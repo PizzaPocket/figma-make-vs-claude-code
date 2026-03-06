@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --version)",
+      "Bash(npm --version)",
+      "Bash(npm install)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(npm run dev)"
+    ]
+  }
+}
