@@ -105,6 +105,7 @@ The map is an illustration, not a survey. Not everything drawn on it is terrain:
 So stage 1 relies on a hand-made annotation file, `data/pyrrhia/map_annotations.json`:
 
 - Every label has a name, one or more boxes, and what it sits on (`water`, `land` or `coast`).
+- A `coast` label also has `hidden_coast`: a hand-traced line for the stretch of coastline its banner covers.
 - Every decoration has a box.
 
 The labels double as our first landmark data: a name and a position for each place.
@@ -117,7 +118,7 @@ The labels double as our first landmark data: a name and a position for each pla
 
 Known limits:
 
-- Coastlines hidden under `coast` labels are a guess and need checking by hand.
+- Coastlines hidden under `coast` labels follow the hand-traced line, which is our judgment, not something the map shows.
 - Inland lakes (for example the one in the Mud Kingdom) come out as land. They are traced separately in stage 1 because they sit above sea level.
 - A few tiny rocks below about 40 pixels are dropped.
 
@@ -148,6 +149,6 @@ These are taken from the map art and need checking against the wiki text in stag
 
 ## Next steps
 
-1. Stage 1, continued: hand-check the coast under the two `coast` labels, trace lakes and rivers, and convert the land mask into `pyrrhia.geojson`.
+1. Stage 1, continued: trace lakes and rivers, and convert the land mask into `pyrrhia.geojson`.
 2. Stage 2: write `regions.yaml` (terrain rules per kingdom), checking each kingdom against its wiki page.
 3. A precision test in Godot: a flat 64 km Terrain3D world with a fast-flying camera. Try both a double-precision build and a floating origin.

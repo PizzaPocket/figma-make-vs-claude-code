@@ -1,6 +1,6 @@
 {
   "source": "PyrrhiaColored.png",
-  "coordinate_space": "Pixels in the source image after cropping the decorative border (crop_fraction of the image width from every side). Boxes are [x0, y0, x1, y1]. A label can use several boxes to hug slanted or multi-line text. A label may set \"glow\" (pixels its white halo may extend past its boxes; default 25) when it sits close to a drawn feature.",
+  "coordinate_space": "Pixels in the source image after cropping the decorative border (crop_fraction of the image width from every side). Boxes are [x0, y0, x1, y1]. A label can use several boxes to hug slanted or multi-line text. A label may set \"glow\" (pixels its white halo may extend past its boxes; default 25) when it sits close to a drawn feature. A label that sits on the coast gives \"hidden_coast\": points [x, y] tracing the coastline its banner covers, from where the drawn coast enters the banner to where it leaves.",
   "crop_fraction": 0.035,
   "labels": [
     {
@@ -92,7 +92,29 @@
           890
         ]
       ],
-      "sits_on": "coast"
+      "sits_on": "coast",
+      "hidden_coast": [
+        [
+          1408,
+          790
+        ],
+        [
+          1414,
+          810
+        ],
+        [
+          1424,
+          828
+        ],
+        [
+          1434,
+          845
+        ],
+        [
+          1443,
+          860
+        ]
+      ]
     },
     {
       "name": "Burn's Stronghold",
@@ -164,7 +186,29 @@
           1100
         ]
       ],
-      "sits_on": "coast"
+      "sits_on": "coast",
+      "hidden_coast": [
+        [
+          1929,
+          1018
+        ],
+        [
+          1922,
+          1040
+        ],
+        [
+          1908,
+          1058
+        ],
+        [
+          1893,
+          1072
+        ],
+        [
+          1883,
+          1092
+        ]
+      ]
     },
     {
       "name": "Scorpion Den",

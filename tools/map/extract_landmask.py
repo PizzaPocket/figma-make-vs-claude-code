@@ -9,9 +9,8 @@ mistaken for terrain:
 - Warm and green colors are land. Pure white outside labels is snow (land).
 - A label's white background (plus its glow, up to GLOW px past its box)
   is not terrain: it becomes sea or land per the label's "sits_on". Labels
-  that sit on the coast are split by distance to the nearest confident pixel,
-  which joins the coastline where it enters and leaves the label; those
-  need review by hand.
+  that sit on the coast are split along their hand-traced "hidden_coast";
+  each side takes the value of the confident pixels around it.
 - Decorations (compass, sea creatures, border ornaments) are painted as sea.
 - Everything else uncertain (ink lines, label text, pale blue) is assigned
   by a watershed that treats dark ink as a wall, so the drawn coastline is
@@ -46,6 +45,29 @@ def box_mask(shape, boxes, pad=0):
     for x0, y0, x1, y1 in boxes:
         mask[max(0, y0 - pad):y1 + pad, max(0, x0 - pad):x1 + pad] = True
     return mask
+
+
+def side_of_polyline(shape, points):
+    """-1 or +1 for every pixel: which side of the polyline it lies on.
+
+    Uses the nearest segment; the first and last segments extend forever, so
+    the line splits the whole plane in two.
+    """
+    pts = np.asarray(points, float)
+    yy, xx = np.mgrid[0:shape[0], 0:shape[1]]
+    best = np.full(shape, np.inf)
+    side = np.ones(shape, np.int8)
+    last = len(pts) - 2
+    for i, (a, b) in enumerate(zip(pts[:-1], pts[1:])):
+        d = b - a
+        tt = ((xx - a[0]) * d[0] + (yy - a[1]) * d[1]) / (d @ d)
+        tt = np.clip(tt, -np.inf if i == 0 else 0, np.inf if i == last else 1)
+        dist = (xx - a[0] - tt * d[0]) ** 2 + (yy - a[1] - tt * d[1]) ** 2
+        cross = d[0] * (yy - a[1]) - d[1] * (xx - a[0])
+        closer = dist < best
+        best[closer] = dist[closer]
+        side[closer] = np.where(cross[closer] >= 0, 1, -1)
+    return side
 
 
 def label_background(white, shape, label):
@@ -101,13 +123,21 @@ def main():
     walls = nd.gaussian_filter(255.0 - v, 1.0)
     result = watershed(walls, markers)
     # Under coast labels the drawn coastline is hidden, so the watershed has
-    # no wall to stop at. Split them (and the uncertain pixels hugging them)
-    # by distance to the nearest pixel whose color was confidently sea or land.
-    if coast_labels.any():
-        hidden = nd.binary_dilation(coast_labels, iterations=GLOW) & (markers == UNKNOWN)
-        hidden |= coast_labels
-        _, (iy, ix) = nd.distance_transform_edt(markers == UNKNOWN, return_indices=True)
-        result[hidden] = markers[iy, ix][hidden]
+    # no wall to stop at. Split the hidden area (label plus the uncertain
+    # pixels hugging it) by which side of the hand-traced coastline each
+    # pixel is on, and give each side the majority value of the confident
+    # pixels bordering it.
+    for label in ann["labels"]:
+        if label["sits_on"] != "coast":
+            continue
+        near = box_mask(shape, label["boxes"], pad=GLOW)
+        hidden = near & ((markers == UNKNOWN) & nd.binary_dilation(coast_labels, iterations=GLOW) | coast_labels)
+        side = side_of_polyline(shape, label["hidden_coast"])
+        for s_ in (-1, 1):
+            part = hidden & (side == s_)
+            ring = nd.binary_dilation(part, iterations=3) & ~hidden & near & (markers != UNKNOWN)
+            if part.any() and ring.any():
+                result[part] = LAND if (markers[ring] == LAND).mean() >= 0.5 else SEA
 
     land = result == LAND
     land = nd.binary_opening(land, iterations=1)
@@ -129,6 +159,8 @@ def main():
         color = (255, 140, 0) if l["sits_on"] == "coast" else (230, 200, 0)
         for box in l["boxes"]:
             draw.rectangle(box, outline=color, width=3)
+        if "hidden_coast" in l:
+            draw.line([tuple(p) for p in l["hidden_coast"]], fill=(0, 160, 255), width=2)
     for d in ann["decorations"]:
         draw.rectangle(d["box"], outline=(220, 0, 220), width=3)
     review.save(OUT / "landmask_review.png")
