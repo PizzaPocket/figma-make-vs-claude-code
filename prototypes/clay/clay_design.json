@@ -1,0 +1,596 @@
+{
+  "about": "Clay (MudWing), described as data from the side-view reference. Model space: x = Clay's left, y = up, z = forward. 1 unit = 343 px of the 1400 px-wide reference; ground at y = 0.",
+  "palette_srgb": {
+    "dark": [
+      98,
+      45,
+      33
+    ],
+    "dark_line": [
+      58,
+      24,
+      17
+    ],
+    "orange": [
+      229,
+      88,
+      41
+    ],
+    "orange_light": [
+      240,
+      122,
+      62
+    ],
+    "cream": [
+      241,
+      196,
+      142
+    ],
+    "cream_shade": [
+      214,
+      156,
+      101
+    ],
+    "peach": [
+      246,
+      166,
+      107
+    ],
+    "peach_light": [
+      250,
+      200,
+      150
+    ],
+    "claw": [
+      72,
+      50,
+      58
+    ],
+    "mane": [
+      82,
+      36,
+      44
+    ],
+    "eye_iris": [
+      120,
+      72,
+      34
+    ],
+    "eye_white": [
+      242,
+      236,
+      226
+    ]
+  },
+  "body_stations": {
+    "columns": [
+      "z",
+      "y",
+      "half_height_above",
+      "half_height_below",
+      "half_width",
+      "squareness",
+      "dark_above_h",
+      "cream_below_h"
+    ],
+    "note": "Centre line from nose to tail tip. Heights are within the cross-section (-1 bottom, 1 top). Head rows come from scanning the reference outline column by column; widths are read from the shading (the head is a narrow wedge, the chest a broad barrel).",
+    "rows": [
+      [
+        2.02,
+        1.42,
+        0.045,
+        0.045,
+        0.05,
+        2.2,
+        0.0,
+        -0.45
+      ],
+      [
+        1.988,
+        1.42,
+        0.067,
+        0.067,
+        0.075,
+        2.4,
+        0.0,
+        -0.45
+      ],
+      [
+        1.953,
+        1.417,
+        0.099,
+        0.099,
+        0.09,
+        2.5,
+        0.05,
+        -0.45
+      ],
+      [
+        1.918,
+        1.435,
+        0.14,
+        0.14,
+        0.1,
+        2.5,
+        0.12,
+        -0.45
+      ],
+      [
+        1.883,
+        1.462,
+        0.19,
+        0.18,
+        0.11,
+        2.5,
+        0.2,
+        -0.45
+      ],
+      [
+        1.848,
+        1.48,
+        0.235,
+        0.235,
+        0.12,
+        2.5,
+        0.28,
+        -0.42
+      ],
+      [
+        1.813,
+        1.483,
+        0.264,
+        0.264,
+        0.13,
+        2.5,
+        0.36,
+        -0.4
+      ],
+      [
+        1.778,
+        1.489,
+        0.282,
+        0.282,
+        0.14,
+        2.4,
+        0.42,
+        -0.38
+      ],
+      [
+        1.743,
+        1.527,
+        0.307,
+        0.307,
+        0.15,
+        2.4,
+        0.5,
+        -0.36
+      ],
+      [
+        1.708,
+        1.55,
+        0.31,
+        0.31,
+        0.165,
+        2.4,
+        0.55,
+        -0.35
+      ],
+      [
+        1.673,
+        1.573,
+        0.308,
+        0.308,
+        0.18,
+        2.3,
+        0.55,
+        -0.35
+      ],
+      [
+        1.638,
+        1.61,
+        0.28,
+        0.28,
+        0.195,
+        2.3,
+        0.55,
+        -0.35
+      ],
+      [
+        1.569,
+        1.64,
+        0.25,
+        0.25,
+        0.22,
+        2.2,
+        0.55,
+        -0.35
+      ],
+      [
+        1.47,
+        1.63,
+        0.255,
+        0.255,
+        0.235,
+        2.1,
+        0.55,
+        -0.3
+      ],
+      [
+        1.36,
+        1.57,
+        0.27,
+        0.27,
+        0.255,
+        2.0,
+        0.55,
+        -0.15
+      ],
+      [
+        1.25,
+        1.46,
+        0.29,
+        0.29,
+        0.28,
+        2.0,
+        0.5,
+        -0.2
+      ],
+      [
+        1.13,
+        1.33,
+        0.33,
+        0.33,
+        0.32,
+        2.0,
+        0.45,
+        -0.25
+      ],
+      [
+        0.98,
+        1.18,
+        0.42,
+        0.42,
+        0.39,
+        2.0,
+        0.35,
+        -0.3
+      ],
+      [
+        0.8,
+        1.1,
+        0.56,
+        0.55,
+        0.43,
+        2.1,
+        0.2,
+        -0.55
+      ],
+      [
+        0.58,
+        1.045,
+        0.525,
+        0.525,
+        0.47,
+        2.1,
+        0.15,
+        -0.65
+      ],
+      [
+        0.29,
+        1.02,
+        0.51,
+        0.51,
+        0.48,
+        2.1,
+        0.15,
+        -0.65
+      ],
+      [
+        0.0,
+        1.055,
+        0.435,
+        0.435,
+        0.46,
+        2.1,
+        0.15,
+        -0.65
+      ],
+      [
+        -0.29,
+        1.065,
+        0.365,
+        0.365,
+        0.43,
+        2.1,
+        0.1,
+        -0.6
+      ],
+      [
+        -0.58,
+        1.08,
+        0.29,
+        0.29,
+        0.4,
+        2.0,
+        0.05,
+        -0.55
+      ],
+      [
+        -0.87,
+        1.055,
+        0.29,
+        0.28,
+        0.41,
+        2.0,
+        0.0,
+        -0.5
+      ],
+      [
+        -1.17,
+        1.015,
+        0.25,
+        0.235,
+        0.35,
+        2.0,
+        0.0,
+        -0.45
+      ],
+      [
+        -1.5,
+        0.95,
+        0.21,
+        0.21,
+        0.22,
+        2.0,
+        -0.05,
+        -0.35
+      ],
+      [
+        -1.9,
+        0.82,
+        0.17,
+        0.17,
+        0.175,
+        2.0,
+        -0.05,
+        -0.35
+      ],
+      [
+        -2.4,
+        0.62,
+        0.13,
+        0.13,
+        0.135,
+        2.0,
+        -0.05,
+        -0.35
+      ],
+      [
+        -2.9,
+        0.45,
+        0.1,
+        0.1,
+        0.1,
+        2.0,
+        -0.05,
+        -0.35
+      ],
+      [
+        -3.4,
+        0.32,
+        0.07,
+        0.07,
+        0.07,
+        2.0,
+        -0.05,
+        -0.35
+      ],
+      [
+        -3.9,
+        0.22,
+        0.045,
+        0.045,
+        0.045,
+        2.0,
+        -0.05,
+        -0.35
+      ],
+      [
+        -4.3,
+        0.16,
+        0.02,
+        0.02,
+        0.02,
+        2.0,
+        -0.05,
+        -0.35
+      ]
+    ]
+  },
+  "surface_rules": {
+    "note": "Each zone's pattern, laid out along (s, distance around) on the body or along/around each limb. Sizes in units. 'relief' is carved into the geometry; finer detail goes into the shading.",
+    "back_plates": {
+      "zone": "dark",
+      "length": 0.16,
+      "width": 0.12,
+      "stagger": 0.5,
+      "relief_step": 0.012
+    },
+    "border_squares": {
+      "zone": "dark/orange boundary, neck to tail",
+      "size": 0.05,
+      "band_width_h": 0.07,
+      "relief": 0.012
+    },
+    "flank_scales": {
+      "zone": "orange on neck and body",
+      "row": 0.065,
+      "width": 0.13,
+      "shape": "half-round, free edge toward the tail"
+    },
+    "head_pebbles": {
+      "zone": "orange on the head",
+      "size": 0.035
+    },
+    "head_plate": {
+      "zone": "dark on the head",
+      "segment": 0.09
+    },
+    "belly_bands": {
+      "zone": "cream",
+      "period_throat": 0.06,
+      "period_body": 0.09,
+      "relief": 0.012
+    },
+    "tail_underside_columns": {
+      "zone": "cream on the tail",
+      "columns": 3
+    },
+    "limb_grid": {
+      "zone": "orange limbs",
+      "size": 0.06,
+      "relief": 0.006,
+      "cream_back": true
+    },
+    "wing_bone": {
+      "pebbles": 0.03
+    }
+  },
+  "features": {
+    "mouth": {
+      "from_zy": [
+        2.0,
+        1.36
+      ],
+      "corner_zy": [
+        1.47,
+        1.57
+      ],
+      "groove_depth": 0.012
+    },
+    "eye": {
+      "centre": [
+        0.15,
+        1.665,
+        1.7
+      ],
+      "radius": 0.045,
+      "brow": {
+        "centre": [
+          0.13,
+          1.745,
+          1.69
+        ],
+        "radii": [
+          0.06,
+          0.032,
+          0.12
+        ]
+      }
+    },
+    "nostril": {
+      "centre": [
+        0.04,
+        1.555,
+        1.92
+      ],
+      "radius": 0.014
+    },
+    "horn": {
+      "note": "one long ridged horn per side; the smaller horn in the drawing is the far-side horn",
+      "path": [
+        [
+          0.1,
+          1.8,
+          1.72
+        ],
+        [
+          0.13,
+          2.12,
+          1.58
+        ],
+        [
+          0.17,
+          2.1,
+          1.21
+        ]
+      ],
+      "radius": [
+        0.055,
+        0.035,
+        0.006
+      ],
+      "ring_every": 0.055
+    },
+    "ear_frill": {
+      "outline": [
+        [
+          0.19,
+          1.73,
+          1.45
+        ],
+        [
+          0.19,
+          1.62,
+          1.36
+        ],
+        [
+          0.23,
+          1.8,
+          1.28
+        ],
+        [
+          0.25,
+          1.89,
+          1.27
+        ]
+      ],
+      "ribs": 3
+    },
+    "mane": {
+      "from_z": 1.32,
+      "to_z": -0.65,
+      "spacing": 0.03,
+      "length": [
+        0.3,
+        0.14
+      ],
+      "lean": 0.55,
+      "rows": 2
+    },
+    "tail_studs": {
+      "count": 9,
+      "first_z": -1.05,
+      "spacing": 0.33,
+      "length": [
+        0.22,
+        0.09
+      ],
+      "width": [
+        0.11,
+        0.045
+      ],
+      "height": [
+        0.05,
+        0.02
+      ]
+    },
+    "wing_arm_blocks": {
+      "humerus": 9,
+      "forearm": 9,
+      "size": [
+        0.07,
+        0.04,
+        0.05
+      ],
+      "spacing": 0.095
+    },
+    "finger_studs": {
+      "spacing": 0.085,
+      "size": 0.032
+    },
+    "wrist_claws": 2,
+    "hand_claws": 3,
+    "foot_claws": 3
+  }
+}

@@ -1,96 +1,128 @@
-// Viewer for the Blender-built Clay (.glb): projects the reference art onto the
-// parts of the skin the reference shows, fills the rest with matching colours,
-// and drives the rig procedurally (rest, walk, fly).
+// Viewer for the Blender-built Clay (.glb): colours and fine scale detail come from the
+// design rules (clay_design.json), and the rig is driven procedurally (rest, walk, fly).
 (function () {
   "use strict";
 
+  // Surface parts written by build_clay2.py: 0 body, 1 limb, 2 wing bone, 3 claw, 4 tail stud,
+  // 5 wing plate/stud, 6 membrane, 7 mane, 8 horn, 9 ear frill, 10 eye.
   const GLSL = /* glsl */`
     varying vec3 vObj;
-    varying vec3 vObjN;
     varying float vPart;
     varying vec2 vUV;
-    varying vec2 vZone;
-    varying float vProj;
-    uniform sampler2D refMap;
-    uniform float debugGray;
-    vec3 srgb(vec3 c) { return pow(c, vec3(2.2)); }
+    varying vec3 vZone;
+    varying float vH;
+    vec3 srgb(vec3 c) { return pow(c / 255.0, vec3(2.2)); }
     float isPart(float p) { return 1.0 - step(0.5, abs(vPart - p)); }
+    vec3 hash3(vec3 p) { p = vec3(dot(p, vec3(127.1, 311.7, 74.7)), dot(p, vec3(269.5, 183.3, 246.1)), dot(p, vec3(113.5, 271.9, 124.6))); return fract(sin(p) * 43758.5453); }
+    vec2 cells(vec3 x) { // x: gap to the nearest cell edge, y: cell id
+      vec3 p = floor(x), f = fract(x); float d1 = 8.0, d2 = 8.0, id = 0.0;
+      for (int k = -1; k <= 1; k++) for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
+        vec3 b = vec3(float(i), float(j), float(k)); vec3 h = hash3(p + b); vec3 r = b + h * 0.8 - f; float d = dot(r, r);
+        if (d < d1) { d2 = d1; d1 = d; id = h.x; } else if (d < d2) d2 = d; }
+      return vec2(sqrt(d2) - sqrt(d1), id);
+    }
+    float lineAt(float f, float w) { float e = min(f, 1.0 - f); float aa = fwidth(f) * 1.5; return 1.0 - smoothstep(w, w + aa + 0.01, e); }
   `;
 
-  function clayMaterial(THREE, refTex) {
-    const mat = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.62, metalness: 0, skinning: true });
+  function clayMaterial(THREE) {
+    const mat = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.6, metalness: 0, skinning: true });
     mat.onBeforeCompile = (shader) => {
-      shader.uniforms.refMap = { value: refTex };
-      shader.uniforms.debugGray = { value: window.CLAY_GRAY ? 1 : 0 };
       shader.vertexShader = shader.vertexShader
         .replace("#include <common>", `#include <common>
-          attribute float _part; attribute float _u; attribute float _v; attribute float _zback; attribute float _zbelly; attribute float _proj;
-          varying vec3 vObj; varying vec3 vObjN; varying float vPart; varying vec2 vUV; varying vec2 vZone; varying float vProj;`)
+          attribute float _part; attribute float _u; attribute float _v; attribute float _zback; attribute float _zbelly; attribute float _zedge; attribute float _h;
+          varying vec3 vObj; varying float vPart; varying vec2 vUV; varying vec3 vZone; varying float vH;`)
         .replace("#include <begin_vertex>", `#include <begin_vertex>
-          vObj = position; vObjN = normal; vPart = _part; vUV = vec2(_u, _v); vZone = vec2(_zback, _zbelly); vProj = _proj;`);
+          vObj = position; vPart = _part; vUV = vec2(_u, _v); vZone = vec3(_zback, _zbelly, _zedge); vH = _h;`);
       shader.fragmentShader = shader.fragmentShader
         .replace("#include <common>", "#include <common>\n" + GLSL)
         .replace("#include <map_fragment>", `
-          // palette sampled from the reference art
-          vec3 dark = srgb(vec3(98.0, 45.0, 33.0) / 255.0), orange = srgb(vec3(229.0, 88.0, 41.0) / 255.0);
-          vec3 cream = srgb(vec3(241.0, 196.0, 142.0) / 255.0), line = srgb(vec3(60.0, 25.0, 18.0) / 255.0);
-          vec3 peach = srgb(vec3(246.0, 166.0, 107.0) / 255.0), peachHi = srgb(vec3(250.0, 200.0, 150.0) / 255.0);
-          float body = isPart(0.0), limb = isPart(1.0), wingb = isPart(2.0), claw = isPart(3.0);
-          float horn = isPart(4.0), memb = isPart(5.0), mane = isPart(6.0), frill = isPart(7.0);
-
-          // colours for the parts the reference doesn't show, in the art's style:
-          // flat colour with thin dark outlines between plates and scales
-          vec3 fill = orange;
-          if (body > 0.5) {
-            float plate = fract(vUV.x / 0.17);
-            vec3 backC = mix(dark, line, (1.0 - smoothstep(0.0, 0.05, min(plate, 1.0 - plate))) * 0.7);
-            float band = fract(vUV.x / 0.09);
-            vec3 bellyC = mix(cream, line, (1.0 - smoothstep(0.0, 0.07, min(band, 1.0 - band))) * 0.55);
-            float sc = fract(vUV.x / 0.07 + 0.5 * floor(vObj.x * 14.0)), scy = fract(vObj.x * 14.0);
-            vec3 flankC = mix(orange, line, (1.0 - smoothstep(0.0, 0.08, min(min(sc, 1.0 - sc), min(scy, 1.0 - scy)))) * 0.35);
-            fill = mix(mix(flankC, backC, vZone.x), bellyC, vZone.y);
-            fill = mix(fill, line, (1.0 - smoothstep(0.0, 0.12, abs(vZone.x - 0.5))) * 0.7);
-            fill = mix(fill, line, (1.0 - smoothstep(0.0, 0.12, abs(vZone.y - 0.5))) * 0.7);
+          // palette and layout rules from clay_design.json
+          vec3 dark = srgb(vec3(98.0, 45.0, 33.0)), line = srgb(vec3(58.0, 24.0, 17.0));
+          vec3 orange = srgb(vec3(229.0, 88.0, 41.0)), orangeL = srgb(vec3(240.0, 122.0, 62.0));
+          vec3 cream = srgb(vec3(241.0, 196.0, 142.0)), creamS = srgb(vec3(214.0, 156.0, 101.0));
+          vec3 peach = srgb(vec3(246.0, 166.0, 107.0)), peachL = srgb(vec3(250.0, 200.0, 150.0));
+          vec3 col = orange; float groove = 0.0; float rough = 0.6;
+          float s = vUV.x, v = vUV.y;
+          if (isPart(0.0) > 0.5) {
+            float head = smoothstep(1.3, 1.4, vObj.z);
+            // dark back: long overlapping plates in staggered rows (head: segments across the plate)
+            float row = floor(v / 0.12);
+            float f = fract(s / 0.16 + 0.5 * row);
+            float plateLine = max(lineAt(f, 0.035), lineAt(fract(v / 0.12), 0.03));
+            vec3 backC = mix(dark * 0.82, dark * 1.1, f);
+            float hseg = lineAt(fract(s / 0.09), 0.05);
+            backC = mix(backC, mix(dark, dark * 1.08, fract(s / 0.09)), head);
+            float bl = mix(plateLine, hseg, head);
+            backC = mix(backC, line, bl * 0.85);
+            // border of square plates along the edge of the dark back
+            float sq = lineAt(fract(s / 0.05), 0.1);
+            vec3 edgeC = mix(dark * 1.15, line, sq * 0.9);
+            // orange: rows of half-round scales on the neck and body, pebbles on the head
+            vec2 g = vec2(s / 0.065, v / 0.13);
+            float r2 = floor(g.x); vec2 fr = vec2(fract(g.x), fract(g.y + 0.5 * mod(r2, 2.0)));
+            float dd = length(vec2((fr.x + 0.08) * 0.065, (fr.y - 0.5) * 0.13)) / (0.56 * 0.13);
+            float arc = (1.0 - smoothstep(0.0, fwidth(dd) * 1.5 + 0.05, abs(dd - 1.0))) * step(fr.x * 0.065, 0.56 * 0.13);
+            vec3 flank = mix(orange * 1.04, orange * 0.86, smoothstep(0.4, 1.0, dd));
+            flank = mix(flank, line, arc * 0.7);
+            vec2 pc = cells(vObj * 30.0);
+            vec3 headC = mix(orange, line, (1.0 - smoothstep(0.02, 0.08, pc.x)) * 0.55);
+            flank = mix(flank, headC, head);
+            // cream: bands across the throat, belly and tail; three columns under the tail
+            float period = vObj.z > 0.95 ? 0.06 : 0.09;
+            float bandL = lineAt(fract(s / period), 0.06);
+            float tailCols = (1.0 - step(-1.15, vObj.z)) * lineAt(fract(abs(v) / 0.07), 0.06);
+            vec3 bellyC = mix(cream, creamS, 0.35 * smoothstep(0.5, 1.0, fract(s / period)));
+            bellyC = mix(bellyC, line, max(bandL, tailCols) * 0.75);
+            col = mix(flank, backC, vZone.x);
+            col = mix(col, edgeC, step(0.5, vZone.z) * (1.0 - head));
+            col = mix(col, bellyC, vZone.y);
+            // outline where the zones meet
+            float seam = max(1.0 - smoothstep(0.0, 0.12, abs(vZone.x - 0.5)), 1.0 - smoothstep(0.0, 0.12, abs(vZone.y - 0.5)));
+            col = mix(col, line, seam * 0.8);
+            groove = max(max(bl * vZone.x, arc * (1.0 - vZone.x) * (1.0 - vZone.y)), max(bandL, tailCols) * vZone.y);
           }
-          if (limb > 0.5) {
-            float r = fract(vObj.y * 9.0);
-            fill = mix(orange, line, (1.0 - smoothstep(0.0, 0.06, min(r, 1.0 - r))) * 0.3);
+          if (isPart(1.0) > 0.5) {
+            float gl = max(lineAt(fract(s / 0.06), 0.06), lineAt(fract(v / 0.06), 0.06));
+            col = mix(mix(orange, orangeL, 0.3 * fract(s / 0.06)), cream, vZone.y);
+            col = mix(col, line, gl * 0.7);
+            groove = gl;
           }
-          if (wingb > 0.5) {
-            float seg = fract(length(vObj) * 12.0);
-            fill = mix(dark * 1.15, line, (1.0 - smoothstep(0.0, 0.1, min(seg, 1.0 - seg))) * 0.8);
+          if (isPart(2.0) > 0.5) { vec2 pc = cells(vObj * 34.0); col = mix(dark * 1.05, line, (1.0 - smoothstep(0.02, 0.08, pc.x)) * 0.6); }
+          if (isPart(3.0) > 0.5) { col = srgb(vec3(72.0, 50.0, 58.0)); rough = 0.3; }
+          if (isPart(4.0) > 0.5) { col = dark * 0.85; rough = 0.45; }
+          if (isPart(5.0) > 0.5) { col = dark * 0.78; rough = 0.45; }
+          if (isPart(6.0) > 0.5) {
+            col = mix(peach, peachL, smoothstep(0.6, 1.0, s) * 0.6);
+            col = mix(col, dark, vZone.x * 0.85);
+            col = mix(col, line, smoothstep(0.96, 1.0, s) * 0.8);
+            rough = 0.72;
           }
-          if (claw > 0.5) fill = srgb(vec3(75.0, 46.0, 42.0) / 255.0);
-          if (horn > 0.5) fill = mix(dark * 0.8, dark * 1.4, vUV.x);
-          if (memb > 0.5) {
-            fill = mix(peach, peachHi, smoothstep(0.75, 1.0, vUV.x) * 0.6);
-            fill = mix(fill, dark, vZone.x * 0.85);
-            fill = mix(fill, srgb(vec3(200.0, 110.0, 70.0) / 255.0), smoothstep(0.94, 1.0, vUV.x));
+          if (isPart(7.0) > 0.5) col = mix(srgb(vec3(60.0, 26.0, 30.0)), srgb(vec3(110.0, 52.0, 58.0)), s);
+          if (isPart(8.0) > 0.5) { col = mix(dark * 0.9, dark * 1.3, s); col = mix(col, line, step(0.05, v) * 0.7); rough = 0.4; }
+          if (isPart(9.0) > 0.5) {
+            col = mix(peach, cream, s);
+            col = mix(col, creamS, max(lineAt(fract(v * 3.0), 0.04), lineAt(s, 0.04)) * 0.8);
           }
-          if (mane > 0.5) fill = mix(srgb(vec3(60.0, 26.0, 26.0) / 255.0), srgb(vec3(110.0, 50.0, 45.0) / 255.0), vUV.x);
-          if (frill > 0.5) fill = mix(peach, cream, vUV.x);
-
-          // the reference art, projected from the side, only where the reference shows
-          // that same part of Clay: head, neck, chest, front legs, front of the body and
-          // the wing arm (the rear of the body and the wing fingers are covered or drawn
-          // differently in the reference)
-          float refX = 700.0 - vObj.z * 343.0;
-          vec2 ruv = vec2(refX / 1400.0, 1.0 - (830.0 - vObj.y * 343.0) / 1020.0);
-          vec3 art = srgb(texture2D(refMap, ruv).rgb); // the image is sRGB; lighting works in linear
-          float facing = smoothstep(0.15, 0.5, abs(normalize(vObjN).x));
-          float trusted = max(body + limb + mane + frill, 0.0) * (1.0 - smoothstep(690.0, 740.0, refX))
-                        + wingb * (1.0 - smoothstep(800.0, 830.0, refX)) * step(0.55, vObj.y);
-          float useArt = vProj * facing * trusted * step(0.0, ruv.y) * step(ruv.y, 1.0);
-          vec3 col = mix(fill, art, useArt);
-          if (debugGray > 0.5) col = vec3(0.5);
+          if (isPart(10.0) > 0.5) {
+            vec3 iris = srgb(vec3(120.0, 72.0, 34.0));
+            col = srgb(vec3(242.0, 236.0, 226.0));
+            col = mix(col, iris, smoothstep(0.78, 0.8, s));
+            col = mix(col, vec3(0.01), smoothstep(0.93, 0.945, s));
+            col = mix(col, line, (1.0 - smoothstep(0.0, 0.05, abs(s - 0.6))) * 0.9);
+            rough = 0.1;
+          }
           diffuseColor.rgb = col;
-          float rough = mix(0.62, 0.35, max(claw, horn));
-          rough = mix(rough, 0.72, memb);
         `)
         .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = rough;")
-        .replace("#include <emissivemap_fragment>", `#include <emissivemap_fragment>
-          // the art already has its own painted shading; lift it a little so lighting doesn't double it
-          totalEmissiveRadiance += col * (0.08 * useArt + 0.2 * memb);`);
+        .replace("#include <normal_fragment_begin>", `#include <normal_fragment_begin>
+          {
+            // fine scale lines read as shallow grooves
+            vec3 sp = -vViewPosition; vec3 dx = dFdx(sp), dy = dFdy(sp);
+            vec3 r1 = cross(dy, normal), r2 = cross(normal, dx); float det = dot(dx, r1);
+            float h = -groove * 0.004;
+            vec3 grad = sign(det) * (dFdx(h) * r1 + dFdy(h) * r2);
+            normal = normalize(abs(det) * normal - grad);
+          }`);
     };
     return mat;
   }
@@ -177,12 +209,10 @@
     const ground = new THREE.Mesh(new THREE.CircleGeometry(16, 64), new THREE.MeshStandardMaterial({ map: gtex, roughness: 0.95 }));
     ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; scene.add(ground);
 
-    const refTex = await new Promise((res, rej) => new THREE.TextureLoader().load(opts.refUrl, res, undefined, rej));
-    refTex.encoding = THREE.sRGBEncoding; refTex.anisotropy = 8;
     const gltf = await new Promise((res, rej) => new THREE.GLTFLoader().load(opts.glbUrl, res, undefined, rej));
     let skinned = null;
     gltf.scene.traverse(o => { if (o.isSkinnedMesh) skinned = o; });
-    skinned.material = clayMaterial(THREE, refTex);
+    skinned.material = clayMaterial(THREE);
     skinned.castShadow = true; skinned.receiveShadow = true; skinned.frustumCulled = false;
     scene.add(gltf.scene);
     const rig = prepareRig(THREE, skinned);
