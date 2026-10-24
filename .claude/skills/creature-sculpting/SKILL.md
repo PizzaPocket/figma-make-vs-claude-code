@@ -1,187 +1,213 @@
 ---
 name: creature-sculpting
-description: Architect one part of a creature model at a time (nose, eye, ear, horn base, jaw, limb, wing, tail) from reference art, the way an architect designs a building, then encode it as measured data and build it. Use when modelling or fixing any part of the Clay (Wings of Fire) model, or any character model built from reference images in this repo.
+description: Sculpt a creature model from reference art one element at a time (nose, eye, cheekbone, horn, jaw, neck, limb, hand, wing, tail), the way an architect designs a building and a sculptor builds from bone and muscle outward, then encode it as measured data and build it. Use when modelling or fixing any part of the Clay (Wings of Fire) model, or any character model built from reference images in this repo.
 ---
 
 # Creature sculpting
 
 Model one element at a time. Treat each element like a building:
 - find its load-bearing masses;
-- find the anatomy that shapes them;
-- find the planes, ridges and creases the artist drew;
+- find the bones and muscles that shape them;
+- find the planes, ridges, plates and creases the artist drew;
 - write all of that down as numbers before building anything.
 
-Never tune the whole creature at once.
+Never tune the whole creature at once, and never guess a shape the references show.
+
+## How we work
+
+The user reviews every step by eye. Their notes are the most valuable input, and they have repeatedly caught what the numbers missed. Work so their review is fast and every note gets fixed properly.
+
+- **Show, side by side.** End every step with a sheet that puts the model next to the reference it is judged against:
+  - a side view aligned with the side sheet;
+  - the official three-quarter and front art;
+  - a plain clay render;
+  - the part articulated (jaw open, blink, expressions).
+
+  Use `scripts/render_sheet.py` with the part's `views.json`.
+- **Fix exactly what is named, at its source.** When the user names a feature ("his cheekbone", "the inside eye point"), first find the exact drawn line or shape they mean in the reference: zoom in, and make a line map. Measure it, then change the data. If the meaning is unclear, ask; don't build a guess.
+- **Answer the question.** If asked "does X look right?", check the reference and answer plainly. Say what was wrong and why, including your own earlier mistakes. ("Yes, I invented that ridge" is the right answer when it is true.)
+- **Report what is still off.** Every report ends with the remaining differences you can see. Never call a part done because it "looks fine".
+- **One commit per fix.** After each fix, update the data file, the element sheet (`*_sheets.md`) and this skill's lessons, then commit and push. The repo is public: never commit the reference images or generated `.glb` files.
 
 ## The loop, for each element
 
-1. **Isolate.** Crop the element at full resolution from every reference that shows it, with a measuring grid in reference pixels (`scripts/study_crop.py`). Use the official art first and fan sheets second. Note which references disagree. Where lines are hard to see (dark ink on dark paint), extract them with `scripts/line_map.py` and trace from the line map.
-2. **Read it as architecture.** Write an element sheet (template below), answering in order:
-   - **Primary mass:** what simple solid is it? (A wedge, box, drum or cone.) What are its overall length, height and width?
-   - **Structure underneath:** which bones and which muscles would have to exist to make this shape? See "Sculpt from the inside out" below. The surface must look driven by them, not inflated.
-   - **Planes:** where are the flat faces, and where do they meet in a hard edge or a soft turn? Cartoon and illustrated dragons are built from clear planes. Find them.
-   - **Lines the artist drew:** every outline and crease is a piece of geometry, either an edge between planes, a ridge or a groove. List each one as a polyline in reference pixels and say which it is.
-   - **Openings and attachments:** eyes, nostrils, ear openings, the mouth, and where horns, frills and plates sit.
-   - **Articulation:** what moves, around which pivot? Which side of a seam is rigid?
-3. **Encode.** Put the numbers in the element's data file, not in code: stations (cross-sections), polylines for ridges and creases, pivots and attachment frames. Convert reference pixels to model units with one documented mapping (for Clay: `z = (700 - px) / 343`, `y = (830 - py) / 343`).
-4. **Build** from the data with the toolkit below.
-5. **Check** against the references:
-   - an orthographic render aligned pixel-for-pixel with the side reference;
-   - a three-quarter and a front view against the official art;
-   - the element articulated through its full range (jaw open, blink, wing spread).
+1. **Isolate.** Crop the element at full resolution from every reference that shows it, with a measuring grid in reference pixels (`scripts/study_crop.py`). Use the official art first and fan sheets second, and note where they disagree. Where the lines are hard to see (dark ink on dark paint), extract them with `scripts/line_map.py` and trace from the line map.
+2. **Read it as architecture.** Write an element sheet (template below):
+   - **Primary mass:** what simple solid is it (wedge, box, drum, cone)? Its length, height and width. Take lengths and heights from the side view and **widths from the front and top views**. A side profile alone hides a box nose.
+   - **Bone, muscle, skin:** what has to exist underneath to make this shape (see "Sculpt from the inside out").
+   - **Planes:** the flat faces, and where they meet in a hard edge or a soft turn.
+   - **Drawn lines:** each line as a polyline in reference pixels, and what it is: an edge between planes, a ridge, a groove, a plate joint, or the outline of an opening.
+   - **Pieces:** which colour areas are separate solids fitted together, which features are sculpted into a host surface, and which are separate attachments.
+   - **Articulation:** what moves, around which pivot, and which side of a seam is rigid.
+3. **Encode.** Put the numbers in the element's data file, not in code:
+   - stations (cross-sections);
+   - polylines for ridges, rims and creases;
+   - plate layouts;
+   - pivots and attachment frames;
+   - a `why` for every form, naming its evidence.
 
-   Write down what still differs. Fix the data, not the code.
-6. **Record** what you learned about this kind of element in this file's "Lessons" section, so the next element starts ahead.
+   Convert reference pixels to model units with one documented mapping (for Clay: `z = (700 - px) / 343`, `y = (830 - py) / 343`).
+4. **Build** from the data with the toolkit below.
+5. **Check** with a sheet: the aligned side view against the line map, three-quarter and front against the official art, plain clay under a raking light, and the part moving through its range. Write down what still differs, and fix the data, not the code.
+6. **Record** what this element taught you in "Lessons", so the next element starts ahead.
+
+## Evidence rules
+
+- **Never invent a form.** Every ridge, crease, plate and mass must point to a specific line or shading in a specific reference, and its `why` says which. Don't assemble a feature from loosely matching lines across several images, and don't add textbook anatomy the art doesn't show. (Invented and removed on Clay: a pit-to-jaw "cheekbone ridge" and a postorbital bar.)
+- **Measure, don't eyeball.** Read positions off gridded crops and line maps. Measure each corner, joint and stroke where it actually is. A measurement between the wrong two points gives a confident wrong number: Clay's eye tilt was first measured to where two creases meet, not to the eye's corner, and came out 26° instead of about 45°.
+- **A drawn line's weight is the edge's strength.** A heavy stroke means a crisp, deep edge; a tapering stroke means the form fades out. Sculpt the edge on the side the line is drawn.
+- **The references decide.** When the model and the art disagree, the model is wrong.
+- Left and right are mirrored: model the left side and mirror it.
+- Organic, not mechanical. Plates and scales vary in size and follow the form; never use a regular grid or brick pattern.
+
+## Construction principles
+
+- **Look for fitted pieces.** A different colour area is often a different solid. Clay's head is an orange face mass with a dark roof of plates fitted over it, standing proud so its edge overhangs.
+- **Sculpt features into their host.** A nose pad, a horn root or a brow belongs to the surface it rises from:
+  - a nose pad is a height field on its plate, with the nostrils cut into it;
+  - a horn root is the roof moved onto the smooth union (exponential smooth-min with a fillet radius) of roof and horn, so the plates swell up into the horn.
+
+  Separate pieces planted on top, flared collars and separate root lofts all failed: they read as stuck on.
+- **Lines are geometry, never ink.** Every line in the art becomes an edge, ridge, crease, plate gap or rim. Don't draw lines on the skin in the shader: they read as scratches on a sculpted model. Ink is acceptable only in a groove that already exists in the geometry, such as a horn ring.
+- **Armour is separate plates, not a scored sheet.**
+  - Build each plate as its own solid tile, in the rows the art draws.
+  - Give it rounded edges, thicker toward its back edge, overlapping the next one back like a shingle.
+  - The gaps make the drawn lines, consistently.
+- **Lay plates out in the art's own directions.** Joints run perpendicular to the form's flow line, and strips run along it. Use coordinates that follow the profile: s along it, d the depth perpendicular to it. On a sloping muzzle the joints are therefore not vertical cuts.
+- **Resolution must match the sharpest edge.** The mesh spacing must be finer than the narrowest crease or overhang, or it renders soft.
+- **Smooth, never stepped.** When carving or uniting surfaces (sockets, fillets), use a smooth minimum, and clamp it so it never cuts into a neighbouring part.
 
 ## Sculpt from the inside out: bone, muscle, skin
 
-A sculptor thinks about the muscles under the skin as much as the skeleton. No surface form is free-floating. Each bump, plane and fold is there because something under it pushes it out, holds it up or lets it fold. Build every element in three layers, and write them in the data in this order:
+No surface form is free-floating: something under it pushes it out, holds it up or lets it fold. Write every element in three layers, in this order:
 
-1. **Bone (landmarks).** The hard, fixed points: rims, ridges, bars and joints. Bone makes crisp edges and flat-ish planes, and it does not change when the creature moves.
-   - Bony rims around openings: the eye socket (brow above, cheekbone below, postorbital bar behind), the nostrils, the ear.
-   - Arches and crests: the zygomatic arch from below the eye back to the jaw joint, the temporal crest, the skull roof.
-   - Joints and pivots: the jaw joint, which sits under the ear in dragons and reptiles.
-2. **Muscle (masses).** Each muscle runs from an origin to an insertion. It bulges in its belly and flattens toward its tendons. Know which one fills each region and what it does, because that also tells you how the region moves.
-   - **Ring muscle round the eye (orbicularis):** a soft raised pad round the lids, longer toward the back corner. It is what closes the eye.
-   - **Masseter:** from the zygomatic arch down to the jaw. It makes the full cheek above the jaw and bunches when the jaw closes.
-   - **Temporalis:** fills the skull behind the eye. It is why the cranium is wide behind the brow.
-   - **Lip muscles (levator):** a gentle fullness on the side of the muzzle.
-   - **Neck muscles** wrap from the skull base. Limb muscles are covered in each limb's sheet.
-3. **Skin (creases, openings, scales).** A crease forms where two muscles meet, or where skin folds over something that moves: lids, the mouth corner, joints. In stylised art the ink lines are mostly these creases. Trace each drawn line back to the boundary between masses that causes it, and sculpt that boundary instead of drawing the line.
+1. **Bone (landmarks).** Rims round openings, arches, crests, bars and joints. Bone makes crisp edges and flat-ish planes, and does not change shape when the creature moves.
+2. **Muscle (masses).** Each muscle runs from an origin to an insertion. It bulges in its belly and flattens toward its tendons. Know which one fills each region, because that tells you both its shape and how the region moves.
+3. **Skin (creases, openings, scales).** A crease forms where two muscles meet, or where skin folds over something that moves (lids, mouth corner, joints). Trace each drawn line back to the boundary that causes it, and sculpt that boundary.
 
-**How the eye is held.** This is the model case for the method:
-- The eyeball sits in a bony socket. The brow shelf (the roof's eave, on Clay) overhangs it from above.
-- The cheekbone's crisp top edge is the socket floor. The eye and its lower lid rest on it.
-- The postorbital bar closes it behind.
-- Inside that frame, the ring muscle forms a raised pad, and the lids are thick shells with a rounded margin hinged on the canthal axis.
-- The face's crease lines (Clay's zig-zag under the eye) are where the lid pad meets the cheekbone.
-
-If the eye looks stuck on, a layer is missing. Usually the socket is a plain dent with no rim, or there is no lid pad.
+**Judge the forms in a plain clay render.** Paint hides missing anatomy.
 
 ### The face is how a creature communicates
 
-Expression is muscle. Every subtlety in the eye, brow, cheek and mouth matters, because that is where the character shows feeling. Learn the expressive muscles and what each one does to the surface, then model the face so those actions are possible:
+Expression is muscle, and every subtlety in the eye, brow, cheek and mouth matters. Model the face so these actions are possible:
 
 | Muscle | Action (FACS unit) | What it does to the surface |
 | --- | --- | --- |
-| Orbicularis oculi, around the lid | blink (AU45), gentle close | the lids slide over the eyeball |
-| Orbicularis oculi, outer ring | cheek raise / squint (AU6, AU7) | the cheek pad rises, the lower lid bunches up, crow's-feet creases fan from the outer corner |
+| Orbicularis oculi, around the lid | blink (AU45) | the lids slide over the eyeball |
+| Orbicularis oculi, outer ring | cheek raise / squint (AU6, AU7) | the cheek pad rises, the lower lid bunches up, creases fan from the outer corner |
 | Levator of the upper lid | lid raise (AU5) | more white above the iris: surprise, fear |
-| Corrugator and procerus | brow lower (AU4) | the brow skin is drawn down and in toward the inner corner and bunches over the upper lid: anger, concentration |
+| Corrugator and procerus | brow lower (AU4) | brow skin drawn down and in over the upper lid: anger, concentration |
 | Frontalis, inner part | inner brow raise (AU1) | the skin above the inner corner lifts: worry, sadness |
-| Zygomaticus major | lip corner pull (AU12) | the mouth corner goes up and back, and the cheek rises with it: a real smile is AU6 + AU12 |
-| Levator labii (with alaeque nasi) | lip raise, nose wrinkle (AU10, AU9) | the upper lip lifts off the teeth and the snout wrinkles: snarl, disgust |
-| Depressor anguli oris | lip corner down (AU15) | the mouth corner drops: sadness |
-| Masseter and temporalis | jaw | they bunch when the jaw clenches |
+| Zygomaticus major | lip corner pull (AU12) | mouth corner up and back, cheek rises; a real smile is AU6 + AU12 |
+| Levator labii (with alaeque nasi) | lip raise, nose wrinkle (AU10, AU9) | upper lip lifts off the teeth, snout wrinkles: snarl, disgust |
+| Depressor anguli oris | lip corner down (AU15) | mouth corner drops: sadness |
+| Masseter, temporalis | jaw | bunch when the jaw clenches |
 
-Build each muscle action as a shape of the face (a morph target): a push of the region it moves, plus the creases it makes. Lid tilts go on bones; the blink is a shape of the lids themselves. Write expressions as mixes of actions. Clay's brow is a rigid plate, so his brow actions move the skin and lids under it, not the plate.
+Build each muscle action as a face morph target: a push of the region plus the creases it makes. Lid tilts go on bones (split the upper lid into inner and outer halves); the blink is a shape of the lids themselves. Write expressions as mixes of actions. A rigid brow plate doesn't move: brow actions move the skin and lids under it.
 
-### Eyes, the details that make them convincing
+### Eyes
 
-- **The two corners differ.**
-  - The inner (medial) corner is rounded, and holds the caruncle: a small fleshy pink teardrop lying on the eyeball between the lid margins. It is never a bead stuck on.
-  - The outer (lateral) corner closes to a sharp point, usually higher, so the canthal axis tilts up toward the outer corner.
-- **Measure each corner's own angle from the eye centre,** on a line map. The canthal axis need not be straight through the centre: Clay's inner corner drops about 58° below horizontal, while his outer corner rises only about 32°. Bend the lid frame so each corner lands at its measured angle. Measuring corner to corner, or to where nearby creases meet, gives the wrong tilt.
-- **The corners sit on the visible eyeball,** where it meets the face, about 50° to each side of the gaze. They are not the ends of the eye's axis, which are buried. Put them at the axis ends and the visible opening has no corners.
-- **The margins are not mirror images.** The upper lid arcs highest a little toward the inner corner. The lower lid is flatter and dips lowest toward the outer corner.
-- **The lids have thickness.** Each is a shell with a rounded margin that slides over the eyeball. They are pinned at the corners by the canthal tendons, so they move most mid-eye and not at all at the corners.
-- **Check the eyeliner's path against the art.** If the art draws a closed round ring, the corner must close round where the ring ends. A corner placed too far round the eyeball drags the margin, and its dark rim, back into a wing.
-- **Keep the eye nearly flush.** Seat it deep enough that the lids barely stand above the face. A visible lid dome behind the eye reads as a bulge. Carve the socket with a smooth minimum, and clamp it so it never cuts into the eyeball.
-- **A blink is the lid sliding,** not a large rigid turn. A large bone turn tears the corners, so make the blink a shape key of the lids.
-- **The socket holds the eye assembly.** Carve the face into a socket: inside the lids' footprint the skin runs in just under the lid dome, and a rounded rim (the orbital rim under the ring muscle) turns it back out. No bone or muscle form may raise the skin over the eye opening; they frame it.
-- **The cheekbone is the rim of the socket.** On Clay it is the heavy hooked line under the eye, measured from the side sheet:
-  - it starts thin below the front of the eye;
-  - it runs back beneath the eye, heaviest under the back of it;
-  - it turns up steeply behind the eye, then sweeps back and tapers out.
+- **The eye sits in a socket.** Carve the face into a socket that holds the eye assembly. Inside the lids' footprint the skin runs in just under them, and a rounded rim turns it back out.
+  - No bone or muscle form may raise the skin over the eye opening; they only frame it.
+  - Seat the eye along the face's true normal at its centre, deep enough that the lids barely stand above the face. A visible lid dome reads as a bulge.
+- **The corners differ, and each has its own angle.** Measure each corner's angle from the eye centre on a line map. Clay's inner corner drops about 58° below horizontal, down and forward to the tear duct; his outer corner rises only about 32°. Bend the lid frame so each corner lands at its measured angle.
+- **The corners sit on the visible eyeball,** where it meets the face, not at the buried ends of the eye's axis.
+  - The inner corner is rounded and holds the caruncle: a fleshy pink teardrop lying on the eyeball between the margins. Never a bead.
+  - The outer corner closes where the art's outline closes.
+- **Follow the eyeliner's path.** If the art draws a closed round ring, the corner must close round where the ring ends. A corner placed too far back drags the dark rim into a wing.
+- **The margins are not mirror images.** The upper lid peaks toward the inner corner; the lower dips lowest toward the outer corner.
+- **Lids have thickness:** shells with a rounded margin, sliding over the eyeball. They are pinned at the corners, moving most mid-eye. A blink is a shape key of the lids; a large bone turn tears the corners.
+- **The cheekbone is the socket's rim.** On Clay it is the heavy hooked line under the eye. Sculpt it as a `rim`: raised, gentle toward the eye, crisp on the outside where the line is drawn.
 
-  Sculpt it as a `rim`: raised, sloping gently up toward the eye, dropping crisply on the outside where the line is drawn. Make it strong enough to read in the plain clay render without any line drawn on it.
+## Toolkit
 
-**Judge forms in a plain clay render.** Render with no colour, scales or ink, under a raking light. Paint hides missing anatomy.
+**Masses**
+- Lofted quad meshes: rings of points at measured stations, each ring a superellipse or profile. The exponent sets boxiness: 2 is round, 5 a crisp box.
+
+**Brushes** (data, grouped into `bone`, `muscle` and `skin` layers)
+- `ridge(polyline, height, width)`
+- `crease(polyline, depth, width)`
+- `dent(point, depth, radius)`
+- `rim(polyline, around, height, width_in, width_out)`: a bony rim round an opening
+- `bulge(centre, amount, radii)`: a muscle belly
+- `pad(centre, radii, tilt, height)`: a raised plateau, such as the lid ring
+
+**Plates**
+- Tiles over (s, d) ranges of a profile-following layout, with bevel, back-edge thickening and overlap.
+- Sculpted height fields (nose pad, nostrils) and smooth-union fillets (horn roots) are applied to the tiles' surface.
+
+**Attachments** (each on its own bone)
+- Tubes along splines for horns and claws, smooth with hairline rings.
+- Fins for frills and membranes.
+- Eyes with lid shells.
+
+**Actions**
+- Face morph targets for muscle actions.
+- Lid shape keys for the blink.
+- Bones for the jaw, tongue and lid tilts.
+
+**Scripts** (`scripts/`)
+- `study_crop.py`: a gridded full-resolution crop of a reference.
+- `line_map.py`: extracts a reference's ink lines into a clean, gridded line map.
+- `render_sheet.py` with `shoot.js`: renders painted and plain-clay views, posed, next to reference crops, from a `views.json`. Needs Playwright's Chromium and three r128's `three.min.js` and `GLTFLoader.js` in a folder (`npm i three@0.128.0`).
+
+**Technical notes**
+- WebGL allows 16 vertex attributes, and morph targets use them up, so pack custom attributes into vectors.
+- three r128 needs `skinning: true` and `morphTargets: true` on the material.
 
 ## Element sheet template
 
 ```
 ## <element>
 References: <files and crops used; where they disagree>
-Primary mass: <solid, size in model units>
+Primary mass: <solid, size in model units; widths from the front/top views>
 Bone: <landmarks (rims, arches, bars, joints) and the crisp edges/planes they make>
 Muscle: <each mass: origin -> insertion, where it bulges, what it moves>
-Skin: <creases and folds, and which boundary between masses each one marks>
+Skin: <creases and folds, and which boundary each one marks>
 Planes: <faces and the edges between them (hard/soft)>
-Drawn lines: <name: polyline in ref px, ridge|crease|edge>
-Openings/attachments: <name: position, size, orientation>
-Articulation: <bone, pivot, range; rigid vs skinned>
+Drawn lines: <name: polyline in ref px, ridge|crease|edge|joint|outline, stroke weight>
+Pieces: <separate solids, features sculpted into a host, attachments>
+Articulation: <bone, pivot, range; rigid vs skinned; morph targets>
 Build: <which toolkit pieces>
 Check: <what to compare; known differences>
 ```
 
-## Toolkit (what elements are built from)
+## Lessons (Clay)
 
-- **Masses.** Lofted quad meshes. Rings of points at measured stations along the element, each ring a superellipse or profile. The exponent controls boxiness: 2 is round, 3.5 is a boxy plane form. Clean topology and natural surface coordinates come for free.
-- **Brushes,** applied to a mass as data, grouped into `bone`, `muscle` and `skin` layers:
-  - `ridge(polyline, height, width)`: a raised line, such as a brow or a cheek ridge;
-  - `crease(polyline, depth, width)`: a fold or the edge of a plate;
-  - `dent(point, depth, radius)`: a nostril, ear opening or eye socket;
-  - `rim(polyline, around, height, width_in, width_out)`: a bony rim round an opening, gentle on the side toward `around` and crisp on the outside, such as the cheekbone cupping the eye;
-  - `bulge(point, amount, radii)`: a muscle belly;
-  - `pad(centre, radii, tilt, height)`: a raised plateau in a tilted ellipse, such as the lid ring muscle;
-  - `flatten(region, plane)`: to make a drawn plane actually flat.
-- **Attachments,** each a separate piece on its own bone:
-  - `tube(path, radii, rings)` for horns and claws;
-  - `fin(base, axis, outline, thickness, ribs, rolled_edge)` for ear frills and membranes;
-  - `eye(centre, radius, gaze)` with upper and lower lid shells;
-  - `plate(position, size, thickness, bevel)` for armour plates.
-- **Seams.** Decide per element whether it is part of the continuous skin or a rigid piece. Rigid pieces tuck their edges under a drawn line (a plate edge or a frill) so the seam is hidden.
+**Muzzle**
+- A box, not a wedge or prow: it hardly narrows to the front, with a flat top, near-vertical sides, and a flat, near-vertical front face with slightly rounded corners.
+- A front plate covers that face above an orange lip band.
+- The nose pad runs along the top front edge, with the nostrils as angled, forward-facing slits at its front corners.
+- The upper lip overhangs a set-back jaw: a strong overbite.
 
-## Rules
+**Roof (the brown crest)**
+- Distinct plates, laid out along the profile:
+  - a nose plate;
+  - top bands that wrap down to a first line (d ≈ 0.054);
+  - a narrow strip of long plates down to d ≈ 0.075;
+  - an edge row of near-square plates (joints about every 0.062) down to the orange.
+- Over the eye the edge steps up, and the eye sits tucked under it.
 
-- **Never invent a form.** Every ridge, crease and mass must point to a specific line or shading in a specific reference. Write that evidence in its `why`. When the user names a feature (for example "his cheekbone"), find the exact drawn line they mean in the side reference and confirm it before modelling. Don't assemble a new feature from loosely matching lines across several images. (A pit-to-jaw "cheekbone ridge" was invented this way; Clay's cheekbone is the hooked line under the eye.)
-- **A drawn line's weight says how strong the form edge is.** A heavy stroke means a crisp, deep edge; a tapering stroke means the form fades out. Sculpt the edge on the side the line is drawn, and match its strength to the stroke.
-- The references decide. When the model and the art disagree, the model is wrong, even if it "looks fine".
-- Measure from the side reference, check the shape from the official three-quarter and front art, and use the books (canon descriptions) to settle what the art leaves open.
-- Organic, not mechanical. Clay's plates and scales are organic and roughly rectangular, varying in size and following the form. Never use a regular grid or brick pattern.
-- Left and right are mirrored. Model the left side and mirror it.
-- Every visible line in the art should end up as geometry. Carry forms such as the cheekbone, lid creases and plate joints by sculpting (ridges, creases, gaps between plates), not by drawn ink lines on the skin. Drawn lines read as scratches on a sculpted model.
+**Horns**
+- The roof's back corner drawn out: the roof's top line runs on into the horn's.
+- Thick at the root.
+- A long, nearly straight sweep back, curling up only at the tip.
+- Smooth, *lined but not bumpy*: hairline rings.
+- The root is sculpted into the roof plates.
 
-## Lessons
+**Eye**
+- Round and wide open.
+- The inner corner points down and forward to the tear duct; the outer corner closes the round outline.
+- The cheekbone is the hooked rim under and behind it.
 
-- **Lay plates out in the art's own directions.** Joints between plates run perpendicular to the form's main flow line, and strips run along it. On a sloping muzzle the joints are therefore *not* vertical cuts at constant depth. Lay plates out in coordinates that follow the profile: s along the profile, d the depth perpendicular to it. Measure the strips' depths and the joint spacing from a line map of the side view, then check the render's side view directly against that line map.
-- **Armour is separate plates, not a scored sheet.** If the art draws plate lines with consistent shapes, build each plate as its own solid tile, in the rows the art uses. On Clay's roof that means a nose plate, a top row of transverse bands, and edge rows of near-square plates along the eave, ending at the brow plate. Give each tile rounded edges, thicker toward its back edge, overlapping the next one like a shingle. The gaps then make the drawn lines, and they stay consistent because they come from the plate layout.
-- **Resolution must match the sharpest edge.** A crisp edge (the cheekbone's overhang, a lid crease) needs mesh spacing finer than its width, or it renders soft. Check in the clay render.
-- **WebGL allows 16 vertex attributes.** Morph targets use them up (position and normal per target), so pack custom attributes into vectors.
-- **Look for fitted pieces first.** Before modelling a region, ask which colour areas are separate architectural pieces fitted together. For Clay's head:
-  - the dark roof is a shell over the orange face, with its eave standing proud;
-  - the nose crest sits on the roof;
-  - the horns continue the roof.
+**Jaw**
+- The cream lower jaw continues up behind the mouth corner as a jowl under the ear.
+- The mouth line is low in front, then curves in and up to end under the ear opening.
 
-  A different colour often means a different solid, not paint.
-- **Find the meridian of every opening.** For an eye, measure the canthal axis (tear duct to the back corner) in the side view. Hinge the lids on that axis: build them as shells parametrised along it and around it, so they pinch to an almond shape and a blink sweeps across along the right angle.
-- **Scan silhouettes column by column.** Scan the side silhouette and look for runs of nearly constant slope. They mark the separate planes: nose crest, forehead, skull, then horn.
+**Ear**
+- The frill sits high at the back of the cheek, under the horn, and its rolled top edge curves back to the horn's underside.
+- The ear opening is a small hole below it.
 
-- **Nose (Clay):**
-  - The muzzle is a box, not a wedge or prow. It hardly narrows to the front, and has a flat top, near-vertical sides and a flat, near-vertical front face with slightly rounded corners. Check the front view and top view, not just the side: a side profile alone let it taper to a point.
-  - A raised nose pad runs along the top front edge, with the nostrils as angled, forward-facing slits at its front corners.
-  - The upper lip overhangs a set-back lower jaw: a strong overbite.
-- **Jaw (Clay):** the cream lower jaw continues up behind the mouth corner as a jowl under the ear. The mouth line is low in front and rises steeply toward the corner.
-- **Ear (Clay):**
-  - The frill sits high at the back of the head.
-  - Its front edge rolls over like the rim of a horse's ear.
-  - The ear opening is a small dark hole on the cheek below it.
-- **Horns (Clay):**
-  - **Where it comes from:** a horn is the roof's back corner drawn out, not a cone stuck on the skull. Its root fills the side of the roof's back corner behind and above the eye, from the eave up to the roof top, so the roof's top line runs straight on into the horn's top line.
-  - **How it is held:** the roof's edge comes back over the eye and curls under the root.
-  - **Path:** it sweeps back in a long, nearly straight line, barely tapering, and curls up only in the last stretch.
-  - **Surface:** smooth, *lined but not bumpy*. The rings are hairline incisions plus ink, never raised ridges or a stack of segments.
-- **Sculpt features into their host; don't attach them as separate pieces.** A nose crest, a horn root or a brow ridge belongs to the surface it rises from.
-  - **Nose crest:** a height field added to the nose plate's own surface, with the nostrils as troughs in it.
-  - **Horn root:** the roof plates are moved onto the smooth union (exponential smooth-min with a fillet radius) of the roof and the horn tube, so they swell up and wrap the horn's base and the horn grows out of the head.
-  - **What failed:** a separate piece planted on top, a radially flared collar (it read as a trumpet bolted on), and a separate root loft. All of them read as stuck on.
-- **Lines on smooth forms.** Make the line a hairline groove (depth about 2% of the radius) plus ink. Check in the clay render that the silhouette stays smooth: if the outline is scalloped, the grooves are too deep or too wide.
-- **Hands vs feet (Clay):** the front hands are compact with big hooked claws and a high dewclaw. The hind feet are long and digitigrade, with a heel spur and studs along the top.
-- **Widths need a front view.** A side reference gives only lengths and heights. Take widths from the front three-quarter art. Clay's head first read as a horse's head because the widths were guessed narrow.
-- **Draw region edges as lines.** For a colour region whose edge is a drawn line (like the dark plate), store the signed distance to the edge per vertex, not a 0/1 flag. The shader can then draw a clean outline instead of a stair-stepped one.
-- **Overhangs are skin.** The underside of an overhanging part (the upper lip in front of the jaw) is skin, not mouth interior.
-- **Check every render with:**
-  - `render.sh`-style sheets: a side, three-quarter and front view, plus the jaw open, next to the references;
-  - a script that rebuilds from the repo files, so the scratch copies never drift.
-
+**Hands and feet**
+- The front hands are compact, with big hooked claws and a high dewclaw.
+- The hind feet are long and digitigrade, with a heel spur and studs along the top.

@@ -25,8 +25,16 @@ The reasoning behind each number is in `head_sheets.md`, one sheet per element, 
 python3 prototypes/clay/head/build_head.py --out cache/clay/head.glb
 ```
 
-`head-viewer.js` colours the parts from the design rules and can open the jaw and move
-the tongue.
+`head-viewer.js` colours the parts and poses them: jaw, tongue, lid bones, face morph
+targets (muscle actions) and the named poses in `head_design.json`.
+
+Review sheets (model beside the references) come from the skill's renderer and `views.json`:
+
+```
+python3 .claude/skills/creature-sculpting/scripts/render_sheet.py --viewer prototypes/clay/head/head-viewer.js \
+    --mount mountHead --glb cache/clay/head.glb --three THREE_R128_DIR --views prototypes/clay/head/views.json \
+    --set overview --design prototypes/clay/head/head_design.json --refs REFERENCE_CROPS_DIR --out sheet.jpg
+```
 
 ## Still to do
 
