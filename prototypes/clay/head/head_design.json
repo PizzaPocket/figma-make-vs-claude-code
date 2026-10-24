@@ -63,32 +63,32 @@
     ]
   },
   "eye": {
-    "note": "Round, wide-open eye tucked under the eave. The canthal axis runs from the inner (medial) corner, front-lower, where the pink caruncle sits, to the outer (lateral) corner, back-upper; it rises about 26 degrees toward the back. The corners differ: the inner one is rounded and held open round the caruncle, the outer one closes to a sharp point. The upper margin arcs highest a little toward the inner corner; the lower margin is flatter and dips lowest toward the outer corner. The lids are thick shells with a rounded margin, hinged on the canthal axis.",
+    "note": "Round, wide-open eye tucked under the eave. Measured on a line map of the side sheet (eye centre px 120, py 250): the inner (medial) corner runs down and forward into a point, with the pink tear duct, about 58 degrees below horizontal from the centre and well out from the round eye; the outer (lateral) corner sits about 32 degrees above horizontal toward the back. So the canthal axis rises about 45 degrees toward the back and is bent, each corner turned 13 degrees further down. The inner corner is rounded and holds the caruncle; the outer closes to a point. The upper margin arcs highest a little toward the inner corner; the lower margin dips lowest toward the outer corner. The lids are thick shells with a rounded margin, hinged on the canthal axis.",
     "centre_zy": [1.695, 1.692],
     "radius": 0.031,
     "sink": 0.72,
     "gaze": [0.85, 0.05, 0.5],
-    "canthal_tilt_deg": 26,
+    "canthal_tilt_deg": 45,
     "lid_scale": 1.02,
     "lid_thickness": 0.1,
     "lids": {
       "upper": {
-        "open_deg": 30,
+        "open_deg": 44,
         "skew": -0.18,
-        "corner_exp_lateral": 1.1,
-        "corner_exp_medial": 0.5
+        "corner_exp_lateral": 0.75,
+        "corner_exp_medial": 0.55
       },
       "lower": {
-        "open_deg": 33,
+        "open_deg": 47,
         "skew": 0.2,
-        "corner_exp_lateral": 1.1,
+        "corner_exp_lateral": 0.75,
         "corner_exp_medial": 0.6
       },
       "columns_note": "outer/inner_canthus_deg: where the corners sit on the eyeball, measured from the gaze along the canthal axis. open_deg: how far the margin opens from the gaze at mid-eye; skew tilts where it peaks (negative = toward the inner corner); corner_exp near 0.5 keeps the corner rounded, 1 or more closes it to a point.",
       "outer_corner_inset_deg": 2,
       "inner_corner_inset_deg": 2,
-      "outer_canthus_deg": 52,
-      "inner_canthus_deg": 50,
+      "outer_canthus_deg": 55,
+      "inner_canthus_deg": 60,
       "blink_meet": 0.95,
       "blink_share_upper": 1.0,
       "blink_share_lower": 0.0,
@@ -104,6 +104,10 @@
       "rim_frac": 0.95,
       "rim_width": 0.014,
       "under": 0.002
+    },
+    "corner_bend_deg": {
+      "outer": 13,
+      "inner": 13
     }
   },
   "horn": {

@@ -506,7 +506,8 @@ def caruncle(c, a, g, u, er):
             v = j / nv
             phi = mid - half + 2 * half * v
             r = er * (1.01 + K["bulge"] * math.sin(math.pi * v) * math.sqrt(max(0.0, 1 - sfr ** 2)) * min(1.0, 3 * sfr))
-            d = a * math.cos(psi) + math.sin(psi) * (g * math.cos(phi) + u * math.sin(phi))
+            ab, ub = bent_frame(a, g, u, t)
+            d = ab * math.cos(psi) + math.sin(psi) * (g * math.cos(phi) + ub * math.sin(phi))
             verts.append(tuple(np.asarray(c) + d * r))
     for i in range(nt):
         for j in range(nv):
@@ -676,6 +677,24 @@ def lid_margin(t, upper):
     return math.asin(min(0.98, h / max(1e-4, math.sqrt(max(0.0, 1 - t * t)))))
 
 
+def rot(v, k, ang):
+    """Rotate v about unit axis k by ang (Rodrigues)."""
+    return v * math.cos(ang) + np.cross(k, v) * math.sin(ang) + k * (k @ v) * (1 - math.cos(ang))
+
+
+def bent_frame(a, g, u, t):
+    """The eye's frame at position t along the canthal axis, bent so each corner sits at its own measured
+    angle: the axis through the centre has the mean tilt, and each half turns its corner further down
+    (toward the corner) by corner_bend_deg, growing from mid-eye to the corner."""
+    if abs(t) < 1e-9:
+        return a, u
+    tau = lid_tau(t)
+    bend = math.radians(EYE["corner_bend_deg"]["outer" if t > 0 else "inner"]) * smoothstep(0.0, 1.0, abs(tau))
+    end = a if t > 0 else -a
+    ang = bend if rot(end, g, 0.01)[1] < end[1] else -bend  # turn that corner downward
+    return rot(a, g, ang), rot(u, g, ang)
+
+
 def lid_tau(t):
     """Position between the corners: 0 mid-eye, +-1 at the outer / inner corner (and beyond)."""
     Ls = EYE["lids"]
@@ -704,8 +723,9 @@ def lid(c, R, a, g, u, upper, thick, psi_lat, psi_med, closed=0.0, nps=40, nph=1
                  [(R + thick - (r - R), ph) for r, ph in rim] + \
                  [(R, phi0 + (phi1 - phi0) * j / nph) for j in range(1, nph + 1)]
         n = len(layers)
+        ab, ub = bent_frame(a, g, u, t)
         for j, (rr, phi) in enumerate(layers):
-            d = a * math.cos(psi) + math.sin(psi) * (g * math.cos(phi) + u * math.sin(phi))
+            d = ab * math.cos(psi) + math.sin(psi) * (g * math.cos(phi) + ub * math.sin(phi))
             verts.append(tuple(np.asarray(c) + d * rr)); A.append(abs(j - (n - 1) / 2) / ((n - 1) / 2)); Ts.append(t)
     for i in range(nps):
         for j in range(n - 1):

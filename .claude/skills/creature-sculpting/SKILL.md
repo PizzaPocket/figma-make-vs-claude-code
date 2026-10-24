@@ -81,6 +81,7 @@ Build each muscle action as a shape of the face (a morph target): a push of the 
 - **The two corners differ.**
   - The inner (medial) corner is rounded, and holds the caruncle: a small fleshy pink teardrop lying on the eyeball between the lid margins. It is never a bead stuck on.
   - The outer (lateral) corner closes to a sharp point, usually higher, so the canthal axis tilts up toward the outer corner.
+- **Measure each corner's own angle from the eye centre,** on a line map. The canthal axis need not be straight through the centre: Clay's inner corner drops about 58° below horizontal, while his outer corner rises only about 32°. Bend the lid frame so each corner lands at its measured angle. Measuring corner to corner, or to where nearby creases meet, gives the wrong tilt.
 - **The corners sit on the visible eyeball,** where it meets the face, about 50° to each side of the gaze. They are not the ends of the eye's axis, which are buried. Put them at the axis ends and the visible opening has no corners.
 - **The margins are not mirror images.** The upper lid arcs highest a little toward the inner corner. The lower lid is flatter and dips lowest toward the outer corner.
 - **The lids have thickness.** Each is a shell with a rounded margin that slides over the eyeball. They are pinned at the corners by the canthal tendons, so they move most mid-eye and not at all at the corners.

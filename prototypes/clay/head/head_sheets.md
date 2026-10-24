@@ -120,6 +120,14 @@ It is a long, nearly straight sweep back and up that barely tapers, then narrows
 
 ## Eye: corners, lids, socket, expression
 
+**Corner angles,** measured on a line map of the side sheet (`line_map.py`, px 100–140, py 235–270; eye centre px 120, py 250):
+- The **inner corner** runs down and forward into a point, with the pink tear duct, about **58° below horizontal** from the centre and well out from the round eye.
+- The **outer corner** sits only about **32° above horizontal** toward the back.
+
+So the canthal axis rises about 45° toward the back, and is *bent*: each corner is turned a further 13° down (`corner_bend_deg`). The opening itself is round (margins open 44° and 47° from the gaze), not a narrow almond.
+
+The earlier figure of 26° was a straight line from the tear duct to where the creases meet; that point is not the outer corner.
+
 - **Corners:** the corners of the eye sit on the visible eyeball, 52° (outer) and 50° (inner) from the gaze along the canthal axis.
   - The inner corner is rounded and holds the caruncle: a fleshy pink teardrop on the eyeball between the lid margins, point in the corner, round end toward the iris.
   - The outer corner closes to a point.
