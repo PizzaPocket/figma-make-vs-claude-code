@@ -324,12 +324,12 @@ def eave_depth(s):
     return d
 
 
-def plate(s0, s1, d0, d1, nv, seed, wrap=False):
+def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0):
     """One roof plate: a solid tile with rounded edges laid on the underlay over profile positions s0..s1
     and depths d0..d1 (d1 may be a function of s). With wrap, it spans the top: from depth d1 on the
     left side, over the top, to d1 on the right. It thickens toward its back edge and runs a little past
     it over the next plate, like a shingle. _A: distance to its nearest edge, _B: tint, _ZONE: nostril."""
-    T, bev, ov, gap = PLATES["thickness"], PLATES["bevel"], PLATES["overlap"], PLATES["gap"]
+    T, bev, ov, gap = thick or PLATES["thickness"], PLATES["bevel"], PLATES["overlap"], PLATES["gap"]
     s0g, s1g = s0 + gap / 2, s1 - gap / 2 + ov
     nu = max(4, int((s1g - s0g) / 0.004))
     tint = (math.sin(seed * 12.9898) * 43758.5453) % 1.0
@@ -370,7 +370,9 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False):
             dist = min(u * Ls, (1 - u) * Ls * 2.5, acc[j], Lv - acc[j])
             edge = rnd(dist / bev)
             ch, nw = crest_height(z, th)
-            h = T * (0.7 + 0.3 * u) * edge + ch * edge - 0.0008 * (dist < 1e-9)
+            v_ = j / nv if not wrap else 0.0
+            rim = flare * smoothstep(0.55, 1.0, v_)  # a rim scute's lower edge rolls outward, like a turtle shell's margin
+            h = (T * (0.7 + 0.3 * u) + rim) * edge + ch * edge - 0.0008 * (dist < 1e-9)
             for sgn in ((1, -1) if not wrap else (1,)):
                 xs = x if wrap else sgn * x
                 ns = nx if wrap else sgn * nx
@@ -448,7 +450,7 @@ def roof_plates():
             if row.get("wrap"):
                 out.append(plate(sc, s1, 0.0, lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002), 14, 10 + seed, wrap=True))
             elif dhi(sc) - dlo > 0.006 and dhi(s1) - dlo > 0.006:
-                out.append(plate(sc, s1, dlo, dhi, 5, 10 + seed))
+                out.append(plate(sc, s1, dlo, dhi, 6, 10 + seed, thick=row.get("thickness"), flare=row.get("rim_flare", 0.0)))
             sc = s1; k += 1; seed += 1
     return out
 

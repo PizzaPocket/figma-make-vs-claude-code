@@ -27,6 +27,23 @@ The art reads as fitted pieces, not one blob:
 | Lids | Shells hinged on the eye's canthal axis | `lidUpper.L/R`, `lidLower.L/R` |
 | Ear frills | Tucked under the horns at the back of the cheek | `head` (own bones still to do) |
 
+## Roof rim and upper lip line (consistent across every depiction)
+
+Read across the side sheet, *How to Draw*, the flight render, the limited-edition render, the graphic novel and the special-edition poster (`all_heads.jpg`), not just the side sheet.
+
+**The roof's lower edge** is a rim of square marginal scutes, like the edge of a turtle shell.
+- It sits about mid-height on the side of the muzzle, so the orange below it is a tall band, not a thin lip.
+- It rises steadily from the nose to the eye. Each scute's lower edge rises a little less steeply, giving a small notch (~0.014) at each joint. It is not a staircase: tall steps were tried and looked wrong.
+- Over the eye it steps up, with the eye tucked right under it.
+- The rim scutes are thicker than the plates above, and their lower edges roll outward.
+
+**The upper lip line**
+- The front corner rounds down.
+- It then runs straight and nearly level back to below the eye.
+- From there it sweeps up in a smooth concave curve into the mouth corner and on to under the ear.
+- The jaw's top edge follows it.
+- The side sheet's dip in the middle of the lip appears in no official image, so it is not modelled.
+
 ## Roof plates
 
 The roof is distinct plates in consistent rows, each a solid tile on a thin dark underlay. The layout was traced from a line map of the side sheet (`scripts/line_map.py`, px 0–200, py 160–380) and checked against *How to Draw*, the flight render and the limited-edition render.

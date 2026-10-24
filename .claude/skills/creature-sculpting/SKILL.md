@@ -54,6 +54,7 @@ The user reviews every step by eye. Their notes are the most valuable input, and
 ## Evidence rules
 
 - **Never invent a form.** Every ridge, crease, plate and mass must point to a specific line or shading in a specific reference, and its `why` says which. Don't assemble a feature from loosely matching lines across several images, and don't add textbook anatomy the art doesn't show. (Invented and removed on Clay: a pit-to-jaw "cheekbone ridge" and a postorbital bar.)
+- **Model what every depiction agrees on.** A single sheet, especially fan art, has quirks. Before encoding a curve, line it up across every official image (`all_heads`-style sheets of the same part) and keep what is consistent. Clay's side sheet sags his lip line, while no official image does.
 - **Measure, don't eyeball.** Read positions off gridded crops and line maps. Measure each corner, joint and stroke where it actually is. A measurement between the wrong two points gives a confident wrong number: Clay's eye tilt was first measured to where two creases meet, not to the eye's corner, and came out 26° instead of about 45°.
 - **A drawn line's weight is the edge's strength.** A heavy stroke means a crisp, deep edge; a tapering stroke means the form fades out. Sculpt the edge on the side the line is drawn.
 - **The references decide.** When the model and the art disagree, the model is wrong.
@@ -181,6 +182,11 @@ Check: <what to compare; known differences>
 - A front plate covers that face above an orange lip band.
 - The nose pad runs along the top front edge, with the nostrils as angled, forward-facing slits at its front corners.
 - The upper lip overhangs a set-back jaw: a strong overbite.
+
+**Roof rim and lip**
+- The roof's lower edge is a rim of square marginal scutes, like a turtle shell's edge.
+- It sits about mid-height on the muzzle side and rises steadily to the eye, with small notches at the joints. Not a staircase.
+- The upper lip line is straight and level, then sweeps up concave into the mouth corner.
 
 **Roof (the brown crest)**
 - Distinct plates, laid out along the profile:
