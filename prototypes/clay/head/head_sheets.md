@@ -122,22 +122,29 @@ It is a long, nearly straight sweep back and up that barely tapers, then narrows
 - The rings are hairline incisions (depth 0.0007, width 0.0014, every 0.03), inked in the shader.
 - They start just past the root and fade out at 88% of the length.
 
-## Box muzzle, nose pad and nostrils
+## Box muzzle, nose block and nostrils
 
-**References:** *How to Draw*, the flight render and the limited-edition render, all at the front of the muzzle. The side sheet gives the profile.
+**References:** the flight render and the limited-edition render (zoomed, gridded crops of each), *How to Draw*, and the side sheet for the profile and the nostril's position.
 
 **Primary mass:** a box.
-- It hardly narrows toward the front: half-width about 0.10 at the tip, against about 0.15 at the eyes.
-- Flat top, near-vertical sides, and a flat, near-vertical front face about 0.11 tall (y 1.335–1.443), with only slightly rounded corners.
+- It hardly narrows toward the front: half-width about 0.105 at the tip.
+- Flat top, near-vertical sides, and a flat front face down to the lip, with only slightly rounded corners.
 - The jaw's chin is squared to match (squareness 3.6).
 
-**Front plate:** a brown plate covers the front face from the top edge down to the eave (y ≈ 1.375). Below it, the orange lip band wraps round the front.
+**Nose block:** the front of the roof is one raised block, standing a little proud of the plates behind it (nose plate 0.016 thick, back to profile position s 0.2). Every three-quarter image shows it as a distinct piece.
+- Its front is capped by the front plate at full width, out to the outside of the block's sides, down to the lip. There is no orange band or tray edge round it.
+- Its top front corner juts forward a little over the front face (front pad, 0.008): the side sheet's pointed nose tip. Kept subtle, so it reads as a corner, not a bumper.
 
-**Nose pad:** sculpted into the nose plate and the front plate. It is a raised, rounded pad along the top front edge, highest in the middle, flattening onto the muzzle at the sides. It joins the muzzle at the front, between the nostrils.
+**Nostrils: on the sides of the block, not the front.** An earlier pass put them on the front face, claiming every official image showed them there; looking again at zoomed crops, none does.
+- Each is a slit running back and a little up from near the front corner: from (z 1.958, y 1.462) to (z 1.885, y 1.50). Side sheet crescent at z 1.93, y 1.46; flight render 0.08–0.17 behind the tip, a little under halfway down the side.
+- It is wide and rounded at the front end (half-width 0.009) and tapers behind (0.003), like a comma, cut 0.008 deep with rounded lips. A raised fold of skin runs along its lower lip.
+- The front face between the two nostrils is solid.
 
-**Nostrils:** forward-facing, angled slits at the pad's outer front corners (u ±0.74, 0.02 below the top edge, tilted 0.7 rad), cut into the front plate as troughs. Every official image shows them there. Seen from the front, they read as slits, not round holes.
+**Building the plates round it:** the nostril is cut into one finely divided plate, so no plate joint crosses it. Two fixes to the plate layout came with this, and apply to every roof plate:
+- The direction along the profile is smoothed (over ~0.06), so joint lines never cross where the profile bends sharply. Before, they folded the nose plate into creases.
+- The eave depth is found precisely, not in 0.002 steps, which had ridged the finely divided plate.
 
-**Still to check:** the slits could be longer and more comma-shaped, curling back along the side of the pad as in the flight render.
+**Still to check:** the nostril's dark opening has slightly jagged edges up close; the front plate still reads a little as its own tile at its lower corners.
 
 ## Eye: corners, lids, socket, expression
 

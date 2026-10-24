@@ -192,17 +192,29 @@ def roof_ring(z, K=26):
 
 
 def crest_height(z, th):
-    """The nose pad's top, sculpted into the nose plate: a rounded ridge along the top front of the muzzle
-    that flattens onto the muzzle at the sides.
-    Returns (height above the plate, nostril weight); the nostrils themselves are on the front plate."""
+    """The nose, sculpted into the nose plate: a rounded pad along the top front of the muzzle, and on each
+    side the nostril, a comma-shaped slit cut into the side of the nose block with a raised fold below it.
+    Returns (height above the plate, nostril weight)."""
+    hh = 0.0
     st = np.array(CREST["stations"])
-    if not (st[-1, 0] <= z <= st[0, 0]):
-        return 0.0, 0.0
-    half, h = (float(np.interp(-z, -st[:, 0], st[:, c])) for c in (1, 2))
-    u = (th - math.pi / 2) / max(half, 1e-6)
-    if abs(u) >= 1:
-        return 0.0, 0.0
-    hh = h * (1 - u * u) ** 0.8
+    if st[-1, 0] <= z <= st[0, 0]:
+        half, h = (float(np.interp(-z, -st[:, 0], st[:, c])) for c in (1, 2))
+        u = (th - math.pi / 2) / max(half, 1e-6)
+        if abs(u) < 1:
+            hh = h * (1 - u * u) ** 0.8
+    N = CREST["nostril"]
+    p0, p1 = np.array(N["front_zy"]), np.array(N["back_zy"])
+    q = np.array([z, face_pt(z, th)[1]])
+    ax = p1 - p0; L = np.linalg.norm(ax); ax /= L
+    s = float((q - p0) @ ax) / L
+    r = q - p0
+    d = float(ax[1] * r[0] - ax[0] * r[1])  # + above the slit's line (the axis runs back, -z, and up)
+    if -0.25 < s < 1.25:
+        w = N["half_width"][0] + (N["half_width"][1] - N["half_width"][0]) * min(1.0, max(0.0, s))
+        ends = smoothstep(-0.12, 0.05, s) * (1 - smoothstep(0.92, 1.1, s))  # rounded front end, tapered tail
+        g = smoothstep(0.0, 1.0, max(0.0, 1 - abs(d) / (w * 1.6))) * ends  # rounded lips, no sharp crease
+        fold = N["fold_height"] * math.exp(-((d + w + N["fold_width"]) / N["fold_width"]) ** 2) * ends
+        return hh - N["depth"] * g + fold, smoothstep(0.35, 0.8, g)
     return hh, 0.0
 
 
@@ -286,6 +298,12 @@ def profile():
         P = np.stack([zs, ys], 1)
         s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
         T = np.gradient(P, axis=0); T /= np.linalg.norm(T, axis=1)[:, None]
+        # smooth the direction along the profile (over ~0.06): the joints follow the profile's overall flow, and
+        # neighbouring joint lines never cross where the profile bends sharply (they would fold the plates)
+        k = np.exp(-0.5 * (np.arange(-75, 76) / 25.0) ** 2)
+        Tp = np.pad(T, ((75, 75), (0, 0)), mode="edge")
+        T = np.stack([np.convolve(Tp[:, c], k / k.sum(), mode="valid") for c in (0, 1)], 1)
+        T /= np.linalg.norm(T, axis=1)[:, None]
         Nin = np.stack([T[:, 1], -T[:, 0]], 1)  # perpendicular, pointing down into the head
         Nin[Nin[:, 1] > 0] *= -1
         _PROFILE.update(P=P, s=s, N=Nin)
@@ -314,24 +332,29 @@ def side_th(z, y):
 
 
 def eave_depth(s):
-    """Depth of the roof's eave below the profile at s."""
-    d = 0.0
-    while d < 0.4:
+    """Depth of the roof's eave below the profile at s (found to within 1e-5, so neighbouring plate rows
+    end smoothly instead of in 0.002 steps, which ridge a finely divided plate)."""
+    def below(d):
         z, y = sv_point(s, d)
-        if y <= float(np.interp(-z, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) or y <= interp(UPPER, z, 2):
-            return d
+        return y <= float(np.interp(-z, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) or y <= interp(UPPER, z, 2)
+    d = 0.0
+    while d < 0.4 and not below(d):
         d += 0.002
-    return d
+    lo, hi = max(0.0, d - 0.002), d
+    for _ in range(8):
+        mid = (lo + hi) / 2
+        lo, hi = (lo, mid) if below(mid) else (mid, hi)
+    return hi
 
 
-def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0):
+def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.004):
     """One roof plate: a solid tile with rounded edges laid on the underlay over profile positions s0..s1
     and depths d0..d1 (d1 may be a function of s). With wrap, it spans the top: from depth d1 on the
     left side, over the top, to d1 on the right. It thickens toward its back edge and runs a little past
     it over the next plate, like a shingle. _A: distance to its nearest edge, _B: tint, _ZONE: nostril."""
     T, bev, ov, gap = thick or PLATES["thickness"], PLATES["bevel"], PLATES["overlap"], PLATES["gap"]
     s0g, s1g = s0 + gap / 2, s1 - gap / 2 + ov
-    nu = max(4, int((s1g - s0g) / 0.004))
+    nu = max(4, int((s1g - s0g) / step))
     tint = (math.sin(seed * 12.9898) * 43758.5453) % 1.0
     D1 = d1 if callable(d1) else (lambda s, v=d1: v)
     rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))
@@ -393,34 +416,30 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0):
 
 
 def front_plate():
-    """The plate over the flat front face of the box muzzle: from the top edge down to the eave, above the
-    orange lip band. The nose pad runs along its top edge, with the nostrils as forward-facing slits at its
-    corners. _A: distance to its nearest edge, _ZONE: nostril."""
+    """The plate over the flat front face of the box muzzle: from the top edge down to the eave (at the front,
+    the lip). The nose pad runs along its top edge, so the top front corner juts forward a little over the
+    face below, as the side sheet draws the nose tip. _A: distance to its nearest edge."""
     T, bev, gap = PLATES["thickness"], PLATES["bevel"], PLATES["gap"]
     z0 = UPPER[0, 0]
     under = roof_t(z0)[0]
     top = face_pt(z0, math.pi / 2)[1]
     ye = float(np.interp(-z0, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) + gap
-    N = CREST["nostril"]; P = CREST["front_pad"]
+    P = CREST["front_pad"]
     rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))
     nj, ni = 14, 20
     verts, A, NW = [], [], []
     for j in range(nj + 1):
         y = ye + (top - 0.002 - ye) * j / nj
-        xw = abs(face_pt(z0, side_th(z0, y))[0]) - gap
+        # full width: out to the outside of the nose block's sides, so the front caps the block, not a tray set in it
+        xw = abs(face_pt(z0, side_th(z0, y))[0]) + under + (PLATES["layout"].get("nose_plate_thickness") or T) * 0.9
         for i in range(ni + 1):
             u = -1 + 2 * i / ni
             x = u * xw
-            dist = min(y - ye, xw - abs(x), (top - y) * 3)
+            dist = min(y - ye, (xw - abs(x)) * 4, (top - y) * 3)  # its sides run on into the nose block's sides
             edge = rnd(dist / bev)
             pad = P["height"] * smoothstep(top - P["band"], top - 0.008, y) * (1 - 0.5 * u * u)
-            # nostril slit: a tilted ellipse in (u, y) at each front corner
-            du, dy = abs(u) - N["u"], y - (top - N["below_top"])
-            ru = du * math.cos(N["tilt"]) + dy / 0.05 * math.sin(N["tilt"])
-            ry = -du * 0.05 * math.sin(N["tilt"]) + dy * math.cos(N["tilt"])
-            e = (ru / N["size"][0]) ** 2 + (ry / N["size"][1]) ** 2
-            nw = max(0.0, 1 - e)
-            h = (T + pad) * edge - N["depth"] * nw ** 0.5 - 0.0008 * (dist < 1e-9)
+            nw = 0.0  # the nostrils are on the sides of the nose block, not on the front face
+            h = (T + pad) * edge - 0.0008 * (dist < 1e-9)
             verts.append((x, y, z0 + under + h)); A.append(dist); NW.append(nw)
     faces = []
     for j in range(nj):
@@ -438,7 +457,8 @@ def roof_plates():
     pr = profile(); smax = pr["s"][-1]
     out, seed = [], 0
     s_nose = L["nose_plate_s"]
-    out.append(plate(0.0, s_nose, 0.0, eave_depth, 20, 1, wrap=True))
+    # the nose plate is finely divided: the nostrils are cut into it
+    out.append(plate(0.0, s_nose, 0.0, eave_depth, 110, 1, wrap=True, thick=L.get("nose_plate_thickness"), step=0.0015))
     out.append(front_plate())
     for row in L["rows"]:
         k = 0
@@ -808,8 +828,9 @@ def head_parts():
         hf.append((y - low) / max(top - low, 1e-6))
     # the closed underside in front of the jaw is the overhanging upper lip (skin), not the palate
     part = [1.0 if uv[i][1] >= 0 or v[i][2] > JAW[0, 0] - 0.01 else 3.0 for i in range(len(v))]
+    under = [1.0 if uv[i][1] < 0 else 0.0 for i in range(len(v))]  # _ZONE: the overhang's underside, smooth skin
     V = carve_socket(np.array(v))
-    face = add_part("Face", V.tolist(), f, {"_PART": part, "_A": [u[0] for u in uv], "_B": hf, "_ZONE": [0] * len(v)}, rigid(len(v)))
+    face = add_part("Face", V.tolist(), f, {"_PART": part, "_A": [u[0] for u in uv], "_B": hf, "_ZONE": under}, rigid(len(v)))
     objs.append(face)
     # expression shapes: one per facial muscle action, exported as morph targets (blend shapes)
     face.shape_key_add(name="Basis", from_mix=False)

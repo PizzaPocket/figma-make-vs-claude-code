@@ -28,7 +28,7 @@
           vec3 orange = srgb(vec3(229.0, 88.0, 41.0)), cream = srgb(vec3(241.0, 196.0, 142.0));
           vec3 col = orange; float rough = 0.6; float groove = 0.0;
           if (isP(1.0) > 0.5) { // orange face with pebble scales
-            float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0));
+            float pe = (1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0))) * (1.0 - vAB.z); // the overhang's underside is smooth skin
             col = mix(orange, line, pe * 0.22);
             float ear = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.410, vObj.y - 1.652)));
             float pit = 1.0 - smoothstep(0.004, 0.008, length(vec2(vObj.z - 1.818, vObj.y - 1.505)));

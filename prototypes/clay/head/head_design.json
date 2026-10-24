@@ -4,11 +4,11 @@
     "columns": ["z", "top", "lower_edge", "half_width_top", "half_width_low"],
     "note": "The orange face mass under the roof. Upper lip line, traced on the side sheet (orange face over cream jaw) and the same in How to Draw and the flight render: from the bottom of the nose it slopes down and back, an overhanging lip that is lowest about a third of the way back (z 1.85); from there it rises in a long, slightly concave line to below the eye, then turns sharply up at the mouth corner (z 1.59) and runs back, gently rising, to the ear opening (z 1.41, y 1.656), where it curls up into the cheek's back edge (anatomy: back edge of the cheek). Traced on the centre of the drawn line. The muzzle is a box: it hardly narrows toward the front, with a flat top, near-vertical sides and a flat, near-vertical front face whose corners are only slightly rounded.",
     "rows": [
-      [2.017, 1.443, 1.358, 0.092, 0.1],
-      [2.006, 1.465, 1.356, 0.095, 0.104],
-      [1.988, 1.487, 1.348, 0.099, 0.108],
-      [1.953, 1.516, 1.332, 0.105, 0.115],
-      [1.918, 1.574, 1.312, 0.112, 0.123],
+      [2.017, 1.443, 1.358, 0.104, 0.112],
+      [2.006, 1.465, 1.356, 0.106, 0.115],
+      [1.988, 1.487, 1.348, 0.108, 0.118],
+      [1.953, 1.516, 1.332, 0.111, 0.121],
+      [1.918, 1.574, 1.312, 0.115, 0.126],
       [1.88, 1.65, 1.281, 0.12, 0.135],
       [1.848, 1.714, 1.292, 0.13, 0.15],
       [1.813, 1.746, 1.31, 0.143, 0.168],
@@ -182,7 +182,7 @@
     "inset": 0.003
   },
   "nose_crest": {
-    "note": "The nose pad, sculpted into the nose plate and the front plate: a raised, rounded pad along the top front edge of the box muzzle, highest in the middle and flattening onto the muzzle at the sides. The nostrils are forward-facing slits at its front corners, on the front face just below the top edge (every official image shows them there). It joins the muzzle at the front between the nostrils.",
+    "note": "The nose, sculpted into the nose plate. Every 3/4 image (flight render, limited edition, How to Draw) shows a distinct nose block at the front of the muzzle, standing a little proud of the roof plates behind it, its top front corner jutting forward over the front face (the side sheet's pointed nose tip). The nostrils are on the SIDES of that block, not on the front: each a slit running back and a little up from near the front corner, wide and rounded at the front end, tapering behind, with a raised fold of skin along its lower lip. The front face between them is solid. Positions from the side sheet (the crescent at z 1.93, y 1.46) and the flight render (slit about 0.08-0.17 behind the tip, a little under halfway down the side of the block).",
     "z": [2.035, 1.86],
     "stations": [
       [2.035, 0.95, 0.01],
@@ -193,16 +193,18 @@
     ],
     "stations_columns": ["z", "half_angle_rad", "height"],
     "nostril": {
-      "note": "on the front plate: slit centre at +-u across the front, below the top edge; size in (u, y)",
-      "u": 0.74,
-      "below_top": 0.02,
-      "size": [0.2, 0.008],
-      "tilt": 0.7,
-      "depth": 0.009
+      "note": "side-view slit centreline, front end to back end; half_width at the front and back ends; a raised fold below",
+      "front_zy": [1.958, 1.462],
+      "back_zy": [1.885, 1.5],
+      "half_width": [0.009, 0.003],
+      "depth": 0.008,
+      "fold_height": 0.006,
+      "fold_width": 0.006
     },
     "front_pad": {
-      "height": 0.014,
-      "band": 0.035
+      "note": "the top front corner juts forward a little over the front face (the side sheet's pointed nose tip); kept subtle so it reads as a corner, not a bumper",
+      "height": 0.008,
+      "band": 0.03
     }
   },
   "anatomy": {
@@ -527,7 +529,7 @@
     "overlap": 0.004,
     "gap": 0.0015,
     "layout": {
-      "nose_plate_s": 0.09,
+      "nose_plate_s": 0.2,
       "rows": [
         {
           "name": "top bands",
@@ -539,18 +541,19 @@
           "name": "long strip",
           "d": [0.054, 0.075],
           "joint_every": 0.11,
-          "start": 0.12
+          "start": 0.2
         },
         {
           "name": "edge row",
           "d": [0.075, null],
           "joint_every": 0.068,
-          "start": 0.105,
+          "start": 0.2,
           "thickness": 0.012,
           "rim_flare": 0.006,
           "note": "the rim of the roof: square marginal scutes like a turtle shell's edge, thicker than the plates above, their lower edges rolled outward; each one's lower edge steps with the stepped dark_plate_edge"
         }
-      ]
+      ],
+      "nose_plate_thickness": 0.016
     },
     "front_plate": {
       "note": "A plate over the flat front face of the box muzzle, from the top edge down to the eave, above the orange lip band that wraps round the front."
