@@ -42,8 +42,10 @@ Traced on the side sheet's colour boundaries, pixel by pixel (dark roof over ora
 **The upper lip line**
 - From the bottom of the nose it slopes down and back: an overhanging lip, lowest about a third of the way back (z 1.85, y 1.26). *How to Draw* and the flight render show the same overhang.
 - From there it rises in a long, slightly concave line to below the eye.
-- At the mouth corner (z 1.59) it turns sharply up, then runs back under the cheek to the ear.
-- The lower jaw's chin is a short point right under the lip's lowest point (z 1.86); its top runs just inside the lip line, up into the mouth corner.
+- At the mouth corner (z 1.59) it turns sharply up, then runs back, gently rising, to the ear opening (z 1.41, y 1.656).
+- It does not stop there: the line curls up and forward round the ear opening and climbs to the base of the ear frill, so the cheek's back edge becomes the ear. The neck's orange continues behind it, so this is a form edge, sculpted as a rim (anatomy: "back edge of the cheek"), not a colour edge.
+- Traced on the centre of the drawn line, not its bottom edge (the first trace sat ~0.015 low at the front).
+- The lower jaw's chin is a short point right under the lip's lowest point (z 1.86); its top runs just inside the lip line at the front and just above it (hidden inside the cheek) behind the mouth corner, back to the ear opening, so no gap shows.
 - An earlier pass flattened this into a level line and called the dip a side-sheet quirk. That was wrong: the overhang is in every depiction.
 
 ## Roof plates
