@@ -155,7 +155,7 @@ def jaw_contour(z):
     for i in range(N_AROUND + 1):
         th = math.pi * i / N_AROUND  # 0 = one edge, pi/2 = chin bottom, pi = other edge
         c, s = math.cos(th), math.sin(th)
-        n = 2.6
+        n = D["lower_jaw"].get("squareness", 2.6)
         x = w * math.copysign(abs(c) ** (2 / n), c)
         pts.append((x, top - b * abs(s) ** (2 / n)))
     return pts, top
@@ -192,9 +192,9 @@ def roof_ring(z, K=26):
 
 
 def crest_height(z, th):
-    """The nose crest sculpted into the nose plate: a centre ridge that flares out to each side and
-    flattens onto the muzzle at the nostril's outer corner, with a nostril trough under each flare.
-    Returns (height above the plate, nostril weight)."""
+    """The nose pad's top, sculpted into the nose plate: a rounded ridge along the top front of the muzzle
+    that flattens onto the muzzle at the sides.
+    Returns (height above the plate, nostril weight); the nostrils themselves are on the front plate."""
     st = np.array(CREST["stations"])
     if not (st[-1, 0] <= z <= st[0, 0]):
         return 0.0, 0.0
@@ -203,12 +203,7 @@ def crest_height(z, th):
     if abs(u) >= 1:
         return 0.0, 0.0
     hh = h * (1 - u * u) ** 0.8
-    nz0, nz1 = CREST["nostril"]["z"]
-    fr0, fr1 = CREST["nostril"]["side_frac"]
-    w = 0.0
-    if nz1 <= z <= nz0 and fr0 <= abs(u) <= fr1:
-        w = math.sin(math.pi * (nz0 - z) / (nz0 - nz1)) * math.sin(math.pi * (abs(u) - fr0) / (fr1 - fr0))
-    return hh - CREST["nostril"]["depth"] * w, w
+    return hh, 0.0
 
 
 def shell_loft(rings, attrs_per_ring):
@@ -395,6 +390,44 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False):
     return verts, faces, A, B, NW
 
 
+def front_plate():
+    """The plate over the flat front face of the box muzzle: from the top edge down to the eave, above the
+    orange lip band. The nose pad runs along its top edge, with the nostrils as forward-facing slits at its
+    corners. _A: distance to its nearest edge, _ZONE: nostril."""
+    T, bev, gap = PLATES["thickness"], PLATES["bevel"], PLATES["gap"]
+    z0 = UPPER[0, 0]
+    under = roof_t(z0)[0]
+    top = face_pt(z0, math.pi / 2)[1]
+    ye = float(np.interp(-z0, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) + gap
+    N = CREST["nostril"]; P = CREST["front_pad"]
+    rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))
+    nj, ni = 14, 20
+    verts, A, NW = [], [], []
+    for j in range(nj + 1):
+        y = ye + (top - 0.002 - ye) * j / nj
+        xw = abs(face_pt(z0, side_th(z0, y))[0]) - gap
+        for i in range(ni + 1):
+            u = -1 + 2 * i / ni
+            x = u * xw
+            dist = min(y - ye, xw - abs(x), (top - y) * 3)
+            edge = rnd(dist / bev)
+            pad = P["height"] * smoothstep(top - P["band"], top - 0.008, y) * (1 - 0.5 * u * u)
+            # nostril slit: a tilted ellipse in (u, y) at each front corner
+            du, dy = abs(u) - N["u"], y - (top - N["below_top"])
+            ru = du * math.cos(N["tilt"]) + dy / 0.05 * math.sin(N["tilt"])
+            ry = -du * 0.05 * math.sin(N["tilt"]) + dy * math.cos(N["tilt"])
+            e = (ru / N["size"][0]) ** 2 + (ry / N["size"][1]) ** 2
+            nw = max(0.0, 1 - e)
+            h = (T + pad) * edge - N["depth"] * nw ** 0.5 - 0.0008 * (dist < 1e-9)
+            verts.append((x, y, z0 + under + h)); A.append(dist); NW.append(nw)
+    faces = []
+    for j in range(nj):
+        for i in range(ni):
+            q = j * (ni + 1) + i
+            faces.append([q, q + 1, q + ni + 2, q + ni + 1])
+    return verts, faces, A, [0.3] * len(verts), NW
+
+
 def roof_plates():
     """The roof plates, as the references draw them: a nose plate over the front of the muzzle; top bands
     over the muzzle and skull that wrap down each side to the first longitudinal line; a narrow strip of
@@ -404,6 +437,7 @@ def roof_plates():
     out, seed = [], 0
     s_nose = L["nose_plate_s"]
     out.append(plate(0.0, s_nose, 0.0, eave_depth, 20, 1, wrap=True))
+    out.append(front_plate())
     for row in L["rows"]:
         k = 0
         sc = row.get("start", s_nose)
@@ -523,7 +557,7 @@ def loft(contour_fn, zs, cap_front=True, cap_back=True):
         r = rings[k]
         c = len(verts)
         cx = sum(verts[i][0] for i in r) / M; cy = sum(verts[i][1] for i in r) / M
-        verts.append((cx, cy, zs[k] + (0.006 if k == 0 else -0.006))); uv.append((zs[k], 0.5))  # caps are outer skin
+        verts.append((cx, cy, zs[k] + (0.0 if k == 0 else -0.006))); uv.append((zs[k], 0.5))  # caps are outer skin; the front one is flat (box muzzle)
         for i in range(M):
             j = (i + 1) % M
             faces.append([r[j], r[i], c] if k == 0 else [r[i], r[j], c])
@@ -752,7 +786,7 @@ def main():
         key.data.foreach_set("co", to_blender(V + expression_offsets(V, act["terms"])).astype(np.float32).ravel())
 
     # roof: banded shell over the face; its eave stands proud of the orange
-    rz = band_zs(z0, ROOF["back_z"], 60)
+    rz = band_zs(z0 + roof_t(z0)[0], ROOF["back_z"], 60)  # its front cap stands just proud of the face's flat front
     rings, at = [], []
     for z in rz:
         outer, inner, fb = roof_ring(z)

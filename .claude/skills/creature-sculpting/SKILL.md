@@ -156,8 +156,8 @@ Check: <what to compare; known differences>
 - **Scan silhouettes column by column.** Scan the side silhouette and look for runs of nearly constant slope. They mark the separate planes: nose crest, forehead, skull, then horn.
 
 - **Nose (Clay):**
-  - The dark nose plate is a faceted wedge ending in a prow.
-  - The nostril sits at the back top corner of that plate on the side, not at the tip.
+  - The muzzle is a box, not a wedge or prow. It hardly narrows to the front, and has a flat top, near-vertical sides and a flat, near-vertical front face with slightly rounded corners. Check the front view and top view, not just the side: a side profile alone let it taper to a point.
+  - A raised nose pad runs along the top front edge, with the nostrils as angled, forward-facing slits at its front corners.
   - The upper lip overhangs a set-back lower jaw: a strong overbite.
 - **Jaw (Clay):** the cream lower jaw continues up behind the mouth corner as a jowl under the ear. The mouth line is low in front and rises steeply toward the corner.
 - **Ear (Clay):**
