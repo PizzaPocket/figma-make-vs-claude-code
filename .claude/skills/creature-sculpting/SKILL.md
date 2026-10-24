@@ -85,6 +85,8 @@ Build each muscle action as a shape of the face (a morph target): a push of the 
 - **The corners sit on the visible eyeball,** where it meets the face, about 50° to each side of the gaze. They are not the ends of the eye's axis, which are buried. Put them at the axis ends and the visible opening has no corners.
 - **The margins are not mirror images.** The upper lid arcs highest a little toward the inner corner. The lower lid is flatter and dips lowest toward the outer corner.
 - **The lids have thickness.** Each is a shell with a rounded margin that slides over the eyeball. They are pinned at the corners by the canthal tendons, so they move most mid-eye and not at all at the corners.
+- **Check the eyeliner's path against the art.** If the art draws a closed round ring, the corner must close round where the ring ends. A corner placed too far round the eyeball drags the margin, and its dark rim, back into a wing.
+- **Keep the eye nearly flush.** Seat it deep enough that the lids barely stand above the face. A visible lid dome behind the eye reads as a bulge. Carve the socket with a smooth minimum, and clamp it so it never cuts into the eyeball.
 - **A blink is the lid sliding,** not a large rigid turn. A large bone turn tears the corners, so make the blink a shape key of the lids.
 - **The socket holds the eye assembly.** Carve the face into a socket: inside the lids' footprint the skin runs in just under the lid dome, and a rounded rim (the orbital rim under the ring muscle) turns it back out. No bone or muscle form may raise the skin over the eye opening; they frame it.
 - **The cheekbone is the rim of the socket.** On Clay it is the heavy hooked line under the eye, measured from the side sheet:

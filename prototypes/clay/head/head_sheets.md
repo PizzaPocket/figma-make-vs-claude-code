@@ -128,6 +128,10 @@ So the canthal axis rises about 45° toward the back, and is *bent*: each corner
 
 The earlier figure of 26° was a straight line from the tear duct to where the creases meet; that point is not the outer corner.
 
+**Eyeliner:** in the reference the dark outline is one closed, round ring round the whole eye, heaviest along the top and back. It ends there; it does not trail back into a wing. The separate crease line starts behind it. So the outer corner sits only 42° from the gaze, and both margins close round at it (corner exponent 0.55).
+
+**Seating:** the eye sits deeper (0.9·r) so the lids barely stand above the face: no dome behind the eye. The socket rolls in with a smooth minimum, and is never carved into the eyeball itself.
+
 - **Corners:** the corners of the eye sit on the visible eyeball, 52° (outer) and 50° (inner) from the gaze along the canthal axis.
   - The inner corner is rounded and holds the caruncle: a fleshy pink teardrop on the eyeball between the lid margins, point in the corner, round end toward the iris.
   - The outer corner closes to a point.

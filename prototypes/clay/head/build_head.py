@@ -472,7 +472,8 @@ def carve_socket(V):
     S = EYE["socket"]; er = EYE["radius"]
     Ro = er * (EYE["lid_scale"] + EYE["lid_thickness"])
     rho_r = Ro * S["rim_frac"]
-    hd = lambda r: math.sqrt(max(0.0, Ro * Ro - r * r)) - S["under"]
+    Re = er * 1.04  # never carve into the eyeball itself
+    hd = lambda r: max(math.sqrt(max(0.0, Ro * Ro - r * r)) - S["under"], math.sqrt(max(0.0, Re * Re - r * r)))
     V = V.copy()
     for sgn in (1, -1):
         c, nf = eye_seat(sgn)
@@ -484,8 +485,10 @@ def carve_socket(V):
                 continue
             s = smoothstep(rho_r, rho_r + S["rim_width"], rho)
             target = hd(min(rho, rho_r)) * (1 - s) + h * s
-            if target < h:
-                V[i] = p + nf * (target - h)
+            k = 0.003  # smooth minimum: the skin rolls into the socket instead of stepping
+            hn = -k * math.log(math.exp(-h / k) + math.exp(-target / k))
+            if hn < h:
+                V[i] = p + nf * (hn - h)
     return V
 
 
