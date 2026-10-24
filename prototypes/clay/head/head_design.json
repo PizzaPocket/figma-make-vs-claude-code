@@ -131,12 +131,15 @@
     "fillet": 0.016
   },
   "ear_frill": {
-    "note": "Sits at the back of the cheek under the horn; its top (front) edge rolls over and curves back to meet the underside of the horn.",
-    "base": [0.2, 1.785, 1.43],
-    "tip": [0.265, 1.905, 1.235],
-    "width": 0.11,
-    "rolled_front_edge": 0.025,
-    "ribs": 3
+    "note": "Measured on the side sheet (frill crop, px 205-262, py 188-224): an almond leaf about 0.18 long and 0.06 wide, from its base at the back of the cheek (front-lower end) back and up to its tip under the horn. It lies close along the side of the head, its face turned outward (the side sheet shows its whole face), cupped like a horse's ear laid back: pale peach hollow inside, an orange rim, the top edge rolled out and over. Its top edge runs back under the horn.",
+    "base": [0.232, 1.775, 1.425],
+    "tip": [0.238, 1.905, 1.235],
+    "width": 0.075,
+    "face_up": 0.1,
+    "face_forward": 0.12,
+    "cup": 0.012,
+    "rolled_front_edge": 0.01,
+    "thickness": 0.003
   },
   "roof": {
     "note": "A thin dark underlay fitted over the face; the visible roof is the plates laid on it (roof_plates). Its eave line is dark_plate_edge.",

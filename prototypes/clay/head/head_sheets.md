@@ -223,9 +223,15 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 
 ## Ear frill and ear opening
 
-- A cupped leaf from the back of the cheek, base (0.20, 1.785, 1.43), up and back to the tip (0.265, 1.905, 1.235).
-- Its rolled front/top edge curves back to meet the underside of the horn.
-- The ear opening is a dark hole at (1.420, 1.638), just above where the mouth line ends.
+**Measured** on the side sheet (frill crop, px 205–262, py 188–224): an almond leaf about 0.18 long and 0.075 wide. Its broad base sits at the back of the cheek (0.232, 1.775, 1.425); its tip points back and up to (0.238, 1.905, 1.235), under the horn.
+
+**Shape**
+- It lies close along the side of the head, face turned outward. The side sheet shows its whole face, not its edge.
+- It is cupped like a horse's ear laid back: a pale peach hollow inside, an orange rim round it, and the top edge rolled out and over.
+
+**Seating:** it must sit on the face surface. Set slightly inside, it was buried, and only its top edge showed, as a spike.
+
+**Ear opening:** a dark hole at (1.420, 1.638), just above where the mouth line ends.
 
 ## Known differences after this pass
 

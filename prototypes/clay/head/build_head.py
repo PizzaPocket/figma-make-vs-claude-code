@@ -909,30 +909,30 @@ def main():
         path = [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]
         v, f, A, B = tube(path, HORN["radius"], around=24, step=0.001, grooves=HORN["grooves"])
         objs.append(add_part("Horn" + sd, v, f, {"_PART": [8] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
-        # ear frill: a leaf-shaped fin from base to tip; its front edge rolls over like a horse's ear
+        # ear frill: an almond leaf lying close along the side of the head under the horn, pointing back and
+        # up; cupped (pale hollow inside) with an orange rolled rim along its top edge, like a horse's ear laid back
         base = np.array([sgn * FRILL["base"][0], FRILL["base"][1], FRILL["base"][2]])
         tipp = np.array([sgn * FRILL["tip"][0], FRILL["tip"][1], FRILL["tip"][2]])
-        up_ = tipp - base; length = np.linalg.norm(up_); up_ /= length
-        fwd = np.array([0, 0.3, 1.0]); fwd = fwd - up_ * (fwd @ up_); fwd /= np.linalg.norm(fwd)
-        nrm = np.cross(up_, fwd); nrm /= np.linalg.norm(nrm)
-        if nrm[0] * sgn < 0:
-            nrm = -nrm
-        G = 12; vs, fs, us, bs = [], [], [], []
-        for side in (1, -1):
+        L = tipp - base; length = np.linalg.norm(L); L /= length
+        nrm = norm([sgn * 1.0, FRILL["face_up"], FRILL["face_forward"]]); nrm = norm(nrm - L * (nrm @ L))
+        W = np.cross(nrm, L); W = W if W[1] > 0 else -W  # across the leaf, toward its top edge
+        G, H = 16, 12
+        vs, fs, us, bs = [], [], [], []
+        for layer, off in ((0, 0.0), (1, -FRILL["thickness"])):
             b0 = len(vs)
             for i in range(G + 1):          # base -> tip
-                for j in range(G + 1):      # front edge -> back edge
-                    a, b = i / G, j / G
-                    width = FRILL["width"] * math.sin(math.pi * min(1.0, 0.12 + a * 0.88)) ** 0.8
-                    p = base + up_ * a * length * (1 - 0.25 * (2 * b - 1) ** 2) + fwd * (0.5 - b) * width
-                    curl = FRILL["rolled_front_edge"] * max(0.0, 1 - b / 0.3) ** 2 * math.sin(math.pi * min(1.0, a * 1.1))
-                    rib = math.cos(b * FRILL["ribs"] * 2 * math.pi) * 0.5 + 0.5
-                    p = p + nrm * (curl + side * (0.004 + 0.003 * rib) * (1 - 0.6 * a))
-                    vs.append(tuple(p)); us.append(a); bs.append(b)
+                for j in range(H + 1):      # bottom edge -> top edge
+                    a = i / G; c = -1 + 2 * j / H
+                    half = FRILL["width"] / 2 * math.sin(math.pi * (0.12 + 0.88 * a)) ** 0.75 * (1 - 0.35 * a)
+                    p = base + L * a * length + W * c * half
+                    cup = -FRILL["cup"] * (1 - c * c) * math.sin(math.pi * min(1.0, a * 1.05))  # hollow facing out
+                    roll = FRILL["rolled_front_edge"] * smoothstep(0.55, 1.0, c) ** 2 * math.sin(math.pi * min(1.0, a * 1.1))
+                    p = p + nrm * (cup + roll + off) - W * roll * 0.6  # the top edge curls out and over
+                    vs.append(tuple(p)); us.append(a); bs.append((c + 1) / 2)
             for i in range(G):
-                for j in range(G):
-                    a = b0 + i * (G + 1) + j
-                    fs.append([a, a + G + 1, a + G + 2, a + 1] if side > 0 else [a, a + 1, a + G + 2, a + G + 1])
+                for j in range(H):
+                    q = b0 + i * (H + 1) + j
+                    fs.append([q, q + H + 1, q + H + 2, q + 1] if layer == 0 else [q, q + 1, q + H + 2, q + H + 1])
         objs.append(add_part("Frill" + ("L" if sgn > 0 else "R"), vs, fs, {"_PART": [9] * len(vs), "_A": us, "_B": bs, "_ZONE": [0] * len(vs)},
                              rigid(len(vs))))
 

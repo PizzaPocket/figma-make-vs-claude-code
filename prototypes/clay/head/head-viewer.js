@@ -68,7 +68,10 @@
           if (isP(12.0) > 0.5) { col = srgb(vec3(226.0, 140.0, 150.0)); rough = 0.3; } // caruncle
           if (isP(7.0) > 0.5) { float pl = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0)); col = mix(line * 0.6, mix(orange, line, pl * 0.22), smoothstep(0.18, 0.3, vAB.x)); } // lid, dark rim at the margin
           if (isP(8.0) > 0.5) { col = mix(dark * 1.15, dark * 0.8, smoothstep(0.6, 1.0, vAB.x)); col = mix(col, line, smoothstep(0.25, 0.7, vAB.y) * 0.85); rough = 0.35; } // smooth horn, incised ring lines inked
-          if (isP(9.0) > 0.5) { col = mix(srgb(vec3(246.0, 166.0, 107.0)), srgb(vec3(250.0, 205.0, 160.0)), vAB.x * 0.7); col = mix(col, srgb(vec3(200.0, 120.0, 80.0)), lineAt(fract(vAB.y * 3.0), 0.05) * 0.7); col = mix(col, line, (1.0 - smoothstep(0.0, 0.06, min(vAB.y, 1.0 - vAB.y))) * 0.8); }
+          if (isP(9.0) > 0.5) { // ear frill: pale peach hollow, orange rolled rim round the edge
+            float rim = max(smoothstep(0.5, 0.7, abs(vAB.y * 2.0 - 1.0)), smoothstep(0.8, 0.95, vAB.x));
+            col = mix(srgb(vec3(250.0, 200.0, 150.0)), srgb(vec3(246.0, 166.0, 107.0)), vAB.x * 0.5);
+            col = mix(col, orange, rim); col = mix(col, line, smoothstep(0.93, 0.99, abs(vAB.y * 2.0 - 1.0)) * 0.8); }
           #ifdef CLAY
           col = srgb(vec3(190.0, 180.0, 170.0)); groove = 0.0; rough = 0.7;
           #endif
