@@ -14,8 +14,9 @@
       return sqrt(d2) - sqrt(d1); }
     float lineAt(float f, float w) { float e = min(f, 1.0 - f); return 1.0 - smoothstep(w, w + fwidth(f) * 1.5 + 0.01, e); }
   `;
-  function material(THREE) {
+  function material(THREE, clay) {
     const m = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.6, skinning: true });
+    if (clay) m.defines = { CLAY: '' }; // plain clay render: judge the forms without paint
     m.onBeforeCompile = (sh) => {
       sh.vertexShader = sh.vertexShader
         .replace("#include <common>", "#include <common>\nattribute float _part; attribute float _a; attribute float _b; attribute float _zone;\nvarying vec3 vObj; varying float vPart; varying vec3 vAB;")
@@ -67,6 +68,9 @@
           if (isP(7.0) > 0.5) { col = mix(line * 0.6, orange * 0.9, smoothstep(0.18, 0.3, vAB.x)); } // lid, dark rim at the margin
           if (isP(8.0) > 0.5) { col = mix(dark * 0.9, dark * 1.3, vAB.x); col = mix(col, line, vAB.y * 0.7); rough = 0.4; }
           if (isP(9.0) > 0.5) { col = mix(srgb(vec3(246.0, 166.0, 107.0)), srgb(vec3(250.0, 205.0, 160.0)), vAB.x * 0.7); col = mix(col, srgb(vec3(200.0, 120.0, 80.0)), lineAt(fract(vAB.y * 3.0), 0.05) * 0.7); col = mix(col, line, (1.0 - smoothstep(0.0, 0.06, min(vAB.y, 1.0 - vAB.y))) * 0.8); }
+          #ifdef CLAY
+          col = srgb(vec3(190.0, 180.0, 170.0)); groove = 0.0; rough = 0.7;
+          #endif
           diffuseColor.rgb = col;
         `)
         .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = rough;")
@@ -88,7 +92,7 @@
     const rim = new THREE.DirectionalLight(0xb8c8ff, 0.5); rim.position.set(-3, 2, -3); scene.add(rim);
     const gltf = await new Promise((res, rej) => new THREE.GLTFLoader().load(opts.glbUrl, res, undefined, rej));
     let sk = null; gltf.scene.traverse(o => { if (o.isSkinnedMesh) sk = o; });
-    sk.material = material(THREE); sk.frustumCulled = false;
+    sk.material = material(THREE, opts.clay); sk.frustumCulled = false;
     scene.add(gltf.scene);
     const bones = {}; sk.skeleton.bones.forEach(b => (bones[b.name] = b));
     const bind = {}; for (const n in bones) bind[n] = bones[n].quaternion.clone();

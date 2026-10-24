@@ -60,61 +60,18 @@
       [1.36, 1.8]
     ]
   },
-  "brushes": [
-    {
-      "kind": "ridge",
-      "name": "cheek ridge under the eye",
-      "zy": [[1.735, 1.595], [1.662, 1.633], [1.603, 1.668], [1.568, 1.7]],
-      "height": 0.012,
-      "width": 0.016
-    },
-    {
-      "kind": "crease",
-      "name": "eye crease, back of the lid",
-      "zy": [[1.671, 1.682], [1.574, 1.743]],
-      "depth": 0.006,
-      "width": 0.008
-    },
-    {
-      "kind": "crease",
-      "name": "mouth corner",
-      "zy": [[1.64, 1.41], [1.6, 1.47], [1.575, 1.515]],
-      "depth": 0.008,
-      "width": 0.008
-    },
-    {
-      "kind": "dent",
-      "name": "ear opening",
-      "zy": [1.42, 1.638],
-      "depth": 0.02,
-      "radius": 0.017
-    },
-    {
-      "kind": "dent",
-      "name": "eye socket",
-      "zy": [1.695, 1.692],
-      "depth": 0.012,
-      "radius": 0.036
-    },
-    {
-      "kind": "dent",
-      "name": "pit at the eave notch in front of the eye",
-      "zy": [1.805, 1.513],
-      "depth": 0.008,
-      "radius": 0.01
-    }
-  ],
   "eye": {
     "note": "Round, wide-open eye tucked under the eave. The canthal axis (tear duct at the front-lower corner to the back corner where the creases meet) rises about 26 degrees toward the back in the side view; the lids are shells hinged on that axis, so a blink sweeps the upper lid forward-down across the eye.",
     "centre_zy": [1.695, 1.692],
     "radius": 0.031,
-    "sink": 0.55,
+    "sink": 0.7,
     "gaze": [0.85, 0.05, 0.5],
     "canthal_tilt_deg": 26,
-    "lid_scale": 1.1,
+    "lid_scale": 1.04,
     "upper_lid_open_deg": 36,
     "lower_lid_open_deg": 42,
-    "canthus_inset_deg": 8
+    "canthus_inset_deg": 8,
+    "lid_thickness": 0.14
   },
   "horn": {
     "note": "Not a cone planted on the skull: the horn is the back corner of the roof drawn out. It starts embedded in the roof's top shoulder above the eye, runs back along the roof (its top line continues the roof's top line in the side view), leaves the skull behind the brow, sweeps back nearly level and curves gently up at the tip.",
@@ -157,5 +114,110 @@
       "side_frac": [0.5, 0.9],
       "depth": 0.01
     }
+  },
+  "anatomy": {
+    "note": "Sculpt from the inside out: bone landmarks first, muscle masses over them, then skin creases where muscles meet or skin folds over something that moves. Every entry says what it is and what it does to the surface. Positions are side-view (z, y); offsets act on the side of the face.",
+    "bone": [
+      {
+        "kind": "shelf",
+        "name": "cheekbone and zygomatic arch",
+        "why": "The jugal bone runs from below the front of the eye back to the jaw joint under the ear. Its crisp top edge is the floor of the eye socket: the eye and its lower lid pad rest on it. Below, it slopes off gently into the masseter.",
+        "zy": [[1.75, 1.6], [1.7, 1.627], [1.645, 1.64], [1.58, 1.655], [1.5, 1.668], [1.44, 1.672]],
+        "height": 0.022,
+        "width_up": 0.007,
+        "width_down": 0.035
+      },
+      {
+        "kind": "ridge",
+        "name": "postorbital bar",
+        "why": "Closes the back of the socket, rising from the cheekbone to the brow (the roof's eave). It is the firm wall the upper crease runs along.",
+        "zy": [[1.605, 1.655], [1.59, 1.7], [1.578, 1.745]],
+        "height": 0.007,
+        "width": 0.012
+      },
+      {
+        "kind": "dent",
+        "name": "eye socket",
+        "why": "The bony orbit between brow, cheekbone and postorbital bar; the eyeball sits in it.",
+        "zy": [1.695, 1.692],
+        "depth": 0.008,
+        "radius": 0.03
+      }
+    ],
+    "muscle": [
+      {
+        "kind": "pad",
+        "name": "orbicularis (lid ring)",
+        "why": "The ring muscle round the eye that closes it. It makes a soft raised pad around the lids, longer toward the back corner along the canthal axis; its lower edge is the zig-zag crease and it sits on the cheekbone shelf.",
+        "centre": [1.672, 1.68],
+        "radii": [0.072, 0.046],
+        "tilt_deg": 26,
+        "height": 0.016,
+        "softness": 0.25
+      },
+      {
+        "kind": "bulge",
+        "name": "masseter",
+        "why": "The jaw-closing muscle from the zygomatic arch down to the jaw: the full rounded cheek above the cream jowl, behind the mouth corner.",
+        "centre": [1.56, 1.53],
+        "radii": [0.07, 0.055],
+        "amount": 0.02
+      },
+      {
+        "kind": "bulge",
+        "name": "lip and snout muscle (levator)",
+        "why": "Lifts the upper lip; a gentle fullness on the side of the muzzle in front of the eye, below the roof's eave.",
+        "centre": [1.79, 1.45],
+        "radii": [0.06, 0.04],
+        "amount": 0.008
+      },
+      {
+        "kind": "note",
+        "name": "temporalis",
+        "why": "Fills the skull behind the eye up to the roof; it is why the cranium under the roof is wide behind the brow. Shaped by the face stations, not a brush."
+      }
+    ],
+    "skin": [
+      {
+        "kind": "crease",
+        "name": "lower lid crease (zig-zag)",
+        "why": "Where the orbicularis pad meets the cheekbone: measured from the side reference, front-lower to the back corner.",
+        "zy": [[1.723, 1.615], [1.691, 1.644], [1.65, 1.656], [1.638, 1.676], [1.624, 1.694]],
+        "depth": 0.005,
+        "width": 0.007
+      },
+      {
+        "kind": "crease",
+        "name": "upper lid crease",
+        "why": "The fold where the lid ring tucks under the brow, running back from the eye's back corner along the postorbital bar.",
+        "zy": [[1.633, 1.694], [1.592, 1.711]],
+        "depth": 0.005,
+        "width": 0.007
+      },
+      {
+        "kind": "crease",
+        "name": "masseter fold over the jowl",
+        "why": "The cheek muscle's lower edge folding over the jowl, parallel to and above the rising mouth line.",
+        "zy": [[1.58, 1.493], [1.493, 1.589]],
+        "depth": 0.006,
+        "width": 0.007
+      },
+      {
+        "kind": "dent",
+        "name": "ear opening",
+        "zy": [1.42, 1.638],
+        "depth": 0.02,
+        "radius": 0.017,
+        "why": "The ear opening, just above where the mouth line ends."
+      },
+      {
+        "kind": "dent",
+        "name": "pit at the eave notch in front of the eye",
+        "zy": [1.805, 1.513],
+        "depth": 0.008,
+        "radius": 0.01,
+        "why": "A small pit at the eave notch; not the nostril."
+      }
+    ]
   }
 }

@@ -18,12 +18,7 @@ Never tune the whole creature at once.
 1. **Isolate.** Crop the element at full resolution from every reference that shows it, with a measuring grid in reference pixels (`scripts/study_crop.py`). Use the official art first and fan sheets second. Note which references disagree.
 2. **Read it as architecture.** Write an element sheet (template below), answering in order:
    - **Primary mass:** what simple solid is it? (A wedge, box, drum or cone.) What are its overall length, height and width?
-   - **Structure underneath:** what bone or muscle would have to exist to make this shape? For example:
-     - the masseter makes the cheek bulge;
-     - a temporal crest leads into the horn base;
-     - the brow is a shelf of bone over the eye socket.
-
-     The surface must look driven by these, not inflated.
+   - **Structure underneath:** which bones and which muscles would have to exist to make this shape? See "Sculpt from the inside out" below. The surface must look driven by them, not inflated.
    - **Planes:** where are the flat faces, and where do they meet in a hard edge or a soft turn? Cartoon and illustrated dragons are built from clear planes. Find them.
    - **Lines the artist drew:** every outline and crease is a piece of geometry, either an edge between planes, a ridge or a groove. List each one as a polyline in reference pixels and say which it is.
    - **Openings and attachments:** eyes, nostrils, ear openings, the mouth, and where horns, frills and plates sit.
@@ -38,13 +33,42 @@ Never tune the whole creature at once.
    Write down what still differs. Fix the data, not the code.
 6. **Record** what you learned about this kind of element in this file's "Lessons" section, so the next element starts ahead.
 
+## Sculpt from the inside out: bone, muscle, skin
+
+A sculptor thinks about the muscles under the skin as much as the skeleton. No surface form is free-floating. Each bump, plane and fold is there because something under it pushes it out, holds it up or lets it fold. Build every element in three layers, and write them in the data in this order:
+
+1. **Bone (landmarks).** The hard, fixed points: rims, ridges, bars and joints. Bone makes crisp edges and flat-ish planes, and it does not change when the creature moves.
+   - Bony rims around openings: the eye socket (brow above, cheekbone below, postorbital bar behind), the nostrils, the ear.
+   - Arches and crests: the zygomatic arch from below the eye back to the jaw joint, the temporal crest, the skull roof.
+   - Joints and pivots: the jaw joint, which sits under the ear in dragons and reptiles.
+2. **Muscle (masses).** Each muscle runs from an origin to an insertion. It bulges in its belly and flattens toward its tendons. Know which one fills each region and what it does, because that also tells you how the region moves.
+   - **Ring muscle round the eye (orbicularis):** a soft raised pad round the lids, longer toward the back corner. It is what closes the eye.
+   - **Masseter:** from the zygomatic arch down to the jaw. It makes the full cheek above the jaw and bunches when the jaw closes.
+   - **Temporalis:** fills the skull behind the eye. It is why the cranium is wide behind the brow.
+   - **Lip muscles (levator):** a gentle fullness on the side of the muzzle.
+   - **Neck muscles** wrap from the skull base. Limb muscles are covered in each limb's sheet.
+3. **Skin (creases, openings, scales).** A crease forms where two muscles meet, or where skin folds over something that moves: lids, the mouth corner, joints. In stylised art the ink lines are mostly these creases, so trace each drawn line back to the boundary between masses that causes it.
+
+**How the eye is held.** This is the model case for the method:
+- The eyeball sits in a bony socket. The brow shelf (the roof's eave, on Clay) overhangs it from above.
+- The cheekbone's crisp top edge is the socket floor. The eye and its lower lid rest on it.
+- The postorbital bar closes it behind.
+- Inside that frame, the ring muscle forms a raised pad, and the lids are thick shells with a rounded margin hinged on the canthal axis.
+- The face's crease lines (Clay's zig-zag under the eye) are where the lid pad meets the cheekbone.
+
+If the eye looks stuck on, a layer is missing. Usually the socket is a plain dent with no rim, or there is no lid pad.
+
+**Judge forms in a plain clay render.** Render with no colour, scales or ink, under a raking light. Paint hides missing anatomy.
+
 ## Element sheet template
 
 ```
 ## <element>
 References: <files and crops used; where they disagree>
 Primary mass: <solid, size in model units>
-Structure underneath: <bones/muscles and what surface each one drives>
+Bone: <landmarks (rims, arches, bars, joints) and the crisp edges/planes they make>
+Muscle: <each mass: origin -> insertion, where it bulges, what it moves>
+Skin: <creases and folds, and which boundary between masses each one marks>
 Planes: <faces and the edges between them (hard/soft)>
 Drawn lines: <name: polyline in ref px, ridge|crease|edge>
 Openings/attachments: <name: position, size, orientation>
@@ -56,11 +80,13 @@ Check: <what to compare; known differences>
 ## Toolkit (what elements are built from)
 
 - **Masses.** Lofted quad meshes. Rings of points at measured stations along the element, each ring a superellipse or profile. The exponent controls boxiness: 2 is round, 3.5 is a boxy plane form. Clean topology and natural surface coordinates come for free.
-- **Brushes,** applied to a mass as data:
+- **Brushes,** applied to a mass as data, grouped into `bone`, `muscle` and `skin` layers:
   - `ridge(polyline, height, width)`: a raised line, such as a brow or a cheek ridge;
   - `crease(polyline, depth, width)`: a fold or the edge of a plate;
   - `dent(point, depth, radius)`: a nostril, ear opening or eye socket;
-  - `bulge(point, amount, radius)`: a muscle mass;
+  - `shelf(polyline, height, width_up, width_down)`: a bony edge that is crisp on one side and slopes off on the other, such as the cheekbone under the eye;
+  - `bulge(point, amount, radii)`: a muscle belly;
+  - `pad(centre, radii, tilt, height)`: a raised plateau in a tilted ellipse, such as the lid ring muscle;
   - `flatten(region, plane)`: to make a drawn plane actually flat.
 - **Attachments,** each a separate piece on its own bone:
   - `tube(path, radii, rings)` for horns and claws;

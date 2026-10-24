@@ -2,7 +2,7 @@
 
 Pieces (see head_design.json and head_sheets.md):
 - face: the orange mass of muzzle, cheeks and skull, a clean quad loft of measured stations
-  shaped by sculpt brushes (ridges, creases, dents);
+  shaped from the inside out by anatomy layers: bone landmarks, muscle masses, skin creases;
 - roof: the dark banded shell fitted over the face, standing proud so its eave overhangs
   the orange; its back corners continue as the horns;
 - nose crest: a raised pad on the front of the roof with the nostrils under its flares;
@@ -33,7 +33,7 @@ ROOF = D["roof"]
 CREST = D["nose_crest"]
 HORN = D["horn"]
 FRILL = D["ear_frill"]
-N_AROUND = 28  # points around the face contour
+N_AROUND = 64  # points around the face contour (fine enough to carry the lid creases)
 
 
 def interp(table, z, col):
@@ -45,27 +45,58 @@ def norm(v):
     return v / np.linalg.norm(v)
 
 
+BRUSHES = [b for layer in ("bone", "muscle", "skin") for b in D["anatomy"][layer] if b["kind"] != "note"]
+
+
 def seg_dist(z, y, pts):
-    """Distance in the side view (z, y) from a point to a polyline."""
-    best = 1e9
+    """Side-view (z, y) distance from a point to a polyline; whether the point is above it (judged on
+    the nearest segment's interior, so the sign never jumps at a joint); and the distance from the
+    polyline's nearer end, measured along it (for tapering)."""
+    best, above, along, total = 1e9, True, 0.0, 0.0
     for (az, ay), (bz, by) in zip(pts[:-1], pts[1:]):
         dz, dy = bz - az, by - ay
-        t = max(0.0, min(1.0, ((z - az) * dz + (y - ay) * dy) / (dz * dz + dy * dy)))
-        best = min(best, math.hypot(z - az - t * dz, y - ay - t * dy))
-    return best
+        L2 = dz * dz + dy * dy
+        t = ((z - az) * dz + (y - ay) * dy) / L2
+        tc = max(0.0, min(1.0, t))
+        d = math.hypot(z - az - tc * dz, y - ay - tc * dy)
+        if d < best:
+            best, along = d, total + tc * math.sqrt(L2)
+            above = (dz * (y - ay) - dy * (z - az)) * (1 if dz < 0 else -1) >= 0
+        total += math.sqrt(L2)
+    return best, above, min(along, total - along)
+
+
+def smoothstep(e0, e1, x):
+    t = min(1.0, max(0.0, (x - e0) / (e1 - e0)))
+    return t * t * (3 - 2 * t)
 
 
 def brush_offset(z, y):
-    """Outward (+) / inward (-) offset of the side surface from the sculpt brushes."""
+    """Outward (+) / inward (-) offset of the side surface from the anatomy layers (bone, muscle, skin)."""
     off = 0.0
-    for b in D["brushes"]:
-        if b["kind"] == "dent":
+    for b in BRUSHES:
+        k = b["kind"]
+        if k == "dent":
             d = math.hypot(z - b["zy"][0], y - b["zy"][1])
             off -= b["depth"] * math.exp(-(d / b["radius"]) ** 2)
+        elif k == "bulge":  # a muscle belly: elliptical, full in the middle
+            (cz, cy), (rz, ry) = b["centre"], b["radii"]
+            off += b["amount"] * math.exp(-((z - cz) / rz) ** 2 - ((y - cy) / ry) ** 2)
+        elif k == "pad":  # a raised plateau in a tilted ellipse (the lid ring)
+            (cz, cy), (ra, rb) = b["centre"], b["radii"]
+            t = math.radians(b["tilt_deg"])
+            along = -(z - cz) * math.cos(t) + (y - cy) * math.sin(t)
+            across = (z - cz) * math.sin(t) + (y - cy) * math.cos(t)
+            e = math.hypot(along / ra, across / rb)
+            off += b["height"] * (1 - smoothstep(1 - b["softness"], 1 + b["softness"], e))
+        elif k == "shelf":  # a bony ridge: crisp on its upper edge, sloping off below, tapering at its ends
+            d, above, end = seg_dist(z, y, b["zy"])
+            w = b["width_up"] if above else b["width_down"]
+            off += b["height"] * math.exp(-(d / w) ** 2) * smoothstep(-0.01, 0.04, end)
         else:
-            d = seg_dist(z, y, b["zy"])
-            amt = b["height"] if b["kind"] == "ridge" else -b["depth"]
-            off += amt * math.exp(-(d / b["width"]) ** 2)
+            d, _, end = seg_dist(z, y, b["zy"])
+            amt = b["height"] if k == "ridge" else -b["depth"]
+            off += amt * math.exp(-(d / b["width"]) ** 2) * smoothstep(-0.01, 0.02, end)
     return off
 
 
@@ -316,19 +347,25 @@ def eye_frame(sgn):
     return g, a, u
 
 
-def lid(c, R, a, g, u, phi0, phi1, inset, nps=18, nph=10):
-    """A lid shell on the sphere of radius R around the eye: psi runs along the canthal axis,
-    phi around it from the lid margin (phi0) back into the socket (phi1). _A is 0 at the margin."""
+def lid(c, R, a, g, u, phi0, phi1, inset, thick, nps=18, nph=10):
+    """A lid: a thick shell around the eye. psi runs along the canthal axis (so the lid pinches to the
+    two corners: the almond), phi around it from the margin (phi0) back into the socket (phi1).
+    The outer and inner layers meet in a rounded rim at the margin. _A is 0 at the margin."""
     verts, faces, A = [], [], []
+    rows = [(R + thick * 0.5 * (1 - math.cos(math.pi * k / 4)), phi0 - math.copysign(math.radians(4), phi1 - phi0) * math.sin(math.pi * k / 4))
+            for k in range(5)]  # the rim: a half-round from the outer to the inner layer, bulging past the margin
+    layers = [(R + thick, phi0 + (phi1 - phi0) * j / nph) for j in range(nph, 0, -1)] + \
+             [(R + thick - (r - R), ph) for r, ph in rows] + \
+             [(R, phi0 + (phi1 - phi0) * j / nph) for j in range(1, nph + 1)]
+    n = len(layers)
     for i in range(nps + 1):
         psi = inset + (math.pi - 2 * inset) * i / nps
-        for j in range(nph + 1):
-            phi = phi0 + (phi1 - phi0) * j / nph
+        for j, (rr, phi) in enumerate(layers):
             d = a * math.cos(psi) + math.sin(psi) * (g * math.cos(phi) + u * math.sin(phi))
-            verts.append(tuple(np.asarray(c) + d * R)); A.append(j / nph)
+            verts.append(tuple(np.asarray(c) + d * rr)); A.append(abs(j - (n - 1) / 2) / ((n - 1) / 2))
     for i in range(nps):
-        for j in range(nph):
-            p = i * (nph + 1) + j; q = p + nph + 1
+        for j in range(n - 1):
+            p = i * n + j; q = p + n
             faces.append([p, q, q + 1, p + 1])
     return verts, faces, A
 
@@ -362,7 +399,7 @@ def main():
 
     # face: the orange mass, dense rings near the nose where the shape changes fastest
     z0, z1 = UPPER[0, 0], UPPER[-1, 0]
-    zs = np.concatenate([np.linspace(z0, 1.86, 14), np.linspace(1.85, z1, 34)])
+    zs = np.concatenate([np.linspace(z0, 1.86, 20), np.linspace(1.85, z1, 120)])
     v, f, uv = loft(upper_contour, zs)
     hf = []
     for (x, y, z), (_, w) in zip(v, uv):
@@ -445,7 +482,7 @@ def main():
         ez, ey, er = EYE["centre_zy"][0], EYE["centre_zy"][1], EYE["radius"]
         pts, _ = upper_contour(ez)
         sx = max(abs(x) for x, y in pts if abs(y - ey) < 0.03)
-        c = np.array([sgn * (sx - er * EYE["sink"]), ey, ez])
+        c = np.array([sgn * (sx - er * EYE["sink"]), ey, ez])  # sx: the face surface, raised there by the lid ring
         g, a, u = eye_frame(sgn)
         v, f, uv = sphere(c, er, up=g)
         objs.append(add_part("Eye" + sd, v, f, {"_PART": [6] * len(v), "_A": [q[0] for q in uv], "_B": [0] * len(v), "_ZONE": [0] * len(v)}, rigid(len(v))))
@@ -455,7 +492,7 @@ def main():
         for name, phi0, phi1, axis in (("Upper", math.radians(EYE["upper_lid_open_deg"]), math.radians(170), hinge),
                                        ("Lower", -math.radians(EYE["lower_lid_open_deg"]), -math.radians(170), -hinge)):
             bn = f"lid{name}.{sd}"
-            v, f, A = lid(c, R, a, g, u, phi0, phi1, inset)
+            v, f, A = lid(c, R, a, g, u, phi0, phi1, inset, er * EYE["lid_thickness"])
             objs.append(add_part(f"Lid{name}{sd}", v, f, {"_PART": [7] * len(v), "_A": A, "_B": [0] * len(v), "_ZONE": [0] * len(v)}, [[(bn, 1.0)]] * len(v)))
             lid_bones.append((bn, c, c + axis * 0.04))
         # horn: the roof's back corner drawn out, embedded at first, leaving the skull behind the brow
