@@ -160,8 +160,15 @@ The small dark pit at the eave notch in front of the eye (px 81, py 311) is kept
 The face surface is shaped from the inside out by the `anatomy` layers in the data. Each entry records what it is and why it is there.
 
 **Bone:**
-- **Cheekbone line:** Clay's most distinctive facial line, present in every reference. It starts at the small pit at the eave notch in front of the eye (1.805, 1.513) and runs back beneath the eye to the jaw joint below the ear (1.43, 1.638). It is lit above and shadowed below, so it overhangs: a shelf 0.032 high, with a crisp lower edge and a gentle upper slope up to the lid-ring pad. It is sculpted only; no line is drawn on it.
-- **Postorbital bar:** closes the socket behind, rising from the cheekbone to the eave.
+- **Cheekbone (the line under the eye):** in every reference, Clay's cheekbone is the heavy hooked line under the eye. Measured from the side sheet (px 109–154, py 243–277):
+  - it starts thin below the front of the eye at (1.724, 1.611);
+  - it runs back beneath the eye, heaviest under its back;
+  - it turns up steeply at a corner behind and below the eye, at (1.643, 1.658);
+  - it then sweeps back and tapers out at (1.592, 1.711).
+
+  It is sculpted as the rim of the eye socket: 0.02 high, sloping gently up toward the eye and dropping crisply on the outside where the line is drawn. No line is drawn on the skin.
+
+  *Correction:* an earlier "cheekbone" ridge from the pit in front of the eye to the jaw joint, and a postorbital bar, were invented without a matching line in the references. Both are removed.
 - **Eye socket:** a shallow dent.
 
 **Muscle:**
@@ -171,8 +178,6 @@ The face surface is shaped from the inside out by the `anatomy` layers in the da
 - **Temporalis:** fills the skull behind the eye under the roof. It is shaped by the stations, not a brush.
 
 **Skin:**
-- The measured zig-zag lower lid crease, where the lid pad meets the cheekbone.
-- The upper lid crease, along the postorbital bar.
 - The masseter's fold over the jowl.
 - The ear opening.
 

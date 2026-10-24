@@ -67,6 +67,19 @@ def seg_dist(z, y, pts):
     return best, above, min(along, total - along)
 
 
+def rim_radius(pts, ref, z, y):
+    """Distance from `ref` to the polyline's nearest point to (z, y): which side of a rim we are on."""
+    best, rr = 1e9, 0.0
+    for (az, ay), (bz, by) in zip(pts[:-1], pts[1:]):
+        dz, dy = bz - az, by - ay
+        t = max(0.0, min(1.0, ((z - az) * dz + (y - ay) * dy) / (dz * dz + dy * dy)))
+        cz, cy = az + t * dz, ay + t * dy
+        d = math.hypot(z - cz, y - cy)
+        if d < best:
+            best, rr = d, math.hypot(cz - ref[0], cy - ref[1])
+    return rr
+
+
 def smoothstep(e0, e1, x):
     t = min(1.0, max(0.0, (x - e0) / (e1 - e0)))
     return t * t * (3 - 2 * t)
@@ -94,9 +107,11 @@ def brush_offset(z, y):
             across = (z - cz) * math.sin(t) + (y - cy) * math.cos(t)
             e = math.hypot(along / ra, across / rb)
             off += b["height"] * (1 - smoothstep(1 - b["softness"], 1 + b["softness"], e))
-        elif k == "shelf":  # a bony ridge: crisp on its upper edge, sloping off below, tapering at its ends
-            d, above, end = seg_dist(z, y, b["zy"])
-            w = b["width_up"] if above else b["width_down"]
+        elif k == "rim":  # a bony rim round an opening: gentle on the side toward `around`, crisp on the outside
+            d, _, end = seg_dist(z, y, b["zy"])
+            ref = b["around"]
+            outside = math.hypot(z - ref[0], y - ref[1]) > rim_radius(b["zy"], ref, z, y)
+            w = b["width_out"] if outside else b["width_in"]
             off += b["height"] * math.exp(-(d / w) ** 2) * smoothstep(-0.01, 0.04, end)
         else:
             d, _, end = seg_dist(z, y, b["zy"])

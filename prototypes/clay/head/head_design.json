@@ -155,29 +155,26 @@
     "note": "Sculpt from the inside out: bone landmarks first, muscle masses over them, then skin creases where muscles meet or skin folds over something that moves. Every entry says what it is and what it does to the surface. Positions are side-view (z, y); offsets act on the side of the face.",
     "bone": [
       {
-        "kind": "shelf",
-        "name": "cheekbone and zygomatic arch",
-        "why": "Clay's most distinctive facial line, in every reference: the cheekbone (jugal) ridge starts at the small pit at the eave notch in front of the eye and runs back beneath the eye to the jaw joint below the ear. Lit above, shadowed below: it overhangs, so its lower edge is crisp and its upper side slopes gently up to the lid-ring pad and the eye. It is the floor the eye assembly rests on.",
+        "kind": "rim",
+        "name": "cheekbone (the line under the eye)",
+        "why": "Clay's cheekbone is the heavy hooked line under the eye in every reference, measured here from the side sheet: it starts thin below the front of the eye, runs back under it (heaviest beneath the back of the eye), turns up steeply at a corner behind and below the eye, then sweeps back and tapers out. It is the rim of the eye socket: a raised ridge cupping the eye from below and behind, sloping gently up toward the eye and dropping crisply on the outside, where the line is drawn. Sculpted, not drawn.",
         "zy": [
-          [1.805, 1.513],
-          [1.76, 1.575],
-          [1.705, 1.616],
-          [1.645, 1.634],
-          [1.57, 1.646],
-          [1.49, 1.648],
-          [1.43, 1.638]
+          [1.7236, 1.6111],
+          [1.7085, 1.6332],
+          [1.6898, 1.642],
+          [1.6665, 1.649],
+          [1.6513, 1.6542],
+          [1.6431, 1.6577],
+          [1.6385, 1.6752],
+          [1.6362, 1.6939],
+          [1.6268, 1.6985],
+          [1.6105, 1.7055],
+          [1.5918, 1.7114]
         ],
-        "height": 0.032,
-        "width_up": 0.03,
-        "width_down": 0.007
-      },
-      {
-        "kind": "ridge",
-        "name": "postorbital bar",
-        "why": "Closes the back of the socket, rising from the cheekbone to the brow (the roof's eave). It is the firm wall the upper crease runs along.",
-        "zy": [[1.605, 1.655], [1.59, 1.7], [1.578, 1.745]],
-        "height": 0.007,
-        "width": 0.012
+        "around": [1.691, 1.694],
+        "height": 0.02,
+        "width_in": 0.02,
+        "width_out": 0.005
       },
       {
         "kind": "dent",
@@ -192,9 +189,9 @@
       {
         "kind": "pad",
         "name": "orbicularis (lid ring)",
-        "why": "The ring muscle round the eye that closes it. It makes a soft raised ring framing the lids, longer toward the back corner along the canthal axis; its lower edge is the zig-zag crease and it sits on the cheekbone shelf. (No form raises the skin inside eye.clear_radius, where the lids sit.)",
+        "why": "The ring muscle round the eye that closes it: a soft raised ring framing the lids, inside the cheekbone rim. (No form raises the skin inside eye.clear_radius, where the lids sit.)",
         "centre": [1.672, 1.68],
-        "radii": [0.072, 0.046],
+        "radii": [0.06, 0.04],
         "tilt_deg": 26,
         "height": 0.016,
         "softness": 0.25
@@ -222,22 +219,6 @@
       }
     ],
     "skin": [
-      {
-        "kind": "crease",
-        "name": "lower lid crease (zig-zag)",
-        "why": "Where the orbicularis pad meets the cheekbone: measured from the side reference, front-lower to the back corner.",
-        "zy": [[1.723, 1.615], [1.691, 1.644], [1.65, 1.656], [1.638, 1.676], [1.624, 1.694]],
-        "depth": 0.005,
-        "width": 0.007
-      },
-      {
-        "kind": "crease",
-        "name": "upper lid crease",
-        "why": "The fold where the lid ring tucks under the brow, running back from the eye's back corner along the postorbital bar.",
-        "zy": [[1.633, 1.694], [1.592, 1.711]],
-        "depth": 0.005,
-        "width": 0.007
-      },
       {
         "kind": "crease",
         "name": "masseter fold over the jowl",
@@ -286,11 +267,14 @@
           {
             "kind": "crease",
             "zy": [
-              [1.723, 1.615],
-              [1.691, 1.644],
-              [1.65, 1.656],
-              [1.638, 1.676],
-              [1.624, 1.694]
+              [1.7236, 1.6111],
+              [1.7085, 1.6332],
+              [1.6898, 1.642],
+              [1.6665, 1.649],
+              [1.6513, 1.6542],
+              [1.6431, 1.6577],
+              [1.6385, 1.6752],
+              [1.6362, 1.6939]
             ],
             "depth": 0.004,
             "width": 0.006

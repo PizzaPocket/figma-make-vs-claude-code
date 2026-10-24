@@ -86,7 +86,12 @@ Build each muscle action as a shape of the face (a morph target): a push of the 
 - **The lids have thickness.** Each is a shell with a rounded margin that slides over the eyeball. They are pinned at the corners by the canthal tendons, so they move most mid-eye and not at all at the corners.
 - **A blink is the lid sliding,** not a large rigid turn. A large bone turn tears the corners, so make the blink a shape key of the lids.
 - **The socket holds the eye assembly.** Carve the face into a socket: inside the lids' footprint the skin runs in just under the lid dome, and a rounded rim (the orbital rim under the ring muscle) turns it back out. No bone or muscle form may raise the skin over the eye opening; they frame it.
-- **The cheekbone is the floor of the socket.** In stylised dragons it is often the face's most distinctive line. Find where it starts and ends in every reference, and which side is crisp: lit above and shadowed below means it overhangs. Sculpt it strongly enough that it reads in the plain clay render without any line drawn on it.
+- **The cheekbone is the rim of the socket.** On Clay it is the heavy hooked line under the eye, measured from the side sheet:
+  - it starts thin below the front of the eye;
+  - it runs back beneath the eye, heaviest under the back of it;
+  - it turns up steeply behind the eye, then sweeps back and tapers out.
+
+  Sculpt it as a `rim`: raised, sloping gently up toward the eye, dropping crisply on the outside where the line is drawn. Make it strong enough to read in the plain clay render without any line drawn on it.
 
 **Judge forms in a plain clay render.** Render with no colour, scales or ink, under a raking light. Paint hides missing anatomy.
 
@@ -114,7 +119,7 @@ Check: <what to compare; known differences>
   - `ridge(polyline, height, width)`: a raised line, such as a brow or a cheek ridge;
   - `crease(polyline, depth, width)`: a fold or the edge of a plate;
   - `dent(point, depth, radius)`: a nostril, ear opening or eye socket;
-  - `shelf(polyline, height, width_up, width_down)`: a bony edge that is crisp on one side and slopes off on the other, such as the cheekbone under the eye;
+  - `rim(polyline, around, height, width_in, width_out)`: a bony rim round an opening, gentle on the side toward `around` and crisp on the outside, such as the cheekbone cupping the eye;
   - `bulge(point, amount, radii)`: a muscle belly;
   - `pad(centre, radii, tilt, height)`: a raised plateau in a tilted ellipse, such as the lid ring muscle;
   - `flatten(region, plane)`: to make a drawn plane actually flat.
@@ -127,6 +132,8 @@ Check: <what to compare; known differences>
 
 ## Rules
 
+- **Never invent a form.** Every ridge, crease and mass must point to a specific line or shading in a specific reference. Write that evidence in its `why`. When the user names a feature (for example "his cheekbone"), find the exact drawn line they mean in the side reference and confirm it before modelling. Don't assemble a new feature from loosely matching lines across several images. (A pit-to-jaw "cheekbone ridge" was invented this way; Clay's cheekbone is the hooked line under the eye.)
+- **A drawn line's weight says how strong the form edge is.** A heavy stroke means a crisp, deep edge; a tapering stroke means the form fades out. Sculpt the edge on the side the line is drawn, and match its strength to the stroke.
 - The references decide. When the model and the art disagree, the model is wrong, even if it "looks fine".
 - Measure from the side reference, check the shape from the official three-quarter and front art, and use the books (canon descriptions) to settle what the art leaves open.
 - Organic, not mechanical. Clay's plates and scales are organic and roughly rectangular, varying in size and following the form. Never use a regular grid or brick pattern.
