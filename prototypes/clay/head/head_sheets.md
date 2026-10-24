@@ -29,13 +29,17 @@ The art reads as fitted pieces, not one blob:
 
 ## Roof plates
 
-The roof is not one scored sheet. Every reference (side sheet, *How to Draw*, flight render, limited-edition render) shows distinct plates in consistent rows, each its own solid tile on a thin dark underlay:
+The roof is distinct plates in consistent rows, each a solid tile on a thin dark underlay. The layout was traced from a line map of the side sheet (`scripts/line_map.py`, px 0–200, py 160–380) and checked against *How to Draw*, the flight render and the limited-edition render.
 
-- **Nose plate:** caps the front of the muzzle (z 2.035 → 1.935), down to the lip. The nose crest is sculpted into it: a centre ridge flaring over the nostrils, with the nostrils as troughs in the plate.
-- **Top row:** wide transverse bands over the top of the muzzle and skull, every ~0.055 from behind the nose plate to the horns. It spans the face angle π/2 ± 0.55–0.66 rad.
-- **Edge rows:** near-square plates on each side, from the eave up to the top row, staggered against it. Over the eye, where the eave steps up, the row narrows to the brow plate.
+**Directions:** plates are laid out in coordinates that follow the head's top profile: s along the profile from the nose tip back, d the depth below it, measured perpendicular. Joints are lines of constant s, so they cross the steep muzzle perpendicular to the profile and look nearly level in the side view. They are never vertical cuts. Strips are lines of constant d.
 
-Each plate has rounded edges (bevel 0.006) and is thicker toward its back edge (0.7 → 1.0 × 0.009). It runs 0.004 past its back edge over the next plate, like a shingle. The gaps and bevels make the art's consistent dark lines.
+**Rows,** with depths measured on the side sheet:
+- **Nose plate:** caps the front of the muzzle (s 0–0.09) down to the eave. The nose crest is sculpted into it: a centre ridge flaring over the nostrils, with the nostrils as troughs in the plate.
+- **Top bands:** wrap over the top and down each side to the first longitudinal line (d 0.054). Joints every 0.058.
+- **Long strip:** a narrow row of long plates between the first and second lines (d 0.054–0.075). Joints every 0.11.
+- **Edge row:** near-square plates from the second line down to the eave, which steps up over the eye. Joints every 0.062, the measured tick spacing.
+
+**Tiles:** each plate has rounded edges (bevel 0.006) and is thicker toward its back edge. It overlaps the next one back like a shingle. The gaps make the drawn lines.
 
 ## Roof
 

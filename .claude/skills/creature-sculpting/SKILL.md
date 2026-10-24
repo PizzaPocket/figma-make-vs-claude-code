@@ -15,7 +15,7 @@ Never tune the whole creature at once.
 
 ## The loop, for each element
 
-1. **Isolate.** Crop the element at full resolution from every reference that shows it, with a measuring grid in reference pixels (`scripts/study_crop.py`). Use the official art first and fan sheets second. Note which references disagree.
+1. **Isolate.** Crop the element at full resolution from every reference that shows it, with a measuring grid in reference pixels (`scripts/study_crop.py`). Use the official art first and fan sheets second. Note which references disagree. Where lines are hard to see (dark ink on dark paint), extract them with `scripts/line_map.py` and trace from the line map.
 2. **Read it as architecture.** Write an element sheet (template below), answering in order:
    - **Primary mass:** what simple solid is it? (A wedge, box, drum or cone.) What are its overall length, height and width?
    - **Structure underneath:** which bones and which muscles would have to exist to make this shape? See "Sculpt from the inside out" below. The surface must look driven by them, not inflated.
@@ -142,6 +142,7 @@ Check: <what to compare; known differences>
 
 ## Lessons
 
+- **Lay plates out in the art's own directions.** Joints between plates run perpendicular to the form's main flow line, and strips run along it. On a sloping muzzle the joints are therefore *not* vertical cuts at constant depth. Lay plates out in coordinates that follow the profile: s along the profile, d the depth perpendicular to it. Measure the strips' depths and the joint spacing from a line map of the side view, then check the render's side view directly against that line map.
 - **Armour is separate plates, not a scored sheet.** If the art draws plate lines with consistent shapes, build each plate as its own solid tile, in the rows the art uses. On Clay's roof that means a nose plate, a top row of transverse bands, and edge rows of near-square plates along the eave, ending at the brow plate. Give each tile rounded edges, thicker toward its back edge, overlapping the next one like a shingle. The gaps then make the drawn lines, and they stay consistent because they come from the plate layout.
 - **Resolution must match the sharpest edge.** A crisp edge (the cheekbone's overhang, a lid crease) needs mesh spacing finer than its width, or it renders soft. Check in the clay render.
 - **WebGL allows 16 vertex attributes.** Morph targets use them up (position and normal per target), so pack custom attributes into vectors.

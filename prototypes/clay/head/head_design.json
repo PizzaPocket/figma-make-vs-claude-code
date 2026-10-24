@@ -425,15 +425,33 @@
     "muscle_actions_note": "blink (orbicularis oculi, palpebral part: AU45) is a shape of the lids themselves, built with them"
   },
   "roof_plates": {
-    "note": "The roof is not one scored sheet: every reference shows distinct plates in consistent rows. A nose plate caps the front of the muzzle (the nose crest sits on it). A top row of wide transverse bands runs over the top of the muzzle and skull from behind the nose plate to the horns. Each side has an edge row of near-square plates along the eave, staggered against the top row; over the eye the edge row narrows to the brow plate under the stepped eave. Plates are solid tiles with rounded edges, each a little thicker toward its back edge and overlapping the next one back, like shingles; the gaps between them are the consistent dark lines of the art.",
+    "note": "The roof is distinct plates in consistent rows, laid out as the side sheet draws them, in coordinates that follow the head's top profile: s along the profile from the nose tip back, d the depth below it, perpendicular to it. Joints are lines of constant s, so they cross the steep muzzle perpendicular to the profile (nearly level in the side view), never vertical. Rows (measured on the side sheet, as depth below the profile): the top bands wrap over the top and down each side to the first longitudinal line (d 0.054); a narrow strip of long plates runs to the second line (d 0.075); the edge row of near-square plates (joints every ~0.062, measured ticks) runs down to the orange. A nose plate caps the front, with the nose crest sculpted into it. Plates are bevelled shingle tiles; the gaps are the drawn lines.",
     "thickness": 0.009,
     "bevel": 0.006,
     "overlap": 0.004,
     "gap": 0.0015,
-    "top_half_angle": [[2.03, 0.55], [1.9, 0.55], [1.75, 0.62], [1.6, 0.66], [1.42, 0.66]],
-    "top_row_note": "top row spans face angle pi/2 +- top_half_angle(z); the edge rows run from the eave up to it",
-    "nose_plate_z": [2.035, 1.935],
-    "top_cuts_z": [1.935, 1.88, 1.825, 1.77, 1.715, 1.66, 1.605, 1.55, 1.495, 1.44],
-    "edge_cuts_z": [1.935, 1.905, 1.855, 1.805, 1.755, 1.7, 1.645, 1.59, 1.535, 1.48, 1.43]
+    "layout": {
+      "nose_plate_s": 0.09,
+      "rows": [
+        {
+          "name": "top bands",
+          "wrap": true,
+          "d": [0.0, 0.054],
+          "joint_every": 0.058
+        },
+        {
+          "name": "long strip",
+          "d": [0.054, 0.075],
+          "joint_every": 0.11,
+          "start": 0.12
+        },
+        {
+          "name": "edge row",
+          "d": [0.075, null],
+          "joint_every": 0.062,
+          "start": 0.105
+        }
+      ]
+    }
   }
 }

@@ -276,67 +276,146 @@ def horn_fillet(q, n, edge):
     return q
 
 
-def top_half(z):
-    th = np.array(PLATES["top_half_angle"])
-    return float(np.interp(-z, -th[:, 0], th[:, 1]))
+# ---------------------------------------------------------------- roof plate layout
+# The plates are laid out in side-view coordinates that follow the head's top profile, as the art draws
+# them: s runs along the profile from the nose tip back, d is the depth below it, perpendicular to it.
+# Joints between plates are lines of constant s (perpendicular to the profile, so nearly level in the side
+# view on the steep muzzle); the strips along the side are lines of constant d.
+_PROFILE = {}
 
 
-def plate(z0, z1, th_a, th_b, nv, seed):
-    """One roof plate: a solid tile with rounded edges laid on the underlay between stations z0 (front)
-    and z1 (back) and face angles th_a(z)..th_b(z). It thickens toward its back edge and runs a little
-    past it to overlap the next plate back, like a shingle. _A: distance to its nearest edge, _B: tint."""
+def profile():
+    if not _PROFILE:
+        zs = np.linspace(UPPER[0, 0] + 0.015, ROOF["back_z"] - 0.02, 400)
+        ys = np.array([interp(UPPER, z, 1) + roof_t(z)[0] for z in zs])
+        P = np.stack([zs, ys], 1)
+        s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
+        T = np.gradient(P, axis=0); T /= np.linalg.norm(T, axis=1)[:, None]
+        Nin = np.stack([T[:, 1], -T[:, 0]], 1)  # perpendicular, pointing down into the head
+        Nin[Nin[:, 1] > 0] *= -1
+        _PROFILE.update(P=P, s=s, N=Nin)
+    return _PROFILE
+
+
+def sv_point(s, d):
+    """Side-view point at profile position s and depth d."""
+    pr = profile()
+    p = np.array([np.interp(s, pr["s"], pr["P"][:, k]) for k in (0, 1)])
+    n = np.array([np.interp(s, pr["s"], pr["N"][:, k]) for k in (0, 1)])
+    return p + norm(n) * d
+
+
+def side_th(z, y):
+    """Face angle on the +x side at which the face reaches height y at station z."""
+    lo, hi = 0.0, math.pi / 2
+    if y >= face_pt(z, hi)[1]:
+        return hi
+    if y <= face_pt(z, lo)[1]:
+        return lo
+    for _ in range(30):
+        mid = (lo + hi) / 2
+        lo, hi = (mid, hi) if face_pt(z, mid)[1] < y else (lo, mid)
+    return (lo + hi) / 2
+
+
+def eave_depth(s):
+    """Depth of the roof's eave below the profile at s."""
+    d = 0.0
+    while d < 0.4:
+        z, y = sv_point(s, d)
+        if y <= float(np.interp(-z, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) or y <= interp(UPPER, z, 2):
+            return d
+        d += 0.002
+    return d
+
+
+def plate(s0, s1, d0, d1, nv, seed, wrap=False):
+    """One roof plate: a solid tile with rounded edges laid on the underlay over profile positions s0..s1
+    and depths d0..d1 (d1 may be a function of s). With wrap, it spans the top: from depth d1 on the
+    left side, over the top, to d1 on the right. It thickens toward its back edge and runs a little past
+    it over the next plate, like a shingle. _A: distance to its nearest edge, _B: tint, _ZONE: nostril."""
     T, bev, ov, gap = PLATES["thickness"], PLATES["bevel"], PLATES["overlap"], PLATES["gap"]
-    z0g, z1g = z0 - gap / 2, z1 + gap / 2 - ov
-    Lz = z0g - z1g
-    nu = max(4, int(Lz / 0.005))
+    s0g, s1g = s0 + gap / 2, s1 - gap / 2 + ov
+    nu = max(4, int((s1g - s0g) / 0.004))
     tint = (math.sin(seed * 12.9898) * 43758.5453) % 1.0
-    under = roof_t(z0)[0]
-    verts, A, B, NW = [], [], [], []
-    rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))  # quarter-round edge profile
+    D1 = d1 if callable(d1) else (lambda s, v=d1: v)
+    rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))
+    rows = []
     for i in range(nu + 1):
         u = i / nu
-        z = z0g + (z1g - z0g) * u
-        a0, a1 = th_a(z) + gap / 0.3, th_b(z) - gap / 0.3
-        x0, y0 = face_pt(z, a0); x1, y1 = face_pt(z, a1)
-        Lv = math.hypot(x1 - x0, y1 - y0) + 1e-6
-        for j in range(nv + 1):
-            v = j / nv
-            th = a0 + (a1 - a0) * v
-            x, y = face_pt(z, th); nx, ny = face_normal(z, th)
-            dist = min(u * Lz, (1 - u) * Lz * 2.5, min(v, 1 - v) * Lv)
+        sc = s0g + (s1g - s0g) * u
+        dh = D1(sc) - gap / 2
+        row = []
+        if wrap:
+            za, ya = sv_point(sc, dh); tha = side_th(za, ya)
+            z0 = sv_point(sc, 0.0)[0]
+            for j in range(nv + 1):
+                v = -1 + 2 * j / nv
+                z = z0 + (za - z0) * abs(v) ** 1.5
+                th = math.pi / 2 - v * (math.pi / 2 - tha)
+                row.append((z, th, (1 - abs(v)) * dh + 0.0))
+        else:
+            dl = d0 + gap / 2
+            for j in range(nv + 1):
+                dd = dl + (dh - dl) * j / nv
+                z, y = sv_point(sc, dd)
+                row.append((z, side_th(z, y), dd))
+        rows.append(row)
+    under = roof_t(sv_point(s0, 0)[0])[0]
+    verts, A, B, NW = [], [], [], []
+    for i, row in enumerate(rows):
+        u = i / nu
+        # arc lengths across the row, for the edge distance
+        pts = [np.array(face_pt(z, th)) for z, th, _ in row]
+        acc = np.concatenate([[0], np.cumsum([np.linalg.norm(pts[k + 1] - pts[k]) for k in range(len(pts) - 1)])])
+        Lv = acc[-1] + 1e-6
+        Ls = (s1g - s0g)
+        for j, (z, th, _) in enumerate(row):
+            x, y = pts[j]; nx, ny = face_normal(z, th)
+            dist = min(u * Ls, (1 - u) * Ls * 2.5, acc[j], Lv - acc[j])
             edge = rnd(dist / bev)
-            ch, nw = crest_height(z, th)  # the nose crest is sculpted into the plate
+            ch, nw = crest_height(z, th)
             h = T * (0.7 + 0.3 * u) * edge + ch * edge - 0.0008 * (dist < 1e-9)
-            q = np.array([x + nx * (under + h), y + ny * (under + h), z])
-            q = horn_fillet(q, np.array([nx, ny, 0.0]), edge)  # the plates rise into the horn roots
-            verts.append(tuple(q))
-            A.append(dist); B.append(tint); NW.append(nw)
+            for sgn in ((1, -1) if not wrap else (1,)):
+                xs = x if wrap else sgn * x
+                ns = nx if wrap else sgn * nx
+                q = np.array([xs + ns * (under + h), y + ny * (under + h), z])
+                q = horn_fillet(q, np.array([ns, ny, 0.0]), edge)
+                verts.append(tuple(q)); A.append(dist); B.append(tint); NW.append(nw)
+    n_side = 1 if wrap else 2
     faces = []
+    W = (nv + 1) * n_side
     for i in range(nu):
         for j in range(nv):
-            q = i * (nv + 1) + j
-            faces.append([q, q + 1, q + nv + 2, q + nv + 1])
+            for k in range(n_side):
+                q0 = i * W + j * n_side + k
+                q1 = q0 + n_side
+                f = [q0, q1, q1 + W, q0 + W]
+                faces.append(f if (k == 0) else f[::-1])
     return verts, faces, A, B, NW
 
 
 def roof_plates():
-    """All roof plates: nose plate, top row, and an edge row on each side."""
-    out = []
-    eave = eave_th
-    nz = PLATES["nose_plate_z"]
-    out.append(plate(nz[0], nz[1], lambda z: eave(z), lambda z: math.pi - eave(z), 18, 1))
-    cuts = PLATES["top_cuts_z"]
-    for k in range(len(cuts) - 1):
-        out.append(plate(cuts[k], cuts[k + 1], lambda z: math.pi / 2 - top_half(z), lambda z: math.pi / 2 + top_half(z), 12, 10 + k))
-    cuts = PLATES["edge_cuts_z"]
-    for k in range(len(cuts) - 1):
-        for side in (1, -1):
-            if side > 0:
-                ta, tb = (lambda z: eave(z)), (lambda z: math.pi / 2 - top_half(z))
-            else:
-                ta, tb = (lambda z: math.pi / 2 + top_half(z)), (lambda z: math.pi - eave(z))
-            if tb(cuts[k]) - ta(cuts[k]) > 0.08:
-                out.append(plate(cuts[k], cuts[k + 1], ta, tb, 6, 40 + 2 * k + side))
+    """The roof plates, as the references draw them: a nose plate over the front of the muzzle; top bands
+    over the muzzle and skull that wrap down each side to the first longitudinal line; a narrow strip of
+    long plates below it; and the edge row of near-square plates down to the eave."""
+    L = PLATES["layout"]
+    pr = profile(); smax = pr["s"][-1]
+    out, seed = [], 0
+    s_nose = L["nose_plate_s"]
+    out.append(plate(0.0, s_nose, 0.0, eave_depth, 20, 1, wrap=True))
+    for row in L["rows"]:
+        k = 0
+        sc = row.get("start", s_nose)
+        while sc < smax - 0.01:
+            s1 = min(smax, sc + row["joint_every"])
+            dlo = row["d"][0]
+            dhi = (lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002)) if row["d"][1] is not None else (lambda s: eave_depth(s) - 0.002)
+            if row.get("wrap"):
+                out.append(plate(sc, s1, 0.0, lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002), 14, 10 + seed, wrap=True))
+            elif dhi(sc) - dlo > 0.006 and dhi(s1) - dlo > 0.006:
+                out.append(plate(sc, s1, dlo, dhi, 5, 10 + seed))
+            sc = s1; k += 1; seed += 1
     return out
 
 
