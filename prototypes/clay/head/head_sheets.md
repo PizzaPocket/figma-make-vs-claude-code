@@ -122,29 +122,22 @@ It is a long, nearly straight sweep back and up that barely tapers, then narrows
 - The rings are hairline incisions (depth 0.0007, width 0.0014, every 0.03), inked in the shader.
 - They start just past the root and fade out at 88% of the length.
 
-## Box muzzle, nose block and nostrils
+## Box muzzle, nose and nostrils
 
-**References:** the flight render and the limited-edition render (zoomed, gridded crops of each), *How to Draw*, and the side sheet for the profile and the nostril's position.
+**Snout roof:** symmetrical, with a low ridge down the middle of its top (upper_head.ridge, 0.012 along the snout, fading out by z 1.62). The roof is a gable, not flat.
 
-**Primary mass:** a box.
-- It hardly narrows toward the front: half-width about 0.105 at the tip.
-- Flat top, near-vertical sides, and a flat front face down to the lip, with only slightly rounded corners.
-- The jaw's chin is squared to match (squareness 3.6).
+**Nose (as the user reads the references): one extruded mass,** its section like the border of the Superman shield:
+- a flat top with square corners, short sides falling straight down, then two lower edges converging to a point;
+- it emerges out of the snout's roof pitched upward: its axis descends toward the front at 19 degrees, less steeply than the snout's top (~49 degrees), so it rises out of the roof and stands proud of it toward the front;
+- it juts forward out of the snout's front above the front lip, ending in a flat upright front face, so the whole shield shows from the front;
+- its back sinks into the roof;
+- below it, the main roof's front plate carries on down to the lip.
 
-**Nose block:** the front of the roof is one raised block, standing a little proud of the plates behind it (nose plate 0.016 thick, back to profile position s 0.2). Every three-quarter image shows it as a distinct piece.
-- Its front is capped by the front plate at full width, out to the outside of the block's sides, down to the lip. There is no orange band or tray edge round it.
-- Its top front corner juts forward a little over the front face (front pad, 0.008): the side sheet's pointed nose tip. Kept subtle, so it reads as a corner, not a bumper.
+**Nostrils:** slits cut into the nose's two lower faces (the undersides), just behind the front face.
 
-**Nostrils: on the sides of the block, not the front.** An earlier pass put them on the front face, claiming every official image showed them there; looking again at zoomed crops, none does.
-- Each is a slit running back and a little up from near the front corner: from (z 1.958, y 1.462) to (z 1.885, y 1.50). Side sheet crescent at z 1.93, y 1.46; flight render 0.08–0.17 behind the tip, a little under halfway down the side.
-- It is wide and rounded at the front end (half-width 0.009) and tapers behind (0.003), like a comma, cut 0.008 deep with rounded lips. A raised fold of skin runs along its lower lip.
-- The front face between the two nostrils is solid.
+**Earlier attempts, all wrong:** a raised pad with nostrils on the front face; a thickened nose plate with nostrils on its sides; a hood-like wedge following the snout's surface. Each was built from my own reading of the art, not from the plain shape the user described.
 
-**Building the plates round it:** the nostril is cut into one finely divided plate, so no plate joint crosses it. Two fixes to the plate layout came with this, and apply to every roof plate:
-- The direction along the profile is smoothed (over ~0.06), so joint lines never cross where the profile bends sharply. Before, they folded the nose plate into creases.
-- The eave depth is found precisely, not in 0.002 steps, which had ridged the finely divided plate.
-
-**Still to check:** the nostril's dark opening has slightly jagged edges up close; the front plate still reads a little as its own tile at its lower corners.
+**Still to check:** the nose's size and how far it juts; the nostrils barely show yet; how it compares with the flight and limited-edition renders at matched angles.
 
 ## Eye: corners, lids, socket, expression
 

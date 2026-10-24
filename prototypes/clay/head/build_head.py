@@ -121,6 +121,12 @@ def brush_offset(z, y):
 
 
 # ---------------------------------------------------------------- face
+def snout_ridge(z):
+    """Height of the ridge along the middle of the snout's top (the roof is a low gable, not flat)."""
+    R = np.array(D["upper_head"]["ridge"])
+    return float(np.interp(-z, -R[:, 0], R[:, 1]))
+
+
 def face_pt(z, th):
     """Point on the face at station z, angle th (0 = left lip edge, pi/2 = top, pi = right lip edge).
     Boxy cross-section (flat top, steep sides, cheeks wider than the top), then the brushes."""
@@ -130,7 +136,7 @@ def face_pt(z, th):
     yy = b * abs(s) ** (2 / SQ)
     a = wb + (wt - wb) * (yy / b) ** 1.6
     x = a * math.copysign(abs(c) ** (2 / SQ), c)
-    y = low + yy
+    y = low + yy + snout_ridge(z) * max(0.0, 1 - (x / (wt * 0.95)) ** 2) ** 1.5 * (yy / b) ** 4
     side = min(1.0, max(0.0, (abs(x) / wb - 0.35) / 0.4))  # brushes act on the sides, fading out on the top
     return x + math.copysign(brush_offset(z, y) * side, x), y
 
@@ -192,30 +198,103 @@ def roof_ring(z, K=26):
 
 
 def crest_height(z, th):
-    """The nose, sculpted into the nose plate: a rounded pad along the top front of the muzzle, and on each
-    side the nostril, a comma-shaped slit cut into the side of the nose block with a raised fold below it.
-    Returns (height above the plate, nostril weight)."""
-    hh = 0.0
-    st = np.array(CREST["stations"])
-    if st[-1, 0] <= z <= st[0, 0]:
-        half, h = (float(np.interp(-z, -st[:, 0], st[:, c])) for c in (1, 2))
-        u = (th - math.pi / 2) / max(half, 1e-6)
-        if abs(u) < 1:
-            hh = h * (1 - u * u) ** 0.8
-    N = CREST["nostril"]
-    p0, p1 = np.array(N["front_zy"]), np.array(N["back_zy"])
-    q = np.array([z, face_pt(z, th)[1]])
-    ax = p1 - p0; L = np.linalg.norm(ax); ax /= L
-    s = float((q - p0) @ ax) / L
-    r = q - p0
-    d = float(ax[1] * r[0] - ax[0] * r[1])  # + above the slit's line (the axis runs back, -z, and up)
-    if -0.25 < s < 1.25:
-        w = N["half_width"][0] + (N["half_width"][1] - N["half_width"][0]) * min(1.0, max(0.0, s))
-        ends = smoothstep(-0.12, 0.05, s) * (1 - smoothstep(0.92, 1.1, s))  # rounded front end, tapered tail
-        g = smoothstep(0.0, 1.0, max(0.0, 1 - abs(d) / (w * 1.6))) * ends  # rounded lips, no sharp crease
-        fold = N["fold_height"] * math.exp(-((d + w + N["fold_width"]) / N["fold_width"]) ** 2) * ends
-        return hh - N["depth"] * g + fold, smoothstep(0.35, 0.8, g)
-    return hh, 0.0
+    """A pad sculpted into the nose plate along the top front of the muzzle (none at present: the nose is its
+    own piece, nose_part). Returns (height above the plate, nostril weight)."""
+    st = np.array(CREST.get("stations", []))
+    if not len(st) or not (st[-1, 0] <= z <= st[0, 0]):
+        return 0.0, 0.0
+    half, h = (float(np.interp(-z, -st[:, 0], st[:, c])) for c in (1, 2))
+    u = (th - math.pi / 2) / max(half, 1e-6)
+    return (h * (1 - u * u) ** 0.8 if abs(u) < 1 else 0.0), 0.0
+
+
+def shield(W, H, drop, r, n=16):
+    """The nose's section, like the border of the Superman shield: a flat top with square corners, short
+    sides falling straight down, then two lower edges converging to a point at the bottom. Corners rounded
+    with radius r. Returns (x, v) points counter-clockwise from the bottom point, and each point's side:
+    0 top, 1 upright side, 2 lower edge (the undersides, where the nostrils open)."""
+    P = [(0.0, -H), (W / 2, -drop), (W / 2, 0.0), (-W / 2, 0.0), (-W / 2, -drop)]
+    out, tag = [], []
+    for i, c in enumerate(P):
+        p, q = np.array(P[i - 1]), np.array(P[(i + 1) % len(P)])
+        c = np.array(c); a1, a2 = norm(p - c), norm(q - c)
+        half = math.acos(max(-1.0, min(1.0, a1 @ a2))) / 2
+        dcut = r / math.tan(half)
+        s0, s1 = c + a1 * dcut, c + a2 * dcut
+        ctr = c + norm(a1 + a2) * r / math.sin(half)
+        u0, u1 = math.atan2(*(s0 - ctr)[::-1]), math.atan2(*(s1 - ctr)[::-1])
+        du = (u1 - u0 + math.pi) % (2 * math.pi) - math.pi
+        for k in range(n + 1):
+            u = u0 + du * k / n
+            out.append(tuple(ctr + r * np.array([math.cos(u), math.sin(u)])))
+            tag.append({0: 2, 1: 2, 2: 1, 3: 0, 4: 1}[i] if k < n // 2 else {0: 2, 1: 1, 2: 0, 3: 1, 4: 2}[i])
+        # the straight edge to the next corner, divided so the faces can be sculpted (the nostrils)
+        out.append(None); tag.append({0: 2, 1: 1, 2: 0, 3: 1, 4: 2}[i])
+    pts = []
+    for j, p in enumerate(out):
+        if p is not None:
+            pts.append((p, tag[j])); continue
+        a, b = np.array(out[j - 1]), np.array(out[(j + 1) % len(out)])
+        m = max(2, int(np.linalg.norm(b - a) / 0.004))
+        pts += [(tuple(a + (b - a) * q / m), tag[j]) for q in range(1, m)]
+    return [p for p, _ in pts], [g for _, g in pts]
+
+
+def nose_part():
+    """The nose: one extruded mass emerging out of the roof, pitched upward, its section like the border of the
+    Superman shield (flat top, short upright sides, lower edges converging to a point). It juts forward out of
+    the snout's front above the front lip, with a flat upright front face; its back sinks into the roof. The nostrils
+    are slits cut into its two lower faces, near the front. _ZONE: nostril."""
+    NS = D["nose"]
+    sec, tag = shield(NS["width"], NS["height"], NS["side_drop"], NS["corner_radius"])
+    p = math.radians(NS["pitch_deg"])
+    ax = np.array([0.0, math.sin(p), math.cos(p)])      # forward and up
+    up = np.array([0.0, math.cos(p), -math.sin(p)])     # the section's v direction
+    front = np.array([0.0, NS["front_top_zy"][1], NS["front_top_zy"][0]])  # middle of the front face's top edge
+    N = NS["nostril"]
+    # the front face is upright (a plane of constant z through the top edge), so the whole shield shows from the
+    # front, its point below jutting as far forward as its top; each section point runs back from there
+    t_end = lambda v: -(up[2] * v) / ax[2]
+    back = np.concatenate([np.linspace(NS["length"], 0.07, 12), np.linspace(0.068, 0.0, 40)])  # distance back from the front face
+    rings, A, NW = [], [], []
+    for db in back:
+        ring, a_r, n_r = [], [], []
+        for (x, v), tg in zip(sec, tag):
+            t = -db
+            pt = front + ax * (t_end(v) + t) + up * v + np.array([x, 0, 0])
+            nw = 0.0
+            if tg == 2:  # a nostril on each lower face: a slit along the axis, wide at the front end
+                s = (t - N["t_front"]) / (N["t_back"] - N["t_front"])
+                across = (abs(x) / (NS["width"] / 2)) - N["across"]
+                if -0.2 < s < 1.2:
+                    w = N["half_width"][0] + (N["half_width"][1] - N["half_width"][0]) * min(1.0, max(0.0, s))
+                    ends = smoothstep(-0.15, 0.05, s) * (1 - smoothstep(0.9, 1.1, s))
+                    g = smoothstep(0.0, 1.0, max(0.0, 1 - abs(across) / w)) * ends
+                    if g > 0:  # cut in toward the nose's axis
+                        pt = pt + norm(front + ax * t - pt) * N["depth"] * g
+                        nw = smoothstep(0.35, 0.8, g)
+            ring.append(tuple(pt)); a_r.append(0.02); n_r.append(nw)
+        rings.append(ring); A.append(a_r); NW.append(n_r)
+    # the front face: a narrow rounded bevel, then flat
+    last = np.array(rings[-1]); c = last.mean(0)
+    fwd = np.array([0.0, 0.0, 1.0])
+    for f, dt in ((0.96, 0.003), (0.9, 0.004)):
+        rings.append([tuple(c + (q - c) * f + fwd * dt) for q in last]); A.append([0.0] * len(last)); NW.append([0.0] * len(last))
+    verts, faces, AA, NN = [], [], [], []
+    M = len(rings[0])
+    for r, a_r, n_r in zip(rings, A, NW):
+        verts += r; AA += a_r; NN += n_r
+    for i in range(len(rings) - 1):
+        for j in range(M):
+            k = (j + 1) % M
+            p0 = i * M + j; q0 = p0 + M
+            faces.append([p0, i * M + k, (i + 1) * M + k, q0])
+    for i in (0, len(rings) - 1):
+        cidx = len(verts); verts.append(tuple(np.mean(rings[i], 0))); AA.append(0.0); NN.append(0.0)
+        for j in range(M):
+            k = (j + 1) % M
+            faces.append([i * M + k, i * M + j, cidx] if i == 0 else [i * M + j, i * M + k, cidx])
+    return verts, faces, [0.02] * len(verts), [0.45] * len(verts), NN
 
 
 def shell_loft(rings, attrs_per_ring):
@@ -294,7 +373,7 @@ _PROFILE = {}
 def profile():
     if not _PROFILE:
         zs = np.linspace(UPPER[0, 0] + 0.015, ROOF["back_z"] - 0.02, 400)
-        ys = np.array([interp(UPPER, z, 1) + roof_t(z)[0] for z in zs])
+        ys = np.array([interp(UPPER, z, 1) + snout_ridge(z) + roof_t(z)[0] for z in zs])
         P = np.stack([zs, ys], 1)
         s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
         T = np.gradient(P, axis=0); T /= np.linalg.norm(T, axis=1)[:, None]
@@ -430,8 +509,8 @@ def front_plate():
     verts, A, NW = [], [], []
     for j in range(nj + 1):
         y = ye + (top - 0.002 - ye) * j / nj
-        # full width: out to the outside of the nose block's sides, so the front caps the block, not a tray set in it
-        xw = abs(face_pt(z0, side_th(z0, y))[0]) + under + (PLATES["layout"].get("nose_plate_thickness") or T) * 0.9
+        # full width: out to the outside of the nose plate's sides, so the front caps the snout, not a tray set in it
+        xw = abs(face_pt(z0, side_th(z0, y))[0]) + under + T * 0.9
         for i in range(ni + 1):
             u = -1 + 2 * i / ni
             x = u * xw
@@ -457,8 +536,7 @@ def roof_plates():
     pr = profile(); smax = pr["s"][-1]
     out, seed = [], 0
     s_nose = L["nose_plate_s"]
-    # the nose plate is finely divided: the nostrils are cut into it
-    out.append(plate(0.0, s_nose, 0.0, eave_depth, 110, 1, wrap=True, thick=L.get("nose_plate_thickness"), step=0.0015))
+    out.append(plate(0.0, s_nose, 0.0, eave_depth, 20, 1, wrap=True))
     out.append(front_plate())
     for row in L["rows"]:
         k = 0
@@ -846,6 +924,8 @@ def head_parts():
         rings.append((outer, inner)); at.append((fb, [fb] * len(outer)))
     v, f, A, B, Z = shell_loft(rings, at)
     objs.append(add_part("Roof", v, f, {"_PART": [10] * len(v), "_A": A, "_B": B, "_ZONE": Z}, rigid(len(v))))
+    v, f, A, B, NW = nose_part()
+    objs.append(add_part("Nose", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
     for k, (v, f, A, B, NW) in enumerate(roof_plates()):
         objs.append(add_part(f"RoofPlate{k}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
 

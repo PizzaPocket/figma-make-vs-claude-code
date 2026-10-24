@@ -26,7 +26,13 @@
       [1.4, 1.8845, 1.71, 0.2115, 0.2295],
       [1.36, 1.872, 1.79, 0.208, 0.224]
     ],
-    "squareness": 5.0
+    "squareness": 5.0,
+    "ridge": [
+      [2.017, 0.012],
+      [1.75, 0.012],
+      [1.62, 0.0]
+    ],
+    "ridge_note": "A low ridge along the middle of the snout's top: the roof is a symmetrical gable, not flat. Rows: z, height."
   },
   "lower_jaw": {
     "columns": ["z", "top", "bottom", "half_width"],
@@ -182,28 +188,9 @@
     "inset": 0.003
   },
   "nose_crest": {
-    "note": "The nose, sculpted into the nose plate. Every 3/4 image (flight render, limited edition, How to Draw) shows a distinct nose block at the front of the muzzle, standing a little proud of the roof plates behind it, its top front corner jutting forward over the front face (the side sheet's pointed nose tip). The nostrils are on the SIDES of that block, not on the front: each a slit running back and a little up from near the front corner, wide and rounded at the front end, tapering behind, with a raised fold of skin along its lower lip. The front face between them is solid. Positions from the side sheet (the crescent at z 1.93, y 1.46) and the flight render (slit about 0.08-0.17 behind the tip, a little under halfway down the side of the block).",
-    "z": [2.035, 1.86],
-    "stations": [
-      [2.035, 0.95, 0.01],
-      [2.0, 1.05, 0.02],
-      [1.97, 0.95, 0.018],
-      [1.95, 0.6, 0.008],
-      [1.935, 0.3, 0.0]
-    ],
-    "stations_columns": ["z", "half_angle_rad", "height"],
-    "nostril": {
-      "note": "side-view slit centreline, front end to back end; half_width at the front and back ends; a raised fold below",
-      "front_zy": [1.958, 1.462],
-      "back_zy": [1.885, 1.5],
-      "half_width": [0.009, 0.003],
-      "depth": 0.008,
-      "fold_height": 0.006,
-      "fold_width": 0.006
-    },
+    "note": "Superseded by 'nose': the nose is its own piece. Only the front pad remains, off (height 0).",
     "front_pad": {
-      "note": "the top front corner juts forward a little over the front face (the side sheet's pointed nose tip); kept subtle so it reads as a corner, not a bumper",
-      "height": 0.008,
+      "height": 0.0,
       "band": 0.03
     }
   },
@@ -529,7 +516,7 @@
     "overlap": 0.004,
     "gap": 0.0015,
     "layout": {
-      "nose_plate_s": 0.2,
+      "nose_plate_s": 0.09,
       "rows": [
         {
           "name": "top bands",
@@ -541,22 +528,40 @@
           "name": "long strip",
           "d": [0.054, 0.075],
           "joint_every": 0.11,
-          "start": 0.2
+          "start": 0.12
         },
         {
           "name": "edge row",
           "d": [0.075, null],
           "joint_every": 0.068,
-          "start": 0.2,
+          "start": 0.105,
           "thickness": 0.012,
           "rim_flare": 0.006,
           "note": "the rim of the roof: square marginal scutes like a turtle shell's edge, thicker than the plates above, their lower edges rolled outward; each one's lower edge steps with the stepped dark_plate_edge"
         }
-      ],
-      "nose_plate_thickness": 0.016
+      ]
     },
     "front_plate": {
       "note": "A plate over the flat front face of the box muzzle, from the top edge down to the eave, above the orange lip band that wraps round the front."
     }
+  },
+  "nose": {
+    "note": "The nose is one extruded mass, its section like the border of the Superman shield: a flat top with square corners, short sides falling straight down, then two lower edges converging to a point. It emerges out of the snout's roof pitched upward and juts forward out of the snout's front above the front lip, ending in a flat front face; its back sinks into the roof. The nostrils are slits in its two lower faces (the undersides), near the front. Flight render: its flat top edge and the flat front face; the nostril on the lower face; the main roof's front carries on beneath it down to the lip. Side sheet: tip at z 2.02, y 1.445.",
+    "front_top_zy": [2.06, 1.5],
+    "width": 0.23,
+    "height": 0.1,
+    "side_drop": 0.04,
+    "corner_radius": 0.007,
+    "pitch_deg": -19,
+    "length": 0.26,
+    "nostril": {
+      "note": "t: distance along the nose's axis from the front face (negative = back); across: position across each lower face (0 = keel, 1 = outer edge); half_width in those units",
+      "t_front": -0.004,
+      "t_back": -0.03,
+      "across": 0.62,
+      "half_width": [0.16, 0.05],
+      "depth": 0.009
+    },
+    "pitch_note": "the axis descends toward the front at 19 degrees: less steeply than the snout's top (about 49 degrees), so the nose rises out of the roof and stands proud of it toward the front. Its side corners run along the side sheet's line from (2.016, 1.449) back to (1.916, 1.484)."
   }
 }

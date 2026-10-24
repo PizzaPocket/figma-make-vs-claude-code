@@ -4,8 +4,7 @@ Work top to bottom: the head first, because the neck and body join onto it. Tick
 
 ## Head
 
-- [x] **Nose.** Done: nose block, side nostrils, full-width front, smooth underside (see head_sheets.md). Left over: the nostril opening's edges are slightly jagged up close.
-  Original plan: Measure first: the side-on outline (bump height, how far back it runs), where each nostril sits and how it is angled, and the width of the front against the muzzle behind it. Then:
+- [ ] **Nose.** Rebuilt as one extruded mass with a shield-shaped section, emerging from the roof pitched upward (see head_sheets.md). Still to settle: size, how far it juts, nostrils. Earlier plan, superseded: Measure first: the side-on outline (bump height, how far back it runs), where each nostril sits and how it is angled, and the width of the front against the muzzle behind it. Then:
   - a raised, rounded nose bump on the top front of the snout, sculpted into the nose plate, with a crisp front edge overhanging the flat front;
   - comma-shaped nostril slits cut into the sides of the bump near the front corners, angled up and back, opening forward and out; flat outer edge, solid bridge between them;
   - the brown plate covers the whole flat front, full width, down to the lip; the orange face never sticks out past it;
