@@ -176,27 +176,24 @@ def roof_ring(z, K=26):
     return outer, inner, f
 
 
-def crest_ring(z, K=22):
+def crest_height(z, th):
+    """The nose crest sculpted into the nose plate: a centre ridge that flares out to each side and
+    flattens onto the muzzle at the nostril's outer corner, with a nostril trough under each flare.
+    Returns (height above the plate, nostril weight)."""
     st = np.array(CREST["stations"])
+    if not (st[-1, 0] <= z <= st[0, 0]):
+        return 0.0, 0.0
     half, h = (float(np.interp(-z, -st[:, 0], st[:, c])) for c in (1, 2))
-    t = roof_t(z)[0] + PLATES["thickness"]  # the crest sits on the nose plate
+    u = (th - math.pi / 2) / max(half, 1e-6)
+    if abs(u) >= 1:
+        return 0.0, 0.0
+    hh = h * (1 - u * u) ** 0.8
     nz0, nz1 = CREST["nostril"]["z"]
     fr0, fr1 = CREST["nostril"]["side_frac"]
-    outer, inner, nost = [], [], []
-    for i in range(K):
-        u = -1 + 2 * i / (K - 1)  # across the crest
-        th = math.pi / 2 + u * half
-        x, y = face_pt(z, th)
-        nx, ny = face_normal(z, th)
-        hh = h * max(0.0, 1 - u * u) ** 0.8  # centre ridge, flattening onto the roof at the flare's outer corner
-        w = 0.0
-        if nz1 <= z <= nz0 and fr0 <= abs(u) <= fr1:  # nostril: a trough under each flare
-            w = math.sin(math.pi * (nz0 - z) / (nz0 - nz1)) * math.sin(math.pi * (abs(u) - fr0) / (fr1 - fr0))
-        hh = max(0.0006, hh - CREST["nostril"]["depth"] * w)
-        outer.append((x + nx * (t + hh), y + ny * (t + hh), z))
-        inner.append((x + nx * (t - 0.004), y + ny * (t - 0.004), z))
-        nost.append(w)
-    return outer, inner, nost
+    w = 0.0
+    if nz1 <= z <= nz0 and fr0 <= abs(u) <= fr1:
+        w = math.sin(math.pi * (nz0 - z) / (nz0 - nz1)) * math.sin(math.pi * (abs(u) - fr0) / (fr1 - fr0))
+    return hh - CREST["nostril"]["depth"] * w, w
 
 
 def shell_loft(rings, attrs_per_ring):
@@ -227,6 +224,43 @@ def shell_loft(rings, attrs_per_ring):
     return verts, faces, A, B, Z
 
 
+_HORN_AXES = {}
+
+
+def horn_axis(sgn):
+    """Centreline and radii of one horn, sampled along its spline."""
+    if sgn not in _HORN_AXES:
+        path = [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]
+        C, R, _, _, _ = spline_frames(path, HORN["radius"], 0.004)
+        _HORN_AXES[sgn] = (C, R)
+    return _HORN_AXES[sgn]
+
+
+def horn_fillet(q, n, edge):
+    """Sculpt the horn's root into the roof: move a roof point out along its normal n onto the smooth
+    union of the roof and the horn (exponential smooth-min, radius HORN['fillet']), so the plates
+    swell up into the horn and wrap its base instead of the horn being stuck on."""
+    k = HORN["fillet"]
+    for sgn in (1, -1):
+        if q[0] * sgn < 0.05:
+            continue
+        C, R = horn_axis(sgn)
+        if np.min(np.linalg.norm(C - q, axis=1) - R) > 4 * k:
+            continue
+        def f(t):
+            p = q + n * t
+            a, b = t, float(np.min(np.linalg.norm(C - p, axis=1) - R))
+            return -k * math.log(math.exp(-a / k) + math.exp(-b / k))
+        lo, hi = 0.0, 0.0
+        while f(hi) < 0 and hi < 0.2:
+            hi += 0.01
+        for _ in range(22):
+            mid = (lo + hi) / 2
+            lo, hi = (mid, hi) if f(mid) < 0 else (lo, mid)
+        return q + n * hi * edge
+    return q
+
+
 def top_half(z):
     th = np.array(PLATES["top_half_angle"])
     return float(np.interp(-z, -th[:, 0], th[:, 1]))
@@ -242,7 +276,7 @@ def plate(z0, z1, th_a, th_b, nv, seed):
     nu = max(4, int(Lz / 0.005))
     tint = (math.sin(seed * 12.9898) * 43758.5453) % 1.0
     under = roof_t(z0)[0]
-    verts, A, B = [], [], []
+    verts, A, B, NW = [], [], [], []
     rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))  # quarter-round edge profile
     for i in range(nu + 1):
         u = i / nu
@@ -255,15 +289,19 @@ def plate(z0, z1, th_a, th_b, nv, seed):
             th = a0 + (a1 - a0) * v
             x, y = face_pt(z, th); nx, ny = face_normal(z, th)
             dist = min(u * Lz, (1 - u) * Lz * 2.5, min(v, 1 - v) * Lv)
-            h = T * (0.7 + 0.3 * u) * rnd(dist / bev) - 0.0008 * (dist < 1e-9)
-            verts.append((x + nx * (under + h), y + ny * (under + h), z))
-            A.append(dist); B.append(tint)
+            edge = rnd(dist / bev)
+            ch, nw = crest_height(z, th)  # the nose crest is sculpted into the plate
+            h = T * (0.7 + 0.3 * u) * edge + ch * edge - 0.0008 * (dist < 1e-9)
+            q = np.array([x + nx * (under + h), y + ny * (under + h), z])
+            q = horn_fillet(q, np.array([nx, ny, 0.0]), edge)  # the plates rise into the horn roots
+            verts.append(tuple(q))
+            A.append(dist); B.append(tint); NW.append(nw)
     faces = []
     for i in range(nu):
         for j in range(nv):
             q = i * (nv + 1) + j
             faces.append([q, q + 1, q + nv + 2, q + nv + 1])
-    return verts, faces, A, B
+    return verts, faces, A, B, NW
 
 
 def roof_plates():
@@ -465,58 +503,6 @@ def tube(path, radii, around=16, step=0.002, grooves=None):
     return verts, faces, A, B
 
 
-def horn_from_roof(sgn, around=24, step=0.001):
-    """The horn grown out of the roof's back corner. Its first cross-section is the roof's corner itself
-    (the outer surface from the eave up over the shoulder, closed by a chord buried in the face), so the
-    roof's top line runs on into the horn's top and the eave wraps under its root. Over `blend` of its
-    length that section morphs into the horn's round section, which then carries the incised rings."""
-    zc, top_th = HORN["root"]["z"], HORN["root"]["top_angle"]
-    th_e = eave_th(zc)
-    t = roof_t(zc)[0] + PLATES["thickness"]  # the root's outer surface is the plates' surface
-    loop = []
-    for th in np.linspace(th_e, top_th, 14):  # outer: eave up over the shoulder
-        x, y = face_pt(zc, th); nx, ny = face_normal(zc, th)
-        loop.append((x + nx * t, y + ny * t))
-    for f in np.linspace(0, 1, 8)[1:-1]:  # chord back down, buried inside the face
-        (x0, y0), (x1, y1) = loop[-1], loop[0]
-        loop.append((x0 + (x1 - x0) * f - 0.035 * math.sin(math.pi * f), y0 + (y1 - y0) * f - 0.01 * math.sin(math.pi * f)))
-    loop = np.array([(sgn * x, y, zc) for x, y in loop])
-    centre = loop.mean(0)
-    path = [centre.tolist()] + [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]
-    C, R, s, N, Bv = spline_frames(path, HORN["radius"], step)
-    T = np.cross(N, Bv)
-    total = s[-1]
-    # resample the root loop evenly and express it in the start frame
-    seg = np.linalg.norm(np.diff(np.vstack([loop, loop[:1]]), axis=0), axis=1)
-    cs = np.concatenate([[0], np.cumsum(seg)])
-    u = np.linspace(0, cs[-1], around, endpoint=False)
-    closed = np.vstack([loop, loop[:1]])
-    pts = np.stack([np.interp(u, cs, closed[:, k]) for k in range(3)], 1) - C[0]
-    off = np.stack([pts @ N[0], pts @ Bv[0], pts @ T[0]], 1)
-    phi = np.arctan2(off[:, 1], off[:, 0])
-    G = HORN["grooves"]; blend = HORN["root"]["blend"]
-    verts, A, B = [], [], []
-    for i in range(len(C)):
-        w = smoothstep(0.0, blend, s[i])
-        g = 0.0
-        if G["start_s"] <= s[i] <= G["end_frac"] * total:
-            m = (s[i] - G["start_s"]) % G["every"]
-            g = math.exp(-(min(m, G["every"] - m) / G["width"]) ** 2)
-        r = R[i] - G["depth"] * g
-        for k in range(around):
-            root = N[i] * off[k, 0] + Bv[i] * off[k, 1] + T[i] * off[k, 2]
-            ring = (N[i] * math.cos(phi[k]) + Bv[i] * math.sin(phi[k])) * r
-            verts.append(tuple(C[i] + root * (1 - w) + ring * w))
-            A.append(s[i] / total); B.append(g)
-    faces = ring_faces(len(C), around)
-    for i, end in ((0, False), (len(C) - 1, True)):
-        c = len(verts); verts.append(tuple(C[i])); A.append(s[i] / total); B.append(0.0)
-        for k in range(around):
-            a = i * around + k; b2 = i * around + (k + 1) % around
-            faces.append([a, b2, c] if end else [b2, a, c])
-    return verts, faces, A, B
-
-
 def sphere(c, r, lat=12, lon=18, theta_max=math.pi, up=(0, 1, 0)):
     up = norm(up)
     a = np.cross(up, [0, 0, 1.0]) if abs(up[2]) < 0.9 else np.cross(up, [1.0, 0, 0]); a = norm(a); b = np.cross(up, a)
@@ -679,17 +665,8 @@ def main():
         rings.append((outer, inner)); at.append((fb, [fb] * len(outer)))
     v, f, A, B, Z = shell_loft(rings, at)
     objs.append(add_part("Roof", v, f, {"_PART": [10] * len(v), "_A": A, "_B": B, "_ZONE": Z}, rigid(len(v))))
-    for k, (v, f, A, B) in enumerate(roof_plates()):
-        objs.append(add_part(f"RoofPlate{k}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
-
-    # nose crest on the front of the roof, nostrils under its flares
-    cz = np.linspace(CREST["z"][0], CREST["z"][1], 22)
-    rings, at = [], []
-    for z in cz:
-        outer, inner, nost = crest_ring(z)
-        rings.append((outer, inner)); at.append((z, nost))
-    v, f, A, B, Z = shell_loft(rings, at)
-    objs.append(add_part("NoseCrest", v, f, {"_PART": [11] * len(v), "_A": A, "_B": B, "_ZONE": Z}, rigid(len(v))))
+    for k, (v, f, A, B, NW) in enumerate(roof_plates()):
+        objs.append(add_part(f"RoofPlate{k}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
 
     # lower jaw skin
     zj = np.concatenate([np.linspace(JAW[0, 0], 1.80, 10), np.linspace(1.79, JAW[-1, 0], 24)])
@@ -776,8 +753,10 @@ def main():
         # caruncle: the fleshy teardrop in the inner corner
         v, f = caruncle(c, a, g, u, er)
         objs.append(add_part("Caruncle" + sd, v, f, {"_PART": [12] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, rigid(len(v))))
-        # horn: grown out of the roof's back corner; smooth, with incised ring lines
-        v, f, A, B = horn_from_roof(sgn)
+        # horn: a smooth tube with incised ring lines, starting buried in the roof; the roof plates are
+        # sculpted up into its root (horn_fillet), so it grows out of the head rather than sitting on it
+        path = [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]
+        v, f, A, B = tube(path, HORN["radius"], around=24, step=0.001, grooves=HORN["grooves"])
         objs.append(add_part("Horn" + sd, v, f, {"_PART": [8] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
         # ear frill: a leaf-shaped fin from base to tip; its front edge rolls over like a horse's ear
         base = np.array([sgn * FRILL["base"][0], FRILL["base"][1], FRILL["base"][2]])
@@ -832,13 +811,12 @@ def main():
     bpy.context.view_layer.objects.active = objs[0]
     bpy.ops.object.join()
     head = objs[0]
-    head["ink"] = json.dumps(D["ink"]["lines"])  # inked face lines, read by the viewer (glTF extras)
     mod = head.modifiers.new("Armature", "ARMATURE"); mod.object = arm
     head.parent = arm
     bpy.ops.object.select_all(action="DESELECT")
     head.select_set(True); arm.select_set(True)
     bpy.ops.export_scene.gltf(filepath=OUT, export_format="GLB", use_selection=True, export_skins=True, export_attributes=True,
-                              export_yup=True, export_animations=False, export_materials="NONE", export_extras=True)
+                              export_yup=True, export_animations=False, export_materials="NONE")
     print(f"exported {OUT}: {len(head.data.vertices)} verts, {len(head.data.polygons)} faces")
 
 

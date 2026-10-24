@@ -31,7 +31,7 @@ The art reads as fitted pieces, not one blob:
 
 The roof is not one scored sheet. Every reference (side sheet, *How to Draw*, flight render, limited-edition render) shows distinct plates in consistent rows, each its own solid tile on a thin dark underlay:
 
-- **Nose plate:** caps the front of the muzzle (z 2.035 → 1.935), down to the lip. The nose crest sits on it.
+- **Nose plate:** caps the front of the muzzle (z 2.035 → 1.935), down to the lip. The nose crest is sculpted into it: a centre ridge flaring over the nostrils, with the nostrils as troughs in the plate.
 - **Top row:** wide transverse bands over the top of the muzzle and skull, every ~0.055 from behind the nose plate to the horns. It spans the face angle π/2 ± 0.55–0.66 rad.
 - **Edge rows:** near-square plates on each side, from the eave up to the top row, staggered against it. Over the eye, where the eave steps up, the row narrows to the brow plate.
 
@@ -79,8 +79,8 @@ Behind the skull, that same line carries on as the top of the horn:
 - The ear frill tucks in behind, under the horn.
 
 **Build**
-- The horn's first cross-section *is* the roof's corner at z 1.56: the outer surface from the eave up to 1.15 rad over the shoulder, closed by a chord buried in the head.
-- Over the first 0.09 of its length that section morphs into the horn's round section, so there is no seam, cuff or planted cone.
+- The horn's root is sculpted into the roof. The roof plates near it are moved onto the smooth union of roof and horn (fillet radius 0.016), so they swell up and wrap the horn's base.
+- The horn tube starts buried in the roof, at z 1.62, so there is no separate root piece.
 
 **Thickness:** the horns are thick, as in the art. The root is about r 0.05–0.06 where it leaves the roof, with a broad corner section (out to 1.3 rad over the shoulder), and tapers to 0.04, 0.03 and 0.02 before the tip.
 
@@ -160,7 +160,7 @@ The small dark pit at the eave notch in front of the eye (px 81, py 311) is kept
 The face surface is shaped from the inside out by the `anatomy` layers in the data. Each entry records what it is and why it is there.
 
 **Bone:**
-- **Cheekbone line:** Clay's most distinctive facial line, present in every reference. It starts at the small pit at the eave notch in front of the eye (1.805, 1.513) and runs back beneath the eye to the jaw joint below the ear (1.43, 1.638). It is lit above and shadowed below, so it overhangs: a shelf 0.032 high, with a crisp lower edge and a gentle upper slope up to the lid-ring pad. It is also inked.
+- **Cheekbone line:** Clay's most distinctive facial line, present in every reference. It starts at the small pit at the eave notch in front of the eye (1.805, 1.513) and runs back beneath the eye to the jaw joint below the ear (1.43, 1.638). It is lit above and shadowed below, so it overhangs: a shelf 0.032 high, with a crisp lower edge and a gentle upper slope up to the lid-ring pad. It is sculpted only; no line is drawn on it.
 - **Postorbital bar:** closes the socket behind, rising from the cheekbone to the eave.
 - **Eye socket:** a shallow dent.
 

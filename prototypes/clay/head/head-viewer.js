@@ -1,7 +1,7 @@
 // Test viewer for the head parts: colours from the design rules, jaw and tongue on bones.
 (function () {
   "use strict";
-  // parts: 1 face, 2 jaw, 3 mouth interior, 4 teeth, 5 tongue, 6 eye, 7 eyelid, 8 horn, 9 ear frill, 10 roof, 11 nose crest
+  // parts: 1 face, 2 jaw, 3 mouth interior, 4 teeth, 5 tongue, 6 eye, 7 eyelid, 8 horn, 9 ear frill, 10 roof underlay, 12 caruncle, 13 roof plates (nose crest sculpted in)
   const GLSL = `
     varying vec3 vObj; varying float vPart; varying vec3 vAB;
     vec3 srgb(vec3 c) { return pow(c / 255.0, vec3(2.2)); }
@@ -12,25 +12,12 @@
         vec3 b = vec3(float(i), float(j), float(k)); vec3 r = b + hash3(p + b) * 0.8 - f; float d = dot(r, r);
         if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d; }
       return sqrt(d2) - sqrt(d1); }
-    uniform vec4 uInk[32]; uniform float uInkW[32];
-    float inkAt(vec2 p) { float k = 0.0;
-      for (int i = 0; i < 32; i++) { if (uInkW[i] <= 0.0) continue; vec2 a = uInk[i].xy, b = uInk[i].zw, ab = b - a;
-        float t = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0); float d = length(p - a - ab * t);
-        k = max(k, 1.0 - smoothstep(uInkW[i] * 0.5, uInkW[i], d)); }
-      return k; }
     float lineAt(float f, float w) { float e = min(f, 1.0 - f); return 1.0 - smoothstep(w, w + fwidth(f) * 1.5 + 0.01, e); }
   `;
-  function material(THREE, clay, ink) {
+  function material(THREE, clay) {
     const m = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.6, skinning: true, morphTargets: true, morphNormals: true });
     if (clay) m.defines = { CLAY: '' }; // plain clay render: judge the forms without paint
-    // inked face lines: side-view (z, y) segments from the model's extras
-    const segs = [];
-    for (const ln of ink || []) for (let i = 0; i + 1 < ln.zy.length; i++) segs.push(new THREE.Vector4(ln.zy[i][0], ln.zy[i][1], ln.zy[i + 1][0], ln.zy[i + 1][1]));
-    while (segs.length < 32) segs.push(new THREE.Vector4(0, 0, 0, 0));
-    const widths = []; for (const ln of ink || []) for (let i = 0; i + 1 < ln.zy.length; i++) widths.push(ln.width);
-    while (widths.length < 32) widths.push(0);
     m.onBeforeCompile = (sh) => {
-      sh.uniforms.uInk = { value: segs.slice(0, 32) }; sh.uniforms.uInkW = { value: widths.slice(0, 32) };
       sh.vertexShader = sh.vertexShader
         .replace("#include <common>", "#include <common>\nattribute float _part; attribute vec3 _abz;\nvarying vec3 vObj; varying float vPart; varying vec3 vAB;")
         .replace("#include <begin_vertex>", "#include <begin_vertex>\nvObj = position; vPart = _part; vAB = _abz;");
@@ -46,7 +33,6 @@
             float ear = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.420, vObj.y - 1.638)));
             float pit = 1.0 - smoothstep(0.004, 0.008, length(vec2(vObj.z - 1.805, vObj.y - 1.513)));
             col = mix(col, line * 0.5, max(ear, pit) * step(0.08, abs(vObj.x)));
-            col = mix(col, line, inkAt(vec2(vObj.z, vObj.y)) * step(0.1, abs(vObj.x)) * 0.9);
             groove = pe * 0.5;
           }
           if (isP(10.0) > 0.5) { // roof: overlapping bands (geometry), outlined at each band's back edge and along the eave
@@ -60,12 +46,7 @@
           if (isP(13.0) > 0.5) { // roof plates: solid tiles; their bevelled edges and the gaps between them make the lines
             col = mix(dark * 0.92, dark * 1.12, vAB.y);
             col = mix(line, col, smoothstep(0.0, 0.004, vAB.x));
-            rough = 0.5;
-          }
-          if (isP(11.0) > 0.5) { // nose crest, nostrils dark under the flares
-            col = mix(dark * 1.05, line, (1.0 - smoothstep(0.0, 0.06, min(vAB.z, 1.0 - vAB.z))) * step(0.0, vAB.z) * 0.8);
-            col = mix(col, vec3(0.012, 0.006, 0.005), smoothstep(0.25, 0.55, vAB.y));
-            if (vAB.z < 0.0) col = line;
+            col = mix(col, vec3(0.012, 0.006, 0.005), smoothstep(0.25, 0.55, vAB.z)); // nostrils, sculpted into the nose plate
             rough = 0.5;
           }
           if (isP(2.0) > 0.5) { // cream lower jaw with bands
@@ -112,7 +93,7 @@
     const rim = new THREE.DirectionalLight(0xb8c8ff, 0.5); rim.position.set(-3, 2, -3); scene.add(rim);
     const gltf = await new Promise((res, rej) => new THREE.GLTFLoader().load(opts.glbUrl, res, undefined, rej));
     let sk = null; gltf.scene.traverse(o => { if (o.isSkinnedMesh) sk = o; });
-    sk.material = material(THREE, opts.clay, sk.userData.ink ? JSON.parse(sk.userData.ink) : []); sk.frustumCulled = false;
+    sk.material = material(THREE, opts.clay); sk.frustumCulled = false;
     scene.add(gltf.scene);
     const bones = {}; sk.skeleton.bones.forEach(b => (bones[b.name] = b));
     const bind = {}; for (const n in bones) bind[n] = bones[n].quaternion.clone();

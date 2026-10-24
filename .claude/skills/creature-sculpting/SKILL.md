@@ -47,7 +47,7 @@ A sculptor thinks about the muscles under the skin as much as the skeleton. No s
    - **Temporalis:** fills the skull behind the eye. It is why the cranium is wide behind the brow.
    - **Lip muscles (levator):** a gentle fullness on the side of the muzzle.
    - **Neck muscles** wrap from the skull base. Limb muscles are covered in each limb's sheet.
-3. **Skin (creases, openings, scales).** A crease forms where two muscles meet, or where skin folds over something that moves: lids, the mouth corner, joints. In stylised art the ink lines are mostly these creases, so trace each drawn line back to the boundary between masses that causes it.
+3. **Skin (creases, openings, scales).** A crease forms where two muscles meet, or where skin folds over something that moves: lids, the mouth corner, joints. In stylised art the ink lines are mostly these creases. Trace each drawn line back to the boundary between masses that causes it, and sculpt that boundary instead of drawing the line.
 
 **How the eye is held.** This is the model case for the method:
 - The eyeball sits in a bony socket. The brow shelf (the roof's eave, on Clay) overhangs it from above.
@@ -86,7 +86,7 @@ Build each muscle action as a shape of the face (a morph target): a push of the 
 - **The lids have thickness.** Each is a shell with a rounded margin that slides over the eyeball. They are pinned at the corners by the canthal tendons, so they move most mid-eye and not at all at the corners.
 - **A blink is the lid sliding,** not a large rigid turn. A large bone turn tears the corners, so make the blink a shape key of the lids.
 - **The socket holds the eye assembly.** Carve the face into a socket: inside the lids' footprint the skin runs in just under the lid dome, and a rounded rim (the orbital rim under the ring muscle) turns it back out. No bone or muscle form may raise the skin over the eye opening; they frame it.
-- **The cheekbone is the floor of the socket.** In stylised dragons it is often the face's most distinctive line. Find where it starts and ends in every reference, and which side is crisp: lit above and shadowed below means it overhangs.
+- **The cheekbone is the floor of the socket.** In stylised dragons it is often the face's most distinctive line. Find where it starts and ends in every reference, and which side is crisp: lit above and shadowed below means it overhangs. Sculpt it strongly enough that it reads in the plain clay render without any line drawn on it.
 
 **Judge forms in a plain clay render.** Render with no colour, scales or ink, under a raking light. Paint hides missing anatomy.
 
@@ -131,7 +131,7 @@ Check: <what to compare; known differences>
 - Measure from the side reference, check the shape from the official three-quarter and front art, and use the books (canon descriptions) to settle what the art leaves open.
 - Organic, not mechanical. Clay's plates and scales are organic and roughly rectangular, varying in size and following the form. Never use a regular grid or brick pattern.
 - Left and right are mirrored. Model the left side and mirror it.
-- Every visible line in the art should end up as geometry or as a deliberate texture line. Know which.
+- Every visible line in the art should end up as geometry. Carry forms such as the cheekbone, lid creases and plate joints by sculpting (ridges, creases, gaps between plates), not by drawn ink lines on the skin. Drawn lines read as scratches on a sculpted model.
 
 ## Lessons
 
@@ -161,7 +161,10 @@ Check: <what to compare; known differences>
   - **How it is held:** the roof's edge comes back over the eye and curls under the root.
   - **Path:** it sweeps back in a long, nearly straight line, barely tapering, and curls up only in the last stretch.
   - **Surface:** smooth, *lined but not bumpy*. The rings are hairline incisions plus ink, never raised ridges or a stack of segments.
-- **Roots of attachments.** Grow an attachment out of its host; never plant it on top, and never hide the join with a collar or cuff. Take the host's own cross-section where the attachment leaves it (for a horn: the roof's corner, from the eave up over the shoulder, closed by a chord buried in the head) and loft that section into the attachment's round section over a short blend. The host's lines then flow into the attachment. (A radially flared collar was tried and read as a trumpet bolted on.)
+- **Sculpt features into their host; don't attach them as separate pieces.** A nose crest, a horn root or a brow ridge belongs to the surface it rises from.
+  - **Nose crest:** a height field added to the nose plate's own surface, with the nostrils as troughs in it.
+  - **Horn root:** the roof plates are moved onto the smooth union (exponential smooth-min with a fillet radius) of the roof and the horn tube, so they swell up and wrap the horn's base and the horn grows out of the head.
+  - **What failed:** a separate piece planted on top, a radially flared collar (it read as a trumpet bolted on), and a separate root loft. All of them read as stuck on.
 - **Lines on smooth forms.** Make the line a hairline groove (depth about 2% of the radius) plus ink. Check in the clay render that the silhouette stays smooth: if the outline is scalloped, the grooves are too deep or too wide.
 - **Hands vs feet (Clay):** the front hands are compact with big hooked claws and a high dewclaw. The hind feet are long and digitigrade, with a heel spur and studs along the top.
 - **Widths need a front view.** A side reference gives only lengths and heights. Take widths from the front three-quarter art. Clay's head first read as a horse's head because the widths were guessed narrow.

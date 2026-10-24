@@ -105,22 +105,24 @@
     }
   },
   "horn": {
-    "note": "Measured from the side reference (px 175-284) and checked on the official renders. The horn is the roof's back corner drawn out: its root (r 0.037) fills the side of the roof's back corner behind and above the eye, at eave-to-top height, so the roof's top line runs straight on into the horn's top line. The roof's edge comes back over the eye and wraps under the root as a collar, cradling it; the ear frill tucks in behind, under the horn. From there it sweeps back and up in a long, nearly straight line, barely tapering (r 0.028 -> 0.02) until the last stretch, where it narrows to a point and curls up more steeply. The surface is smooth; the lines are thin incised rings, evenly spaced, wrapping round it, fading out before the tip.",
-    "path": [[0.172, 1.887, 1.487], [0.198, 1.957, 1.37], [0.214, 1.999, 1.297], [0.224, 2.046, 1.245], [0.23, 2.096, 1.213]],
-    "radius": [0.06, 0.05, 0.04, 0.03, 0.02, 0.003],
+    "note": "The horn grows out of the roof: its root is sculpted into the roof plates, which swell up and wrap its base (a smooth union with fillet radius `fillet`), so the roof's top line runs on into the horn's top line. From there it sweeps back and up in a long, nearly straight line, tapering slowly, and curls up only in the last stretch. Smooth, with hairline incised rings.",
+    "path": [
+      [0.15, 1.855, 1.62],
+      [0.172, 1.887, 1.487],
+      [0.198, 1.957, 1.37],
+      [0.214, 1.999, 1.297],
+      [0.224, 2.046, 1.245],
+      [0.23, 2.096, 1.213]
+    ],
+    "radius": [0.05, 0.05, 0.04, 0.03, 0.02, 0.003],
     "grooves": {
       "every": 0.03,
       "depth": 0.0007,
       "width": 0.0014,
-      "start_s": 0.11,
+      "start_s": 0.17,
       "end_frac": 0.88
     },
-    "root": {
-      "z": 1.56,
-      "top_angle": 1.3,
-      "blend": 0.09,
-      "note": "The root's first section is the roof's back corner at z: its outer surface from the eave (side) up to top_angle over the shoulder. It morphs to round over `blend` of the horn's length."
-    }
+    "fillet": 0.016
   },
   "ear_frill": {
     "note": "Sits at the back of the cheek under the horn; its top (front) edge rolls over and curves back to meet the underside of the horn.",
@@ -139,12 +141,12 @@
     "inset": 0.003
   },
   "nose_crest": {
-    "note": "Its own feature on the front of the roof, above the upper lip: a raised pad with a centre ridge. Each side flares out over a nostril and flattens onto the muzzle plane at the nostril's outer corner. It joins the muzzle at the front between the nostrils and fades into the roof behind.",
+    "note": "Sculpted into the nose plate, not a separate piece: a raised centre ridge on the front of the muzzle above the upper lip, flaring out to each side over a nostril and flattening onto the muzzle at the nostril's outer corner; it joins the muzzle at the front between the nostrils.",
     "z": [2.035, 1.86],
-    "stations": [[2.035, 0.95, 0.01], [2.0, 1.05, 0.02], [1.96, 0.95, 0.02], [1.91, 0.6, 0.012], [1.86, 0.3, 0.0]],
+    "stations": [[2.035, 0.95, 0.01], [2.0, 1.05, 0.02], [1.97, 0.95, 0.018], [1.95, 0.6, 0.008], [1.935, 0.3, 0.0]],
     "stations_columns": ["z", "half_angle_rad", "height"],
     "nostril": {
-      "z": [2.025, 1.945],
+      "z": [2.025, 1.95],
       "side_frac": [0.5, 0.9],
       "depth": 0.01
     }
@@ -449,38 +451,5 @@
     "nose_plate_z": [2.035, 1.935],
     "top_cuts_z": [1.935, 1.88, 1.825, 1.77, 1.715, 1.66, 1.605, 1.55, 1.495, 1.44],
     "edge_cuts_z": [1.935, 1.905, 1.855, 1.805, 1.755, 1.7, 1.645, 1.59, 1.535, 1.48, 1.43]
-  },
-  "ink": {
-    "note": "Lines the art inks on the face, drawn by the shader along these side-view polylines (each also exists as geometry: a crease, or the edge of a form).",
-    "lines": [
-      {
-        "name": "cheekbone line",
-        "zy": [
-          [1.805, 1.513],
-          [1.76, 1.575],
-          [1.705, 1.616],
-          [1.645, 1.634],
-          [1.57, 1.646],
-          [1.49, 1.648],
-          [1.43, 1.638]
-        ],
-        "width": 0.0028
-      },
-      {
-        "name": "lower lid crease (zig-zag)",
-        "zy": [[1.723, 1.615], [1.691, 1.644], [1.65, 1.656], [1.638, 1.676], [1.624, 1.694]],
-        "width": 0.0022
-      },
-      {
-        "name": "upper lid crease",
-        "zy": [[1.633, 1.694], [1.592, 1.711]],
-        "width": 0.002
-      },
-      {
-        "name": "masseter fold",
-        "zy": [[1.58, 1.493], [1.493, 1.589]],
-        "width": 0.002
-      }
-    ]
   }
 }
