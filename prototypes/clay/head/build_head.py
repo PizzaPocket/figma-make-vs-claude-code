@@ -427,77 +427,137 @@ def eave_depth(s):
     return hi
 
 
+def chamfer(dist):
+    """A tile's edge profile: a short wall, then a narrow 45-degree chamfer up to its full thickness."""
+    c = PLATES["chamfer"]
+    return 0.0 if dist < 1e-9 else min(1.0, 0.5 + 0.5 * dist / c)
+
+
+def edge_samples(n, frac):
+    """0..1 in n steps, plus a sample just inside each end (frac), so a tile's edge is a crisp wall."""
+    return sorted(set([0.0, frac, 1 - frac, 1.0] + [k / n for k in range(1, n)]))
+
+
 def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.004):
-    """One roof plate: a solid tile with rounded edges laid on the underlay over profile positions s0..s1
-    and depths d0..d1 (d1 may be a function of s). With wrap, it spans the top: from depth d1 on the
-    left side, over the top, to d1 on the right; with wrap=+1 or -1, only that side of the gable, from the
-    ridge down to d1 (the roof's plates meet at the ridge). It thickens toward its back edge and runs a little past
-    it over the next plate, like a shingle. _A: distance to its nearest edge, _B: tint, _ZONE: nostril."""
-    T, bev, ov, gap = thick or PLATES["thickness"], PLATES["bevel"], PLATES["overlap"], PLATES["gap"]
-    s0g, s1g = s0 + gap / 2, s1 - gap / 2 + ov
-    nu = max(4, int((s1g - s0g) / step))
+    """One roof plate: a solid tile of even thickness with crisp chamfered edges, laid on the underlay over
+    profile positions s0..s1 and depths d0..d1 (d1 may be a function of s). With wrap=+1 or -1 it is one
+    side of the gable, from the ridge down to depth d1 (the roof's plates meet at the ridge in mirrored
+    pairs). _A: distance to its nearest edge, _B: tint, _ZONE: 0."""
+    T, gap = thick or PLATES["thickness"], PLATES["gap"]
+    s0g, s1g = s0 + gap / 2, s1 - gap / 2
+    Ls = s1g - s0g
+    us = edge_samples(max(4, int(Ls / step)), PLATES["chamfer"] * 0.3 / Ls)
     tint = (math.sin(seed * 12.9898) * 43758.5453) % 1.0
     D1 = d1 if callable(d1) else (lambda s, v=d1: v)
-    rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))
     rows = []
-    for i in range(nu + 1):
-        u = i / nu
-        sc = s0g + (s1g - s0g) * u
+    for u in us:
+        sc = s0g + Ls * u
         dh = D1(sc) - gap / 2
         row = []
         if wrap:
             za, ya = sv_point(sc, dh); tha = side_th(za, ya)
-            z0 = sv_point(sc, 0.0)[0]
-            for j in range(nv + 1):
-                if wrap is True:
-                    v = -1 + 2 * j / nv
-                else:  # one side of the gable: from the ridge down to the eave; the two halves' rounded edges
-                    # meet at the ridge in a seam
-                    v = wrap * (j / nv) ** 1.3
-                z = z0 + (za - z0) * abs(v) ** 1.5
+            zt = sv_point(sc, 0.0)[0]
+            for w in edge_samples(nv, 0.012):
+                v = wrap * w ** 1.3 if wrap is not True else -1 + 2 * w
+                z = zt + (za - zt) * abs(v)  # the joint runs straight from the ridge to the plate's lower end
                 th = math.pi / 2 - v * (math.pi / 2 - tha)
-                row.append((z, th, (1 - abs(v)) * dh + 0.0))
+                row.append((z, th, w))
         else:
             dl = d0 + gap / 2
-            for j in range(nv + 1):
-                dd = dl + (dh - dl) * j / nv
-                z, y = sv_point(sc, dd)
-                row.append((z, side_th(z, y), dd))
+            for w in edge_samples(nv, 0.03):
+                z, y = sv_point(sc, dl + (dh - dl) * w)
+                row.append((z, side_th(z, y), w))
         rows.append(row)
     under = roof_t(sv_point(s0, 0)[0])[0]
     verts, A, B, NW = [], [], [], []
-    for i, row in enumerate(rows):
-        u = i / nu
-        # arc lengths across the row, for the edge distance
+    for u, row in zip(us, rows):
         pts = [np.array(face_pt(z, th)) for z, th, _ in row]
         acc = np.concatenate([[0], np.cumsum([np.linalg.norm(pts[k + 1] - pts[k]) for k in range(len(pts) - 1)])])
         Lv = acc[-1] + 1e-6
-        Ls = (s1g - s0g)
-        for j, (z, th, _) in enumerate(row):
+        for j, (z, th, w) in enumerate(row):
             x, y = pts[j]; nx, ny = face_normal(z, th)
-            dist = min(u * Ls, (1 - u) * Ls * 2.5, acc[j], Lv - acc[j])
-            edge = rnd(dist / bev)
-            ch, nw = crest_height(z, th)
-            v_ = j / nv if not wrap else 0.0
-            rim = flare * smoothstep(0.55, 1.0, v_)  # a rim scute's lower edge rolls outward, like a turtle shell's margin
-            h = (T * (0.7 + 0.3 * u) + rim) * edge + ch * edge - 0.0008 * (dist < 1e-9)
+            dist = min(u * Ls, (1 - u) * Ls, acc[j], Lv - acc[j])
+            edge = chamfer(dist)
+            rim = flare * smoothstep(0.55, 1.0, w) if not wrap else 0.0  # a rim scute's lower edge rolls outward, like a turtle shell's margin
+            h = (T + rim) * edge
             for sgn in ((1, -1) if not wrap else (1,)):
                 xs = x if wrap else sgn * x
                 ns = nx if wrap else sgn * nx
                 q = np.array([xs + ns * (under + h), y + ny * (under + h), z])
                 q = horn_fillet(q, np.array([ns, ny, 0.0]), edge)
-                verts.append(tuple(q)); A.append(dist); B.append(tint); NW.append(nw)
+                verts.append(tuple(q)); A.append(dist); B.append(tint); NW.append(0.0)
     n_side = 1 if wrap else 2
+    nvv = len(rows[0]) - 1
     faces = []
-    W = (nv + 1) * n_side
-    for i in range(nu):
-        for j in range(nv):
+    W = (nvv + 1) * n_side
+    for i in range(len(rows) - 1):
+        for j in range(nvv):
             for k in range(n_side):
                 q0 = i * W + j * n_side + k
                 q1 = q0 + n_side
                 f = [q0, q1, q1 + W, q0 + W]
                 faces.append(f if (k == 0) else f[::-1])
     return verts, faces, A, B, NW
+
+
+def front_cap():
+    """The front of the roof: one solid piece. Its gabled top and its sides run back to the first band's
+    joint (profile position nose_plate_s, so the bands behind abut it) and down to the eave; in front it
+    ends in one flat front face that comes down to the lip. Even thickness, crisp chamfered edges; the nose
+    comes out of its front face. _A: distance to its nearest edge."""
+    L = PLATES["layout"]; T = L.get("cap_thickness", PLATES["thickness"])
+    sc = L["nose_plate_s"]; z0 = UPPER[0, 0]
+    under = roof_t(z0)[0]; o = under + T
+    (zt, yt), (zb, yb) = sv_point(sc, 0.0), sv_point(sc, eave_depth(sc))
+    z_back = lambda y: zb + (zt - zb) * min(1.0, max(0.0, (y - yb) / (yt - yb)))  # the joint line, in side view; below it, the eave
+    c = PLATES["chamfer"]
+    ws = edge_samples(60, 0.004)
+    us = edge_samples(40, 0.01)
+    grid = []
+    for u in us:
+        row = []
+        for w in ws:
+            v = -1 + 2 * w
+            z = z0
+            for _ in range(5):  # the back edge follows the joint line, the sides end at the eave
+                th = math.pi / 2 - v * (math.pi / 2 - eave_th(z))
+                zl = z_back(face_pt(z, th)[1])
+                z = zl + (z0 - zl) * u
+            row.append((z, th))
+        grid.append(row)
+    verts, A = [], []
+    for i, row in enumerate(grid):
+        pts = [np.array(face_pt(z, th)) for z, th in row]
+        acc = np.concatenate([[0], np.cumsum([np.linalg.norm(pts[k + 1] - pts[k]) for k in range(len(pts) - 1)])])
+        for j, (z, th) in enumerate(row):
+            x, y = pts[j]; nx, ny = face_normal(z, th)
+            along = (z - grid[0][j][0])  # distance from the back edge
+            dist = min(along, acc[j], acc[-1] - acc[j])
+            h = under + T * chamfer(dist) if i < len(grid) - 1 else under + T
+            verts.append((x + nx * h, y + ny * h, z)); A.append(dist)
+    nu, nw = len(grid), len(ws)
+    faces = []
+    for i in range(nu - 1):
+        for j in range(nw - 1):
+            p = i * nw + j
+            faces.append([p, p + 1, p + nw + 1, p + nw])
+    # the flat front face: the last ring, chamfered forward, then filled across
+    last = np.array(verts[(nu - 1) * nw:]); cen = last.mean(0)
+    base = len(verts)
+    for f, dz in ((1.0, o * 0.5), (1.0 - c / 0.12, o)):
+        for q in last:
+            p = cen + (q - cen) * np.array([f, f, 1.0])
+            verts.append((p[0], p[1], z0 + dz)); A.append(0.02)
+    for k, r0 in enumerate([(nu - 1) * nw, base]):
+        r1 = base + k * nw
+        for j in range(nw - 1):
+            faces.append([r0 + j, r0 + j + 1, r1 + j + 1, r1 + j])
+    ci = len(verts); verts.append((cen[0], cen[1], z0 + o)); A.append(0.02)
+    r = base + nw
+    for j in range(nw - 1):
+        faces.append([r + j, r + j + 1, ci])
+    faces.append([r + nw - 1, r, ci])
+    return verts, faces, A, [0.5] * len(verts), [0.0] * len(verts)
 
 
 def front_plate():
@@ -535,29 +595,24 @@ def front_plate():
 
 
 def roof_plates():
-    """The roof plates, as the references draw them: a nose plate over the front of the muzzle; top bands
-    over the muzzle and skull that wrap down each side to the first longitudinal line; a narrow strip of
-    long plates below it; and the edge row of near-square plates down to the eave."""
+    """The roof, in few pieces: one front cap over the front of the snout, then bands of tiles behind it,
+    each a mirrored pair meeting at the ridge and running down each side to the rim, and the rim of square
+    marginal scutes down to the eave."""
     L = PLATES["layout"]
     pr = profile(); smax = pr["s"][-1]
-    out, seed = [], 0
-    s_nose = L["nose_plate_s"]
-    for side in (1, -1):  # the roof is a gable: every band is a pair of plates meeting at the ridge, mirrored
-        out.append(plate(0.0, s_nose, 0.0, eave_depth, 10, 1, wrap=side))
-    out.append(front_plate())
+    out, seed = [front_cap()], 0
     for row in L["rows"]:
-        k = 0
-        sc = row.get("start", s_nose)
+        sc = row.get("start", L["nose_plate_s"])
         while sc < smax - 0.01:
             s1 = min(smax, sc + row["joint_every"])
             dlo = row["d"][0]
             dhi = (lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002)) if row["d"][1] is not None else (lambda s: eave_depth(s) - 0.002)
             if row.get("wrap"):
                 for side in (1, -1):
-                    out.append(plate(sc, s1, 0.0, lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002), 8, 10 + seed, wrap=side))
+                    out.append(plate(sc, s1, 0.0, dhi, 10, 10 + seed, wrap=side))
             elif dhi(sc) - dlo > 0.006 and dhi(s1) - dlo > 0.006:
                 out.append(plate(sc, s1, dlo, dhi, 6, 10 + seed, thick=row.get("thickness"), flare=row.get("rim_flare", 0.0)))
-            sc = s1; k += 1; seed += 1
+            sc = s1; seed += 1
     return out
 
 
@@ -925,7 +980,7 @@ def head_parts():
         key.data.foreach_set("co", to_blender(V + expression_offsets(V, act["terms"])).astype(np.float32).ravel())
 
     # roof: banded shell over the face; its eave stands proud of the orange
-    rz = band_zs(z0 + roof_t(z0)[0], ROOF["back_z"], 60)  # its front cap stands just proud of the face's flat front
+    rz = band_zs(z0 - 0.004, ROOF["back_z"], 60)  # its front end is inside the roof's front cap
     rings, at = [], []
     for z in rz:
         outer, inner, fb = roof_ring(z)

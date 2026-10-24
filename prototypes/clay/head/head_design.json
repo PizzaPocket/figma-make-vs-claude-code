@@ -510,40 +510,37 @@
     "muscle_actions_note": "blink (orbicularis oculi, palpebral part: AU45) is a shape of the lids themselves, built with them"
   },
   "roof_plates": {
-    "note": "The roof is distinct plates in consistent rows, laid out as the side sheet draws them, in coordinates that follow the head's top profile: s along the profile from the nose tip back, d the depth below it, perpendicular to it. Joints are lines of constant s, so they cross the steep muzzle perpendicular to the profile (nearly level in the side view), never vertical. Rows (measured on the side sheet, as depth below the profile): the top bands wrap over the top and down each side to the first longitudinal line (d 0.054); a narrow strip of long plates runs to the second line (d 0.075); the edge row of near-square plates (joints every ~0.062, measured ticks) runs down to the orange. A nose plate caps the front, with the nose crest sculpted into it. Plates are bevelled shingle tiles; the gaps are the drawn lines.",
+    "note": "The roof in few, properly shaped pieces: one front cap (gabled top, sides down to the eave, a flat front face down to the lip, the nose coming out of it), then bands of tiles behind it, each band a mirrored pair meeting at the ridge, and a rim of square marginal scutes along the eave. Every piece is a solid tile of even thickness with a short wall and a narrow chamfer at its edges; the gaps between them are the drawn lines. Laid out in profile coordinates: s along the top profile from the front edge back, d the depth below it; joints are lines of constant s.",
     "thickness": 0.009,
     "bevel": 0.006,
-    "overlap": 0.004,
+    "overlap": 0.0,
     "gap": 0.0015,
     "layout": {
-      "nose_plate_s": 0.09,
+      "nose_plate_s": 0.1,
       "rows": [
         {
           "name": "top bands",
           "wrap": true,
-          "d": [0.0, 0.054],
-          "joint_every": 0.058
-        },
-        {
-          "name": "long strip",
-          "d": [0.054, 0.075],
-          "joint_every": 0.11,
-          "start": 0.12
+          "d": [0.0, 0.075],
+          "joint_every": 0.058,
+          "start": 0.1
         },
         {
           "name": "edge row",
           "d": [0.075, null],
           "joint_every": 0.068,
-          "start": 0.105,
+          "start": 0.1,
           "thickness": 0.012,
           "rim_flare": 0.006,
           "note": "the rim of the roof: square marginal scutes like a turtle shell's edge, thicker than the plates above, their lower edges rolled outward; each one's lower edge steps with the stepped dark_plate_edge"
         }
-      ]
+      ],
+      "cap_thickness": 0.012
     },
     "front_plate": {
       "note": "A plate over the flat front face of the box muzzle, from the top edge down to the eave, above the orange lip band that wraps round the front."
-    }
+    },
+    "chamfer": 0.003
   },
   "nose": {
     "note": "The nose is one extruded mass, its section like the border of the Superman shield: a flat top with square corners, short sides falling straight down, then two lower edges converging to a point. It comes out of the snout's flat front face, below the gabled roof's flat front edge and above the front lip, pitched upward, ending in a flat upright front face; its back is buried in the snout. The nostrils are slits in its two lower faces (the undersides), near the front.",

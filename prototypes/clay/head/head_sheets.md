@@ -50,17 +50,14 @@ Traced on the side sheet's colour boundaries, pixel by pixel (dark roof over ora
 
 ## Roof plates
 
-The roof is distinct plates in consistent rows, each a solid tile on a thin dark underlay. The layout was traced from a line map of the side sheet (`scripts/line_map.py`, px 0–200, py 160–380) and checked against *How to Draw*, the flight render and the limited-edition render.
+**Few, properly shaped pieces.** An earlier version stacked an underlay, a nose plate, a front plate, overlapping shingle bands, a long strip and a rim row; at the front they lumped into each other. Now:
+- **Front cap:** one solid piece over the front of the snout. Its gabled top and sides run back to the first band joint (profile position s 0.1) and down to the eave; in front it ends in one flat front face down to the lip. The nose comes out of that face.
+- **Bands:** behind the cap, joints every 0.058. Each band is a mirrored pair of tiles meeting at the ridge, running down each side to d 0.075.
+- **Rim:** the edge row of near-square scutes from d 0.075 down to the eave (joints every 0.068), with lower edges rolled outward.
 
-**Directions:** plates are laid out in coordinates that follow the head's top profile: s along the profile from the nose tip back, d the depth below it, measured perpendicular. Joints are lines of constant s, so they cross the steep muzzle perpendicular to the profile and look nearly level in the side view. They are never vertical cuts. Strips are lines of constant d.
+**Tiles:** each is a solid of even thickness with a short wall and a narrow 45-degree chamfer at its edges (chamfer 0.003). They abut, with no shingle overlap; the gaps make the drawn lines. A thin dark underlay fills the gaps.
 
-**Rows,** with depths measured on the side sheet:
-- **Nose plate:** caps the front of the muzzle (s 0–0.09) down to the eave. The nose crest is sculpted into it: a centre ridge flaring over the nostrils, with the nostrils as troughs in the plate.
-- **Top bands:** wrap over the top and down each side to the first longitudinal line (d 0.054). Joints every 0.058.
-- **Long strip:** a narrow row of long plates between the first and second lines (d 0.054–0.075). Joints every 0.11.
-- **Edge row:** near-square plates from the second line down to the eave, which steps up over the eye. Joints every 0.062, the measured tick spacing.
-
-**Tiles:** each plate has rounded edges (bevel 0.006) and is thicker toward its back edge. It overlaps the next one back like a shingle. The gaps make the drawn lines.
+**Directions:** laid out in coordinates that follow the head's top profile: s along it from the front edge back, d the depth below it, perpendicular. Joints are lines of constant s, running straight from the ridge down to each tile's lower end.
 
 ## Roof
 
