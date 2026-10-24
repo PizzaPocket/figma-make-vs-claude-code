@@ -1,0 +1,99 @@
+{
+  "about": "Clay's body (neck, torso, tail, then limbs and wings), element by element (see body_sheets.md). Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side sheet; x = Clay's left. The bind pose is the side sheet's pose, so the side view can be checked against the sheet directly; the tail's lower run is lifted onto the ground and curls toward the viewer (+x).",
+  "trunk": {
+    "note": "Neck, torso and tail are one continuous mass, built as one loft along a curved spine with cross-sections perpendicular to it. Measured on the side sheet (trunk_overlay): the spine was traced through the middle of the body, and at each station the depth to the dorsal outline (top of neck and back, outer edge of the tail curl) and to the ventral outline (throat, chest, belly, inner edge of the tail curl) was measured along the perpendicular. The neck is short and thick, the torso a deep barrel (~0.9 from back to belly), the tail thick (~0.25-0.38) nearly to its tip.",
+    "stations_columns": ["s", "z", "y", "dorsal", "ventral"],
+    "stations": [
+      [0.0, 1.3848, 1.656, 0.315, 0.2116],
+      [0.1166, 1.2889, 1.5897, 0.3604, 0.2184],
+      [0.2333, 1.196, 1.5195, 0.4377, 0.2282],
+      [0.3499, 1.1093, 1.4415, 0.502, 0.2528],
+      [0.4666, 1.0228, 1.3632, 0.5418, 0.3035],
+      [0.5832, 0.9365, 1.2847, 0.5615, 0.4269],
+      [0.6999, 0.8388, 1.2218, 0.5677, 0.5524],
+      [0.8165, 0.7375, 1.1642, 0.5592, 0.6408],
+      [0.9331, 0.6268, 1.1273, 0.5343, 0.6403],
+      [1.0498, 0.5162, 1.0904, 0.5076, 0.6013],
+      [1.1664, 0.4041, 1.0598, 0.4824, 0.5588],
+      [1.2831, 0.2884, 1.0448, 0.4709, 0.5209],
+      [1.3997, 0.1728, 1.0297, 0.4581, 0.4967],
+      [1.5164, 0.0564, 1.0227, 0.4468, 0.4784],
+      [1.633, -0.0601, 1.018, 0.4364, 0.4661],
+      [1.7496, -0.1767, 1.0158, 0.4191, 0.4538],
+      [1.8663, -0.2932, 1.0205, 0.3967, 0.4367],
+      [1.9829, -0.4098, 1.0251, 0.3661, 0.4166],
+      [2.0996, -0.5262, 1.0316, 0.3307, 0.3982],
+      [2.2162, -0.6427, 1.0386, 0.2848, 0.3868],
+      [2.3328, -0.7587, 1.0384, 0.241, 0.3759],
+      [2.4495, -0.8735, 1.0177, 0.2017, 0.3693],
+      [2.5661, -0.9883, 0.997, 0.1679, 0.3599],
+      [2.6828, -1.094, 0.9508, 0.1383, 0.3451],
+      [2.7994, -1.1962, 0.8946, 0.1099, 0.3335],
+      [2.9161, -1.2984, 0.8383, 0.0924, 0.32],
+      [3.0327, -1.3835, 0.7593, 0.0792, 0.3083],
+      [3.1493, -1.466, 0.6769, 0.0714, 0.3012],
+      [3.266, -1.5387, 0.5883, 0.0757, 0.285],
+      [3.3826, -1.576, 0.4778, 0.0911, 0.2735],
+      [3.4993, -1.609, 0.3666, 0.121, 0.2384],
+      [3.6159, -1.6061, 0.25, 0.1508, 0.2144],
+      [3.7326, -1.598, 0.1347, 0.18, 0.1764],
+      [3.8492, -1.5458, 0.0304, 0.1841, 0.153],
+      [3.9658, -1.4869, -0.0679, 0.178, 0.1149],
+      [4.0825, -1.3896, -0.1323, 0.1568, 0.104],
+      [4.1991, -1.2886, -0.1867, 0.1524, 0.0977],
+      [4.3158, -1.1729, -0.2017, 0.1484, 0.1143],
+      [4.4324, -1.0573, -0.2168, 0.1489, 0.1232],
+      [4.5491, -0.941, -0.22, 0.1467, 0.1297],
+      [4.6657, -0.8243, -0.2177, 0.1442, 0.1299],
+      [4.7823, -0.7077, -0.2155, 0.1397, 0.1284],
+      [4.899, -0.5911, -0.2144, 0.1311, 0.1269],
+      [5.0156, -0.4744, -0.2132, 0.1228, 0.125],
+      [5.1323, -0.3579, -0.2172, 0.1183, 0.1221],
+      [5.2489, -0.2415, -0.2237, 0.1144, 0.1138],
+      [5.3656, -0.1272, -0.2424, 0.1103, 0.1017],
+      [5.4822, -0.016, -0.2774, 0.0988, 0.0792],
+      [5.5988, 0.0857, -0.3317, 0.0785, 0.0506],
+      [5.7155, 0.1733, -0.4062, 0.0657, 0.0328]
+    ],
+    "width": {
+      "note": "half-width = factor * mean depth; widths are not in the side sheet: from the official front and three-quarter art (a broad barrel chest, thick neck)",
+      "factor": [[0.0, 0.85], [0.6, 0.95], [1.0, 1.0], [2.3, 0.95], [2.8, 0.9], [5.72, 0.85]]
+    },
+    "squareness": [[0.0, 2.4], [1.0, 2.2], [2.3, 2.2], [5.72, 2.0]],
+    "zones": {
+      "note": "fraction of the visible side from dorsal (0) to ventral (1) where the dark back ends and the cream underside begins, read on the sheet. Behind the forelegs the cream comes all the way up to the dark back (no orange band).",
+      "columns": ["s", "dark_to", "cream_from"],
+      "rows": [
+        [0.0, 0.3, 0.72],
+        [0.55, 0.3, 0.7],
+        [0.75, 0.33, 0.6],
+        [1.0, 0.42, 0.45],
+        [2.2, 0.42, 0.45],
+        [2.6, 0.5, 0.52],
+        [5.72, 0.5, 0.52]
+      ]
+    },
+    "front_overlap": 0.06,
+    "tail_pose": {
+      "note": "the sheet draws the tail's lower run below the feet (it lies nearer the viewer); in 3D it rests on the ground and curls toward the viewer",
+      "ground_y": -0.03,
+      "ground_from_s": 3.3,
+      "curl_x": 0.55,
+      "curl_from_s": 3.5
+    },
+    "bones": {
+      "note": "spine bones by ranges of s; the head bone attaches to the last neck bone",
+      "chain_forward": [
+        ["hips", 2.3, 1.75],
+        ["spine", 1.75, 1.2],
+        ["chest", 1.2, 0.65],
+        ["neck1", 0.65, 0.48],
+        ["neck2", 0.48, 0.32],
+        ["neck3", 0.32, 0.16],
+        ["neck4", 0.16, 0.0]
+      ],
+      "tail_from": 2.3,
+      "tail_count": 12
+    }
+  }
+}

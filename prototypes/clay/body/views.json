@@ -1,0 +1,14 @@
+{
+  "about": "Review sheets for the whole body (render_sheet.py). The side view is aligned with the side sheet (ref1400.png): same framing, so the model can be compared directly. {refs} is the local folder of reference images (not committed).",
+  "overview": [
+    {"label": "side (aligned with the side sheet)", "cam": [30, 0.935, 0.0], "target": [0, 0.935, 0.0], "fov": 5.67, "pose": "neutral"},
+    {"label": "side sheet", "ref": "{refs}/clayref/ref1400.png"},
+    {"label": "three-quarter front", "cam": [5.0, 2.6, 6.5], "target": [0.0, 0.8, 0.2], "fov": 34, "pose": "neutral"},
+    {"label": "three-quarter back", "cam": [5.5, 3.0, -5.5], "target": [0.0, 0.8, 0.0], "fov": 34, "pose": "neutral"},
+    {"label": "front", "cam": [0.0, 1.4, 9.0], "target": [0.0, 1.0, 0.5], "fov": 24, "pose": "neutral"},
+    {"label": "top", "cam": [0.0, 9.0, 0.3], "target": [0.0, 0.8, 0.0], "fov": 34, "pose": "neutral"},
+    {"label": "plain clay, three-quarter", "cam": [5.0, 2.6, 6.5], "target": [0.0, 0.8, 0.2], "fov": 34, "pose": "neutral", "clay": true},
+    {"label": "how to draw (official)", "ref": "{refs}/covers/t_Clay_htd_png.jpg"},
+    {"label": "limited edition (official)", "ref": "{refs}/covers/t_Clay_LE_Render_zstarchaserr_png.jpg"}
+  ]
+}

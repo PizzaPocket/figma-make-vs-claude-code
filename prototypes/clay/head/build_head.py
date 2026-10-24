@@ -784,8 +784,9 @@ def add_part(name, verts, faces, attrs, bone_weights):
     return ob
 
 
-def main():
-    bpy.ops.wm.read_factory_settings(use_empty=True)
+def head_parts():
+    """Build every head part as a Blender object. Returns the objects and the head's bones as
+    (name, head, tail, parent) with the head bone's parent left as None, for the caller to attach."""
     objs = []
     rigid = lambda n: [[("head", 1.0)]] * n
 
@@ -936,39 +937,49 @@ def main():
         objs.append(add_part("Frill" + ("L" if sgn > 0 else "R"), vs, fs, {"_PART": [9] * len(vs), "_A": us, "_B": bs, "_ZONE": [0] * len(vs)},
                              rigid(len(vs))))
 
-    # armature: neck stub, head, jaw hinge, tongue chain
-    arm_data = bpy.data.armatures.new("HeadRig"); arm = bpy.data.objects.new("HeadRig", arm_data)
+    bones = [("head", (0, 1.57, 1.36), (0, 1.44, 2.017), None),
+             ("jaw", HINGE, (0, 1.24, 1.86), "head"),
+             ("tongue1", (0, 1.42, 1.56), (0, 1.38, 1.66), "jaw"),
+             ("tongue2", (0, 1.38, 1.66), (0, 1.34, 1.75), "tongue1"),
+             ("tongue3", (0, 1.34, 1.75), (0, 1.31, 1.84), "tongue2")]
+    bones += [(bn, h0, h1, "head") for bn, h0, h1 in lid_bones]
+    return objs, bones
+
+
+def assemble(objs, bones, out, name="ClayRig"):
+    """Make the armature from (name, head, tail, parent) specs, join the parts into one skinned mesh
+    on it, and export a .glb."""
+    arm_data = bpy.data.armatures.new(name); arm = bpy.data.objects.new(name, arm_data)
     bpy.context.scene.collection.objects.link(arm)
     bpy.context.view_layer.objects.active = arm
     bpy.ops.object.mode_set(mode="EDIT")
-    def bone(name, head, tail, parent=None):
-        b = arm_data.edit_bones.new(name); b.head = to_blender(head).tolist(); b.tail = to_blender(tail).tolist()
+    for bn, h0, h1, parent in bones:
+        b = arm_data.edit_bones.new(bn); b.head = to_blender(h0).tolist(); b.tail = to_blender(h1).tolist()
         if parent:
             b.parent = arm_data.edit_bones[parent]
-        return b
-    bone("neck3", (0, 1.30, 1.10), (0, 1.57, 1.36))
-    bone("head", (0, 1.57, 1.36), (0, 1.44, 2.017), "neck3")
-    bone("jaw", HINGE, (0, 1.24, 1.86), "head")
-    bone("tongue1", (0, 1.42, 1.56), (0, 1.38, 1.66), "jaw")
-    bone("tongue2", (0, 1.38, 1.66), (0, 1.34, 1.75), "tongue1")
-    bone("tongue3", (0, 1.34, 1.75), (0, 1.31, 1.84), "tongue2")
-    for bn, h0, h1 in lid_bones:
-        bone(bn, h0, h1, "head")
     bpy.ops.object.mode_set(mode="OBJECT")
-
     bpy.ops.object.select_all(action="DESELECT")
     for o in objs:
         o.select_set(True)
     bpy.context.view_layer.objects.active = objs[0]
     bpy.ops.object.join()
-    head = objs[0]
-    mod = head.modifiers.new("Armature", "ARMATURE"); mod.object = arm
-    head.parent = arm
+    mesh = objs[0]
+    mod = mesh.modifiers.new("Armature", "ARMATURE"); mod.object = arm
+    mesh.parent = arm
     bpy.ops.object.select_all(action="DESELECT")
-    head.select_set(True); arm.select_set(True)
-    bpy.ops.export_scene.gltf(filepath=OUT, export_format="GLB", use_selection=True, export_skins=True, export_attributes=True,
+    mesh.select_set(True); arm.select_set(True)
+    bpy.ops.export_scene.gltf(filepath=out, export_format="GLB", use_selection=True, export_skins=True, export_attributes=True,
                               export_yup=True, export_animations=False, export_materials="NONE")
-    print(f"exported {OUT}: {len(head.data.vertices)} verts, {len(head.data.polygons)} faces")
+    print(f"exported {out}: {len(mesh.data.vertices)} verts, {len(mesh.data.polygons)} faces")
 
 
-main()
+def main():
+    """The head on its own, on a stub neck bone."""
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    objs, bones = head_parts()
+    bones = [("neck3", (0, 1.30, 1.10), (0, 1.57, 1.36), None)] + [(n, h, t, p or "neck3") for n, h, t, p in bones]
+    assemble(objs, bones, OUT, "HeadRig")
+
+
+if __name__ == "__main__":
+    main()
