@@ -469,8 +469,8 @@ def eye_seat(sgn):
 
 
 def carve_socket(V):
-    """Carve the eye sockets into the face: inside the lids' footprint the skin runs in just under the
-    lid dome; a rounded rim turns it back out to the face."""
+    """Carve the eye sockets into the face: inside the lids' footprint the skin runs in under the lid
+    dome and, inside the lid shell, back behind the eyeball; a rounded rim turns it back out to the face."""
     S = EYE["socket"]; er = EYE["radius"]
     Ro = er * (EYE["lid_scale"] + EYE["lid_thickness"])
     rho_r = Ro * S["rim_frac"]
@@ -491,6 +491,12 @@ def carve_socket(V):
             hn = -k * math.log(math.exp(-h / k) + math.exp(-target / k))
             if hn < h:
                 V[i] = p + nf * (hn - h)
+            # inside the lids the skin goes in behind the eyeball, never over it: the lids and the eye fill the
+            # opening, so no skin can show between the eyeball and the lid margin
+            q = V[i] - c; dist = np.linalg.norm(q)
+            w = 1 - smoothstep(Ro * 0.92, Ro * 1.02, dist)
+            if w > 0 and dist > 0.85 * er:
+                V[i] = c + q / dist * (dist + (0.85 * er - dist) * w)
     return V
 
 
@@ -896,7 +902,10 @@ def head_parts():
                     ws.append([(f"lidUpperOut.{sd}", m * wo), (f"lidUpperIn.{sd}", m * (1 - wo)), ("head", 1 - m + 1e-4)])
                 else:
                     ws.append([(f"lidLower.{sd}", m), ("head", 1 - m + 1e-4)])
-            ob = add_part(f"Lid{'Upper' if upper else 'Lower'}{sd}", v, f, {"_PART": [7] * len(v), "_A": A, "_B": [0] * len(v), "_ZONE": [0] * len(v)}, ws)
+            # _B: how far past the eye's corner (0 inside the opening, 1 beyond): there the lids are closed and their
+            # margins meet in a plain seam, not a dark rim, so the eye ends at its corners with no line trailing on
+            beyond = [smoothstep(1.0, 1.12, abs(t) / math.cos(math.radians(EYE["lids"]["outer_canthus_deg" if t > 0 else "inner_canthus_deg"]))) for t in Ts]
+            ob = add_part(f"Lid{'Upper' if upper else 'Lower'}{sd}", v, f, {"_PART": [7] * len(v), "_A": A, "_B": beyond, "_ZONE": [0] * len(v)}, ws)
             # blink as a shape: the lid slides over the eyeball (a bone turn this large would tear the corners)
             vb, _, _, _ = lid(c, R, a, g, u, upper, thick, psi_lat, psi_med, closed=1.0)
             ob.shape_key_add(name="Basis", from_mix=False)
