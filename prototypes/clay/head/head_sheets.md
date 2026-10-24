@@ -229,16 +229,14 @@ The eye is sunk 0.7·r into the face, measured from the face's surface on the ra
 
 ## Cheek, mouth line and jaw
 
-**Mouth line** (measured):
-- It runs low and nearly level from the lip to the mouth corner under the eye (z 1.72, y 1.34).
-- Behind the corner it curves inward (concave) and then up, ending just under the ear opening:
-  (1.65, 1.38) → (1.58, 1.43) → (1.52, 1.48) → (1.48, 1.53) → (1.45, 1.58) → (1.42, 1.62).
-- The face's lower edge and the jaw's top edge both follow this line.
+**Mouth line:** the upper lip line, traced (see "Roof rim and upper lip line" above). The face's lower edge follows it; the jaw's top runs just inside it at the front and just above it, hidden inside the cheek, behind the mouth corner.
 
-**Jaw:**
-- Set back under the overhanging lip: a strong overbite.
-- The chin juts forward and down.
-- It hinges at (0, 1.52, 1.47).
+**Jaw: a separate piece from the neck**, skinned only to the jaw bone, hinged at (0, 1.52, 1.47). Its outline is the clear line every reference draws round it, traced on the side sheet:
+- Set back under the overhanging lip (a strong overbite). The chin is a short point at z 1.86, right under the lip's lowest point.
+- The underside drops back to its lowest at z 1.77 (y 1.206), then rises to the throat notch (z 1.60, y 1.38), where the neck begins.
+- From the notch its back edge is the heavy line running back and up along the neck: (1.55, 1.41) → (1.49, 1.43) → (1.44, 1.46), then turning up into the ear opening at z 1.39.
+- At the back it is as wide as the cheek (the jowl). It stands proud of the neck, so its back edge reads as a step in the form, not a seam or a drawn line.
+- Skin: cream with faint pebble scales, larger and softer than the face's. The neck's transverse throat bands start below its back edge; there are none on the jaw.
 
 The underside of the overhanging lip in front of the jaw is skin, not palate.
 

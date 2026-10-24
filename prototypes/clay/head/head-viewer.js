@@ -30,7 +30,7 @@
           if (isP(1.0) > 0.5) { // orange face with pebble scales
             float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0));
             col = mix(orange, line, pe * 0.22);
-            float ear = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.420, vObj.y - 1.638)));
+            float ear = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.410, vObj.y - 1.652)));
             float pit = 1.0 - smoothstep(0.004, 0.008, length(vec2(vObj.z - 1.818, vObj.y - 1.505)));
             col = mix(col, line * 0.5, max(ear, pit) * step(0.08, abs(vObj.x)));
             groove = pe * 0.5;
@@ -67,9 +67,9 @@
           }
           if (isP(22.0) > 0.5) { col = mix(dark, dark * 1.15, vAB.x); rough = 0.5; } // dark shoulder mass
           if (isP(23.0) > 0.5) { col = srgb(vec3(72.0, 50.0, 58.0)); rough = 0.25; } // claws
-          if (isP(2.0) > 0.5) { // cream lower jaw with bands
-            float band = lineAt(fract((2.05 - vObj.z) / 0.06), 0.03);
-            col = mix(cream, line, band * 0.3); groove = band * 0.5;
+          if (isP(2.0) > 0.5) { // cream lower jaw: faint pebble scales, larger and softer than the face's (no bands: those start on the neck)
+            float pe = 1.0 - smoothstep(0.02, 0.06, cellEdge(vObj * 20.0));
+            col = mix(cream, line, pe * 0.14); groove = pe * 0.35;
           }
           if (isP(3.0) > 0.5) { col = srgb(vec3(120.0, 40.0, 45.0)); rough = 0.4; }
           if (isP(4.0) > 0.5) { col = srgb(vec3(245.0, 238.0, 220.0)); rough = 0.25; }
