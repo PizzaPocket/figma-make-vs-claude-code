@@ -122,7 +122,8 @@ def brush_offset(z, y):
 
 # ---------------------------------------------------------------- face
 def snout_ridge(z):
-    """Height of the ridge along the middle of the snout's top (the roof is a low gable, not flat)."""
+    """Height of the ridge along the middle of the roof's top: the roof is a gable, two mirrored slopes meeting
+    at a crisp ridge down its whole length."""
     R = np.array(D["upper_head"]["ridge"])
     return float(np.interp(-z, -R[:, 0], R[:, 1]))
 
@@ -136,7 +137,7 @@ def face_pt(z, th):
     yy = b * abs(s) ** (2 / SQ)
     a = wb + (wt - wb) * (yy / b) ** 1.6
     x = a * math.copysign(abs(c) ** (2 / SQ), c)
-    y = low + yy + snout_ridge(z) * max(0.0, 1 - (x / (wt * 0.95)) ** 2) ** 1.5 * (yy / b) ** 4
+    y = low + yy + snout_ridge(z) * max(0.0, 1 - abs(x) / (wt * 0.98)) * (yy / b) ** 4  # gable: straight slopes to a crisp ridge
     side = min(1.0, max(0.0, (abs(x) / wb - 0.35) / 0.4))  # brushes act on the sides, fading out on the top
     return x + math.copysign(brush_offset(z, y) * side, x), y
 
@@ -184,7 +185,7 @@ def eave_th(z):
     return min(math.asin(q ** (SQ / 2)), math.pi / 2 - 0.08)
 
 
-def roof_ring(z, K=26):
+def roof_ring(z, K=27):  # odd, so one sample sits on the ridge
     the = eave_th(z)
     t, f = roof_t(z)
     outer, inner = [], []
@@ -372,7 +373,7 @@ _PROFILE = {}
 
 def profile():
     if not _PROFILE:
-        zs = np.linspace(UPPER[0, 0] + 0.015, ROOF["back_z"] - 0.02, 400)
+        zs = np.linspace(UPPER[0, 0], ROOF["back_z"] - 0.02, 400)  # from the flat front edge, where the roof meets the front face
         ys = np.array([interp(UPPER, z, 1) + snout_ridge(z) + roof_t(z)[0] for z in zs])
         P = np.stack([zs, ys], 1)
         s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
@@ -429,7 +430,8 @@ def eave_depth(s):
 def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.004):
     """One roof plate: a solid tile with rounded edges laid on the underlay over profile positions s0..s1
     and depths d0..d1 (d1 may be a function of s). With wrap, it spans the top: from depth d1 on the
-    left side, over the top, to d1 on the right. It thickens toward its back edge and runs a little past
+    left side, over the top, to d1 on the right; with wrap=+1 or -1, only that side of the gable, from the
+    ridge down to d1 (the roof's plates meet at the ridge). It thickens toward its back edge and runs a little past
     it over the next plate, like a shingle. _A: distance to its nearest edge, _B: tint, _ZONE: nostril."""
     T, bev, ov, gap = thick or PLATES["thickness"], PLATES["bevel"], PLATES["overlap"], PLATES["gap"]
     s0g, s1g = s0 + gap / 2, s1 - gap / 2 + ov
@@ -447,7 +449,11 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
             za, ya = sv_point(sc, dh); tha = side_th(za, ya)
             z0 = sv_point(sc, 0.0)[0]
             for j in range(nv + 1):
-                v = -1 + 2 * j / nv
+                if wrap is True:
+                    v = -1 + 2 * j / nv
+                else:  # one side of the gable: from the ridge down to the eave; the two halves' rounded edges
+                    # meet at the ridge in a seam
+                    v = wrap * (j / nv) ** 1.3
                 z = z0 + (za - z0) * abs(v) ** 1.5
                 th = math.pi / 2 - v * (math.pi / 2 - tha)
                 row.append((z, th, (1 - abs(v)) * dh + 0.0))
@@ -536,7 +542,8 @@ def roof_plates():
     pr = profile(); smax = pr["s"][-1]
     out, seed = [], 0
     s_nose = L["nose_plate_s"]
-    out.append(plate(0.0, s_nose, 0.0, eave_depth, 20, 1, wrap=True))
+    for side in (1, -1):  # the roof is a gable: every band is a pair of plates meeting at the ridge, mirrored
+        out.append(plate(0.0, s_nose, 0.0, eave_depth, 10, 1, wrap=side))
     out.append(front_plate())
     for row in L["rows"]:
         k = 0
@@ -546,7 +553,8 @@ def roof_plates():
             dlo = row["d"][0]
             dhi = (lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002)) if row["d"][1] is not None else (lambda s: eave_depth(s) - 0.002)
             if row.get("wrap"):
-                out.append(plate(sc, s1, 0.0, lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002), 14, 10 + seed, wrap=True))
+                for side in (1, -1):
+                    out.append(plate(sc, s1, 0.0, lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002), 8, 10 + seed, wrap=side))
             elif dhi(sc) - dlo > 0.006 and dhi(s1) - dlo > 0.006:
                 out.append(plate(sc, s1, dlo, dhi, 6, 10 + seed, thick=row.get("thickness"), flare=row.get("rim_flare", 0.0)))
             sc = s1; k += 1; seed += 1

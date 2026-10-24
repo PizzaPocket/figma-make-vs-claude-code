@@ -124,13 +124,13 @@ It is a long, nearly straight sweep back and up that barely tapers, then narrows
 
 ## Box muzzle, nose and nostrils
 
-**Snout roof:** symmetrical, with a low ridge down the middle of its top (upper_head.ridge, 0.012 along the snout, fading out by z 1.62). The roof is a gable, not flat.
+**Roof: a gable.** Two mirrored slopes meet at a crisp ridge down the roof's whole length (upper_head.ridge: 0.045 over the shoulders along the snout, 0.03 at the back). Every band of plates is a mirrored pair meeting at the ridge in a seam, so the lines have reflective symmetry. The roof meets the snout's flat front face along a flat front edge (the plate layout starts exactly at the front plane, not past it).
 
 **Nose (as the user reads the references): one extruded mass,** its section like the border of the Superman shield:
 - a flat top with square corners, short sides falling straight down, then two lower edges converging to a point;
-- it emerges out of the snout's roof pitched upward: its axis descends toward the front at 19 degrees, less steeply than the snout's top (~49 degrees), so it rises out of the roof and stands proud of it toward the front;
-- it juts forward out of the snout's front above the front lip, ending in a flat upright front face, so the whole shield shows from the front;
-- its back sinks into the roof;
+- it comes out of the snout's flat front face, below the roof's front edge and above the front lip, pitched upward (its axis rises 12 degrees toward the front);
+- it ends in a flat upright front face, so the whole shield shows from the front;
+- its back is buried in the snout;
 - below it, the main roof's front plate carries on down to the lip.
 
 **Nostrils:** slits cut into the nose's two lower faces (the undersides), just behind the front face.
