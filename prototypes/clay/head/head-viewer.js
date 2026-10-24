@@ -12,15 +12,28 @@
         vec3 b = vec3(float(i), float(j), float(k)); vec3 r = b + hash3(p + b) * 0.8 - f; float d = dot(r, r);
         if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d; }
       return sqrt(d2) - sqrt(d1); }
+    uniform vec4 uInk[32]; uniform float uInkW[32];
+    float inkAt(vec2 p) { float k = 0.0;
+      for (int i = 0; i < 32; i++) { if (uInkW[i] <= 0.0) continue; vec2 a = uInk[i].xy, b = uInk[i].zw, ab = b - a;
+        float t = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0); float d = length(p - a - ab * t);
+        k = max(k, 1.0 - smoothstep(uInkW[i] * 0.5, uInkW[i], d)); }
+      return k; }
     float lineAt(float f, float w) { float e = min(f, 1.0 - f); return 1.0 - smoothstep(w, w + fwidth(f) * 1.5 + 0.01, e); }
   `;
-  function material(THREE, clay) {
-    const m = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.6, skinning: true });
+  function material(THREE, clay, ink) {
+    const m = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.6, skinning: true, morphTargets: true, morphNormals: true });
     if (clay) m.defines = { CLAY: '' }; // plain clay render: judge the forms without paint
+    // inked face lines: side-view (z, y) segments from the model's extras
+    const segs = [];
+    for (const ln of ink || []) for (let i = 0; i + 1 < ln.zy.length; i++) segs.push(new THREE.Vector4(ln.zy[i][0], ln.zy[i][1], ln.zy[i + 1][0], ln.zy[i + 1][1]));
+    while (segs.length < 32) segs.push(new THREE.Vector4(0, 0, 0, 0));
+    const widths = []; for (const ln of ink || []) for (let i = 0; i + 1 < ln.zy.length; i++) widths.push(ln.width);
+    while (widths.length < 32) widths.push(0);
     m.onBeforeCompile = (sh) => {
+      sh.uniforms.uInk = { value: segs.slice(0, 32) }; sh.uniforms.uInkW = { value: widths.slice(0, 32) };
       sh.vertexShader = sh.vertexShader
-        .replace("#include <common>", "#include <common>\nattribute float _part; attribute float _a; attribute float _b; attribute float _zone;\nvarying vec3 vObj; varying float vPart; varying vec3 vAB;")
-        .replace("#include <begin_vertex>", "#include <begin_vertex>\nvObj = position; vPart = _part; vAB = vec3(_a, _b, _zone);");
+        .replace("#include <common>", "#include <common>\nattribute float _part; attribute vec3 _abz;\nvarying vec3 vObj; varying float vPart; varying vec3 vAB;")
+        .replace("#include <begin_vertex>", "#include <begin_vertex>\nvObj = position; vPart = _part; vAB = _abz;");
       sh.fragmentShader = sh.fragmentShader
         .replace("#include <common>", "#include <common>\n" + GLSL)
         .replace("#include <map_fragment>", `
@@ -33,6 +46,7 @@
             float ear = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.420, vObj.y - 1.638)));
             float pit = 1.0 - smoothstep(0.004, 0.008, length(vec2(vObj.z - 1.805, vObj.y - 1.513)));
             col = mix(col, line * 0.5, max(ear, pit) * step(0.08, abs(vObj.x)));
+            col = mix(col, line, inkAt(vec2(vObj.z, vObj.y)) * step(0.1, abs(vObj.x)) * 0.9);
             groove = pe * 0.5;
           }
           if (isP(10.0) > 0.5) { // roof: overlapping bands (geometry), outlined at each band's back edge and along the eave
@@ -41,6 +55,11 @@
             col = mix(col, line, smoothstep(0.93, 0.99, f) * 0.9);
             col = mix(col, line, (1.0 - smoothstep(0.0, 0.025, min(vAB.z, 1.0 - vAB.z))) * step(0.0, vAB.z) * 0.9);
             if (vAB.z < 0.0) col = line;
+            rough = 0.5;
+          }
+          if (isP(13.0) > 0.5) { // roof plates: solid tiles; their bevelled edges and the gaps between them make the lines
+            col = mix(dark * 0.92, dark * 1.12, vAB.y);
+            col = mix(line, col, smoothstep(0.0, 0.004, vAB.x));
             rough = 0.5;
           }
           if (isP(11.0) > 0.5) { // nose crest, nostrils dark under the flares
@@ -65,7 +84,8 @@
             col = mix(col, vec3(0.01), 1.0 - smoothstep(0.065, 0.075, a));
             rough = 0.08;
           }
-          if (isP(7.0) > 0.5) { col = mix(line * 0.6, orange * 0.9, smoothstep(0.18, 0.3, vAB.x)); } // lid, dark rim at the margin
+          if (isP(12.0) > 0.5) { col = srgb(vec3(226.0, 140.0, 150.0)); rough = 0.3; } // caruncle
+          if (isP(7.0) > 0.5) { float pl = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0)); col = mix(line * 0.6, mix(orange, line, pl * 0.22), smoothstep(0.18, 0.3, vAB.x)); } // lid, dark rim at the margin
           if (isP(8.0) > 0.5) { col = mix(dark * 1.15, dark * 0.8, smoothstep(0.6, 1.0, vAB.x)); col = mix(col, line, smoothstep(0.25, 0.7, vAB.y) * 0.85); rough = 0.35; } // smooth horn, incised ring lines inked
           if (isP(9.0) > 0.5) { col = mix(srgb(vec3(246.0, 166.0, 107.0)), srgb(vec3(250.0, 205.0, 160.0)), vAB.x * 0.7); col = mix(col, srgb(vec3(200.0, 120.0, 80.0)), lineAt(fract(vAB.y * 3.0), 0.05) * 0.7); col = mix(col, line, (1.0 - smoothstep(0.0, 0.06, min(vAB.y, 1.0 - vAB.y))) * 0.8); }
           #ifdef CLAY
@@ -92,14 +112,14 @@
     const rim = new THREE.DirectionalLight(0xb8c8ff, 0.5); rim.position.set(-3, 2, -3); scene.add(rim);
     const gltf = await new Promise((res, rej) => new THREE.GLTFLoader().load(opts.glbUrl, res, undefined, rej));
     let sk = null; gltf.scene.traverse(o => { if (o.isSkinnedMesh) sk = o; });
-    sk.material = material(THREE, opts.clay); sk.frustumCulled = false;
+    sk.material = material(THREE, opts.clay, sk.userData.ink ? JSON.parse(sk.userData.ink) : []); sk.frustumCulled = false;
     scene.add(gltf.scene);
     const bones = {}; sk.skeleton.bones.forEach(b => (bones[b.name] = b));
     const bind = {}; for (const n in bones) bind[n] = bones[n].quaternion.clone();
     function resize() { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
     resize();
     const Q = new THREE.Quaternion(), X = new THREE.Vector3(1, 0, 0);
-    function setPose(jawOpen, tongue, blink) {
+    function setPose(jawOpen, tongue, lids, morphs) {
       // rotations about the model's x axis, converted into each bone's frame
       for (const n in bones) bones[n].quaternion.copy(bind[n]);
       const apply = (n, ang) => {
@@ -113,15 +133,21 @@
       apply("tongue1", -tongue * 0.3); gltf.scene.updateMatrixWorld(true);
       apply("tongue2", -tongue * 0.4); gltf.scene.updateMatrixWorld(true);
       apply("tongue3", -tongue * 0.5);
-      // blink: each lid bone lies along the eye's canthal axis; a positive turn about it closes the lid
-      for (const n in bones) if (n.startsWith("lid")) {
-        const up = n.startsWith("lidUpper");
-        bones[n].quaternion.copy(bind[n]).multiply(Q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), blink * (up ? 1.2 : 0.25)));
+      // lids: each lid bone lies along the eye's canthal axis; a positive turn about it closes the lid
+      const L = lids || [0, 0, 0];
+      for (const n in bones) {
+        const k = n.startsWith("lidUpperIn") ? 0 : n.startsWith("lidUpperOut") ? 1 : n.startsWith("lidLower") ? 2 : -1;
+        if (k >= 0) bones[n].quaternion.copy(bind[n]).multiply(Q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), L[k]));
       }
+      // face: muscle actions as morph targets
+      const dict = sk.morphTargetDictionary || {};
+      for (const name in dict) sk.morphTargetInfluences[dict[name]] = (morphs && morphs[name]) || 0;
     }
     return {
-      shot(cam, target, jawOpen, tongue, fov, blink) {
-        setPose(jawOpen || 0, tongue || 0, blink || 0);
+      // pose: {jaw, tongue, lids: [upperIn, upperOut, lower], morphs: {action: weight}} (see head_design.json "expressions")
+      shot(cam, target, pose, fov) {
+        pose = pose || {};
+        setPose(pose.jaw || 0, pose.tongue || 0, pose.lids, pose.morphs);
         camera.fov = fov || 30; camera.updateProjectionMatrix();
         camera.position.set(...cam); camera.lookAt(...target);
         renderer.render(scene, camera);

@@ -58,6 +58,36 @@ A sculptor thinks about the muscles under the skin as much as the skeleton. No s
 
 If the eye looks stuck on, a layer is missing. Usually the socket is a plain dent with no rim, or there is no lid pad.
 
+### The face is how a creature communicates
+
+Expression is muscle. Every subtlety in the eye, brow, cheek and mouth matters, because that is where the character shows feeling. Learn the expressive muscles and what each one does to the surface, then model the face so those actions are possible:
+
+| Muscle | Action (FACS unit) | What it does to the surface |
+| --- | --- | --- |
+| Orbicularis oculi, around the lid | blink (AU45), gentle close | the lids slide over the eyeball |
+| Orbicularis oculi, outer ring | cheek raise / squint (AU6, AU7) | the cheek pad rises, the lower lid bunches up, crow's-feet creases fan from the outer corner |
+| Levator of the upper lid | lid raise (AU5) | more white above the iris: surprise, fear |
+| Corrugator and procerus | brow lower (AU4) | the brow skin is drawn down and in toward the inner corner and bunches over the upper lid: anger, concentration |
+| Frontalis, inner part | inner brow raise (AU1) | the skin above the inner corner lifts: worry, sadness |
+| Zygomaticus major | lip corner pull (AU12) | the mouth corner goes up and back, and the cheek rises with it: a real smile is AU6 + AU12 |
+| Levator labii (with alaeque nasi) | lip raise, nose wrinkle (AU10, AU9) | the upper lip lifts off the teeth and the snout wrinkles: snarl, disgust |
+| Depressor anguli oris | lip corner down (AU15) | the mouth corner drops: sadness |
+| Masseter and temporalis | jaw | they bunch when the jaw clenches |
+
+Build each muscle action as a shape of the face (a morph target): a push of the region it moves, plus the creases it makes. Lid tilts go on bones; the blink is a shape of the lids themselves. Write expressions as mixes of actions. Clay's brow is a rigid plate, so his brow actions move the skin and lids under it, not the plate.
+
+### Eyes, the details that make them convincing
+
+- **The two corners differ.**
+  - The inner (medial) corner is rounded, and holds the caruncle: a small fleshy pink teardrop lying on the eyeball between the lid margins. It is never a bead stuck on.
+  - The outer (lateral) corner closes to a sharp point, usually higher, so the canthal axis tilts up toward the outer corner.
+- **The corners sit on the visible eyeball,** where it meets the face, about 50° to each side of the gaze. They are not the ends of the eye's axis, which are buried. Put them at the axis ends and the visible opening has no corners.
+- **The margins are not mirror images.** The upper lid arcs highest a little toward the inner corner. The lower lid is flatter and dips lowest toward the outer corner.
+- **The lids have thickness.** Each is a shell with a rounded margin that slides over the eyeball. They are pinned at the corners by the canthal tendons, so they move most mid-eye and not at all at the corners.
+- **A blink is the lid sliding,** not a large rigid turn. A large bone turn tears the corners, so make the blink a shape key of the lids.
+- **The socket holds the eye assembly.** Carve the face into a socket: inside the lids' footprint the skin runs in just under the lid dome, and a rounded rim (the orbital rim under the ring muscle) turns it back out. No bone or muscle form may raise the skin over the eye opening; they frame it.
+- **The cheekbone is the floor of the socket.** In stylised dragons it is often the face's most distinctive line. Find where it starts and ends in every reference, and which side is crisp: lit above and shadowed below means it overhangs.
+
 **Judge forms in a plain clay render.** Render with no colour, scales or ink, under a raking light. Paint hides missing anatomy.
 
 ## Element sheet template
@@ -105,6 +135,9 @@ Check: <what to compare; known differences>
 
 ## Lessons
 
+- **Armour is separate plates, not a scored sheet.** If the art draws plate lines with consistent shapes, build each plate as its own solid tile, in the rows the art uses. On Clay's roof that means a nose plate, a top row of transverse bands, and edge rows of near-square plates along the eave, ending at the brow plate. Give each tile rounded edges, thicker toward its back edge, overlapping the next one like a shingle. The gaps then make the drawn lines, and they stay consistent because they come from the plate layout.
+- **Resolution must match the sharpest edge.** A crisp edge (the cheekbone's overhang, a lid crease) needs mesh spacing finer than its width, or it renders soft. Check in the clay render.
+- **WebGL allows 16 vertex attributes.** Morph targets use them up (position and normal per target), so pack custom attributes into vectors.
 - **Look for fitted pieces first.** Before modelling a region, ask which colour areas are separate architectural pieces fitted together. For Clay's head:
   - the dark roof is a shell over the orange face, with its eave standing proud;
   - the nose crest sits on the roof;

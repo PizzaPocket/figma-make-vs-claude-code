@@ -27,6 +27,16 @@ The art reads as fitted pieces, not one blob:
 | Lids | Shells hinged on the eye's canthal axis | `lidUpper.L/R`, `lidLower.L/R` |
 | Ear frills | Tucked under the horns at the back of the cheek | `head` (own bones still to do) |
 
+## Roof plates
+
+The roof is not one scored sheet. Every reference (side sheet, *How to Draw*, flight render, limited-edition render) shows distinct plates in consistent rows, each its own solid tile on a thin dark underlay:
+
+- **Nose plate:** caps the front of the muzzle (z 2.035 → 1.935), down to the lip. The nose crest sits on it.
+- **Top row:** wide transverse bands over the top of the muzzle and skull, every ~0.055 from behind the nose plate to the horns. It spans the face angle π/2 ± 0.55–0.66 rad.
+- **Edge rows:** near-square plates on each side, from the eave up to the top row, staggered against it. Over the eye, where the eave steps up, the row narrows to the brow plate.
+
+Each plate has rounded edges (bevel 0.006) and is thicker toward its back edge (0.7 → 1.0 × 0.009). It runs 0.004 past its back edge over the next plate, like a shingle. The gaps and bevels make the art's consistent dark lines.
+
 ## Roof
 
 **Profile.** The side silhouette, scanned column by column from the reference, has three parts:
@@ -72,6 +82,8 @@ Behind the skull, that same line carries on as the top of the horn:
 - The horn's first cross-section *is* the roof's corner at z 1.56: the outer surface from the eave up to 1.15 rad over the shoulder, closed by a chord buried in the head.
 - Over the first 0.09 of its length that section morphs into the horn's round section, so there is no seam, cuff or planted cone.
 
+**Thickness:** the horns are thick, as in the art. The root is about r 0.05–0.06 where it leaves the roof, with a broad corner section (out to 1.3 rad over the shoulder), and tapers to 0.04, 0.03 and 0.02 before the tip.
+
 **Path:** measured edges, centreline through:
 - (1.487, 1.887) r 0.036
 - (1.37, 1.957) r 0.028
@@ -102,7 +114,27 @@ It is a long, nearly straight sweep back and up that barely tapers, then narrows
 
 The small dark pit at the eave notch in front of the eye (px 81, py 311) is kept as a minor detail. It is not the nostril.
 
-## Eye and lids
+## Eye: corners, lids, socket, expression
+
+- **Corners:** the corners of the eye sit on the visible eyeball, 52° (outer) and 50° (inner) from the gaze along the canthal axis.
+  - The inner corner is rounded and holds the caruncle: a fleshy pink teardrop on the eyeball between the lid margins, point in the corner, round end toward the iris.
+  - The outer corner closes to a point.
+- **Margins:** the upper margin peaks toward the inner corner (skew -0.18). The lower margin dips lowest toward the outer corner (skew +0.2).
+- **Lid bones:** the upper lid is on two bones (inner and outer half), so the margin can tilt for expression. The lower lid is on one. All are pinned at the corners.
+- **Blink:** a shape key of the lids. The upper margin slides down to meet the lower one.
+- **Socket:** the face is carved to hold the eye assembly. Under the lids' footprint the skin runs in just below the lid dome, then a rounded rim turns it back out.
+  - The eye is seated 0.72·r along the face's true normal at the eye centre.
+  - No bone or muscle form raises the skin within 0.034–0.052 of the eye centre.
+- **Expressions:** muscle actions are face morph targets.
+  - `cheekRaise` (AU6/12)
+  - `lipRaise` (AU9/10)
+  - `lipCornerDown` (AU15)
+  - `browLower` (AU4)
+  - `innerBrowRaise` (AU1)
+
+  Poses mix them with the lid bones: neutral, blink, wide, happy, worried, angry and snarl, all in `head_design.json`.
+
+## Eye and lids (measurements)
 
 **Eyeball:**
 - Centre (z 1.695, y 1.692), measured at px 120, py 250. Radius 0.031.
@@ -128,7 +160,7 @@ The small dark pit at the eave notch in front of the eye (px 81, py 311) is kept
 The face surface is shaped from the inside out by the `anatomy` layers in the data. Each entry records what it is and why it is there.
 
 **Bone:**
-- **Cheekbone and zygomatic arch:** a shelf from below the front of the eye (1.75, 1.60) back to the jaw joint under the ear (1.44, 1.672). Its crisp top edge is the floor of the eye socket, and it slopes off below into the masseter.
+- **Cheekbone line:** Clay's most distinctive facial line, present in every reference. It starts at the small pit at the eave notch in front of the eye (1.805, 1.513) and runs back beneath the eye to the jaw joint below the ear (1.43, 1.638). It is lit above and shadowed below, so it overhangs: a shelf 0.032 high, with a crisp lower edge and a gentle upper slope up to the lid-ring pad. It is also inked.
 - **Postorbital bar:** closes the socket behind, rising from the cheekbone to the eave.
 - **Eye socket:** a shallow dent.
 
