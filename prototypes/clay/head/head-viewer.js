@@ -31,17 +31,16 @@
             float seg = lineAt(fract((2.05 - vObj.z) / 0.085), 0.05);
             vec3 plate = mix(dark * 1.1, dark * 0.9, fract((2.05 - vObj.z) / 0.085));
             plate = mix(plate, line, seg * 0.85);
-            float pe = 1.0 - smoothstep(0.02, 0.06, cellEdge(vObj * 24.0));
-            vec3 cheek = mix(orange, line, pe * 0.32);
-            col = mix(cheek, plate, vAB.z);
-            float edgeL = 1.0 - smoothstep(0.0, 0.02, abs(vAB.z - 0.5) - 0.48); // outline where the plate ends
-            // cheek crease: from the mouth corner up toward the ear
-            float crease = 1.0 - smoothstep(0.0, 0.006, abs((vObj.y - 1.52) - (1.52 - vObj.z) * 0.9 * step(vObj.z, 1.52)) - 0.002);
-            col = mix(col, line, crease * step(vObj.z, 1.53) * step(1.40, vObj.z) * (1.0 - vAB.z) * 0.8);
-            // nostril
-            float nos = 1.0 - smoothstep(0.010, 0.016, length(vec2(abs(vObj.x) - 0.038, vObj.z - 1.965)));
-            col = mix(col, line * 0.6, nos * step(1.45, vObj.y));
-            groove = seg * vAB.z + pe * (1.0 - vAB.z) * 0.5;
+            float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0));
+            vec3 cheek = mix(orange, line, pe * 0.22);
+            float onPlate = smoothstep(-0.003, 0.003, vAB.z); // vAB.z: signed height above the plate edge
+            col = mix(cheek, plate, onPlate);
+            col = mix(col, line, (1.0 - smoothstep(0.002, 0.005, abs(vAB.z))) * 0.9); // outline where the plate ends
+            // openings: nostril at the back top corner of the nose plate, ear opening below the frill
+            float nos = 1.0 - smoothstep(0.008, 0.013, length(vec2(vObj.z - 1.805, vObj.y - 1.513)));
+            float ear = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.420, vObj.y - 1.638)));
+            col = mix(col, line * 0.5, max(nos, ear) * step(0.08, abs(vObj.x)));
+            groove = seg * onPlate + pe * (1.0 - onPlate) * 0.5;
           }
           if (isP(2.0) > 0.5) { // cream lower jaw with bands
             float band = lineAt(fract((2.05 - vObj.z) / 0.06), 0.03);
@@ -53,9 +52,10 @@
           if (isP(6.0) > 0.5) { // eyeball: _a is the angle from the gaze direction (0..1 over 180 degrees)
             float a = vAB.x;
             col = srgb(vec3(242.0, 236.0, 226.0));
-            col = mix(col, srgb(vec3(120.0, 72.0, 34.0)), 1.0 - smoothstep(0.24, 0.25, a));
-            col = mix(col, vec3(0.01), 1.0 - smoothstep(0.08, 0.09, a));
-            col = mix(col, vec3(1.0), (1.0 - smoothstep(0.02, 0.03, length(vec2(a - 0.12, 0.0)))) * 0.0);
+            // wide-open eye: a white ring shows all round a warm brown iris, as in every official image
+            col = mix(col, srgb(vec3(150.0, 92.0, 44.0)), 1.0 - smoothstep(0.155, 0.165, a));
+            col = mix(col, srgb(vec3(70.0, 38.0, 20.0)), (1.0 - smoothstep(0.15, 0.17, abs(a - 0.16) + 0.15)) * 0.8);
+            col = mix(col, vec3(0.01), 1.0 - smoothstep(0.065, 0.075, a));
             rough = 0.08;
           }
           if (isP(7.0) > 0.5) { col = mix(dark, line, 0.3); }
@@ -105,8 +105,9 @@
       apply("tongue3", -tongue * 0.5);
     }
     return {
-      shot(cam, target, jawOpen, tongue) {
+      shot(cam, target, jawOpen, tongue, fov) {
         setPose(jawOpen || 0, tongue || 0);
+        camera.fov = fov || 30; camera.updateProjectionMatrix();
         camera.position.set(...cam); camera.lookAt(...target);
         renderer.render(scene, camera);
       },
