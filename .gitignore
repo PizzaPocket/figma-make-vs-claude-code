@@ -5,3 +5,4 @@ dist/
 # Downloaded source maps and generated map data
 cache/
 __pycache__/
+*.glb
