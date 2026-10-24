@@ -1,3 +1,5 @@
 # Wings of Fire game
 
-In planning.
+A personal 3D Wings of Fire project in Godot. In planning.
+
+- [World plan: Pyrrhia](docs/world-plan.md)
