@@ -286,30 +286,102 @@ def catmull(P, n):
     return np.array(pts), np.array(par)
 
 
-def tube(path, radii, around=14, ring_every=None, emerge_t=0.0, per_span=10):
-    """Tube along a spline through `path`, radius interpolated per control point; raised rings after emerge_t."""
-    C, par = catmull(path, per_span)
-    R = np.interp(par, np.arange(len(radii)), radii)
-    seg = np.linalg.norm(np.diff(C, axis=0), axis=1)
-    s = np.concatenate([[0], np.cumsum(seg)]); total = s[-1]
+def spline_frames(path, radii, step):
+    """Resample a Catmull-Rom spline through `path` at even arc-length steps. Returns centres, radii
+    (interpolated per control point), arc length, and a parallel-transported frame (n, b)."""
+    C, par = catmull(path, 200)
+    s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(C, axis=0), axis=1))])
+    su = np.arange(0, s[-1], step); su = np.append(su, s[-1])
+    C = np.stack([np.interp(su, s, C[:, k]) for k in range(3)], 1)
+    R = np.interp(np.interp(su, s, par), np.arange(len(radii)), radii)
     T = np.gradient(C, axis=0); T /= np.linalg.norm(T, axis=1)[:, None]
+    N, B = [], []
     n = norm(np.cross(T[0], [0, 1.0, 0]))
-    verts, faces, A, B = [], [], [], []
     for i in range(len(C)):
         if i:
-            n = norm(n - T[i] * (n @ T[i]))  # parallel transport
-        b = np.cross(T[i], n)
-        ring = 0.0
-        if ring_every and s[i] / total > emerge_t:
-            ring = 1.0 if math.cos(2 * math.pi * s[i] / ring_every) > 0.6 else 0.0
-        for k in range(around):
-            a = 2 * math.pi * k / around
-            verts.append(tuple(C[i] + (n * math.cos(a) + b * math.sin(a)) * R[i] * (1 + 0.08 * ring)))
-            A.append(s[i] / total); B.append(ring)
-    for i in range(len(C) - 1):
+            n = norm(n - T[i] * (n @ T[i]))
+        N.append(n); B.append(np.cross(T[i], n))
+    return C, R, su, np.array(N), np.array(B)
+
+
+def ring_faces(nrings, around, closed_ends=None):
+    faces = []
+    for i in range(nrings - 1):
         for k in range(around):
             a = i * around + k; b2 = i * around + (k + 1) % around
             faces.append([a, b2, b2 + around, a + around])
+    return faces
+
+
+def tube(path, radii, around=16, step=0.002, grooves=None):
+    """A smooth horn: a tube along a spline, radius per control point, with fine incised grooves
+    (thin lines cut into a smooth surface, not raised bumps). _A runs 0..1 along it; _B is the groove."""
+    C, R, s, N, Bv = spline_frames(path, radii, step)
+    total = s[-1]
+    verts, A, B = [], [], []
+    for i in range(len(C)):
+        g = 0.0
+        if grooves and grooves["start_s"] <= s[i] <= grooves["end_frac"] * total:
+            m = (s[i] - grooves["start_s"]) % grooves["every"]
+            g = math.exp(-(min(m, grooves["every"] - m) / grooves["width"]) ** 2)
+        r = R[i] - (grooves["depth"] * g if grooves else 0.0)
+        for k in range(around):
+            a = 2 * math.pi * k / around
+            verts.append(tuple(C[i] + (N[i] * math.cos(a) + Bv[i] * math.sin(a)) * r))
+            A.append(s[i] / total); B.append(g)
+    faces = ring_faces(len(C), around)
+    for i, end in ((0, False), (len(C) - 1, True)):
+        c = len(verts); verts.append(tuple(C[i])); A.append(s[i] / total); B.append(0.0)
+        for k in range(around):
+            a = i * around + k; b2 = i * around + (k + 1) % around
+            faces.append([a, b2, c] if end else [b2, a, c])
+    return verts, faces, A, B
+
+
+def horn_from_roof(sgn, around=24, step=0.001):
+    """The horn grown out of the roof's back corner. Its first cross-section is the roof's corner itself
+    (the outer surface from the eave up over the shoulder, closed by a chord buried in the face), so the
+    roof's top line runs on into the horn's top and the eave wraps under its root. Over `blend` of its
+    length that section morphs into the horn's round section, which then carries the incised rings."""
+    zc, top_th = HORN["root"]["z"], HORN["root"]["top_angle"]
+    th_e = eave_th(zc)
+    t, _ = roof_t(zc)
+    loop = []
+    for th in np.linspace(th_e, top_th, 14):  # outer: eave up over the shoulder
+        x, y = face_pt(zc, th); nx, ny = face_normal(zc, th)
+        loop.append((x + nx * t, y + ny * t))
+    for f in np.linspace(0, 1, 8)[1:-1]:  # chord back down, buried inside the face
+        (x0, y0), (x1, y1) = loop[-1], loop[0]
+        loop.append((x0 + (x1 - x0) * f - 0.035 * math.sin(math.pi * f), y0 + (y1 - y0) * f - 0.01 * math.sin(math.pi * f)))
+    loop = np.array([(sgn * x, y, zc) for x, y in loop])
+    centre = loop.mean(0)
+    path = [centre.tolist()] + [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]
+    C, R, s, N, Bv = spline_frames(path, HORN["radius"], step)
+    T = np.cross(N, Bv)
+    total = s[-1]
+    # resample the root loop evenly and express it in the start frame
+    seg = np.linalg.norm(np.diff(np.vstack([loop, loop[:1]]), axis=0), axis=1)
+    cs = np.concatenate([[0], np.cumsum(seg)])
+    u = np.linspace(0, cs[-1], around, endpoint=False)
+    closed = np.vstack([loop, loop[:1]])
+    pts = np.stack([np.interp(u, cs, closed[:, k]) for k in range(3)], 1) - C[0]
+    off = np.stack([pts @ N[0], pts @ Bv[0], pts @ T[0]], 1)
+    phi = np.arctan2(off[:, 1], off[:, 0])
+    G = HORN["grooves"]; blend = HORN["root"]["blend"]
+    verts, A, B = [], [], []
+    for i in range(len(C)):
+        w = smoothstep(0.0, blend, s[i])
+        g = 0.0
+        if G["start_s"] <= s[i] <= G["end_frac"] * total:
+            m = (s[i] - G["start_s"]) % G["every"]
+            g = math.exp(-(min(m, G["every"] - m) / G["width"]) ** 2)
+        r = R[i] - G["depth"] * g
+        for k in range(around):
+            root = N[i] * off[k, 0] + Bv[i] * off[k, 1] + T[i] * off[k, 2]
+            ring = (N[i] * math.cos(phi[k]) + Bv[i] * math.sin(phi[k])) * r
+            verts.append(tuple(C[i] + root * (1 - w) + ring * w))
+            A.append(s[i] / total); B.append(g)
+    faces = ring_faces(len(C), around)
     for i, end in ((0, False), (len(C) - 1, True)):
         c = len(verts); verts.append(tuple(C[i])); A.append(s[i] / total); B.append(0.0)
         for k in range(around):
@@ -495,9 +567,8 @@ def main():
             v, f, A = lid(c, R, a, g, u, phi0, phi1, inset, er * EYE["lid_thickness"])
             objs.append(add_part(f"Lid{name}{sd}", v, f, {"_PART": [7] * len(v), "_A": A, "_B": [0] * len(v), "_ZONE": [0] * len(v)}, [[(bn, 1.0)]] * len(v)))
             lid_bones.append((bn, c, c + axis * 0.04))
-        # horn: the roof's back corner drawn out, embedded at first, leaving the skull behind the brow
-        path = [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]
-        v, f, A, B = tube(path, HORN["radius"], around=14, ring_every=HORN["ring_every"], emerge_t=HORN["emerge_t"])
+        # horn: grown out of the roof's back corner; smooth, with incised ring lines
+        v, f, A, B = horn_from_roof(sgn)
         objs.append(add_part("Horn" + sd, v, f, {"_PART": [8] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
         # ear frill: a leaf-shaped fin from base to tip; its front edge rolls over like a horse's ear
         base = np.array([sgn * FRILL["base"][0], FRILL["base"][1], FRILL["base"][2]])

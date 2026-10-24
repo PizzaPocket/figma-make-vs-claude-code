@@ -18,10 +18,10 @@
       [1.673, 1.88, 1.367, 0.182, 0.213],
       [1.633, 1.89, 1.392, 0.195, 0.224],
       [1.6, 1.89, 1.416, 0.202, 0.235],
-      [1.545, 1.89, 1.459, 0.208, 0.241],
-      [1.487, 1.885, 1.521, 0.215, 0.241],
-      [1.44, 1.875, 1.593, 0.215, 0.235],
-      [1.36, 1.85, 1.66, 0.208, 0.224]
+      [1.545, 1.902, 1.459, 0.208, 0.241],
+      [1.487, 1.907, 1.521, 0.215, 0.241],
+      [1.44, 1.897, 1.593, 0.215, 0.235],
+      [1.36, 1.872, 1.66, 0.208, 0.224]
     ],
     "squareness": 5.0
   },
@@ -74,19 +74,22 @@
     "lid_thickness": 0.14
   },
   "horn": {
-    "note": "Not a cone planted on the skull: the horn is the back corner of the roof drawn out. It starts embedded in the roof's top shoulder above the eye, runs back along the roof (its top line continues the roof's top line in the side view), leaves the skull behind the brow, sweeps back nearly level and curves gently up at the tip.",
-    "path": [
-      [0.15, 1.8, 1.74],
-      [0.165, 1.86, 1.6],
-      [0.18, 1.905, 1.48],
-      [0.2, 1.955, 1.38],
-      [0.215, 1.995, 1.3],
-      [0.228, 2.035, 1.245],
-      [0.235, 2.095, 1.21]
-    ],
-    "radius": [0.012, 0.03, 0.042, 0.037, 0.027, 0.015, 0.003],
-    "emerge_t": 0.35,
-    "ring_every": 0.045
+    "note": "Measured from the side reference (px 175-284) and checked on the official renders. The horn is the roof's back corner drawn out: its root (r 0.037) fills the side of the roof's back corner behind and above the eye, at eave-to-top height, so the roof's top line runs straight on into the horn's top line. The roof's edge comes back over the eye and wraps under the root as a collar, cradling it; the ear frill tucks in behind, under the horn. From there it sweeps back and up in a long, nearly straight line, barely tapering (r 0.028 -> 0.02) until the last stretch, where it narrows to a point and curls up more steeply. The surface is smooth; the lines are thin incised rings, evenly spaced, wrapping round it, fading out before the tip.",
+    "path": [[0.172, 1.887, 1.487], [0.198, 1.957, 1.37], [0.214, 1.999, 1.297], [0.224, 2.046, 1.245], [0.23, 2.096, 1.213]],
+    "radius": [0.045, 0.036, 0.028, 0.022, 0.016, 0.002],
+    "grooves": {
+      "every": 0.03,
+      "depth": 0.0007,
+      "width": 0.0014,
+      "start_s": 0.11,
+      "end_frac": 0.88
+    },
+    "root": {
+      "z": 1.56,
+      "top_angle": 1.15,
+      "blend": 0.09,
+      "note": "The root's first section is the roof's back corner at z: its outer surface from the eave (side) up to top_angle over the shoulder. It morphs to round over `blend` of the horn's length."
+    }
   },
   "ear_frill": {
     "note": "Sits at the back of the cheek under the horn; its top (front) edge rolls over and curves back to meet the underside of the horn.",

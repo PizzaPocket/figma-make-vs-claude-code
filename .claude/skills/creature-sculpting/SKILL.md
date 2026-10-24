@@ -124,9 +124,12 @@ Check: <what to compare; known differences>
   - Its front edge rolls over like the rim of a horse's ear.
   - The ear opening is a small dark hole on the cheek below it.
 - **Horns (Clay):**
-  - A horn is the back corner of the roof drawn out, not a cone stuck on the skull.
-  - In the side view, the roof's top line carries straight on into the horn's top line.
-  - Build the horn as a spline tube that starts buried in the roof, rises out of it as a ridge, and only gets its rings once it is clear.
+  - **Where it comes from:** a horn is the roof's back corner drawn out, not a cone stuck on the skull. Its root fills the side of the roof's back corner behind and above the eye, from the eave up to the roof top, so the roof's top line runs straight on into the horn's top line.
+  - **How it is held:** the roof's edge comes back over the eye and curls under the root.
+  - **Path:** it sweeps back in a long, nearly straight line, barely tapering, and curls up only in the last stretch.
+  - **Surface:** smooth, *lined but not bumpy*. The rings are hairline incisions plus ink, never raised ridges or a stack of segments.
+- **Roots of attachments.** Grow an attachment out of its host; never plant it on top, and never hide the join with a collar or cuff. Take the host's own cross-section where the attachment leaves it (for a horn: the roof's corner, from the eave up over the shoulder, closed by a chord buried in the head) and loft that section into the attachment's round section over a short blend. The host's lines then flow into the attachment. (A radially flared collar was tried and read as a trumpet bolted on.)
+- **Lines on smooth forms.** Make the line a hairline groove (depth about 2% of the radius) plus ink. Check in the clay render that the silhouette stays smooth: if the outline is scalloped, the grooves are too deep or too wide.
 - **Hands vs feet (Clay):** the front hands are compact with big hooked claws and a high dewclaw. The hind feet are long and digitigrade, with a heel spur and studs along the top.
 - **Widths need a front view.** A side reference gives only lengths and heights. Take widths from the front three-quarter art. Clay's head first read as a horse's head because the widths were guessed narrow.
 - **Draw region edges as lines.** For a colour region whose edge is a drawn line (like the dark plate), store the signed distance to the edge per vertex, not a 0/1 flag. The shader can then draw a clean outline instead of a stair-stepped one.

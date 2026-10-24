@@ -57,16 +57,33 @@ Behind the skull, that same line carries on as the top of the horn:
 
 ## Horns
 
-The horn is not a cone planted on the skull:
-- It starts embedded in the roof's top shoulder above the eye (x ≈ 0.15).
-- It rises out of the roof as a ridge.
-- It leaves the skull behind the brow.
-- It sweeps back nearly level, splaying slightly outward (x 0.18 → 0.235).
-- It curves gently up at the tip.
+**References**
+- Side reference: px 175–284, py 100–230. Crop made with `study_crop.py`.
+- Official art: the flight render, the limited-edition render and *How to Draw*.
 
-**Path:** a Catmull-Rom spline through 7 points (in the data).
-- Radius: 0.012 (buried start) → 0.042 → 0.003 at the tip.
-- Rings every 0.045, starting where the horn leaves the roof.
+**Where it comes from and how it is held**
+- The horn is the roof's back corner drawn out.
+- Its root (r ≈ 0.037–0.045) fills the side of the roof's back corner, behind and above the eye, from the eave up to the roof top.
+- The roof's top line runs straight on into the horn's top line. To meet it, the roof's top rises slightly at the back, to about 1.91.
+- The roof's edge comes back over the eye and curls under the root.
+- The ear frill tucks in behind, under the horn.
+
+**Build**
+- The horn's first cross-section *is* the roof's corner at z 1.56: the outer surface from the eave up to 1.15 rad over the shoulder, closed by a chord buried in the head.
+- Over the first 0.09 of its length that section morphs into the horn's round section, so there is no seam, cuff or planted cone.
+
+**Path:** measured edges, centreline through:
+- (1.487, 1.887) r 0.036
+- (1.37, 1.957) r 0.028
+- (1.297, 1.999) r 0.022
+- (1.245, 2.046) r 0.016
+- tip (1.213, 2.096)
+
+It is a long, nearly straight sweep back and up that barely tapers, then narrows and curls up more steeply at the end. It splays slightly outward, x 0.17 → 0.23.
+
+**Surface:** smooth, *lined but not bumpy*.
+- The rings are hairline incisions (depth 0.0007, width 0.0014, every 0.03), inked in the shader.
+- They start just past the root and fade out at 88% of the length.
 
 ## Nose crest
 
@@ -163,4 +180,4 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 - **Closed eye:** it bulges, because the eye and lid stand out of the socket. The lid should sink into the face as it closes.
 - **Anatomy forms:** the cheekbone, lid pad and masseter now shape the surface but still read soft in the plain clay render. They need more contrast, and the shelf needs a firmer, more continuous top edge.
 - **Back of the head:** the roof's back edge is a flat cap. The neck plates and mane will cover it, but the joint still has to be built.
-- **Horns:** in the front view they still rise a little steeply compared with the limited-edition render.
+- **Horn roots:** a small shading seam shows at the top of each root, where the morph starts. In the art the root also sits a little further back on the corner.
