@@ -88,17 +88,40 @@ Each stage writes files the next stage reads, so any stage can be redone without
 | Stage | Input | Output | Done by |
 | --- | --- | --- | --- |
 | 0. Fetch | Wiki | Source images, location pages (git-ignored) | Script |
-| 1. Trace | Source map | `pyrrhia.geojson`: coastline, kingdom borders, rivers, lakes, mountain ranges, landmarks | Auto-extract, then corrected by hand |
+| 1. Trace | Source map, `map_annotations.json` | `pyrrhia.geojson`: coastline, kingdom borders, rivers, lakes, mountain ranges, landmarks | Auto-extract, then corrected by hand |
 | 2. Region rules | Traced data, wiki text | `regions.yaml`: per-kingdom height range, roughness, biome, landmark notes | Written together |
 | 3. Heightmap | Stages 1–2 | Height image at the chosen world size: traced shapes, then noise, then erosion | Script |
 | 4. Biome / splat maps | Stages 1–3 | Texture-control images (sand, mud, jungle, snow, rock, grass) and vegetation density | Script |
 | 5. Godot import | Stages 3–4 | Terrain3D regions, landmark markers, cell grid | Godot import script |
 
-The first automatic land/sea test on the colored map got the overall shape right. Its known failures, which hand correction in stage 1 will fix:
+### Reading the map in context
 
-- Snowy Ice Kingdom areas read as water.
-- The Sea Kingdom's small islands merged together.
-- Fine coastline detail was lost.
+The map is an illustration, not a survey. Not everything drawn on it is terrain:
+
+- **Labels** sit on white banners with a soft glow. Some float over the sea ("Kingdom of the Sea", "Queen Glacier's Palace"); some cover the coastline itself ("Diamond Spray Delta", the eastern "Scavenger Den").
+- **Decorations**: the compass dragon, sea creatures and border ornaments.
+- **Styling that looks like something else**: the ice mountains are shaded with the same blue as the sea, and the water is covered in ink hatching.
+
+So stage 1 relies on a hand-made annotation file, `data/pyrrhia/map_annotations.json`:
+
+- Every label has a name, one or more boxes, and what it sits on (`water`, `land` or `coast`).
+- Every decoration has a box.
+
+The labels double as our first landmark data: a name and a position for each place.
+
+`tools/map/extract_landmask.py` then separates land from sea:
+
+- Blue only counts as sea if it connects to the open ocean.
+- The drawn black coastline decides where land meets sea.
+- Label backgrounds take the land or sea value of whatever surrounds them, and decorations count as sea.
+
+Known limits:
+
+- Coastlines hidden under `coast` labels are a guess and need checking by hand.
+- Inland lakes (for example the one in the Mud Kingdom) come out as land. They are traced separately in stage 1 because they sit above sea level.
+- A few tiny rocks below about 40 pixels are dropped.
+
+To run it: `pip install -r tools/map/requirements.txt`, then `python3 tools/map/fetch_sources.py`, then `python3 tools/map/extract_landmask.py`. Output goes to `cache/stage1/`.
 
 ## Kingdom terrain notes (first pass)
 
@@ -125,6 +148,6 @@ These are taken from the map art and need checking against the wiki text in stag
 
 ## Next steps
 
-1. Write the fetch script and add the cache folder to `.gitignore`.
-2. Stage 1: auto-extract the coastline and features, then hand-correct them.
+1. Stage 1, continued: hand-check the coast under the two `coast` labels, trace lakes and rivers, and convert the land mask into `pyrrhia.geojson`.
+2. Stage 2: write `regions.yaml` (terrain rules per kingdom), checking each kingdom against its wiki page.
 3. A precision test in Godot: a flat 64 km Terrain3D world with a fast-flying camera. Try both a double-precision build and a floating origin.

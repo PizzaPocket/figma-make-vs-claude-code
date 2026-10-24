@@ -1,3 +1,7 @@
 node_modules/
 dist/
 .DS_Store
+
+# Downloaded source maps and generated map data
+cache/
+__pycache__/

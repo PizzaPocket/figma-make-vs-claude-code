@@ -1,0 +1,289 @@
+{
+  "source": "PyrrhiaColored.png",
+  "coordinate_space": "Pixels in the source image after cropping the decorative border (crop_fraction of the image width from every side). Boxes are [x0, y0, x1, y1]. A label can use several boxes to hug slanted or multi-line text. A label may set \"glow\" (pixels its white halo may extend past its boxes; default 25) when it sits close to a drawn feature.",
+  "crop_fraction": 0.035,
+  "labels": [
+    {
+      "name": "Queen Glacier's Palace",
+      "boxes": [
+        [
+          175,
+          62,
+          415,
+          112
+        ],
+        [
+          175,
+          100,
+          360,
+          172
+        ]
+      ],
+      "sits_on": "water",
+      "glow": 20
+    },
+    {
+      "name": "Ice Kingdom",
+      "boxes": [
+        [
+          340,
+          285,
+          580,
+          365
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Queen Scarlet's Palace",
+      "boxes": [
+        [
+          1110,
+          335,
+          1340,
+          415
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Sky Kingdom",
+      "boxes": [
+        [
+          765,
+          445,
+          1070,
+          670
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Kingdom of the Sea",
+      "boxes": [
+        [
+          1640,
+          530,
+          1975,
+          690
+        ]
+      ],
+      "sits_on": "water"
+    },
+    {
+      "name": "Diamond Spray River",
+      "boxes": [
+        [
+          1125,
+          460,
+          1420,
+          805
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Diamond Spray Delta",
+      "boxes": [
+        [
+          1200,
+          795,
+          1470,
+          890
+        ]
+      ],
+      "sits_on": "coast"
+    },
+    {
+      "name": "Burn's Stronghold",
+      "boxes": [
+        [
+          475,
+          820,
+          640,
+          890
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Under the Mountain",
+      "boxes": [
+        [
+          775,
+          775,
+          1040,
+          1105
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Kingdom of Sand",
+      "boxes": [
+        [
+          380,
+          930,
+          590,
+          1090
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Mud Kingdom",
+      "boxes": [
+        [
+          1345,
+          920,
+          1690,
+          1040
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Scavenger Den (central)",
+      "boxes": [
+        [
+          1125,
+          1010,
+          1275,
+          1155
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Scavenger Den (east)",
+      "boxes": [
+        [
+          1700,
+          1020,
+          1970,
+          1100
+        ]
+      ],
+      "sits_on": "coast"
+    },
+    {
+      "name": "Scorpion Den",
+      "boxes": [
+        [
+          525,
+          1105,
+          755,
+          1180
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Jade Mountain",
+      "boxes": [
+        [
+          725,
+          1185,
+          1005,
+          1250
+        ]
+      ],
+      "sits_on": "land"
+    },
+    {
+      "name": "Rainforest Kingdom",
+      "boxes": [
+        [
+          1225,
+          1235,
+          1655,
+          1365
+        ]
+      ],
+      "sits_on": "land"
+    }
+  ],
+  "decorations": [
+    {
+      "name": "Compass dragon",
+      "box": [
+        1840,
+        160,
+        2075,
+        415
+      ]
+    },
+    {
+      "name": "Sea serpent (west)",
+      "box": [
+        15,
+        550,
+        110,
+        620
+      ]
+    },
+    {
+      "name": "Sea creature (south)",
+      "box": [
+        495,
+        1460,
+        630,
+        1510
+      ]
+    },
+    {
+      "name": "Octopus (southeast)",
+      "box": [
+        1895,
+        1420,
+        1965,
+        1475
+      ]
+    },
+    {
+      "name": "Border corner (NW)",
+      "box": [
+        0,
+        0,
+        90,
+        70
+      ]
+    },
+    {
+      "name": "Border corner (NE)",
+      "box": [
+        2075,
+        0,
+        2165,
+        90
+      ]
+    },
+    {
+      "name": "Border corner (SW)",
+      "box": [
+        0,
+        1520,
+        90,
+        1606
+      ]
+    },
+    {
+      "name": "Border corner (SE)",
+      "box": [
+        2060,
+        1500,
+        2165,
+        1606
+      ]
+    },
+    {
+      "name": "Border ornament (east edge)",
+      "box": [
+        2060,
+        1270,
+        2165,
+        1390
+      ]
+    }
+  ]
+}
