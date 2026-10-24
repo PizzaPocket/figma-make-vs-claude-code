@@ -50,12 +50,12 @@ Traced on the side sheet's colour boundaries, pixel by pixel (dark roof over ora
 
 ## Roof plates
 
-**Few, properly shaped pieces.** An earlier version stacked an underlay, a nose plate, a front plate, overlapping shingle bands, a long strip and a rim row; at the front they lumped into each other. Now:
-- **Front cap:** one solid piece over the front of the snout. Its gabled top and sides run back to the first band joint (profile position s 0.1) and down to the eave; in front it ends in one flat front face down to the lip. The nose comes out of that face.
-- **Bands:** behind the cap, joints every 0.058. Each band is a mirrored pair of tiles meeting at the ridge, running down each side to d 0.075.
+**Pieces of one kind.** An earlier version stacked an underlay, a nose plate, a front plate, overlapping shingle bands, a long strip and a rim row, which lumped into each other at the front; a later one used a separate front cap. Now every piece is the same kind of tile:
+- **Bands:** from the roof's flat front edge back, joints every 0.058. Each band is a mirrored pair of tiles meeting at the ridge, running down each side to d 0.075. The first band starts right at the front edge.
 - **Rim:** the edge row of near-square scutes from d 0.075 down to the eave (joints every 0.068), with lower edges rolled outward.
+- **Front tile:** one tile over the flat front face, from the roof's front edge (its top follows the gable) down to the lip. The nose comes out of it.
 
-**Tiles:** each is a solid of even thickness with a short wall and a narrow 45-degree chamfer at its edges (chamfer 0.003). They abut, with no shingle overlap; the gaps make the drawn lines. A thin dark underlay fills the gaps.
+**Tiles:** each is a solid of even thickness with a short wall and a narrow 45-degree chamfer at its edges (chamfer 0.003). They abut, with no shingle overlap; the gaps make the drawn lines. A thin dark underlay, capped over the face's flat front, fills the gaps.
 
 **Directions:** laid out in coordinates that follow the head's top profile: s along it from the front edge back, d the depth below it, perpendicular. Joints are lines of constant s, running straight from the ridge down to each tile's lower end.
 

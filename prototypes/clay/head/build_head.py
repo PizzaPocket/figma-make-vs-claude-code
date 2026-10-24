@@ -500,109 +500,41 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
     return verts, faces, A, B, NW
 
 
-def front_cap():
-    """The front of the roof: one solid piece. Its gabled top and its sides run back to the first band's
-    joint (profile position nose_plate_s, so the bands behind abut it) and down to the eave; in front it
-    ends in one flat front face that comes down to the lip. Even thickness, crisp chamfered edges; the nose
-    comes out of its front face. _A: distance to its nearest edge."""
-    L = PLATES["layout"]; T = L.get("cap_thickness", PLATES["thickness"])
-    sc = L["nose_plate_s"]; z0 = UPPER[0, 0]
-    under = roof_t(z0)[0]; o = under + T
-    (zt, yt), (zb, yb) = sv_point(sc, 0.0), sv_point(sc, eave_depth(sc))
-    z_back = lambda y: zb + (zt - zb) * min(1.0, max(0.0, (y - yb) / (yt - yb)))  # the joint line, in side view; below it, the eave
-    c = PLATES["chamfer"]
-    ws = edge_samples(60, 0.004)
-    us = edge_samples(40, 0.01)
-    grid = []
-    for u in us:
-        row = []
-        for w in ws:
-            v = -1 + 2 * w
-            z = z0
-            for _ in range(5):  # the back edge follows the joint line, the sides end at the eave
-                th = math.pi / 2 - v * (math.pi / 2 - eave_th(z))
-                zl = z_back(face_pt(z, th)[1])
-                z = zl + (z0 - zl) * u
-            row.append((z, th))
-        grid.append(row)
-    verts, A = [], []
-    for i, row in enumerate(grid):
-        pts = [np.array(face_pt(z, th)) for z, th in row]
-        acc = np.concatenate([[0], np.cumsum([np.linalg.norm(pts[k + 1] - pts[k]) for k in range(len(pts) - 1)])])
-        for j, (z, th) in enumerate(row):
-            x, y = pts[j]; nx, ny = face_normal(z, th)
-            along = (z - grid[0][j][0])  # distance from the back edge
-            dist = min(along, acc[j], acc[-1] - acc[j])
-            h = under + T * chamfer(dist) if i < len(grid) - 1 else under + T
-            verts.append((x + nx * h, y + ny * h, z)); A.append(dist)
-    nu, nw = len(grid), len(ws)
-    faces = []
-    for i in range(nu - 1):
-        for j in range(nw - 1):
-            p = i * nw + j
-            faces.append([p, p + 1, p + nw + 1, p + nw])
-    # the flat front face: the last ring, chamfered forward, then filled across
-    last = np.array(verts[(nu - 1) * nw:]); cen = last.mean(0)
-    base = len(verts)
-    for f, dz in ((1.0, o * 0.5), (1.0 - c / 0.12, o)):
-        for q in last:
-            p = cen + (q - cen) * np.array([f, f, 1.0])
-            verts.append((p[0], p[1], z0 + dz)); A.append(0.02)
-    for k, r0 in enumerate([(nu - 1) * nw, base]):
-        r1 = base + k * nw
-        for j in range(nw - 1):
-            faces.append([r0 + j, r0 + j + 1, r1 + j + 1, r1 + j])
-    ci = len(verts); verts.append((cen[0], cen[1], z0 + o)); A.append(0.02)
-    r = base + nw
-    for j in range(nw - 1):
-        faces.append([r + j, r + j + 1, ci])
-    faces.append([r + nw - 1, r, ci])
-    return verts, faces, A, [0.5] * len(verts), [0.0] * len(verts)
-
-
 def front_plate():
-    """The plate over the flat front face of the box muzzle: from the top edge down to the eave (at the front,
-    the lip). The nose pad runs along its top edge, so the top front corner juts forward a little over the
-    face below, as the side sheet draws the nose tip. _A: distance to its nearest edge."""
-    T, bev, gap = PLATES["thickness"], PLATES["bevel"], PLATES["gap"]
+    """The tile over the flat front face of the snout: from the roof's front edge down to the lip, the same
+    kind of tile as the rest of the roof (even thickness, short wall, narrow chamfer). The nose comes out
+    of it. _A: distance to its nearest edge."""
+    T, gap = PLATES["thickness"], PLATES["gap"]
     z0 = UPPER[0, 0]
     under = roof_t(z0)[0]
-    top = face_pt(z0, math.pi / 2)[1]
     ye = float(np.interp(-z0, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) + gap
-    P = CREST["front_pad"]
-    rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))
-    nj, ni = 14, 20
-    verts, A, NW = [], [], []
-    for j in range(nj + 1):
-        y = ye + (top - 0.002 - ye) * j / nj
-        # full width: out to the outside of the nose plate's sides, so the front caps the snout, not a tray set in it
-        xw = abs(face_pt(z0, side_th(z0, y))[0]) + under + T * 0.9
-        for i in range(ni + 1):
-            u = -1 + 2 * i / ni
-            x = u * xw
-            dist = min(y - ye, (xw - abs(x)) * 4, (top - y) * 3)  # its sides run on into the nose block's sides
-            edge = rnd(dist / bev)
-            pad = P["height"] * smoothstep(top - P["band"], top - 0.008, y) * (1 - 0.5 * u * u)
-            nw = 0.0  # the nostrils are on the sides of the nose block, not on the front face
-            h = (T + pad) * edge - 0.0008 * (dist < 1e-9)
-            verts.append((x, y, z0 + under + h)); A.append(dist); NW.append(nw)
+    apex = face_pt(z0, math.pi / 2)[1]
+    ys = [ye + (apex - ye) * w for w in edge_samples(30, 0.01)]
+    verts, A = [], []
+    for y in ys:
+        xw = abs(face_pt(z0, side_th(z0, y))[0]) - gap / 2  # the outline of the front: up the sides, then the gable
+        for w in edge_samples(40, 0.01):
+            x = (-1 + 2 * w) * xw
+            dist = min(y - ye, xw - abs(x), apex - y)
+            verts.append((x, y, z0 + under + T * chamfer(dist))); A.append(dist)
+    n = len(edge_samples(40, 0.01))
     faces = []
-    for j in range(nj):
-        for i in range(ni):
-            q = j * (ni + 1) + i
-            faces.append([q, q + 1, q + ni + 2, q + ni + 1])
-    return verts, faces, A, [0.3] * len(verts), NW
+    for j in range(len(ys) - 1):
+        for i in range(n - 1):
+            q = j * n + i
+            faces.append([q, q + 1, q + n + 1, q + n])
+    return verts, faces, A, [0.3] * len(verts), [0.0] * len(verts)
 
 
 def roof_plates():
-    """The roof, in few pieces: one front cap over the front of the snout, then bands of tiles behind it,
-    each a mirrored pair meeting at the ridge and running down each side to the rim, and the rim of square
-    marginal scutes down to the eave."""
+    """The roof, in few pieces of one kind: bands of tiles from the roof's front edge back, each a mirrored
+    pair meeting at the ridge and running down each side to the rim; the rim of square marginal scutes
+    down to the eave; and one tile over the flat front face, which the nose comes out of."""
     L = PLATES["layout"]
     pr = profile(); smax = pr["s"][-1]
-    out, seed = [front_cap()], 0
+    out, seed = [front_plate()], 0
     for row in L["rows"]:
-        sc = row.get("start", L["nose_plate_s"])
+        sc = 0.0  # the bands start at the roof's front edge
         while sc < smax - 0.01:
             s1 = min(smax, sc + row["joint_every"])
             dlo = row["d"][0]
@@ -980,7 +912,7 @@ def head_parts():
         key.data.foreach_set("co", to_blender(V + expression_offsets(V, act["terms"])).astype(np.float32).ravel())
 
     # roof: banded shell over the face; its eave stands proud of the orange
-    rz = band_zs(z0 - 0.004, ROOF["back_z"], 60)  # its front end is inside the roof's front cap
+    rz = band_zs(z0 + roof_t(z0)[0], ROOF["back_z"], 60)  # its front cap covers the face's flat front, dark in the gaps round the front tile
     rings, at = [], []
     for z in rz:
         outer, inner, fb = roof_ring(z)

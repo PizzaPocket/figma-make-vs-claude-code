@@ -510,32 +510,28 @@
     "muscle_actions_note": "blink (orbicularis oculi, palpebral part: AU45) is a shape of the lids themselves, built with them"
   },
   "roof_plates": {
-    "note": "The roof in few, properly shaped pieces: one front cap (gabled top, sides down to the eave, a flat front face down to the lip, the nose coming out of it), then bands of tiles behind it, each band a mirrored pair meeting at the ridge, and a rim of square marginal scutes along the eave. Every piece is a solid tile of even thickness with a short wall and a narrow chamfer at its edges; the gaps between them are the drawn lines. Laid out in profile coordinates: s along the top profile from the front edge back, d the depth below it; joints are lines of constant s.",
+    "note": "The roof in pieces of one kind: bands of tiles from the roof's flat front edge back, each band a mirrored pair meeting at the ridge, a rim of square marginal scutes along the eave, and one tile over the flat front face (the nose comes out of it). Every tile is a solid of even thickness with a short wall and a narrow chamfer at its edges; the gaps between them are the drawn lines. Laid out in profile coordinates: s along the top profile from the front edge back, d the depth below it; joints are lines of constant s.",
     "thickness": 0.009,
     "bevel": 0.006,
     "overlap": 0.0,
     "gap": 0.0015,
     "layout": {
-      "nose_plate_s": 0.1,
       "rows": [
         {
           "name": "top bands",
           "wrap": true,
           "d": [0.0, 0.075],
-          "joint_every": 0.058,
-          "start": 0.1
+          "joint_every": 0.058
         },
         {
           "name": "edge row",
           "d": [0.075, null],
           "joint_every": 0.068,
-          "start": 0.1,
           "thickness": 0.012,
           "rim_flare": 0.006,
           "note": "the rim of the roof: square marginal scutes like a turtle shell's edge, thicker than the plates above, their lower edges rolled outward; each one's lower edge steps with the stepped dark_plate_edge"
         }
-      ],
-      "cap_thickness": 0.012
+      ]
     },
     "front_plate": {
       "note": "A plate over the flat front face of the box muzzle, from the top edge down to the eave, above the orange lip band that wraps round the front."
