@@ -2,67 +2,89 @@
   "about": "Clay's head as fitted architectural pieces (see head_sheets.md): an orange face mass, a dark roof shell fitted over it whose back corners continue as the horns, a nose crest on the front of the roof, a hinged jaw, eyes with lids hinged on the canthal axis, and ear frills tucked under the horns. Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side reference; x = Clay's left.",
   "upper_head": {
     "columns": ["z", "top", "lower_edge", "half_width_top", "half_width_low"],
-    "note": "The orange face mass under the roof. Upper lip line, consistent across the official art: the front corner rounds down, then the lip runs straight and nearly level back to below the eye, then sweeps up in a smooth concave curve into the mouth corner and on to under the ear. (The side sheet's dip in the middle of the lip is not in any official image.) The muzzle is a box: it hardly narrows toward the front, with a flat top, near-vertical sides and a flat, near-vertical front face whose corners are only slightly rounded.",
+    "note": "The orange face mass under the roof. Upper lip line, traced on the side sheet (orange face over cream jaw) and the same in How to Draw and the flight render: from the bottom of the nose it slopes down and back, an overhanging lip that is lowest about a third of the way back (z 1.85); from there it rises in a long, slightly concave line to below the eye, then turns sharply up at the mouth corner (z 1.59) and runs back under the cheek to the ear. The muzzle is a box: it hardly narrows toward the front, with a flat top, near-vertical sides and a flat, near-vertical front face whose corners are only slightly rounded.",
     "rows": [
-      [2.017, 1.443, 1.34, 0.092, 0.1],
-      [2.006, 1.465, 1.335, 0.095, 0.104],
-      [1.988, 1.487, 1.332, 0.099, 0.108],
-      [1.953, 1.516, 1.33, 0.105, 0.115],
-      [1.918, 1.574, 1.33, 0.112, 0.123],
-      [1.88, 1.65, 1.33, 0.12, 0.135],
-      [1.848, 1.714, 1.332, 0.13, 0.15],
-      [1.813, 1.746, 1.334, 0.143, 0.168],
-      [1.778, 1.77, 1.336, 0.15, 0.179],
+      [2.017, 1.443, 1.352, 0.092, 0.1],
+      [2.006, 1.465, 1.35, 0.095, 0.104],
+      [1.988, 1.487, 1.343, 0.099, 0.108],
+      [1.953, 1.516, 1.318, 0.105, 0.115],
+      [1.918, 1.574, 1.296, 0.112, 0.123],
+      [1.88, 1.65, 1.272, 0.12, 0.135],
+      [1.848, 1.714, 1.262, 0.13, 0.15],
+      [1.813, 1.746, 1.276, 0.143, 0.168],
+      [1.778, 1.77, 1.294, 0.15, 0.179],
       [1.743, 1.834, 1.34, 0.156, 0.19],
-      [1.706, 1.86, 1.35, 0.169, 0.202],
-      [1.673, 1.88, 1.37, 0.182, 0.213],
-      [1.633, 1.89, 1.4, 0.195, 0.224],
-      [1.6, 1.89, 1.43, 0.202, 0.235],
-      [1.545, 1.902, 1.47, 0.208, 0.241],
-      [1.487, 1.907, 1.521, 0.215, 0.241],
-      [1.44, 1.897, 1.593, 0.215, 0.235],
+      [1.706, 1.86, 1.368, 0.169, 0.202],
+      [1.673, 1.88, 1.386, 0.182, 0.213],
+      [1.633, 1.89, 1.418, 0.195, 0.224],
+      [1.6, 1.89, 1.46, 0.202, 0.235],
+      [1.58, 1.8944, 1.535, 0.2042, 0.2372],
+      [1.545, 1.902, 1.57, 0.208, 0.241],
+      [1.487, 1.907, 1.58, 0.215, 0.241],
+      [1.44, 1.897, 1.597, 0.215, 0.235],
       [1.36, 1.872, 1.66, 0.208, 0.224]
     ],
     "squareness": 5.0
   },
   "lower_jaw": {
     "columns": ["z", "top", "bottom", "half_width"],
-    "note": "Set back under the overhanging upper lip (strong overbite); chin juts forward and down. Its top edge follows the mouth line: low and nearly level to the mouth corner under the eye, then an inward (concave) curve back and up to end under the ear opening.",
+    "note": "Set back under the overhanging upper lip (strong overbite): its chin is a short point at z 1.86, right under the lowest point of the lip; its underside drops back to its lowest at z 1.77 then rises toward the throat (side sheet silhouette). Its top edge runs just inside the upper lip line.",
     "rows": [
-      [1.885, 1.322, 1.262, 0.078],
-      [1.87, 1.325, 1.24, 0.088],
-      [1.837, 1.328, 1.219, 0.1],
-      [1.8, 1.334, 1.212, 0.11],
-      [1.764, 1.337, 1.21, 0.121],
-      [1.72, 1.343, 1.225, 0.138],
-      [1.676, 1.365, 1.268, 0.154],
-      [1.647, 1.384, 1.3, 0.165],
-      [1.6, 1.43, 1.36, 0.176],
-      [1.545, 1.47, 1.4, 0.187],
-      [1.487, 1.521, 1.43, 0.193],
-      [1.44, 1.593, 1.45, 0.187]
+      [1.862, 1.258, 1.248, 0.072],
+      [1.85, 1.258, 1.236, 0.08],
+      [1.83, 1.264, 1.226, 0.092],
+      [1.808, 1.274, 1.216, 0.104],
+      [1.79, 1.284, 1.21, 0.112],
+      [1.773, 1.294, 1.206, 0.12],
+      [1.738, 1.33, 1.226, 0.134],
+      [1.703, 1.36, 1.245, 0.148],
+      [1.668, 1.38, 1.268, 0.16],
+      [1.647, 1.39, 1.29, 0.166],
+      [1.6, 1.455, 1.36, 0.176],
+      [1.58, 1.528, 1.375, 0.18],
+      [1.545, 1.555, 1.4, 0.187],
+      [1.487, 1.57, 1.43, 0.193],
+      [1.44, 1.59, 1.45, 0.187]
     ],
     "hinge": [0.0, 1.52, 1.47],
     "squareness": 3.6
   },
   "dark_plate_edge": {
-    "note": "The roof's lower edge, consistent across every depiction (side sheet, How to Draw, flight render, limited edition, graphic novel): a rim of square edge plates, like the marginal scutes of a turtle shell. The rim rises steadily toward the eye; each scute's lower edge rises a little less steeply than the rim as a whole, so there is a small notch (~0.014) at each joint, not a staircase; it sits about mid-height on the side of the muzzle, so the orange below it is a tall band, not a thin lip. Over the eye it steps up, with the eye tucked right under it, then runs back to the horn.",
+    "note": "The roof's lower edge, traced on the side sheet's colour boundary (dark roof over orange face) and checked against How to Draw and the flight render, which agree on its shape: the roof covers the whole nose, down to the lip at the front; from the nose the edge rises only gently for the front third of the muzzle, then turns sharply up in a near-vertical step at about mid-muzzle, climbs steeply and diagonally to the front of the eye, runs over the top of the eye (the eye tucked right under it), steps up again behind the eye and runs back toward the ear. The rim plates (edge row) follow this line.",
     "zy": [
-      [2.03, 1.407],
-      [1.952, 1.4511],
-      [1.948, 1.4651],
-      [1.882, 1.5019],
-      [1.878, 1.5159],
-      [1.817, 1.5491],
-      [1.813, 1.5631],
-      [1.762, 1.589],
-      [1.758, 1.603],
-      [1.729, 1.613],
-      [1.72, 1.745],
-      [1.642, 1.75],
-      [1.638, 1.762],
-      [1.552, 1.772],
-      [1.548, 1.785],
+      [2.03, 1.35],
+      [2.012, 1.352],
+      [1.994, 1.356],
+      [1.953, 1.363],
+      [1.918, 1.376],
+      [1.895, 1.389],
+      [1.872, 1.402],
+      [1.848, 1.415],
+      [1.837, 1.424],
+      [1.831, 1.443],
+      [1.825, 1.469],
+      [1.813, 1.487],
+      [1.811, 1.52],
+      [1.806, 1.545],
+      [1.802, 1.569],
+      [1.79, 1.587],
+      [1.778, 1.605],
+      [1.767, 1.624],
+      [1.755, 1.656],
+      [1.743, 1.682],
+      [1.732, 1.694],
+      [1.72, 1.706],
+      [1.708, 1.714],
+      [1.697, 1.723],
+      [1.673, 1.738],
+      [1.638, 1.75],
+      [1.603, 1.763],
+      [1.592, 1.767],
+      [1.582, 1.8],
+      [1.545, 1.806],
+      [1.51, 1.796],
+      [1.487, 1.778],
+      [1.42, 1.782],
       [1.36, 1.8]
     ]
   },
@@ -156,7 +178,13 @@
   "nose_crest": {
     "note": "The nose pad, sculpted into the nose plate and the front plate: a raised, rounded pad along the top front edge of the box muzzle, highest in the middle and flattening onto the muzzle at the sides. The nostrils are forward-facing slits at its front corners, on the front face just below the top edge (every official image shows them there). It joins the muzzle at the front between the nostrils.",
     "z": [2.035, 1.86],
-    "stations": [[2.035, 0.95, 0.01], [2.0, 1.05, 0.02], [1.97, 0.95, 0.018], [1.95, 0.6, 0.008], [1.935, 0.3, 0.0]],
+    "stations": [
+      [2.035, 0.95, 0.01],
+      [2.0, 1.05, 0.02],
+      [1.97, 0.95, 0.018],
+      [1.95, 0.6, 0.008],
+      [1.935, 0.3, 0.0]
+    ],
     "stations_columns": ["z", "half_angle_rad", "height"],
     "nostril": {
       "note": "on the front plate: slit centre at +-u across the front, below the top edge; size in (u, y)",
@@ -243,7 +271,10 @@
         "kind": "crease",
         "name": "masseter fold over the jowl",
         "why": "The cheek muscle's lower edge folding over the jowl, parallel to and above the rising mouth line.",
-        "zy": [[1.58, 1.493], [1.493, 1.589]],
+        "zy": [
+          [1.58, 1.493],
+          [1.493, 1.589]
+        ],
         "depth": 0.006,
         "width": 0.007
       },
@@ -301,13 +332,19 @@
           },
           {
             "kind": "crease",
-            "zy": [[1.618, 1.703], [1.588, 1.722]],
+            "zy": [
+              [1.618, 1.703],
+              [1.588, 1.722]
+            ],
             "depth": 0.003,
             "width": 0.004
           },
           {
             "kind": "crease",
-            "zy": [[1.618, 1.692], [1.586, 1.688]],
+            "zy": [
+              [1.618, 1.692],
+              [1.586, 1.688]
+            ],
             "depth": 0.003,
             "width": 0.004
           }
@@ -331,19 +368,28 @@
           },
           {
             "kind": "crease",
-            "zy": [[1.8, 1.42], [1.745, 1.5]],
+            "zy": [
+              [1.8, 1.42],
+              [1.745, 1.5]
+            ],
             "depth": 0.005,
             "width": 0.005
           },
           {
             "kind": "crease",
-            "zy": [[1.86, 1.42], [1.84, 1.47]],
+            "zy": [
+              [1.86, 1.42],
+              [1.84, 1.47]
+            ],
             "depth": 0.004,
             "width": 0.004
           },
           {
             "kind": "crease",
-            "zy": [[1.835, 1.415], [1.815, 1.46]],
+            "zy": [
+              [1.835, 1.415],
+              [1.815, 1.46]
+            ],
             "depth": 0.004,
             "width": 0.004
           }
@@ -373,7 +419,10 @@
           },
           {
             "kind": "crease",
-            "zy": [[1.745, 1.7], [1.735, 1.735]],
+            "zy": [
+              [1.745, 1.7],
+              [1.735, 1.735]
+            ],
             "depth": 0.004,
             "width": 0.004
           }

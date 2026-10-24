@@ -27,22 +27,24 @@ The art reads as fitted pieces, not one blob:
 | Lids | Shells hinged on the eye's canthal axis | `lidUpper.L/R`, `lidLower.L/R` |
 | Ear frills | Tucked under the horns at the back of the cheek | `head` (own bones still to do) |
 
-## Roof rim and upper lip line (consistent across every depiction)
+## Roof rim and upper lip line (traced, then checked across the official art)
 
-Read across the side sheet, *How to Draw*, the flight render, the limited-edition render, the graphic novel and the special-edition poster (`all_heads.jpg`), not just the side sheet.
+Traced on the side sheet's colour boundaries, pixel by pixel (dark roof over orange face; orange face over cream jaw), not eyeballed. Then checked against *How to Draw* and the flight render, which agree on the shape. Verified by rendering a true side view at the reference's scale and blending it over the side sheet (`cmp_side`).
 
-**The roof's lower edge** is a rim of square marginal scutes, like the edge of a turtle shell.
-- It sits about mid-height on the side of the muzzle, so the orange below it is a tall band, not a thin lip.
-- It rises steadily from the nose to the eye. Each scute's lower edge rises a little less steeply, giving a small notch (~0.014) at each joint. It is not a staircase: tall steps were tried and looked wrong.
-- Over the eye it steps up, with the eye tucked right under it.
-- The rim scutes are thicker than the plates above, and their lower edges roll outward.
+**The roof's lower edge**
+- The roof covers the whole nose: at the front it comes down to the lip.
+- From the nose it rises only gently for the front third of the muzzle (z 1.99 to 1.84, y 1.356 to 1.42).
+- At about mid-muzzle it turns sharply up in a near-vertical step (z 1.83 to 1.81, up to y 1.55).
+- It then climbs steeply and diagonally to the front of the eye, runs over the top of the eye with the eye tucked right under it, steps up again behind the eye (z 1.59) and runs back toward the ear.
+- The rim plates (edge row) follow this line; they are thicker than the plates above, with lower edges rolled outward like a turtle shell's margin.
+- An earlier pass drew this as a steady diagonal at mid-height: up to 0.07 too high in the front half and missing the step. That was wrong.
 
 **The upper lip line**
-- The front corner rounds down.
-- It then runs straight and nearly level back to below the eye.
-- From there it sweeps up in a smooth concave curve into the mouth corner and on to under the ear.
-- The jaw's top edge follows it.
-- The side sheet's dip in the middle of the lip appears in no official image, so it is not modelled.
+- From the bottom of the nose it slopes down and back: an overhanging lip, lowest about a third of the way back (z 1.85, y 1.26). *How to Draw* and the flight render show the same overhang.
+- From there it rises in a long, slightly concave line to below the eye.
+- At the mouth corner (z 1.59) it turns sharply up, then runs back under the cheek to the ear.
+- The lower jaw's chin is a short point right under the lip's lowest point (z 1.86); its top runs just inside the lip line, up into the mouth corner.
+- An earlier pass flattened this into a level line and called the dip a side-sheet quirk. That was wrong: the overhang is in every depiction.
 
 ## Roof plates
 
