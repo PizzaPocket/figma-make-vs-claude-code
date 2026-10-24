@@ -61,7 +61,7 @@
     },
     "squareness": [[0.0, 2.4], [1.0, 2.2], [2.3, 2.2], [5.72, 2.0]],
     "zones": {
-      "note": "fraction of the visible side from dorsal (0) to ventral (1) where the dark back ends and the cream underside begins, read on the sheet. Behind the forelegs the cream comes all the way up to the dark back (no orange band).",
+      "note": "On the neck and torso the zone edges are measured side-view lines, not fractions. The dark edge is the line of small square plates: from behind the ear it runs back and then straight DOWN the side of the neck into the shoulder, round the bottom of the dark shoulder patch, and back along the wing arm. The cream edge bounds the wide throat band, down the front of the neck into the chest; behind the forelegs the cream rises to meet the dark edge (no orange band). On the tail (after lines_until_s) the edges are side fractions.",
       "columns": ["s", "dark_to", "cream_from"],
       "rows": [
         [0.0, 0.3, 0.72],
@@ -71,7 +71,100 @@
         [2.2, 0.42, 0.45],
         [2.6, 0.5, 0.52],
         [5.72, 0.5, 0.52]
-      ]
+      ],
+      "dark_edge_px": [
+        [199, 227],
+        [252, 229],
+        [293, 235],
+        [326, 243],
+        [347, 255],
+        [363, 272],
+        [375, 296],
+        [388, 325],
+        [396, 350],
+        [404, 382],
+        [412, 415],
+        [420, 448],
+        [429, 481],
+        [445, 509],
+        [470, 525],
+        [520, 532],
+        [560, 522],
+        [580, 495],
+        [600, 465],
+        [700, 447],
+        [800, 445],
+        [880, 452]
+      ],
+      "dark_region_px": [
+        [199, 227],
+        [252, 229],
+        [293, 235],
+        [326, 243],
+        [347, 255],
+        [363, 272],
+        [375, 296],
+        [388, 325],
+        [396, 350],
+        [404, 382],
+        [412, 415],
+        [420, 448],
+        [429, 481],
+        [445, 509],
+        [470, 525],
+        [520, 532],
+        [560, 522],
+        [580, 495],
+        [600, 465],
+        [700, 447],
+        [800, 445],
+        [880, 452],
+        [960, 470],
+        [960, 0],
+        [150, 0],
+        [150, 227]
+      ],
+      "cream_edge_px": [
+        [190, 342],
+        [252, 374],
+        [277, 407],
+        [306, 448],
+        [334, 481],
+        [363, 513],
+        [380, 546],
+        [395, 600],
+        [410, 650],
+        [480, 610],
+        [540, 555],
+        [585, 500],
+        [605, 470],
+        [700, 455],
+        [800, 452],
+        [880, 458]
+      ],
+      "cream_region_px": [
+        [190, 342],
+        [252, 374],
+        [277, 407],
+        [306, 448],
+        [334, 481],
+        [363, 513],
+        [380, 546],
+        [395, 600],
+        [410, 650],
+        [480, 610],
+        [540, 555],
+        [585, 500],
+        [605, 470],
+        [700, 455],
+        [800, 452],
+        [880, 458],
+        [960, 476],
+        [960, 1100],
+        [100, 1100],
+        [100, 342]
+      ],
+      "lines_until_s": 2.45
     },
     "front_overlap": 0.06,
     "tail_pose": {
@@ -94,6 +187,116 @@
       ],
       "tail_from": 2.3,
       "tail_count": 12
+    },
+    "sculpt": {
+      "note": "Muscle masses sculpted into the trunk, and colour patches over them (mirrored). The shoulder is not a separate piece: the scapula and deltoid swell the side of the chest over the top of the upper arm, and the dark back runs down over it as a rounded patch (side sheet px 400-575, py 380-532), rimmed below by small square plates.",
+      "masses": [
+        {
+          "name": "shoulder (scapula and deltoid)",
+          "centre": [0.5, 1.06, 0.62],
+          "radii": [0.3, 0.26, 0.28],
+          "amount": 0.07
+        }
+      ],
+      "patches": [
+        {
+          "name": "dark shoulder patch",
+          "centre_zy": [0.62, 1.1],
+          "radii": [0.25, 0.21],
+          "zone": 0.0,
+          "x_min": 0.25
+        }
+      ]
+    }
+  },
+  "front_leg": {
+    "note": "Measured on the side sheet's near front leg (fleg crop, px 330-700, py 380-870): a big dark rounded shoulder mass rimmed below by small square plates; a heavy orange upper arm running down and back to an elbow that points backward (~0.64 long); a forearm column angling down and forward to a low wrist (~0.67), cream along its back; a compact hand (~0.3) with three big hooked dark claws and a dewclaw high on the back of the wrist. The sheet's far leg steps forward; the rest pose uses the near leg's pose on both sides. Thickness: the upper arm is a huge muscular mass (about 0.5 deep near the shoulder), the forearm a heavy column; the shoulder sits on the outside of the broad chest.",
+    "joints": {
+      "shoulder": [0.46, 1.04, 0.64],
+      "elbow": [0.5, 0.6, 0.17],
+      "wrist": [0.48, 0.11, 0.52],
+      "knuckles": [0.48, 0.05, 0.66]
+    },
+    "path": [
+      [0.46, 1.04, 0.64],
+      [0.49, 0.82, 0.42],
+      [0.5, 0.6, 0.17],
+      [0.49, 0.36, 0.33],
+      [0.48, 0.13, 0.5],
+      [0.48, 0.06, 0.6],
+      [0.48, 0.05, 0.66]
+    ],
+    "radius": [0.27, 0.23, 0.15, 0.13, 0.1, 0.085, 0.065],
+    "aspect": [0.75, 0.7, 0.75, 0.75, 0.85, 1.3, 1.4],
+    "aspect_note": "side-to-side width over front-to-back depth of each section (the hand is broad and flat)",
+    "cream_back": {
+      "from": 0.45,
+      "to": 0.9,
+      "width": 0.5,
+      "note": "along the back of the forearm and wrist (fraction of the limb's length; width as a fraction of the half-circumference)"
+    },
+    "toes": {
+      "count": 3,
+      "spread_deg": [-22, 0, 22],
+      "base_offset_x": [-0.055, 0, 0.055],
+      "segments": [0.07, 0.05],
+      "radius": [0.035, 0.028],
+      "drop_deg": [25, 35],
+      "claw": {
+        "length": 0.1,
+        "radius": 0.026,
+        "hook_deg": 80
+      }
+    },
+    "dewclaw": {
+      "at": [0.52, 0.22, 0.46],
+      "direction": [0.15, 0.0, -1.0],
+      "length": 0.07,
+      "radius": 0.02
+    }
+  },
+  "hind_leg": {
+    "note": "Measured on the side sheet (tail crop): the hind leg is drawn in a deep crouch. The thigh, mostly hidden behind the wing, runs down from the hip to a low knee (~px 895, py 720); the shin runs back to the heel near the ground (~px 1090, py 812), cream down its back; the long digitigrade foot runs forward from the heel along the ground to the ball of the foot (~px 900) with dark square studs along its top; four longer, splayed toes with claws; a spur claw at the heel points back. Thigh muscle mass from the official art (How to Draw, limited edition): a big rounded orange haunch.",
+    "joints": {
+      "hip": [0.42, 0.9, -0.62],
+      "knee": [0.5, 0.33, -0.55],
+      "heel": [0.48, 0.07, -1.12],
+      "ball": [0.47, 0.045, -0.6]
+    },
+    "leg_path": [[0.42, 0.9, -0.62], [0.48, 0.6, -0.5], [0.5, 0.33, -0.55], [0.5, 0.2, -0.84], [0.48, 0.08, -1.1]],
+    "leg_radius": [0.33, 0.25, 0.15, 0.11, 0.08],
+    "leg_aspect": [0.75, 0.7, 0.8, 0.8, 0.9],
+    "cream_back": {
+      "from": 0.5,
+      "to": 1.0,
+      "width": 0.5
+    },
+    "foot_path": [[0.48, 0.07, -1.13], [0.48, 0.055, -0.9], [0.47, 0.045, -0.6]],
+    "foot_radius": [0.075, 0.065, 0.06],
+    "foot_aspect": [1.0, 1.5, 1.7],
+    "toes": {
+      "count": 4,
+      "spread_deg": [-30, -10, 10, 30],
+      "base_offset_x": [-0.07, -0.025, 0.025, 0.07],
+      "segments": [0.09, 0.07, 0.05],
+      "radius": [0.034, 0.03, 0.026],
+      "drop_deg": [8, 15, 25],
+      "claw": {
+        "length": 0.09,
+        "radius": 0.024,
+        "hook_deg": 70
+      }
+    },
+    "spur": {
+      "at": [0.48, 0.09, -1.16],
+      "direction": [0.0, -0.3, -1.0],
+      "length": 0.08,
+      "radius": 0.022
+    },
+    "studs": {
+      "count": 5,
+      "size": [0.035, 0.022, 0.04],
+      "lift": 0.065
     }
   }
 }

@@ -74,6 +74,8 @@ The user reviews every step by eye. Their notes are the most valuable input, and
   - Give it rounded edges, thicker toward its back edge, overlapping the next one back like a shingle.
   - The gaps make the drawn lines, consistently.
 - **Lay plates out in the art's own directions.** Joints run perpendicular to the form's flow line, and strips run along it. Use coordinates that follow the profile: s along it, d the depth perpendicular to it. On a sloping muzzle the joints are therefore not vertical cuts.
+- **Colour and pattern edges are measured lines.** Trace a zone edge as a side-view polyline from the art. Don't use a fraction of the body's depth: a fraction runs parallel to the spine, while the art's edges sweep (Clay's dark neck edge drops straight down into the shoulder).
+- **Measure pattern rhythm.** Scan across the ink lines on the sheet to get each pattern's spacing (bands, plates, scales). Lay patterns out in model units, not normalised parameters, so sizes stay true on thick and thin parts. Put the pattern's wrap-around seam on a hidden side.
 - **Resolution must match the sharpest edge.** The mesh spacing must be finer than the narrowest crease or overhang, or it renders soft.
 - **Smooth, never stepped.** When carving or uniting surfaces (sockets, fillets), use a smooth minimum, and clamp it so it never cuts into a neighbouring part.
 

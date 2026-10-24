@@ -52,12 +52,21 @@
           if (isP(20.0) > 0.5) { // trunk: dark back, orange side, cream underside (vAB: s along the spine, side fraction, zone)
             float zv = vAB.z;
             float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 14.0));
-            vec3 back = mix(dark, line, lineAt(fract(vAB.x / 0.09), 0.04) * 0.6);
+            vec3 back = mix(dark, line, lineAt(fract(vAB.x / 0.10), 0.04) * 0.6); // back plates ~0.08-0.12 apart (measured)
             vec3 side = mix(orange, line, pe * 0.25);
-            vec3 belly = mix(cream, line, lineAt(fract(vAB.x / 0.055), 0.05) * 0.35);
+            vec3 belly = mix(cream, line, lineAt(fract(vAB.x / 0.095), 0.035) * 0.45); // ventral bands ~0.09-0.10 apart (measured)
             col = zv < 0.5 ? mix(back, side, zv * 2.0) : mix(side, belly, zv * 2.0 - 1.0);
             groove = pe * 0.3 * (1.0 - abs(zv - 0.5) * 2.0);
           }
+          if (isP(21.0) > 0.5) { // limb skin: plates in columns along the limb, ~0.10 long x 0.075 across (measured), organically warped
+            float r = vAB.x / 0.10, c = vAB.y / 0.075;
+            r += 0.16 * sin(c * 1.7 + floor(c) * 2.3); c += 0.1 * sin(r * 1.3 + floor(r) * 1.7);
+            float pl = max(lineAt(fract(r), 0.045), lineAt(fract(c), 0.04));
+            float tint = hash3(vec3(floor(r), floor(c), 3.0)).x;
+            col = mix(mix(orange * (0.94 + 0.12 * tint), cream, vAB.z), line, pl * 0.5); groove = pl * 0.6;
+          }
+          if (isP(22.0) > 0.5) { col = mix(dark, dark * 1.15, vAB.x); rough = 0.5; } // dark shoulder mass
+          if (isP(23.0) > 0.5) { col = srgb(vec3(72.0, 50.0, 58.0)); rough = 0.25; } // claws
           if (isP(2.0) > 0.5) { // cream lower jaw with bands
             float band = lineAt(fract((2.05 - vObj.z) / 0.06), 0.03);
             col = mix(cream, line, band * 0.3); groove = band * 0.5;
