@@ -160,6 +160,107 @@ def sculpt_trunk(q, centre, zone):
     return q, zone
 
 
+_TF = {}
+
+
+def trunk_surface(s, th):
+    """A point on the trunk (with its muscle masses) at spine position s and angle th (0 dorsal,
+    +pi/2 Clay's left), and the outward direction there."""
+    if not _TF:
+        _TF["f"] = trunk_frames()
+    s_all, P, DU, DV, N, Bv = _TF["f"]
+    i = int(np.clip(np.searchsorted(s_all, s), 1, len(s_all) - 1))
+    t = (s - s_all[i - 1]) / (s_all[i] - s_all[i - 1])
+    lerp = lambda X: X[i - 1] * (1 - t) + X[i] * t
+    p, du, dv, n, b = lerp(P), lerp(DU), lerp(DV), H.norm(lerp(N)), H.norm(lerp(Bv))
+    nsq = table(TR["squareness"], s)
+    wf = table(TR["width"]["factor"], s) * (du + dv) / 2
+    c, sn = math.cos(th), math.sin(th)
+    v = (du if c > 0 else dv) * math.copysign(abs(c) ** (2 / nsq), c)
+    w = wf * math.copysign(abs(sn) ** (2 / nsq), sn)
+    q = p + n * v + b * w
+    q, _ = sculpt_trunk(q, p, 0.0)
+    out = H.norm(q - p)
+    return q, out
+
+
+def carapace_edge(s):
+    """Angle from the dorsal line at which the dark back ends at s (the rim of the carapace)."""
+    for th in np.linspace(0.05, math.pi - 0.05, 120):
+        q, _ = trunk_surface(s, th)
+        if zone_value(s, (1 - math.cos(th)) / 2, q[2], q[1]) > 0.25:
+            return th
+    return math.pi - 0.05
+
+
+def carapace_plate(s0, s1, th0, th1, nv, ranges, thick, lift, flare=0.0, seed=0, wrap=False):
+    """A shell plate over the trunk between s0..s1 and angles th0..th1 (functions of s), raised by lift,
+    bevelled, thicker toward its back edge and overlapping the next one back. With flare, its outer edge
+    rolls outward like a turtle shell's margin."""
+    C = B["carapace"]; bev, ov, gap = C["bevel"], C["overlap"], C["gap"]
+    s0g, s1g = s0 + gap / 2, s1 - gap / 2 + ov
+    nu = max(4, int((s1g - s0g) / 0.01))
+    rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))
+    verts, A, Bq, W = [], [], [], []
+    tint = (math.sin(seed * 12.9898) * 43758.5453) % 1.0
+    for i in range(nu + 1):
+        u = i / nu; sc = s0g + (s1g - s0g) * u
+        a0, a1 = th0(sc), th1(sc)
+        if not wrap:
+            a0, a1 = a0 + gap * 2, a1 - gap * 2
+        row = [trunk_surface(sc, a0 + (a1 - a0) * j / nv) for j in range(nv + 1)]
+        acc = np.concatenate([[0], np.cumsum([np.linalg.norm(row[k + 1][0] - row[k][0]) for k in range(nv)])])
+        Lv, Ls = acc[-1] + 1e-6, s1g - s0g
+        for j, (q, out) in enumerate(row):
+            dist = min(u * Ls, (1 - u) * Ls * 2.5, acc[j], Lv - acc[j])
+            e = rnd(dist / bev)
+            rim = flare * smoothstep(0.5, 1.0, j / nv) if not wrap else 0.0
+            h = lift + (thick * (0.7 + 0.3 * u) + rim) * e
+            verts.append(tuple(q + out * h)); A.append(dist); Bq.append(tint); W.append(trunk_weights(sc, ranges))
+    faces = []
+    for i in range(nu):
+        for j in range(nv):
+            q = i * (nv + 1) + j
+            faces.append([q, q + 1, q + nv + 2, q + nv + 1])
+    return verts, faces, A, Bq, W
+
+
+def carapace_parts(ranges):
+    """The dark back as a turtle-shell carapace over the trunk: transverse bands wrapping over the top
+    down to the rim, and a rim of square marginal scutes along the measured dark edge (mirrored)."""
+    C = B["carapace"]
+    edge = {}
+    def th_edge(s):
+        k = round(s / 0.02) * 0.02
+        if k not in edge:
+            edge[k] = carapace_edge(k)
+        return edge[k]
+    parts = []
+    band_to = lambda s: th_edge(s) - C["rim"]["height"] / max(0.05, trunk_radius(s))
+    s, k = C["from_s"], 0
+    while s < C["to_s"]:
+        s1 = min(C["to_s"], s + C["band_every"] * (1 if s < TR["bones"]["tail_from"] else C["tail_scale"]))
+        v, f, A, Bq, W = carapace_plate(s, s1, lambda x: -band_to(x), band_to, 16, ranges, C["thickness"], C["lift"], seed=k, wrap=True)
+        parts.append(H.add_part(f"Back{k}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": Bq, "_ZONE": [0] * len(v)}, W))
+        s, k = s1, k + 1
+    R = C["rim"]
+    for side in (1, -1):
+        s, j = C["from_s"] + R["offset"], 0
+        while s < C["to_s"]:
+            s1 = min(C["to_s"], s + R["every"] * (1 if s < TR["bones"]["tail_from"] else C["tail_scale"]))
+            lo = (lambda x: band_to(x)) if side > 0 else (lambda x: -th_edge(x))
+            hi = (lambda x: th_edge(x)) if side > 0 else (lambda x: -band_to(x))
+            v, f, A, Bq, W = carapace_plate(s, s1, lo, hi, 4, ranges, R["thickness"], C["lift"], flare=R["flare"] if side > 0 else 0.0, seed=100 + j)
+            parts.append(H.add_part(f"Rim{j}{side}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": Bq, "_ZONE": [0] * len(v)}, W))
+            s, j = s1, j + 1
+    return parts
+
+
+def trunk_radius(s):
+    st = np.array(TR["stations"])
+    return (table(st, s, 3) + table(st, s, 4)) / 2
+
+
 def trunk_part(ranges, around=72):
     s_all, P, DU, DV, N, Bv = trunk_frames()
     verts, faces, A, Bf, Z, W = [], [], [], [], [], []
@@ -341,6 +442,7 @@ def main():
     tb, ranges = trunk_bones()
     objs, head_bones = H.head_parts()
     objs.append(trunk_part(ranges))
+    objs += carapace_parts(ranges)
     neck_end = TR["bones"]["chain_forward"][-1][0]
     bones = tb + [(n, h, t, p or neck_end) for n, h, t, p in head_bones]
     for sgn in (1, -1):

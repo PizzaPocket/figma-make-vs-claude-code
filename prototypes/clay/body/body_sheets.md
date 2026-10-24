@@ -15,7 +15,8 @@ has its own sheets in `../head/head_sheets.md`.
 | --- | --- | --- |
 | Neck, torso, tail | one continuous loft along a curved spine (the "trunk"), skinned to spine bones | first pass |
 | Head join | the trunk runs on into the head's back; head bone parented to the last neck bone | first pass |
-| Dorsal plates, border squares, neck scales, ventral bands, tail studs | plates and sculpted rows on the trunk | to do |
+| Carapace (the dark back) | its own shell fitted over the trunk: transverse bands, and a rim of square marginal scutes with rolled edges | first pass |
+| Neck scales, ventral bands, tail studs | sculpted rows and plates on the trunk | to do |
 | Mane | spines along the neck and back, on spring bones | to do |
 | Front legs and hands | shoulder sculpted into the trunk (dark patch), upper arm, forearm, compact hand: big hooked claws, high dewclaw | first pass |
 | Hind legs and feet | thigh + shin loft, long digitigrade foot loft, four splayed toes, heel spur, studs on top | first pass |
@@ -51,7 +52,6 @@ Patterns are laid out in model units along and around each part, so they stay th
 **Rig:** hips → spine → chest → neck1–4 → head; tail1–12 from the hips, getting shorter toward the tip.
 
 **Known differences**
-- The dark back is still paint on the trunk. Like the head's roof, it should be its own overlapping plates fitted over the trunk, with the border squares as a row of small tiles along the dark edge.
 - The neck's orange side needs its rows of rounded scales, and the throat and belly bands should be real stepped plates.
 - The toes are separate tubes pushed into the hands and feet. They should be sculpted into them, with only the claws separate.
 - The hind thigh pokes up the side of the torso; in the sheet it stays below the dark edge.
@@ -59,3 +59,19 @@ Patterns are laid out in model units along and around each part, so they stay th
 - Widths are estimates.
 - No plates, scales, bands, studs or mane yet: the surface only has the zone colours.
 - The orange of the neck reaches too far back.
+
+## Carapace (the dark back)
+
+**References:** the side sheet (neck and torso line maps) and the official art, where the dark back always ends in a rim of small square plates.
+
+**What it is:** not paint. Like the head's roof, the dark back is a shell fitted over the trunk and standing proud of it: a turtle-shell carapace.
+- **Bands:** transverse bands, about 0.09–0.12 apart on the sheet (0.105 in the model; ×0.8 on the tail), wrap over the top and down each side to the rim.
+- **Rim:** a row of small square marginal scutes (~0.06 tall, joints every ~0.055) along the measured dark edge. They are thicker than the bands, with outer edges rolled outward like a turtle shell's margin.
+
+**How it follows the body:** the rim follows the dark edge line, so it sweeps down the side of the neck into the shoulder and runs back along the wing arm and down the tail.
+
+**Build:** the plates are laid on the trunk surface (`trunk_surface(s, θ)`), between the dorsal line and the edge angle found from the zone lines. Each is bevelled, thicker toward its back edge, and overlaps the next one back. They are skinned to the spine bones.
+
+**Known differences**
+- The bands on the neck converge on the inside of the curve; the sheet's neck plates look broader.
+- The mane spikes along the top are not built yet.

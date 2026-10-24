@@ -298,5 +298,24 @@
       "size": [0.035, 0.022, 0.04],
       "lift": 0.065
     }
+  },
+  "carapace": {
+    "note": "The dark back is not paint: like the head's roof it is a shell fitted over the trunk, standing proud of it, a turtle-shell carapace. Transverse bands (~0.09-0.12 apart on the sheet) wrap over the top down to the rim; the rim is a row of small square marginal scutes along the measured dark edge, their outer edges rolled outward like a turtle shell's margin. It runs from behind the head down the tail.",
+    "from_s": 0.04,
+    "to_s": 5.6,
+    "band_every": 0.105,
+    "tail_scale": 0.8,
+    "thickness": 0.014,
+    "lift": 0.006,
+    "bevel": 0.012,
+    "overlap": 0.008,
+    "gap": 0.003,
+    "rim": {
+      "height": 0.06,
+      "every": 0.055,
+      "offset": 0.02,
+      "thickness": 0.02,
+      "flare": 0.012
+    }
   }
 }
