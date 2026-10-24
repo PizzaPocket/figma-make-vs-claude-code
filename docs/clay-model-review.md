@@ -30,7 +30,7 @@ Most glaring first.
    - the sides of the neck;
    - the cheeks;
    - the shoulders and upper forelegs;
-   - the thighs and the legs.
+   - the thighs and the legs (organic, roughly rectangular plates, not a grid).
 
    The model paints an orange stripe the length of the torso.
 3. **The back and tail look like brick walls.** The dark back is covered in long, overlapping, curved plates (like shingles or feathers) with clear outlines, not staggered rectangles. The tail top is the same dark plating, with a row of leaf-shaped studs down the centre line. The cream underside of the tail is a grid of 2–3 columns of plates, which the model roughly has.
@@ -40,6 +40,7 @@ Most glaring first.
    - The forelegs are too short.
    - The hands and feet are too small.
    - The claws are tiny nubs instead of big, dark, hooked claws.
+   - The front hands and hind feet are built the same way, but in the art they differ (see section 2).
 5. **The wings are off.**
    - Finger bones are thick tubes ending in balls; in the art they are slim, jointed bones.
    - The row of square plates along the wing arm, present in every official image, doesn't show.
@@ -59,14 +60,16 @@ written down as data:
   - On the chest it is wide and rises up the sides behind the forelegs to meet the dark back.
   - Some art shows a central seam on the chest plates.
 - **Dark dorsal armour:** long overlapping curved plates from the back of the skull, over the back and down the tail. It is bordered by a line of small square plates where it meets the lighter skin.
-- **Orange regions:** neck sides (rows of rounded scales), cheeks (small pebble scales), shoulders and limbs (a rectangular grid of plates following each limb), with cream on the back of the forelegs.
+- **Orange regions:** neck sides (rows of rounded scales), cheeks (small pebble scales), shoulders and limbs. On the limbs the plates are organic and roughly rectangular, not a grid: they vary in size, curve with the muscles and taper toward the joints. The backs of the forelegs are cream.
 - **Head:** the dark plate runs from the nose over the brow to the horns, in segments. Then the cheek plate, the cream lower jaw, the brow shelf over the eye and the pale ribbed ear frill.
 - **Wings:**
   - The wing arm carries a row of square plates along its leading edge.
   - Five slim fingers, each with a claw at the tip.
   - A thumb claw at the wrist, and the wrist rests on the ground when folded.
   - The membrane has a scalloped trailing edge.
-- **Hands and feet:** three main clawed toes plus a dewclaw, with dark, thick, curved claws.
+- **Front hands and hind feet are built differently:**
+  - **Front hand:** compact and broad, with the wrist close to the ground at the end of a column-like forearm. Three to four short, knuckly toes each end in a very large, thick claw that hooks down. A dewclaw sits high on the back of the wrist, pointing backward.
+  - **Hind foot:** long and digitigrade. The foot runs nearly flat along the ground back to a slightly raised heel, which has a spur claw pointing backward. The toes are longer, slimmer and splayed (four in the How to Draw art), with claws. A row of dark square studs runs along the top of the foot, and the back of the shin and heel is cream.
 
 The covers differ on hue (golden orange to red-orange) and membrane colour. The layout of zones and plates is consistent.
 
@@ -81,7 +84,7 @@ Real game creatures use both.
 
 ### One continuous skinned mesh: the "under-skin"
 
-The neck, torso, limbs, tail, wing arms, lower jaw and throat. These stretch and bend together, so they must be one welded surface with clean edge loops at every joint. Fine scales live here as normal-map detail: neck rows, cheek pebbles, the limb grid.
+The neck, torso, limbs, tail, wing arms, lower jaw and throat. These stretch and bend together, so they must be one welded surface with clean edge loops at every joint. Fine scales live here as normal-map detail: neck rows, cheek pebbles, the limb plates.
 
 **Lower jaw and throat stay part of this skin.** When the jaw opens, the throat skin under it has to stretch, as you described.
 
