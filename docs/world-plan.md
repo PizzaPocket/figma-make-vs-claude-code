@@ -23,25 +23,25 @@ The repo is **public**, so the wiki's map images are **not committed**. A script
 
 ## Scale
 
-**Proposal: a world area of 64 km × 48 km**, matching the map's roughly 4:3 shape and including the sea around the continent.
+**Decision: a world area of 32 km × 24 km**, matching the map's roughly 4:3 shape and including the sea around the continent. (An earlier draft proposed 64 × 48 km; we halved it to keep the world fillable.)
 
-- About 40% of that is land, so roughly **1,200 km² of land**. For comparison, Skyrim is about 37 km² and GTA V about 80 km².
-- Crossing Pyrrhia at a 40 m/s cruise (about 145 km/h) takes about **25 minutes**. At an 80 m/s boost it takes about **13 minutes**.
-- 64 km fits inside Terrain3D's stated limit of 65.5 km at 1 m spacing. We would use 4 m spacing (next section), which raises the ceiling further.
+- About 40% of that is land, so roughly **300 km² of land**: about four times GTA V's land area (about 80 km²).
+- Crossing Pyrrhia at a 40 m/s cruise (about 145 km/h) takes about **13 minutes**. At an 80 m/s boost it takes about **7 minutes**.
+- 32 km fits well inside Terrain3D's stated limit of 65.5 km at 1 m spacing.
 
-At this scale one pixel of the source map covers about 28 m. Everything finer than that (ridges, gullies, dunes, riverbanks) has to be generated, not traced.
+At this scale one pixel of the source map covers about 15 m. Everything finer than that (ridges, gullies, dunes, riverbanks) has to be generated, not traced.
 
-**The pipeline must be scale-independent.** Every stage takes the world size as a setting. We prototype at a small scale (for example 16 × 12 km) and scale up once it plays well. Picking the final size is then a number change, not a rebuild.
+**The pipeline must be scale-independent.** Every stage takes the world size as a setting. We prototype at a small scale (for example 8 × 6 km) and scale up once it plays well. Picking the final size is then a number change, not a rebuild.
 
 ## Terrain resolution and memory
 
 The player mostly sees the terrain from the air, so we can use a coarser grid than a walking game and add close-up detail in the shader.
 
-| Vertex spacing | Grid for 64 × 48 km | Approx. memory (land regions only) |
+| Vertex spacing | Grid for 32 × 24 km | Approx. memory (land regions only) |
 | --- | --- | --- |
-| 1 m | 65k × 49k | over 15 GB, not feasible |
-| 2 m | 32k × 24k | about 4 GB, too heavy without streaming |
-| **4 m** | **16k × 12k** | **about 1 GB, workable on a mid-range desktop GPU** |
+| 1 m | 32k × 24k | about 4 GB, too heavy without streaming |
+| **2 m** | **16k × 12k** | **about 1 GB, workable on a mid-range desktop GPU** |
+| 4 m | 8k × 6k | about 0.25 GB, a fallback for weaker hardware |
 
 The memory estimate assumes Terrain3D's height, control and color maps at 4 bytes each per sample, and that only regions containing land are stored. Open-sea regions cost nothing.
 
@@ -55,16 +55,16 @@ Use **[Terrain3D](https://github.com/TokisanGames/Terrain3D)**, a free Godot ter
 - It has built-in level of detail and texture painting.
 - It has an instancer for scattering vegetation.
 
-**Risk:** Terrain3D does not yet stream regions in and out. It keeps every region loaded, so the 4 m spacing above is what keeps the memory budget sane. Streaming is on its roadmap, and if it arrives we can tighten the spacing.
+**Risk:** Terrain3D does not yet stream regions in and out. It keeps every region loaded, so the 2 m spacing above is what keeps the memory budget sane. Streaming is on its roadmap, and if it arrives we can tighten the spacing.
 
 ### Floating-point precision
 
-Standard Godot builds use 32-bit floats, and objects start to jitter a few kilometres from the world origin. A 64 km world needs one of two fixes:
+Standard Godot builds use 32-bit floats, and objects start to jitter a few kilometres from the world origin. Even a 32 km world needs one of two fixes:
 
 1. **Double-precision Godot build** ("large world coordinates"). This means compiling Godot ourselves, and Terrain3D also has to be built for double precision.
 2. **Floating origin.** Periodically shift the whole world back so the player stays near (0, 0, 0). This works with stock Godot, but every system has to tolerate the shift.
 
-**Decision:** prototype both early, at full 64 km scale, before building anything else on top.
+**Decision:** prototype both early, at full 32 km scale, before building anything else on top.
 
 ### Streaming everything except terrain
 
@@ -151,4 +151,4 @@ These are taken from the map art and need checking against the wiki text in stag
 
 1. Stage 1, continued: trace lakes and rivers, and convert the land mask into `pyrrhia.geojson`.
 2. Stage 2: write `regions.yaml` (terrain rules per kingdom), checking each kingdom against its wiki page.
-3. A precision test in Godot: a flat 64 km Terrain3D world with a fast-flying camera. Try both a double-precision build and a floating origin.
+3. A precision test in Godot: a flat 32 km Terrain3D world with a fast-flying camera. Try both a double-precision build and a floating origin.
