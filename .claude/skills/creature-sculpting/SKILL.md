@@ -79,6 +79,15 @@ Check: <what to compare; known differences>
 
 ## Lessons
 
+- **Look for fitted pieces first.** Before modelling a region, ask which colour areas are separate architectural pieces fitted together. For Clay's head:
+  - the dark roof is a shell over the orange face, with its eave standing proud;
+  - the nose crest sits on the roof;
+  - the horns continue the roof.
+
+  A different colour often means a different solid, not paint.
+- **Find the meridian of every opening.** For an eye, measure the canthal axis (tear duct to the back corner) in the side view. Hinge the lids on that axis: build them as shells parametrised along it and around it, so they pinch to an almond shape and a blink sweeps across along the right angle.
+- **Scan silhouettes column by column.** Scan the side silhouette and look for runs of nearly constant slope. They mark the separate planes: nose crest, forehead, skull, then horn.
+
 - **Nose (Clay):**
   - The dark nose plate is a faceted wedge ending in a prow.
   - The nostril sits at the back top corner of that plate on the side, not at the tip.
@@ -88,7 +97,10 @@ Check: <what to compare; known differences>
   - The frill sits high at the back of the head.
   - Its front edge rolls over like the rim of a horse's ear.
   - The ear opening is a small dark hole on the cheek below it.
-- **Horns (Clay):** a temporal crest runs from the brow back to the horn base. The horn is ringed along its whole length. A "second horn" in a side view is usually the far-side horn.
+- **Horns (Clay):**
+  - A horn is the back corner of the roof drawn out, not a cone stuck on the skull.
+  - In the side view, the roof's top line carries straight on into the horn's top line.
+  - Build the horn as a spline tube that starts buried in the roof, rises out of it as a ridge, and only gets its rings once it is clear.
 - **Hands vs feet (Clay):** the front hands are compact with big hooked claws and a high dewclaw. The hind feet are long and digitigrade, with a heel spur and studs along the top.
 - **Widths need a front view.** A side reference gives only lengths and heights. Take widths from the front three-quarter art. Clay's head first read as a horse's head because the widths were guessed narrow.
 - **Draw region edges as lines.** For a colour region whose edge is a drawn line (like the dark plate), store the signed distance to the edge per vertex, not a 0/1 flag. The shader can then draw a clean outline instead of a stair-stepped one.

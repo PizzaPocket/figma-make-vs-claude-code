@@ -2,8 +2,12 @@
 
 The head built as articulated parts, following `docs/clay-model-review.md`:
 
-- **Rigid upper head:** muzzle, brow and skull back to the ear, on the `head` bone.
-  It carries the horns, eyes, eyelids and ear frills.
+- **Rigid upper head** (`head` bone), made of fitted pieces:
+  - an orange face mass;
+  - a dark banded roof shell over it, whose back corners carry on as the horns;
+  - a nose crest with the nostrils;
+  - eyes and ear frills.
+- **Eyelids** on their own bones, hinged on each eye's canthal axis (blink).
 - **Lower jaw:** hinges open on the `jaw` bone.
 - **Mouth:** palate and floor, upper and lower teeth, and a tongue on `tongue1`–`tongue3`.
 

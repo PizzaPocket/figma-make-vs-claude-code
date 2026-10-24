@@ -1,7 +1,7 @@
 // Test viewer for the head parts: colours from the design rules, jaw and tongue on bones.
 (function () {
   "use strict";
-  // parts: 1 upper head, 2 jaw, 3 mouth interior, 4 teeth, 5 tongue, 6 eye, 7 eyelid, 8 horn, 9 ear frill
+  // parts: 1 face, 2 jaw, 3 mouth interior, 4 teeth, 5 tongue, 6 eye, 7 eyelid, 8 horn, 9 ear frill, 10 roof, 11 nose crest
   const GLSL = `
     varying vec3 vObj; varying float vPart; varying vec3 vAB;
     vec3 srgb(vec3 c) { return pow(c / 255.0, vec3(2.2)); }
@@ -26,21 +26,27 @@
           vec3 dark = srgb(vec3(98.0, 45.0, 33.0)), line = srgb(vec3(58.0, 24.0, 17.0));
           vec3 orange = srgb(vec3(229.0, 88.0, 41.0)), cream = srgb(vec3(241.0, 196.0, 142.0));
           vec3 col = orange; float rough = 0.6; float groove = 0.0;
-          if (isP(1.0) > 0.5) {
-            // dark top plate in segments across the muzzle and brow; orange cheek with pebble scales
-            float seg = lineAt(fract((2.05 - vObj.z) / 0.085), 0.05);
-            vec3 plate = mix(dark * 1.1, dark * 0.9, fract((2.05 - vObj.z) / 0.085));
-            plate = mix(plate, line, seg * 0.85);
+          if (isP(1.0) > 0.5) { // orange face with pebble scales
             float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0));
-            vec3 cheek = mix(orange, line, pe * 0.22);
-            float onPlate = smoothstep(-0.003, 0.003, vAB.z); // vAB.z: signed height above the plate edge
-            col = mix(cheek, plate, onPlate);
-            col = mix(col, line, (1.0 - smoothstep(0.002, 0.005, abs(vAB.z))) * 0.9); // outline where the plate ends
-            // openings: nostril at the back top corner of the nose plate, ear opening below the frill
-            float nos = 1.0 - smoothstep(0.008, 0.013, length(vec2(vObj.z - 1.805, vObj.y - 1.513)));
+            col = mix(orange, line, pe * 0.22);
             float ear = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.420, vObj.y - 1.638)));
-            col = mix(col, line * 0.5, max(nos, ear) * step(0.08, abs(vObj.x)));
-            groove = seg * onPlate + pe * (1.0 - onPlate) * 0.5;
+            float pit = 1.0 - smoothstep(0.004, 0.008, length(vec2(vObj.z - 1.805, vObj.y - 1.513)));
+            col = mix(col, line * 0.5, max(ear, pit) * step(0.08, abs(vObj.x)));
+            groove = pe * 0.5;
+          }
+          if (isP(10.0) > 0.5) { // roof: overlapping bands (geometry), outlined at each band's back edge and along the eave
+            float f = vAB.y;
+            col = mix(dark * 1.12, dark * 0.88, f);
+            col = mix(col, line, smoothstep(0.93, 0.99, f) * 0.9);
+            col = mix(col, line, (1.0 - smoothstep(0.0, 0.025, min(vAB.z, 1.0 - vAB.z))) * step(0.0, vAB.z) * 0.9);
+            if (vAB.z < 0.0) col = line;
+            rough = 0.5;
+          }
+          if (isP(11.0) > 0.5) { // nose crest, nostrils dark under the flares
+            col = mix(dark * 1.05, line, (1.0 - smoothstep(0.0, 0.06, min(vAB.z, 1.0 - vAB.z))) * step(0.0, vAB.z) * 0.8);
+            col = mix(col, vec3(0.012, 0.006, 0.005), smoothstep(0.25, 0.55, vAB.y));
+            if (vAB.z < 0.0) col = line;
+            rough = 0.5;
           }
           if (isP(2.0) > 0.5) { // cream lower jaw with bands
             float band = lineAt(fract((2.05 - vObj.z) / 0.06), 0.03);
@@ -58,7 +64,7 @@
             col = mix(col, vec3(0.01), 1.0 - smoothstep(0.065, 0.075, a));
             rough = 0.08;
           }
-          if (isP(7.0) > 0.5) { col = mix(dark, line, 0.3); }
+          if (isP(7.0) > 0.5) { col = mix(line * 0.6, orange * 0.9, smoothstep(0.18, 0.3, vAB.x)); } // lid, dark rim at the margin
           if (isP(8.0) > 0.5) { col = mix(dark * 0.9, dark * 1.3, vAB.x); col = mix(col, line, vAB.y * 0.7); rough = 0.4; }
           if (isP(9.0) > 0.5) { col = mix(srgb(vec3(246.0, 166.0, 107.0)), srgb(vec3(250.0, 205.0, 160.0)), vAB.x * 0.7); col = mix(col, srgb(vec3(200.0, 120.0, 80.0)), lineAt(fract(vAB.y * 3.0), 0.05) * 0.7); col = mix(col, line, (1.0 - smoothstep(0.0, 0.06, min(vAB.y, 1.0 - vAB.y))) * 0.8); }
           diffuseColor.rgb = col;
@@ -89,7 +95,7 @@
     function resize() { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
     resize();
     const Q = new THREE.Quaternion(), X = new THREE.Vector3(1, 0, 0);
-    function setPose(jawOpen, tongue) {
+    function setPose(jawOpen, tongue, blink) {
       // rotations about the model's x axis, converted into each bone's frame
       for (const n in bones) bones[n].quaternion.copy(bind[n]);
       const apply = (n, ang) => {
@@ -103,10 +109,15 @@
       apply("tongue1", -tongue * 0.3); gltf.scene.updateMatrixWorld(true);
       apply("tongue2", -tongue * 0.4); gltf.scene.updateMatrixWorld(true);
       apply("tongue3", -tongue * 0.5);
+      // blink: each lid bone lies along the eye's canthal axis; a positive turn about it closes the lid
+      for (const n in bones) if (n.startsWith("lid")) {
+        const up = n.startsWith("lidUpper");
+        bones[n].quaternion.copy(bind[n]).multiply(Q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), blink * (up ? 1.2 : 0.25)));
+      }
     }
     return {
-      shot(cam, target, jawOpen, tongue, fov) {
-        setPose(jawOpen || 0, tongue || 0);
+      shot(cam, target, jawOpen, tongue, fov, blink) {
+        setPose(jawOpen || 0, tongue || 0, blink || 0);
         camera.fov = fov || 30; camera.updateProjectionMatrix();
         camera.position.set(...cam); camera.lookAt(...target);
         renderer.render(scene, camera);

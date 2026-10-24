@@ -2,144 +2,135 @@
 
 The working notes behind `head_design.json`. These follow the `creature-sculpting` skill (`.claude/skills/creature-sculpting/SKILL.md`).
 
-Coordinates:
-- Reference pixels are on the 1400-px-wide side reference (Spirit978's sheet).
-- Model units use `z = (700 - px) / 343` and `y = (830 - py) / 343`.
-- x is Clay's left.
+**Coordinates:** reference pixels are on the 1400-px-wide side reference (Spirit978's sheet). Model units use `z = (700 - px) / 343` and `y = (830 - py) / 343`. x is Clay's left.
 
-Official art used for checks:
-- Brianna C. Walsh's *How to Draw*: front three-quarter view.
-- Joy Ang's covers: three-quarter views.
+**Official art used:**
+- *How to Draw* (Brianna C. Walsh): front three-quarter view.
+- The flight render: open mouth, three-quarter view from the front.
+- The limited-edition render.
+- Joy Ang's covers.
 
-## Nose plate and muzzle
+Study crops are made with `scripts/study_crop.py`.
 
-**References**
-- Side reference crop: px 0–120, py 290–420.
-- *How to Draw* front three-quarter view.
+## How the head is put together
 
-**Primary mass:** a wedge.
-- It runs 0.12 deep from the prow (z 2.017) to the back edge of the nose plate (z ≈ 1.82).
-- The front face is blunt and nearly vertical, about 0.08 tall: px 9→12, py 334→362.
+The art reads as fitted pieces, not one blob:
 
-**Structure underneath:** the nasal bones make a flat roof, and the premaxilla makes the blunt front. There is no muscle mass here, so the surfaces are flat.
+| Piece | What it is | Bone |
+| --- | --- | --- |
+| Face | Orange mass of the muzzle, cheeks and skull | `head` |
+| Roof | Dark banded shell fitted over the top of the face, standing proud of it so its eave overhangs the orange. Its back corners carry on as the horns. | `head` |
+| Horns | The roof's back corners drawn out | `head` |
+| Nose crest | A raised pad on the front of the roof, above the upper lip | `head` |
+| Lower jaw | Cream jaw hinged under the face; the mouth line between them | `jaw` |
+| Eyes | Spheres sunk into the face under the eave | `head` |
+| Lids | Shells hinged on the eye's canthal axis | `lidUpper.L/R`, `lidLower.L/R` |
+| Ear frills | Tucked under the horns at the back of the cheek | `head` (own bones still to do) |
 
-**Planes**
-- A flat top that rises toward the brow.
-- Near-vertical sides.
-- Hard edges between the top and the sides (squareness 5).
-- In the art, a soft turn into the front face.
+## Roof
 
-**Drawn lines**
-- The back edge of the nose plate is a **crease**: (1.837, 1.434) → (1.79, 1.62).
-- Plate segment lines run across the top: painted, spaced 0.085.
+**Profile.** The side silhouette, scanned column by column from the reference, has three parts:
+1. The low nose crest at the tip (z 2.03–1.94, y 1.46–1.55).
+2. A steep forehead rise of about 45° (z 1.91→1.70, y 1.65→1.86).
+3. A long, gently rising line over the skull (z 1.70→1.54, y 1.86→1.945).
 
-**Openings:** the nostril.
-- Dent position: z 1.805, y 1.513.
-- It sits at the back top corner of the plate on the side, not at the tip.
+Behind the skull, that same line carries on as the top of the horn:
+- (1.45, 1.965)
+- (1.31, 2.01)
+- (1.24, 2.06)
+- tip (1.21, 2.09)
 
-**Articulation:** rigid, on `head`.
+**Cross-section:**
+- A broad, nearly flat top with steep sides, like a mansard roof over the muzzle.
+- It is a shell offset 0.006–0.010 outside the face.
 
-**Build:** an `upper_head` loft (rows 2.017–1.85), the `dark_plate_edge` line, a crease brush and a dent brush.
+**Bands:**
+- Overlapping transverse bands every 0.058.
+- Each band is thickest at its back edge, like armadillo plates.
+- The steps are real geometry, outlined in the shader.
 
-**Check**
-- The dark plate now reaches the lip at the front.
-- The underside of the overhang is skin, not palate.
+**Eave line** (`dark_plate_edge`):
+- The roof covers the front of the muzzle down to the lip.
+- Its edge rises steeply in front of the eye.
+- It steps up over the eye, so the eye sits tucked under the eave.
+- It then runs back level at about y 1.80.
 
-## Eye, lids and brow
+## Horns
 
-**References**
-- Side crop: px 95–150, py 230–290.
-- *How to Draw*.
-- Covers.
+The horn is not a cone planted on the skull:
+- It starts embedded in the roof's top shoulder above the eye (x ≈ 0.15).
+- It rises out of the roof as a ridge.
+- It leaves the skull behind the brow.
+- It sweeps back nearly level, splaying slightly outward (x 0.18 → 0.235).
+- It curves gently up at the tip.
 
-**Primary mass:** a sphere, measured radius ≈ 0.026. The model uses 0.033, since part of the sphere is sunk into the socket. The eye is sunk 0.55·r into the side plane.
+**Path:** a Catmull-Rom spline through 7 points (in the data).
+- Radius: 0.012 (buried start) → 0.042 → 0.003 at the tip.
+- Rings every 0.045, starting where the horn leaves the roof.
 
-**Structure underneath**
-- The brow is a shelf of bone over the socket. A ridge brush, 0.022 high, runs (1.749, 1.720) → (1.574, 1.793).
-- A cheekbone ridge runs under the eye: (1.735, 1.595) → (1.568, 1.700).
+## Nose crest
 
-**Planes:** the socket is a shallow dent (radius 0.036) between the brow shelf and the cheek ridge.
+**What the art shows:**
+- The nose is its own feature on the top front of the muzzle, above the upper lip.
+- It is a raised pad with a centre ridge.
+- On each side it flares out over a nostril, and the flare flattens onto the plane of the muzzle at the nostril's outer corner.
+- It joins the muzzle at the front, between the nostrils, and fades into the roof behind.
+- In the side reference, the nostril is the curled line at px 36–54, py 312–335.
 
-**Drawn lines**
-- The eye crease behind the lid is a **crease**: (1.671, 1.682) → (1.574, 1.743).
-- The zig-zag line under the eye is still to do. It runs back to the mouth corner and is also a crease.
+**Build:**
+- A shell on the roof surface, from z 2.035 to z 1.86.
+- Its half-width is given as an angle around the roof: 0.95 → 1.05 → 0.3 rad.
+- Its height is 0.01–0.02. The height profile `(1 - u²)^0.8` gives the ridge and the flat outer corners.
+- The nostrils are troughs under the flares (z 2.025–1.945, 50–90% of the way across), shaded dark.
 
-**Look:** every official image shows the eye wide open, with a white ring all round a warm brown iris and a thick dark rim.
-- The shader draws the iris to 0.16 of the sphere angle, with a darker limbal ring and a pupil of 0.07.
-- The lids cover less than before: upper 0.6 rad, lower 0.45 rad.
+The small dark pit at the eave notch in front of the eye (px 81, py 311) is kept as a minor detail. It is not the nostril.
 
-**Articulation:** the eyeball can aim. Lids are separate shells, still to be put on blink bones.
+## Eye and lids
 
-## Crown, temporal crest and horns
+**Eyeball:**
+- Centre (z 1.695, y 1.692), measured at px 120, py 250. Radius 0.031.
+- Sunk 0.55·r into the face, under the eave.
+- Gaze is out and about 30° forward.
 
-**References**
-- Side crop: px 100–290, py 90–250.
-- *How to Draw*: the horns sweep back, then curl up at the tips.
+**Canthal axis** (the eye's meridian):
+- It runs from the tear duct at the front-lower corner (px 114, py 262) to the back corner where the upper crease and the zig-zag lower crease meet (about px 140, py 249).
+- It rises **about 26° toward the back** in the side view.
+- In 3D it lies in the plane of the face side, perpendicular to the gaze, so the back corner sits further out than the front.
 
-**Primary mass:** the cranium is a box behind the brow.
-- Top y ≈ 1.89.
-- Half-width 0.2 at the top and 0.24 low.
-- Widened 1.3× (top) and 1.12× (low) on this pass, since the front view read as a horse's head.
+**Lids:**
+- Each lid is a shell on a sphere 1.1× the eyeball, parametrised by:
+  - ψ along the canthal axis: both lids pinch to the corners, which gives the almond shape;
+  - φ around the axis.
+- The upper margin is 36° above the gaze and the lower margin 42° below. Both margins have a dark rim.
+- **Blink:** each lid bone lies along the canthal axis.
+  - A turn about the axis sweeps the upper lid forward and down across the eye (1.2 rad).
+  - The lower lid rises 0.25 rad to meet it.
 
-**Structure underneath:** a temporal crest runs from the end of the brow back to the horn base. Ridge brush: (1.574, 1.793) → (1.501, 1.851).
+## Cheek, mouth line and jaw
 
-**Horn**
-- A ringed tube along a quadratic path: base (0.13, 1.857, 1.545) → mid (0.19, 1.99, 1.40) → tip (0.26, 2.09, 1.19).
-- It sweeps back at about 45° in the side view and splays outward.
-- Radius 0.036 → 0.024 → 0.004.
-- A ring every 0.05.
+**Mouth line** (measured):
+- It runs low and nearly level from the lip to the mouth corner under the eye (z 1.72, y 1.34).
+- Behind the corner it curves inward (concave) and then up, ending just under the ear opening:
+  (1.65, 1.38) → (1.58, 1.43) → (1.52, 1.48) → (1.48, 1.53) → (1.45, 1.58) → (1.42, 1.62).
+- The face's lower edge and the jaw's top edge both follow this line.
 
-**Note:** the second horn in the side view is the far-side horn. It is not a second pair.
+**Jaw:**
+- Set back under the overhanging lip: a strong overbite.
+- The chin juts forward and down.
+- It hinges at (0, 1.52, 1.47).
 
-**Articulation:** rigid, on `head`.
+The underside of the overhanging lip in front of the jaw is skin, not palate.
 
 ## Ear frill and ear opening
 
-**References**
-- Side crop: px 180–290, py 165–275.
-
-**Primary mass**
-- A cupped leaf about 0.15 long.
-- Base at about (z 1.36–1.41, y 1.77–1.79).
-- It points up and back.
-
-**Look**
-- The front edge rolls over like the rim of a horse's ear (`rolled_front_edge` 0.025).
-- The inside is pale peach with 3 ribs.
-- The rim is orange.
-
-**Opening:** the ear hole is a dent at (1.420, 1.638). It sits below the frill, on the cheek.
-
-**Articulation:** rigid for now. It needs its own bone for ear flicks.
-
-## Cheek, jaw and mouth
-
-**References**
-- Side crop: px 40–260, py 330–430.
-
-**Upper lip**
-- The lower edge of the upper head drops from 1.38 at the prow to 1.28 at z 1.88.
-- It then rises steeply to the mouth corner at about (1.60, 1.47).
-
-**Lower jaw**
-- The jaw is set back under the lip, a strong overbite. Its front is at z 1.885.
-- The chin juts forward and down.
-- Behind the mouth corner, the cream jowl rises to below the ear.
-- Half-widths were widened 1.1× with the cranium.
-
-**Structure underneath:** the masseter fills the cheek between the cheek ridge and the jowl.
-
-**Drawn lines:** the mouth corner is a **crease**: (1.640, 1.410) → (1.575, 1.515).
-
-**Articulation**
-- `jaw` hinges at (0, 1.52, 1.47).
-- The teeth ride on `head` and `jaw`.
-- The tongue is on `tongue1`–`tongue3`.
+- A cupped leaf from the back of the cheek, base (0.20, 1.785, 1.43), up and back to the tip (0.265, 1.905, 1.235).
+- Its rolled front/top edge curves back to meet the underside of the horn.
+- The ear opening is a dark hole at (1.420, 1.638), just above where the mouth line ends.
 
 ## Known differences after this pass
 
-- The cranium and brow still read rounder than the art's crisp planes. A `flatten` brush for the top plane is the next tool to add.
-- The horns rise more steeply in the front view than in the *How to Draw* art. That art has them lower and curling up only at the tips.
-- The zig-zag cheek crease under the eye is missing.
-- The frill is still small next to the art.
-- The upper head does not yet join the neck.
+- **Frills:** seen from above they stick out flat like blades. They should stand up and cup forward.
+- **Closed eye:** it bulges, because the eye and lid stand out of the socket. The lid should sink into the face as it closes.
+- **Eye creases:** the zig-zag lower lid crease and the upper crease are not yet shaped. They belong on the face around the canthal axis.
+- **Back of the head:** the roof's back edge is a flat cap. The neck plates and mane will cover it, but the joint still has to be built.
+- **Horns:** in the front view they still rise a little steeply compared with the limited-edition render.
