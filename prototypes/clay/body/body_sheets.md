@@ -156,3 +156,15 @@ Patterns are laid out in model units along and around each part, so they stay th
 - The floating studs on the hind feet are gone.
 
 **To do:** the dark plates across the top of each finger segment (SE poster). Cream soles and palm.
+
+## Underside
+
+**Seen from below:** there were pits where the trunk, the thigh and the arm met. A real quadruped's muscles fill those places, so the fix is the muscles, not smoothing:
+- **Groin** (0.06 deep): the adductors now run from the underside of the pelvis (under the belly's midline) to the inner knee, as a broad fan.
+- **In front of the thigh** (0.04): a flank fold from the belly to the front of the knee, as on a cat.
+- **Behind the thigh, beside the tail's root** (0.03): the semitendinosus, the inner hamstring, from the ischium to the back of the knee.
+- **Armpit** (0.03): the latissimus and the triceps' long head, from the chest wall behind the elbow to the back of the upper arm.
+
+The four use a wider blend (0.18), so they melt into the belly rather than sitting on it. The remaining crease, under the tail's root where the two inner hamstrings meet, is natural.
+
+**How I measured:** marching cubes at 0.02, then each surface point's depth below a 60-step Laplacian smoothing of the mesh. Clusters deeper than 0.025 are pits.

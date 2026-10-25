@@ -740,5 +740,102 @@
    "label": "how to draw (official)",
    "ref": "{refs}/study/htd_feet.jpg"
   }
+ ],
+ "below": [
+  {
+   "label": "belly from below",
+   "cam": [
+    0.01,
+    -2.2,
+    -0.2
+   ],
+   "target": [
+    0,
+    0.6,
+    -0.2
+   ],
+   "fov": 55,
+   "pose": "neutral"
+  },
+  {
+   "label": "belly from below, plain clay",
+   "cam": [
+    0.01,
+    -2.2,
+    -0.2
+   ],
+   "target": [
+    0,
+    0.6,
+    -0.2
+   ],
+   "fov": 55,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "hind end from below, plain clay",
+   "cam": [
+    0.4,
+    -1.2,
+    -0.9
+   ],
+   "target": [
+    0,
+    0.7,
+    -0.75
+   ],
+   "fov": 60,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "between hind legs, from behind low",
+   "cam": [
+    0.0,
+    0.25,
+    -2.2
+   ],
+   "target": [
+    0,
+    0.6,
+    -0.7
+   ],
+   "fov": 40,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "chest to belly from below front",
+   "cam": [
+    0.0,
+    -0.9,
+    1.6
+   ],
+   "target": [
+    0,
+    0.7,
+    0.0
+   ],
+   "fov": 50,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "inner thigh, low three-quarter",
+   "cam": [
+    1.0,
+    0.05,
+    -0.1
+   ],
+   "target": [
+    0.15,
+    0.6,
+    -0.65
+   ],
+   "fov": 50,
+   "pose": "neutral",
+   "clay": true
+  }
  ]
 }

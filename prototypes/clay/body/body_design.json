@@ -661,15 +661,55 @@
       },
       {
         "name": "adductors",
-        "why": "the inside of the thigh, tied to the belly",
-        "from": [0.08, 0.66, -0.48],
-        "to": [0.36, 0.55, -0.55],
-        "radii": [0.12, 0.08],
+        "why": "the inside of the thigh: from the underside of the pelvis (pubis and ischium, under the belly's midline) to the inner knee, a broad fan that ties the thigh to the belly, so there is no pit in the groin (it was 0.06 deep)",
+        "from": [0.06, 0.68, -0.62],
+        "to": [0.4, 0.42, -0.58],
+        "radii": [0.13, 0.11],
         "hint": [0, 1, 0],
-        "k": 0.1,
+        "k": 0.18,
         "rig": {
           "hips": 0.5,
           "thigh": 0.5
+        },
+        "zone": null
+      },
+      {
+        "name": "flank fold",
+        "why": "the fold of skin and muscle from the belly to the front of the knee (a cat's flank fold): fills the hollow in front of the thigh (0.04 deep)",
+        "from": [0.16, 0.8, -0.3],
+        "to": [0.42, 0.45, -0.5],
+        "radii": [0.07, 0.09],
+        "hint": [1, 0, 0],
+        "k": 0.18,
+        "rig": {
+          "hips": 0.5,
+          "thigh": 0.5
+        },
+        "zone": null
+      },
+      {
+        "name": "semitendinosus",
+        "why": "the inner hamstring, from the ischium under the tail's root to the back of the knee: fills the hollow behind the thigh beside the tail (0.03 deep)",
+        "from": [0.12, 0.8, -0.98],
+        "to": [0.42, 0.42, -0.68],
+        "radii": [0.09, 0.1],
+        "k": 0.18,
+        "rig": {
+          "thigh": 0.6,
+          "hips": 0.4
+        },
+        "zone": null
+      },
+      {
+        "name": "armpit (latissimus and the triceps' long head)",
+        "why": "from the side of the chest behind the elbow to the back of the upper arm: fills the pit behind the elbow (0.03 deep)",
+        "from": [0.16, 0.86, 0.08],
+        "to": [0.38, 0.68, 0.22],
+        "radii": [0.07, 0.08],
+        "k": 0.18,
+        "rig": {
+          "chest": 0.6,
+          "upperarm": 0.4
         },
         "zone": null
       },
