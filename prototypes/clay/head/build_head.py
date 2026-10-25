@@ -137,7 +137,7 @@ def front_setback(x, y):
     lo, top = interp(UPPER, z0, 2), interp(UPPER, z0, 1)
     q = min(1.0, max(0.0, (y - lo) / (top - lo)))
     xo = abs(face_pt(z0, side_th(z0, min(max(y, lo + 1e-4), top - 1e-4)))[0]) or 1e-6
-    across = max(0.0, 1 - (x / xo) ** 2)
+    across = max(0.0, 1 - (x / xo) ** 2) * (1 - smoothstep(0.8, 1.0, q))  # zero all round the outline, its peak included
     return across * (F["convex"] - F["concave"] * math.sin(math.pi * q ** 0.8))
 
 
@@ -269,25 +269,26 @@ def shield(W, H, drop, r, n=16, bulge=0.0):
 
 
 def front_ridge():
-    """The brown ridge across the front of the muzzle, under the nose: the roof's front edge. It covers the front
-    face above the eave (where brown meets orange) right up to the face's outline, so its top follows the convex,
-    gabled curve of the muzzle's front edge, and its bottom is the eave line across. A raised piece of even
-    thickness with rounded edges, laid on the convex front face."""
+    """The front ridge: the roof's front band carried on down over the front of the snout, under the nose, as one
+    simple piece (no mirrored plates, no edge where it turns over the front: it joins the front band without a
+    seam). It covers the front face above the eave; its only edge is its bottom, where it meets the orange front
+    muzzle, and since it lies on the convex front face that edge follows the face's convex curve. That edge rolls
+    over in a quarter round."""
     R = D["upper_head"]["front"]["ridge"]
     z0 = UPPER[0, 0]
     ye = R["eave_y"]
     yt = face_pt(z0, math.pi / 2)[1]
-    T, rr = R["depth"], R["edge_round"]
+    T = PLATES["thickness"] + roof_t(z0)[0]
+    rr = R["edge_round"]
     nu, nv = 48, 18
     rows = []
     for j in range(nv + 1):
-        y = ye + (yt - 0.001 - ye) * j / nv
-        xo = abs(face_pt(z0, side_th(z0, y))[0])
+        y = ye + (yt - ye) * (j / nv) ** 0.8
+        xo = abs(face_pt(z0, side_th(z0, min(y, yt - 1e-4)))[0])
         row = []
         for i in range(nu + 1):
             x = (-1 + 2 * i / nu) * xo
-            dist = min(y - ye, xo - abs(x), yt - y)
-            h = T * math.sqrt(max(0.0, 1 - (1 - min(1.0, dist / rr)) ** 2))  # quarter-round edges
+            h = T * math.sqrt(max(0.0, 1 - (1 - min(1.0, (y - ye) / rr)) ** 2))  # only the bottom edge rolls over
             row.append((x, y, z0 + front_setback(x, y) + h))
         rows.append(row)
     verts = [p for row in rows for p in row]
@@ -505,7 +506,7 @@ def edge_samples(n, frac):
     return sorted(set([0.0, frac, 1 - frac, 1.0] + [k / n for k in range(1, n)]))
 
 
-def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.004):
+def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.004, open_front=False):
     """One roof plate: a solid tile of even thickness with crisp chamfered edges, laid on the underlay over
     profile positions s0..s1 and depths d0..d1 (d1 may be a function of s). With wrap=+1 or -1 it is one
     side of the gable, from the ridge down to depth d1 (the roof's plates meet at the ridge in mirrored
@@ -543,7 +544,7 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
         Lv = acc[-1] + 1e-6
         for j, (z, th, w) in enumerate(row):
             x, y = pts[j]; nx, ny = face_normal(z, th)
-            dist = min(u * Ls, (1 - u) * Ls, acc[j], Lv - acc[j])
+            dist = min(1.0 if open_front else u * Ls, (1 - u) * Ls, acc[j], Lv - acc[j])  # open_front: no edge at the front (it carries on)
             edge = chamfer(dist)
             rim = flare * smoothstep(0.55, 1.0, w) if not wrap else 0.0  # a rim scute's lower edge rolls outward, like a turtle shell's margin
             h = (T + rim) * edge
@@ -580,7 +581,11 @@ def roof_plates():
             s1 = min(smax, sc + row["joint_every"])
             dlo = row["d"][0]
             dhi = (lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002)) if row["d"][1] is not None else (lambda s: eave_depth(s) - 0.002)
-            if row.get("wrap"):
+            if row.get("wrap") and sc == 0.0:
+                # the front band is one piece, not a mirrored pair: it wraps over the ridge down to the eave and carries
+                # on, with no edge, into the front ridge over the front face (front_ridge)
+                out.append(plate(sc, s1, 0.0, lambda s: eave_depth(s) - 0.002, 20, 10 + seed, wrap=True, open_front=True))
+            elif row.get("wrap"):
                 # where the rim below would be too thin to be a plate (at the front, the eave comes up close), the
                 # band runs on down to the eave instead
                 cap = row["d"][1]
@@ -590,7 +595,7 @@ def roof_plates():
                     dh2 = dhi
                 for side in (1, -1):
                     out.append(plate(sc, s1, 0.0, dh2, 10, 10 + seed, wrap=side))
-            elif min(eave_depth(sc), eave_depth(s1)) - 0.002 - dlo >= L.get("min_rim", 0.025):
+            elif sc > 0.0 and min(eave_depth(sc), eave_depth(s1)) - 0.002 - dlo >= L.get("min_rim", 0.025):
                 out.append(plate(sc, s1, dlo, dhi, 6, 10 + seed, thick=row.get("thickness"), flare=row.get("rim_flare", 0.0)))
             sc = s1; seed += 1
     return out
