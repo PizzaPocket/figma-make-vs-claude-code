@@ -231,7 +231,8 @@ def shell(V, F, Z, sh, N, s, f, band, level=0.25):
     in_rim = 1 - in_band
     g, gw = sh["groove_depth"], sh["groove_width"]
     groove = g * np.maximum(in_band * (1 - np.clip(joint / gw, 0, 1)), in_rim * (1 - np.clip(border / gw, 0, 1)) * (du > 0.004))
-    h = (sh["thickness"] + rim + sh["shingle"] * u * in_band) * foot - groove * foot
+    # the shingle falls into the groove at each joint, so the surface has no cliff for the mesh to saw into teeth
+    h = (sh["thickness"] + rim + sh["shingle"] * u * np.clip(joint / gw, 0, 1) * in_band) * foot - groove * foot
     S = Vu + Nu * h[:, None]
     ink = np.minimum(du, np.where(in_band > 0.5, joint, border))
     plate = np.where(in_band > 0.5, np.floor(bc), 1000 + ii[:, 0])
