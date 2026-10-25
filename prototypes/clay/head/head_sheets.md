@@ -168,6 +168,10 @@ The earlier figure of 26° was a straight line from the tear duct to where the c
 
   Poses mix them with the lid bones: neutral, blink, wide, happy, worried, angry and snarl, all in `head_design.json`.
 
+**Round eye (every official image):** the lids open 48 (upper) and 50 (lower) degrees from the gaze, rounded at the measured corners (42 and 60 degrees). They hug the eyeball (thickness 0.05 r, scale 1.01), so there is less dome. The iris is dark warm brown with a large pupil inside a white ring, and a heavy dark ring runs round the whole opening, stopping at the corners. Moving the corners further round (55 degrees) opened a dark wedge behind the eye, so they stay where they were measured.
+
+**Teeth (flight render, limited edition):** small, flat, triangular ivory blades, evenly spaced along the whole lip line: 11 a side upper (z 1.975–1.62) and 8 lower (z 1.85–1.63), a little larger mid-row. Each points perpendicular to its lip edge, not straight down, with its tip raked 12 degrees back toward the throat. No single big fang.
+
 ## Eye and lids (measurements)
 
 **Eyeball:**

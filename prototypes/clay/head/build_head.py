@@ -928,27 +928,40 @@ def head_parts():
     objs.append(add_part("Jaw", v, f, {"_PART": part, "_A": [u[0] for u in uv], "_B": [u[1] for u in uv], "_ZONE": [0] * len(v)},
                          [[("jaw", 1.0)]] * len(v)))
 
-    # teeth: a row along each lip edge, fangs near the front
+    # teeth: small flat triangular blades, evenly spaced along each lip edge, each pointing perpendicular to the
+    # lip line with its tip raked a little back toward the throat (flight render, limited edition)
+    TT = D["teeth"]
     for jaw_side, bone in ((False, "head"), (True, "jaw")):
+        TS = TT["lower" if jaw_side else "upper"]
         vs, fs, ws = [], [], []
+        if jaw_side:
+            edge_y = lambda z: interp(JAW, z, 1)
+            half_w = lambda z: interp(JAW, z, 3) - TS["inset"]
+        else:
+            edge_y = lambda z: interp(UPPER, z, 2)
+            half_w = lambda z: interp(UPPER, z, 4) - TS["inset"]
+        zs = np.linspace(TS["z"][0], TS["z"][1], TS["count"])
         for sgn in (1, -1):
-            for k, z in enumerate(np.linspace(1.86, 1.62, 8)):
-                if jaw_side:
-                    w, edge = interp(JAW, z, 3) - 0.018, interp(JAW, z, 1)
-                else:
-                    w, edge = interp(JAW, z, 3) + 0.004, interp(UPPER, z, 2)
-                length = 0.055 if k == 1 else 0.03 + 0.01 * (k % 2)
-                base_r = 0.014 if k == 1 else 0.010
-                tip = np.array([sgn * w, edge + (length if jaw_side else -length), z])
-                base = np.array([sgn * w, edge, z])
+            for k, z in enumerate(zs):
+                f = k / (len(zs) - 1)
+                length = TS["length"][0] + (TS["length"][1] - TS["length"][0]) * math.sin(math.pi * min(1.0, f * 1.3))
+                dz = 0.004
+                slope = (edge_y(z + dz) - edge_y(z - dz)) / (2 * dz)
+                tang = norm(np.array([0.0, slope, 1.0]))          # along the lip, forward
+                into = np.array([0.0, 1.0 if jaw_side else -1.0, 0.0])
+                into = norm(into - (into @ tang) * tang)            # perpendicular to the lip line, into the mouth gap
+                rake = math.radians(TT["rake_deg"])
+                d = norm(into * math.cos(rake) - tang * math.sin(rake))  # tip raked back toward the throat
+                base = np.array([sgn * half_w(z), edge_y(z), z])
+                bl, bt = length * TT["base_frac"], TT["thickness"]
                 b0 = len(vs)
-                for j in range(6):
-                    a = 2 * math.pi * j / 6
-                    vs.append(tuple(base + np.array([math.cos(a) * base_r, 0, math.sin(a) * base_r])))
-                vs.append(tuple(tip))
-                for j in range(6):
-                    fs.append([b0 + j, b0 + (j + 1) % 6, b0 + 6])
-                ws += [[(bone, 1.0)]] * 7
+                # a flat blade: base a thin diamond along the lip, apex at the tip
+                for p in (tang * bl, np.array([sgn * bt, 0, 0]), -tang * bl, np.array([-sgn * bt, 0, 0])):
+                    vs.append(tuple(base + p - d * 0.004))
+                vs.append(tuple(base + d * length))
+                for j in range(4):
+                    fs.append([b0 + j, b0 + (j + 1) % 4, b0 + 4] if sgn > 0 else [b0 + (j + 1) % 4, b0 + j, b0 + 4])
+                ws += [[(bone, 1.0)]] * 5
         objs.append(add_part("Teeth" + ("Lower" if jaw_side else "Upper"), vs, fs, {"_PART": [4] * len(vs), "_A": [0] * len(vs), "_B": [0] * len(vs), "_ZONE": [0] * len(vs)}, ws))
 
     # tongue: a flattened loft lying on the floor of the mouth, on three bones

@@ -107,20 +107,20 @@
     "sink": 0.9,
     "gaze": [0.85, 0.05, 0.5],
     "canthal_tilt_deg": 45,
-    "lid_scale": 1.02,
-    "lid_thickness": 0.1,
+    "lid_scale": 1.01,
+    "lid_thickness": 0.05,
     "lids": {
       "upper": {
-        "open_deg": 44,
-        "skew": -0.18,
-        "corner_exp_lateral": 0.55,
-        "corner_exp_medial": 0.55
+        "open_deg": 48,
+        "skew": -0.05,
+        "corner_exp_lateral": 0.5,
+        "corner_exp_medial": 0.5
       },
       "lower": {
-        "open_deg": 47,
-        "skew": 0.2,
-        "corner_exp_lateral": 0.55,
-        "corner_exp_medial": 0.6
+        "open_deg": 50,
+        "skew": 0.05,
+        "corner_exp_lateral": 0.5,
+        "corner_exp_medial": 0.55
       },
       "columns_note": "outer/inner_canthus_deg: where the corners sit on the eyeball, measured from the gaze along the canthal axis. open_deg: how far the margin opens from the gaze at mid-eye; skew tilts where it peaks (negative = toward the inner corner); corner_exp near 0.5 keeps the corner rounded, 1 or more closes it to a point.",
       "outer_corner_inset_deg": 2,
@@ -146,7 +146,8 @@
     "corner_bend_deg": {
       "outer": 13,
       "inner": 13
-    }
+    },
+    "round_note": "Every official image shows a round eye: the opening nearly a circle (the lids open 48 and 50 degrees, corners at the measured 42 and 60 degrees from the gaze, rounded), a white ring round a large dark-brown iris and pupil, a heavy dark ring round the whole opening, and the pink tear duct at the lower front corner. The lids hug the eyeball (thickness 0.05 r), so there is no dome."
   },
   "horn": {
     "note": "The horn grows out of the roof: its root is sculpted into the roof plates, which swell up and wrap its base (a smooth union with fillet radius `fillet`), so the roof's top line runs on into the horn's top line. From there it sweeps back and up in a long, nearly straight line, tapering slowly, and curls up only in the last stretch. Smooth, with hairline incised rings.",
@@ -561,5 +562,23 @@
     "emerge": 0.01,
     "sink": 0.04,
     "size_note": "side sheet front outline: the tip juts furthest at y 1.44 (z 2.019); just under it a notch at y 1.414 (z 1.98) where the nose's underside meets the front of the upper jaw, which carries on down to the lip at z 2.0-2.01"
+  },
+  "teeth": {
+    "note": "Flight render and limited edition: small, flat, triangular blades, evenly spaced along the whole lip line, a little larger in the middle of the row; each points perpendicular to the lip edge (not straight down), its tip raked a little back toward the throat. No single big fang.",
+    "rake_deg": 12,
+    "base_frac": 0.45,
+    "thickness": 0.006,
+    "upper": {
+      "z": [1.975, 1.62],
+      "count": 11,
+      "length": [0.026, 0.04],
+      "inset": 0.012
+    },
+    "lower": {
+      "z": [1.85, 1.63],
+      "count": 8,
+      "length": [0.022, 0.034],
+      "inset": 0.016
+    }
   }
 }

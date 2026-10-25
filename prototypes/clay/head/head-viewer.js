@@ -78,13 +78,13 @@
             float a = vAB.x;
             col = srgb(vec3(242.0, 236.0, 226.0));
             // wide-open eye: a white ring shows all round a warm brown iris, as in every official image
-            col = mix(col, srgb(vec3(150.0, 92.0, 44.0)), 1.0 - smoothstep(0.155, 0.165, a));
+            col = mix(col, srgb(vec3(112.0, 66.0, 34.0)), 1.0 - smoothstep(0.155, 0.165, a)); // dark warm brown iris, as in every official image
             col = mix(col, srgb(vec3(70.0, 38.0, 20.0)), (1.0 - smoothstep(0.15, 0.17, abs(a - 0.16) + 0.15)) * 0.8);
-            col = mix(col, vec3(0.01), 1.0 - smoothstep(0.065, 0.075, a));
+            col = mix(col, vec3(0.01), 1.0 - smoothstep(0.085, 0.095, a)); // large pupil
             rough = 0.08;
           }
           if (isP(12.0) > 0.5) { col = srgb(vec3(226.0, 140.0, 150.0)); rough = 0.3; } // caruncle
-          if (isP(7.0) > 0.5) { float pl = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0)); col = mix(line * 0.6, mix(orange, line, pl * 0.22), max(smoothstep(0.18, 0.3, vAB.x), vAB.y)); } // lid, dark rim at the margin (only between the eye's corners)
+          if (isP(7.0) > 0.5) { float pl = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0)); col = mix(line * 0.6, mix(orange, line, pl * 0.22), max(smoothstep(0.27, 0.37, vAB.x), vAB.y)); } // lid: a heavy dark ring round the opening (only between the eye's corners)
           if (isP(8.0) > 0.5) { col = mix(dark * 1.15, dark * 0.8, smoothstep(0.6, 1.0, vAB.x)); col = mix(col, line, smoothstep(0.25, 0.7, vAB.y) * 0.85); rough = 0.35; } // smooth horn, incised ring lines inked
           if (isP(9.0) > 0.5) { // ear frill: pale peach hollow, orange rolled rim round the edge
             float rim = max(smoothstep(0.5, 0.7, abs(vAB.y * 2.0 - 1.0)), smoothstep(0.8, 0.95, vAB.x));
