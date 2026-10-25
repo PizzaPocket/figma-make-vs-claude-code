@@ -291,7 +291,7 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trus
     W, Z, A, T = [], [], [], []
     for n in range(len(V)):
         sc = max(float(s[n]), 0.0)
-        zt = trunk_zone(sc, float(f[n]), V[n, 2], V[n, 1])
+        zt = trunk_zone(sc, float(f[n]), V[n, 2], V[n, 1], V[n, 0])
         acc = {}
         for bn, wt in trunk_weights(sc):
             acc[bn] = acc.get(bn, 0.0) + infl[0, n] * wt

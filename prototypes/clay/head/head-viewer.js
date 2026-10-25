@@ -55,8 +55,10 @@
             vec3 back = mix(dark, line, lineAt(fract(vAB.x / 0.10), 0.04) * 0.6); // back plates ~0.08-0.12 apart (measured)
             vec3 side = mix(orange, line, pe * 0.25);
             vec3 belly = mix(cream, line, lineAt(fract(vAB.x / 0.095), 0.035) * 0.45 * smoothstep(0.5, 0.8, vAB.y)); // ventral bands ~0.09-0.10 apart (measured), on the trunk only (vAB.y: its share)
+            float mer = (1.0 - smoothstep(0.004, 0.008, abs(vObj.x))) * smoothstep(0.1, 0.25, vAB.x) * (1.0 - smoothstep(1.35, 1.55, vAB.x)) * smoothstep(0.5, 0.8, vAB.y);
+            belly = mix(belly, line, mer * 0.55); // the meridian: a seam down the middle of the plates, throat to mid-thorax (How to Draw, box set)
             col = zv < 0.5 ? mix(back, side, zv * 2.0) : mix(side, belly, zv * 2.0 - 1.0);
-            groove = pe * 0.3 * (1.0 - abs(zv - 0.5) * 2.0);
+            groove = pe * 0.3 * (1.0 - abs(zv - 0.5) * 2.0) + mer * 0.5 * smoothstep(0.5, 1.0, zv);
           }
           if (isP(21.0) > 0.5) { // limb skin: plates in columns along the limb, ~0.10 long x 0.075 across (measured), organically warped
             float r = vAB.x / 0.10, c = vAB.y / 0.075;

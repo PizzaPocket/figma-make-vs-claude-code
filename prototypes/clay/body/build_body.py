@@ -129,7 +129,7 @@ def poly_sdist(z, y, poly):
 _ZONES = {}
 
 
-def zone_value(s, f, z=None, y=None):
+def zone_value(s, f, z=None, y=None, x=None):
     """0 dark back, 0.5 orange side, 1 cream underside. On the neck and torso the edges are the measured
     side-view lines (zones.dark_edge_px, zones.cream_edge_px); on the tail, a side fraction f."""
     Zd = TR["zones"]
@@ -147,6 +147,9 @@ def zone_value(s, f, z=None, y=None):
     # the cream underside: the sheet's cream region, or the underside of the body by its place round it
     # (zones.rows), so the throat band wraps under the neck wherever the side view can't show it
     cream = max(cream, smoothstep(fc - 0.015, fc + 0.015, f))
+    if x is not None:  # over the chest the cream is a central band of plates; orange wraps the shoulders round it
+        hw = table(Zd["cream_halfwidth"], s)
+        cream *= 1 - smoothstep(hw - 0.02, hw + 0.02, abs(x))
     by_lines = 0.5 * (1 - dark) + 0.5 * cream * (1 - dark)
     t = smoothstep(Zd["lines_until_s"] - 0.15, Zd["lines_until_s"] + 0.15, s)
     return by_lines * (1 - t) + by_fraction * t
