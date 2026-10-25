@@ -132,12 +132,19 @@
     scene.add(gltf.scene);
     const bones = {}; sk.skeleton.bones.forEach(b => (bones[b.name] = b));
     const bind = {}; for (const n in bones) bind[n] = bones[n].quaternion.clone();
+    // the wings rest spread; the "wings_fold" clip turns their bones to the side sheet's folded pose (0 spread, 1 folded)
+    const fold = (gltf.animations || []).find(a => /wings_fold/.test(a.name));
+    const foldTracks = fold ? fold.tracks.filter(tr => /\.quaternion$/.test(tr.name))
+      .map(tr => ({ node: gltf.scene.getObjectByName(THREE.PropertyBinding.parseTrackName(tr.name).nodeName), it: tr.createInterpolant() }))
+      .filter(t => t.node) : [];
     function resize() { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
     resize();
     const Q = new THREE.Quaternion(), X = new THREE.Vector3(1, 0, 0);
-    function setPose(jawOpen, tongue, lids, morphs) {
+    function setPose(jawOpen, tongue, lids, morphs, wings) {
       // rotations about the model's x axis, converted into each bone's frame
       for (const n in bones) bones[n].quaternion.copy(bind[n]);
+      const w = wings === undefined ? 1 : Math.max(0, Math.min(1, wings));
+      for (const t of foldTracks) t.node.quaternion.fromArray(t.it.evaluate(w * fold.duration));
       const apply = (n, ang) => {
         const b = bones[n]; const wq = new THREE.Quaternion(); b.parent.getWorldQuaternion(wq);
         const axis = X.clone().applyQuaternion(wq.clone().invert()).normalize();
@@ -157,7 +164,7 @@
       }
       // face: muscle actions as morph targets
       const dict = sk.morphTargetDictionary || {};
-      const m = Object.assign({}, morphs || {});
+      const m = Object.assign({ wingfold: w }, morphs || {});
       // blink: in-between shapes blink1..blinkN along the lids' arc; a weight w blends the two steps either side of it
       const nb = Object.keys(dict).filter(k => /^blink\d+$/.test(k)).length;
       if (nb && m.blink !== undefined) {
@@ -168,10 +175,11 @@
       for (const name in dict) sk.morphTargetInfluences[dict[name]] = m[name] || 0;
     }
     return {
-      // pose: {jaw, tongue, lids: [upperIn, upperOut, lower], morphs: {action: weight}} (see head_design.json "expressions")
+      // pose: {jaw, tongue, lids: [upperIn, upperOut, lower], morphs: {action: weight}, wings: 0 spread .. 1 folded (the default)}
+      // (see head_design.json "expressions")
       shot(cam, target, pose, fov) {
         pose = pose || {};
-        setPose(pose.jaw || 0, pose.tongue || 0, pose.lids, pose.morphs);
+        setPose(pose.jaw || 0, pose.tongue || 0, pose.lids, pose.morphs, pose.wings);
         camera.fov = fov || 30; camera.updateProjectionMatrix();
         camera.position.set(...cam); camera.lookAt(...target);
         renderer.render(scene, camera);

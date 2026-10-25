@@ -183,15 +183,21 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 
 **Not used:** the Japanese design sheet, whose style differs from the rest of the official art.
 
-## Spread wings
+## Wings: one rig, folded to spread
 
 **References:** the covers seen from below: The Dragonet Prophecy (US and the full render), the Hybrid Prince cover (Umber, a MudWing, in house style), the limited edition and the SE poster.
-- **Arm:** the humerus runs out, up and a little back from the shoulder. The forearm runs out and forward to the wrist, forming the leading edge.
-- **Fingers:** the first finger carries the leading edge on to the wing's tip. The others fan back, the last pointing nearly straight back.
-- **Membrane:** scalloped between the fingers' tips. It also runs from the last finger back along the flank to the hip (the Umber render; hidden when the wing is folded).
+- **Arm:** spread, the humerus runs out, up and a little back from the shoulder. The forearm runs out and forward to the wrist, forming the leading edge.
+- **Fingers:** the longest finger carries the leading edge on to the wing's tip. On the folded sheet it is the outermost one, reaching highest. The shorter fingers fan back, the shortest pointing nearly straight back.
+- **Elbow finger:** a short plated finger springs from the elbow, up and back, to a small claw at the membrane's edge. On the side sheet it runs from px 785,425 to 912,347. On the TDP cover render it rises from the arm beside the body.
+- **Membrane:** it runs from the elbow finger across to the fingers and between them, scalloped between the tips. It also runs from the elbow finger back along the flank to the hip (the Umber render). Folded, that flank piece gathers in a few soft folds along his side.
 - **Light:** the membrane is thin. Seen from below against the sky it glows peach, so the shader adds the light coming through it.
 
-**Build:**
-- `build_body.py --wing-pose spread` builds the wing spread; the default is folded, the side sheet's pose. The spread pose is directions for the humerus, the forearm and each finger (`wing.spread`), and the bones keep their folded lengths.
-- The arm's muscles ride their bone: those on the humerus turn about the shoulder, those on the forearm about the elbow.
-- The flank panel runs between the last finger and the line wrist → elbow → flank → hip.
+**Build:** one rig with real joints, so the wing moves through any pose.
+- The wing rests spread. Its bones pivot at the shoulder, the elbow, the elbow finger's root, the wrist, each knuckle and the thumb.
+- The side sheet's folded wing is a pose of those bones: per bone, a turn from rest, computed so the joints land where the sheet measures them. It is exported as the animation `wings_fold` (rest at 0, folded at its end).
+- Folded, the flank membrane's folds are the `wingfold` blend shape, set together with the fold.
+- The viewer's pose takes `wings` (0 spread, 1 folded, the default) and blends each bone's rotation between them, so every in-between is a real pose.
+- The anatomy is still measured folded (`wing.joints`, `wing.fingers`, `wing.anatomy`); `wing.spread` gives the rest pose's directions, and the bones keep their lengths.
+- The arm's muscles are carried to rest with their bone: those on the humerus turn about the shoulder, those on the forearm about the elbow.
+
+**To do:** the elbow pinches a little when folded (the bones' weights blend there).

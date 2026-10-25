@@ -1303,9 +1303,41 @@ def head_parts():
     return objs, bones
 
 
-def assemble(objs, bones, out, name="ClayRig"):
+def pose_clips(arm, bones, clips):
+    """Key each clip on the armature: rest at frame 0, the pose at frame 1 (see assemble)."""
+    from mathutils import Matrix
+    C = np.array([[1.0, 0, 0], [0, 0, -1.0], [0, 1.0, 0]])  # the model's frame to Blender's
+    order = [b[0] for b in bones]
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode="POSE")
+    arm.animation_data_create()
+    for clip, pose in clips.items():
+        arm.animation_data.action = bpy.data.actions.new(clip)
+        names = [n for n in order if n in pose]
+        for n in names:
+            pb = arm.pose.bones[n]; pb.rotation_mode = "QUATERNION"
+            pb.rotation_quaternion = (1, 0, 0, 0); pb.location = (0, 0, 0)
+            pb.keyframe_insert("rotation_quaternion", frame=0)
+        bpy.context.view_layer.update()
+        for n in names:  # parents first, so each bone's head follows its parent's pose
+            Rm, head = pose[n]
+            pb = arm.pose.bones[n]; rest = np.array(arm.data.bones[n].matrix_local)
+            M = np.eye(4); M[:3, :3] = (C @ Rm @ C.T) @ rest[:3, :3]
+            M[:3, 3] = to_blender(np.array(head)) if head is not None else np.array(pb.matrix)[:3, 3]
+            pb.matrix = Matrix(M.tolist())
+            bpy.context.view_layer.update()
+            pb.keyframe_insert("rotation_quaternion", frame=1)
+        for n in names:
+            arm.pose.bones[n].rotation_quaternion = (1, 0, 0, 0); arm.pose.bones[n].location = (0, 0, 0)
+    bpy.context.scene.frame_set(0)
+    bpy.ops.object.mode_set(mode="OBJECT")
+
+
+def assemble(objs, bones, out, name="ClayRig", clips=None):
     """Make the armature from (name, head, tail, parent) specs, join the parts into one skinned mesh
-    on it, and export a .glb."""
+    on it, and export a .glb. clips: {clip name: {bone: (turn, head)}}, each exported as an animation from
+    rest (time 0) to that pose (its end): per bone its turn from rest (a 3x3 in the model's frame) and its
+    head in the pose (None: wherever its parent carries it)."""
     arm_data = bpy.data.armatures.new(name); arm = bpy.data.objects.new(name, arm_data)
     bpy.context.scene.collection.objects.link(arm)
     bpy.context.view_layer.objects.active = arm
@@ -1323,10 +1355,12 @@ def assemble(objs, bones, out, name="ClayRig"):
     mesh = objs[0]
     mod = mesh.modifiers.new("Armature", "ARMATURE"); mod.object = arm
     mesh.parent = arm
+    if clips:
+        pose_clips(arm, bones, clips)
     bpy.ops.object.select_all(action="DESELECT")
     mesh.select_set(True); arm.select_set(True)
     bpy.ops.export_scene.gltf(filepath=out, export_format="GLB", use_selection=True, export_skins=True, export_attributes=True,
-                              export_yup=True, export_animations=False, export_materials="NONE")
+                              export_yup=True, export_animations=bool(clips), export_force_sampling=False, export_materials="NONE")
     print(f"exported {out}: {len(mesh.data.vertices)} verts, {len(mesh.data.polygons)} faces")
 
 
