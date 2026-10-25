@@ -201,3 +201,25 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 - The arm's muscles are carried to rest with their bone: those on the humerus turn about the shoulder, those on the forearm about the elbow.
 
 **To do:** the elbow pinches a little when folded (the bones' weights blend there).
+
+## Review round: front half, wing root, spikes, colours
+
+**Front half, against the side sheet at its angle (the sheet is turned about 25° toward us):**
+- **Chest:** one rounded mass. The keel over the forelegs is gentle (0.12–0.15), and one broad pectoral runs from the breastbone. There used to be a groove down the chest between the shoulder balls.
+- **Upper arm:** smoother, with a smaller triceps ball and wider blends.
+- **Throat:** the collar behind the jaw was a bump in the traced ventral depth (0.232 at s 0.23). It's smoothed.
+
+**Inner thighs:** slimmer, as on the Hybrid Prince cover. The thigh is a distinct oval meeting a slim belly in a clean crease.
+
+**Wing:**
+- **Root:** directly behind the shoulder armor, where the carapace gives onto the cream.
+- **Carapace edge:** between the shoulder armor and the hip armor, the carapace's lower edge is one smooth arc, with cream below. The membrane meets the body just under it.
+- **Flank membrane:** laid out from the wing's root, between the arm (the humerus, then the elbow finger) and the body. It meets the whole upper arm with no gap.
+- **Elbow finger:** about 0.88 long, twice its apparent length on the sheet (foreshortened there; the spread covers show it long). It has a knuckle and a hooked claw.
+- **Fingers:** a metacarpal and two phalanges each, with knuckle bulges and hooked claws.
+- **Arm:** heavier, with the upper arm as thick as the leg and the forearm fleshy past halfway.
+- **Surface:** orange skin with dark plates in rows over the top. "Top" is measured with the wing spread, so it is the same on both wings; before, the plates were mirrored, under one arm and on top of the other.
+
+**Spikes:** one continuous run. Mane blades go to the withers, then thorns lie back over the back, hips and tail. All have body (about 0.03 thick), and the tail's thorns are 0.065 tall at its root.
+
+**Legs:** coloured by which way the skin faces. They are orange on the outside and front, cream on the inside, back and underside (the side sheet's forelegs).

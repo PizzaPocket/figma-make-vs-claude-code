@@ -1,13 +1,13 @@
 {
   "about": "Clay's body (neck, torso, tail, then limbs and wings), element by element (see body_sheets.md). Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side sheet; x = Clay's left. The bind pose is the side sheet's pose, so the side view can be checked against the sheet directly; the tail's lower run is lifted onto the ground and curls toward the viewer (+x).",
   "trunk": {
-    "note": "Neck, torso and tail are one continuous mass, built as one loft along a curved spine with cross-sections perpendicular to it. Measured on the side sheet (trunk_overlay): the spine was traced through the middle of the body, and at each station the depth to the dorsal outline (top of the neck and back along the body under the mane, at the bases of the spike blades, not their tips; outer edge of the tail curl) and to the ventral outline (the throat and chest along the underside's midline, drawn down the middle of the cream throat band, not the outline in front of it, which is the far front leg's shoulder; at about elbow height where the near upper arm hides the chest; belly, inner edge of the tail curl) was measured along the perpendicular. The neck is short and thick, the torso a deep barrel (~0.9 from back to belly), the tail thick (~0.25-0.38) nearly to its tip.",
+    "note": "Neck, torso and tail are one continuous mass, built as one loft along a curved spine with cross-sections perpendicular to it. Measured on the side sheet (trunk_overlay): the spine was traced through the middle of the body, and at each station the depth to the dorsal outline (top of the neck and back along the body under the mane, at the bases of the spike blades, not their tips; outer edge of the tail curl) and to the ventral outline (the throat and chest along the underside's midline, drawn down the middle of the cream throat band, not the outline in front of it, which is the far front leg's shoulder; at about elbow height where the near upper arm hides the chest; belly, inner edge of the tail curl) was measured along the perpendicular. The neck is short and thick, the torso a deep barrel (~0.9 from back to belly), the tail thick (~0.25-0.38) nearly to its tip. The throat's ventral depth runs smoothly from the jaw down the neck (0.212, 0.213, 0.207, 0.200, 0.203): the trace had a bump at s 0.23 (0.232 between 0.213 and 0.195), most likely the jaw's corner read as throat, which made a collar round the neck just behind the jaw.",
     "stations_columns": ["s", "z", "y", "dorsal", "ventral"],
     "stations": [
       [0.0, 1.3848, 1.656, 0.2473, 0.2116],
       [0.1166, 1.2889, 1.5897, 0.3075, 0.2131],
-      [0.2333, 1.196, 1.5195, 0.3778, 0.2322],
-      [0.3499, 1.1093, 1.4415, 0.4113, 0.1949],
+      [0.2333, 1.196, 1.5195, 0.3778, 0.207],
+      [0.3499, 1.1093, 1.4415, 0.4113, 0.2],
       [0.4666, 1.0228, 1.3632, 0.4411, 0.2034],
       [0.5832, 0.9365, 1.2847, 0.4769, 0.2407],
       [0.6999, 0.8388, 1.2218, 0.4766, 0.3516],
@@ -102,8 +102,11 @@
         [560, 522],
         [580, 495],
         [600, 465],
-        [700, 447],
-        [800, 445],
+        [640, 450],
+        [680, 440],
+        [720, 436],
+        [760, 438],
+        [800, 444],
         [840, 452],
         [870, 480],
         [900, 515],
@@ -134,8 +137,11 @@
         [560, 522],
         [580, 495],
         [600, 465],
-        [700, 447],
-        [800, 445],
+        [640, 450],
+        [680, 440],
+        [720, 436],
+        [760, 438],
+        [800, 444],
         [840, 452],
         [870, 480],
         [900, 515],
@@ -163,8 +169,11 @@
         [540, 555],
         [585, 500],
         [605, 470],
-        [700, 455],
-        [800, 452],
+        [640, 452],
+        [680, 442],
+        [720, 438],
+        [760, 440],
+        [800, 446],
         [880, 458]
       ],
       "cream_region_px": [
@@ -181,8 +190,11 @@
         [540, 555],
         [585, 500],
         [605, 470],
-        [700, 455],
-        [800, 452],
+        [640, 452],
+        [680, 442],
+        [720, 438],
+        [760, 440],
+        [800, 446],
         [880, 458],
         [1400, 476],
         [1400, 1100],
@@ -191,7 +203,8 @@
       ],
       "lines_until_s": 2.45,
       "cream_halfwidth": [[0.0, 0.2], [0.5, 0.17], [1.2, 0.17], [1.5, 1.0], [5.72, 1.0]],
-      "cream_halfwidth_why": "From the front (limited edition, How to Draw, the box set): the cream throat band runs down the chest as a central band of plates about half the chest's width, and the orange of the neck's side wraps round the shoulders' inner faces down into the forelegs. Behind the forelegs (s > 1.3) the cream widens to meet the dark edge, as on the sheet."
+      "cream_halfwidth_why": "From the front (limited edition, How to Draw, the box set): the cream throat band runs down the chest as a central band of plates about half the chest's width, and the orange of the neck's side wraps round the shoulders' inner faces down into the forelegs. Behind the forelegs (s > 1.3) the cream widens to meet the dark edge, as on the sheet.",
+      "dark_edge_arc_why": "Between the shoulder armor and the hip armor the carapace's lower edge is one smooth arc (px 600 -> 840, rising a little in the middle), the cream of the flank directly below it: the shoulder armor gives straight onto the cream behind the shoulder, where the wing's arm roots, and the wing's membrane meets the body along this junction, under the carapace's edge."
     },
     "front_overlap": 0.06,
     "bones": {
@@ -238,16 +251,16 @@
   "wing": {
     "note": "Built like a bat's arm (the official art draws it so: the spread wings of the limited-edition render and the full render, the raised wing in How to Draw), bone first, then muscle, then membrane. Upper arm: short and heavily muscled, a fleshy belly over the humerus that swells out of a round mound on the shoulder (the side sheet's scaly mound, px 490-560, py 340-400). Forearm: long, thick and fleshy for its first third below the elbow (the forearm muscles), then a bony shaft (tendons) to a knobby wrist; the elbow's point stands out behind. Thumb: a short digit on the wrist's leading side ending in a hooked claw. Fingers: four long ones from the wrist, each a metacarpal to a knuckle partway out and a phalanx to a small hooked claw past the membrane. Pose: the side sheet's folded wing. The arm runs from the shoulder back along the flank to the elbow (px 525,385 -> 785,425); the forearm drops straight down to a low wrist (765,760) with the thumb claw (735,800); the fingers fan up and back to their tips (1055,255; 1165,140; 1265,55; 1365,20), nearly parallel, the membrane between them in narrow strips, scalloped between the tips (a sixth of the finger's length). x from the model: the shoulder cap is 0.40 out, the flank under the arm 0.34-0.36, the hind thigh 0.57, so the arm lies on the flank (the sheet's arm is a broad band, py 395-460: 0.19 tall) and the fan stands just outside the thigh. [x, y, z].",
     "joints": {
-      "shoulder": [0.33, 1.3, 0.48],
+      "shoulder": [0.33, 1.24, 0.3],
       "elbow": [0.41, 1.16, -0.25],
       "wrist": [0.6, 0.22, -0.19]
     },
     "fingers": [[0.66, 1.676, -1.035], [0.68, 2.012, -1.356], [0.7, 2.259, -1.647], [0.72, 2.362, -1.939]],
     "finger_bow": 0.025,
     "claw": {
-      "length": 0.06,
-      "radius": 0.016,
-      "hook_deg": 70
+      "length": 0.075,
+      "radius": 0.02,
+      "hook_deg": 75
     },
     "thumb": {
       "length": 0.06,
@@ -273,9 +286,9 @@
       "bones": [
         {
           "name": "humerus",
-          "from": [0.33, 1.3, 0.48],
+          "from": [0.33, 1.24, 0.3],
           "to": [0.41, 1.16, -0.25],
-          "r": [0.055, 0.045],
+          "r": [0.06, 0.05],
           "k": 0.03,
           "rig": {
             "wing_humerus": 1.0
@@ -296,7 +309,7 @@
           "name": "forearm",
           "from": [0.41, 1.16, -0.25],
           "to": [0.6, 0.22, -0.19],
-          "r": [0.045, 0.026],
+          "r": [0.05, 0.035],
           "k": 0.03,
           "rig": {
             "wing_forearm": 1.0
@@ -317,9 +330,9 @@
       "muscles": [
         {
           "name": "shoulder mound",
-          "why": "the deltoid and the wing's pectoral insertion: the side sheet's round scaly mound where the wing meets the back. Its front end dives into the shoulder, so the arm grows out of the body rather than resting on it",
-          "from": [0.2, 1.4, 0.72],
-          "to": [0.41, 1.28, 0.26],
+          "why": "the wing's shoulder: deltoid and the pectoral insertion, a rounded mound where the arm roots behind the shoulder armor, its front end diving under the armor",
+          "from": [0.2, 1.36, 0.48],
+          "to": [0.4, 1.22, 0.12],
           "radii": [0.12, 0.1],
           "hint": [1, 0.4, 0],
           "k": 0.05,
@@ -330,10 +343,10 @@
         },
         {
           "name": "upper arm",
-          "why": "biceps and triceps: the thick belly of the upper arm, tapering into the elbow",
-          "from": [0.3, 1.32, 0.52],
+          "why": "biceps and triceps: the heavy belly of the upper arm, as thick as the leg's (Umber: the wing arm is a heavy limb, not a strut), tapering into the elbow",
+          "from": [0.33, 1.25, 0.28],
           "to": [0.42, 1.16, -0.2],
-          "radii": [0.1, 0.1],
+          "radii": [0.12, 0.12],
           "hint": [1, 0, 0],
           "k": 0.05,
           "rig": {
@@ -342,10 +355,10 @@
         },
         {
           "name": "forearm muscles",
-          "why": "the flexors and extensors: fleshy for the first third below the elbow, then only tendon over the bone",
+          "why": "the flexors and extensors: fleshy for the first half or more below the elbow, then tendon over the bone to the wrist (Umber: the forearm stays thick toward the wrist)",
           "from": [0.41, 1.16, -0.25],
-          "to": [0.5, 0.7, -0.22],
-          "radii": [0.075, 0.065],
+          "to": [0.524, 0.596, -0.214],
+          "radii": [0.08, 0.07],
           "hint": [1, 0, 0],
           "k": 0.05,
           "rig": {
@@ -357,7 +370,9 @@
     "finger": {
       "knuckle_at": 0.45,
       "bend_deg": 6,
-      "radius": [0.03, 0.022, 0.027, 0.017, 0.011]
+      "radius": [0.034, 0.024, 0.03, 0.02, 0.024, 0.015, 0.01],
+      "knuckle2_at": 0.75,
+      "why": "Each finger a metacarpal and two phalanges, a knuckle bulge at each joint (the TDP cover render: segmented fingers, plates along each segment, a hooked claw at the tip past the membrane)."
     },
     "spread": {
       "why": "The wings spread in flight, from the covers seen from below (The Dragonet Prophecy US cover and its full render, the Hybrid Prince cover's Umber render, the limited edition, the SE poster): the humerus out, up and a little back from the shoulder; the forearm out and forward to the wrist, the leading edge; the longest finger on along the leading edge to the wing's tip (on the folded sheet it is the outermost, reaching highest), the shorter ones fanned back, the shortest pointing nearly straight back; the elbow finger back; the membrane between the fingers scalloped between their tips, and from the last finger back along the flank to the hip (the Umber render); billowed up by the air under it. Directions for the left wing [x, y, z]; the bones keep their folded lengths.",
@@ -365,15 +380,21 @@
       "forearm_dir": [1.0, 0.2, 0.5],
       "finger_dirs": [[0.35, 0.0, -1.0], [0.8, 0.05, -1.0], [1.0, 0.1, -0.45], [1.0, 0.15, 0.15]],
       "billow": 0.12,
-      "elbow_finger_dir": [0.25, 0.15, -1.0]
+      "elbow_finger_dir": [0.3, 0.2, -1.0]
     },
     "elbow_finger": {
-      "tip": [0.5, 1.41, -0.62],
-      "radius": [0.032, 0.02],
-      "why": "A short plated finger springing from the elbow, up and back to a small claw at the membrane's edge: on the side sheet from the elbow (px 785,425) to its claw at px 912,347; on the TDP cover render it rises from the arm beside the body with membrane on both sides of it. It holds up the inner membrane: from it the membrane runs across to the wing fingers and back to the flank."
+      "tip": [0.5, 1.32, -1.11],
+      "radius": [0.036, 0.026, 0.03, 0.02, 0.013],
+      "why": "A short plated finger springing from the elbow, up and back to a small claw at the membrane's edge: on the side sheet from the elbow (px 785,425) to its claw at px 912,347; on the TDP cover render it rises from the arm beside the body with membrane on both sides of it. It holds up the inner membrane: from it the membrane runs across to the wing fingers and back to the flank. About 0.88 long, twice its length as seen on the side sheet: the spread covers show it long, so on the sheet it is foreshortened, raked back away from us; folded it lies back along the side.",
+      "claw": {
+        "length": 0.065,
+        "radius": 0.019,
+        "hook_deg": 70
+      }
     },
-    "body_attach": [[0.36, 1.08, -0.1], [0.38, 1.02, -0.4], [0.42, 0.95, -0.75]],
-    "body_attach_why": "Where the membrane's inner edge joins the body: along the flank under the shell's rim from behind the wing's root to the hip (the Umber render). Fixed to the body in every pose."
+    "body_attach": [[0.38, 1.12, 0.12], [0.4, 1.15, -0.06], [0.41, 1.13, -0.24], [0.41, 1.08, -0.43]],
+    "body_attach_why": "Where the membrane meets the body: just under the carapace's lower edge, along its arc from the wing's root behind the shoulder armor to the front of the hip armor (px ~840).",
+    "joints_why": "The wing's arm roots directly behind the shoulder armor, where the carapace gives onto the cream of the flank (the junction the membrane then follows back to the hip armor); on the Hybrid Prince cover's Umber the wings rise from the back over the shoulders."
   },
   "front_leg": {
     "note": "Measured on the side sheet's near front leg (crop px 300-720, py 300-880). The dark shoulder patch is the shoulder blade and its muscles seen from the side; the shoulder joint sits at the front of the upper arm under it (px 425, py 495). The upper arm slopes down and back to an elbow at the bottom of the chest (px 625, py 605; its point at 649, 613); the forearm angles down and forward to a slim wrist (px 515, py 790, 0.155 deep against 0.37 below the elbow); the hand lies flat on the ground. Like a great cat's: the elbow tucked in against the chest, the leg hanging close beside the keel of the chest. Built as bones and muscles (anatomy).",
@@ -790,29 +811,29 @@
     "plates_note": "From the side sheet: the back is transverse bands about 0.08-0.10 apart, their joints slanting forward down the side; on the tail, arched bands about 0.13 apart, closer toward the tip; the edge is beaded with small square scutes about 0.04-0.05 wide, continuously round the shoulder patch and along both edges of the tail. Each band is a shingle, thicker toward its back edge, with a groove at each joint; the rim is divided into scutes by grooves across it."
   },
   "spikes": {
-    "note": "Blades along the top of the shell's midline, raked back. The neck's mane, from the side sheet: blades from the base of the neck to the shoulders, their bases on the body's top line and their tips on the old outline trace (which ran along the spike tips): tallest, about 0.12 above the back, at mid-neck (px 480), falling to small spikes along the back. The tail's: leaf-shaped dark spikes about 0.1 long and 0.045 wide, one per band, lying raked back along its top and smaller toward the tip. height is above the back, perpendicular to it; each blade's length is height / sin(rake).",
+    "note": "Blades along the top of the shell's midline, raked back. The neck's mane, from the side sheet: blades from the base of the neck to the shoulders, their bases on the body's top line and their tips on the old outline trace (which ran along the spike tips): tallest, about 0.12 above the back, at mid-neck (px 480), falling to small spikes along the back. The tail's: leaf-shaped dark spikes about 0.1 long and 0.045 wide, one per band, lying raked back along its top and smaller toward the tip. height is above the back, perpendicular to it; each blade's length is height / sin(rake). One continuous run from the neck to near the tail's tip: the mane's raked blades to the withers, then thorns lying back over the back, hips and tail with no break; each blade and thorn has body (about 0.03 thick at its base), not a flat card. The tail's thorns are the size of the TDP cover render's, about 0.065 tall at its root.",
     "rows": [
       {
         "name": "mane",
         "from_s": 0.12,
-        "to_s": 2.2,
+        "to_s": 1.6,
         "every": 0.06,
         "rake_deg": 28,
         "width": 0.045,
-        "thickness": 0.012,
-        "height": [[0.12, 0.035], [0.35, 0.055], [0.6, 0.09], [0.93, 0.12], [1.1, 0.07], [1.3, 0.03], [2.2, 0.02]]
+        "thickness": 0.03,
+        "height": [[0.12, 0.035], [0.35, 0.055], [0.6, 0.09], [0.93, 0.12], [1.1, 0.075], [1.3, 0.05], [1.6, 0.045]]
       },
       {
         "name": "tail",
-        "from_s": 2.7,
+        "from_s": 1.6,
         "to_s": 5.0,
         "every": "band",
         "rake_deg": 6,
         "shape": "thorn",
         "length_per_height": 2.4,
-        "width": 0.05,
-        "thickness": 0.014,
-        "height": [[2.7, 0.045], [4.0, 0.035], [5.3, 0.015]]
+        "width": 0.06,
+        "thickness": 0.035,
+        "height": [[1.6, 0.045], [2.3, 0.05], [2.7, 0.065], [3.5, 0.06], [4.3, 0.045], [5.0, 0.025]]
       }
     ]
   }

@@ -37,6 +37,8 @@ class Piece:
         self.a, self.b = np.array(spec["from"]) * m, np.array(spec["to"]) * m
         self.rig = {f"{bn}.{'L' if sgn > 0 else 'R'}" if bn in LIMB_BONES else bn: w for bn, w in spec["rig"].items()}
         self.zone = spec.get("zone", 0.5 if kind == "bone" else None)  # bones near the skin show orange
+        # a limb's piece: coloured by which way its skin faces (limb_zone), not by its own zone
+        self.limb = sum(w for bn, w in spec["rig"].items() if bn in LIMB_BONES) > 0.5
         ax = norm(self.b - self.a)
         if kind == "bone":
             self.r = spec["r"]
@@ -275,7 +277,17 @@ def piece_weights(V, parts, blend=0.02):
     return W
 
 
-def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trust_s, blend=0.025):
+def limb_zone(x, n):
+    """A limb's colour where its skin faces normal n at side x: orange (0.5) on the outside and front, cream
+    (1) on the inside (toward the body), the back and the underside (the side sheet's forelegs: a cream
+    stripe down the back of the near one, the far one cream on its inner side)."""
+    inward = -n[0] * (1.0 if x >= 0 else -1.0)
+    # only the faces turned well away: the legs stay mostly orange with a cream stripe down the back and inside
+    c = float(np.clip(max(inward - 0.55, -n[2] - 0.6, -n[1] - 0.5) / 0.25, 0.0, 1.0))
+    return 0.5 + 0.5 * c * c * (3 - 2 * c)
+
+
+def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trust_s, blend=0.025, N=None):
     """Per vertex: rig weights, colour zone, the pattern coordinate A (s along the spine) and f (round the body),
     and T, the trunk's share of the surface there (the belly bands are drawn only where it is the trunk).
     Each part's say is how close it lies to the skin there (within ~blend of the nearest). The dark
@@ -302,7 +314,7 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trus
                 continue
             for bn, wt in p.rig.items():
                 acc[bn] = acc.get(bn, 0.0) + ik * wt
-            z += ik * (zt if ZP[k] is None else ZP[k][n])
+            z += ik * (limb_zone(V[n, 0], N[n]) if (p.limb and N is not None) else (zt if ZP[k] is None else ZP[k][n]))
         top = sorted(acc.items(), key=lambda kv: -kv[1])[:4]
         tot = sum(wt for _, wt in top)
         # the tail's dark-top rule holds only on the tail itself: a limb lying near the tail (the forearm
