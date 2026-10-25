@@ -225,6 +225,10 @@ Check: <what to compare; known differences>
 - The frill sits high at the back of the cheek, under the horn, and its rolled top edge curves back to the horn's underside.
 - The ear opening is a small hole below it.
 
+**Body**
+- Build limbs as bones with muscles laid from origin to insertion, under one skin (a smooth union of fields), never as tubes stuck onto the body. A limb with no shoulder or haunch muscles reads as chopped off.
+- The chest's section is a keel, not a barrel: widest up at the shoulders, so the legs hang close beside it, like a cat's.
+
 **Hands and feet**
 - The front hands are compact, with big hooked claws and a high dewclaw.
 - The hind feet are long and digitigrade, with a heel spur and studs along the top.

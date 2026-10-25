@@ -2,12 +2,12 @@
 
 The head comes from ../head/build_head.py. The body is built here, element by element (see
 body_design.json and body_sheets.md):
-- trunk: neck, torso and tail as one loft along a curved spine, with cross-sections perpendicular
-  to it, skinned to a chain of spine bones;
-- front legs: upper arm, forearm and compact hand as one loft along the limb, with toes, hooked
-  claws and a dewclaw; the shoulder is sculpted into the trunk;
-- hind legs: thigh and shin as one loft, the long digitigrade foot as another, four splayed toes,
-  a heel spur and studs along the top of the foot.
+- skin (skin.py): one surface over the trunk (neck, torso and tail, measured cross-sections along a
+  curved spine), the limb bones and the muscles that work them, so the shoulders and haunches grow
+  out of the body; skinned to the spine and limb bones;
+- the dark back: a carapace of plates over the trunk, lifted onto the skin where muscles swell it;
+- front legs: toes, hooked claws and a dewclaw on the hand;
+- hind legs: four splayed toes, a heel spur and studs along the top of the foot.
 Model space: x = Clay's left, y = up, z = forward; 1 unit = 343 px of the reference.
 
     python3 build_body.py --out clay.glb
@@ -20,6 +20,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "..", "head"))
 import build_head as H  # noqa: E402  (also imports bpy)
+import skin as SK  # noqa: E402
 import bpy  # noqa: E402
 import numpy as np  # noqa: E402
 
@@ -143,24 +144,21 @@ def trunk_weights(s, ranges, blend=0.05):
     return [(ranges[-1][0], 1.0)]
 
 
-def sculpt_trunk(q, centre, zone):
-    """Muscle masses swelling the trunk (mirrored left/right), and colour patches painted over them."""
-    sgn = 1.0 if q[0] >= 0 else -1.0
-    for m in TR["sculpt"]["masses"]:
-        c = np.array([sgn * m["centre"][0], m["centre"][1], m["centre"][2]])
-        w = math.exp(-float(np.sum(((q - c) / np.array(m["radii"])) ** 2)))
-        out = q - centre; out = out / (np.linalg.norm(out) + 1e-9)
-        q = q + out * m["amount"] * w
-    for pt in TR["sculpt"]["patches"]:
-        if abs(q[0]) < pt["x_min"]:
-            continue
-        (cz, cy), (rz, ry) = pt["centre_zy"], pt["radii"]
-        e = math.hypot((q[2] - cz) / rz, (q[1] - cy) / ry)
-        zone = zone + (pt["zone"] - zone) * (1 - smoothstep(0.95, 1.05, e))
-    return q, zone
+def section_vw(s, du, dv, th):
+    """The trunk's cross-section at s, at angle th round the spine (0 dorsal, +pi/2 Clay's left): the
+    offset (v toward the back, w to the left). A superellipse with the measured depths, narrowing below
+    the spine into the keel of the chest and belly (trunk.keel)."""
+    nsq = table(TR["squareness"], s)
+    wf = table(TR["width"]["factor"], s) * (du + dv) / 2
+    c, sn = math.cos(th), math.sin(th)
+    v = (du if c > 0 else dv) * math.copysign(abs(c) ** (2 / nsq), c)
+    eta = v / (du if v > 0 else dv)
+    w = wf * math.copysign(abs(sn) ** (2 / nsq), sn) * (1 - table(TR["keel"]["rows"], s) * smoothstep(-0.1, 1.0, -eta))
+    return v, w
 
 
 _TF = {}
+_SKIN = {}
 
 
 def trunk_surface(s, th):
@@ -173,13 +171,8 @@ def trunk_surface(s, th):
     t = (s - s_all[i - 1]) / (s_all[i] - s_all[i - 1])
     lerp = lambda X: X[i - 1] * (1 - t) + X[i] * t
     p, du, dv, n, b = lerp(P), lerp(DU), lerp(DV), H.norm(lerp(N)), H.norm(lerp(Bv))
-    nsq = table(TR["squareness"], s)
-    wf = table(TR["width"]["factor"], s) * (du + dv) / 2
-    c, sn = math.cos(th), math.sin(th)
-    v = (du if c > 0 else dv) * math.copysign(abs(c) ** (2 / nsq), c)
-    w = wf * math.copysign(abs(sn) ** (2 / nsq), sn)
+    v, w = section_vw(max(s, 0.0), du, dv, th)
     q = p + n * v + b * w
-    q, _ = sculpt_trunk(q, p, 0.0)
     out = H.norm(q - p)
     return q, out
 
@@ -209,6 +202,9 @@ def carapace_plate(s0, s1, th0, th1, nv, ranges, thick, lift, flare=0.0, seed=0,
         if not wrap:
             a0, a1 = a0 + gap * 2, a1 - gap * 2
         row = [trunk_surface(sc, a0 + (a1 - a0) * j / nv) for j in range(nv + 1)]
+        if _SKIN:  # where muscles swell the skin (the shoulder, the haunch), the plates ride over them
+            Q = SK.lift_onto([q for q, _ in row], np.array([o for _, o in row]), _SKIN["trunk"], _SKIN["parts"])
+            row = [(Q[j], o) for j, (_, o) in enumerate(row)]
         acc = np.concatenate([[0], np.cumsum([np.linalg.norm(row[k + 1][0] - row[k][0]) for k in range(nv)])])
         Lv, Ls = acc[-1] + 1e-6, s1g - s0g
         for j, (q, out) in enumerate(row):
@@ -261,64 +257,22 @@ def trunk_radius(s):
     return (table(st, s, 3) + table(st, s, 4)) / 2
 
 
-def trunk_part(ranges, around=72):
+def skin_setup():
+    """The trunk as a field (its measured sections along the spine) and the bones and muscles."""
     s_all, P, DU, DV, N, Bv = trunk_frames()
-    verts, faces, A, Bf, Z, W = [], [], [], [], [], []
-    for i, s in enumerate(s_all):
-        sc = max(s, 0.0)
-        nsq = table(TR["squareness"], sc)
-        wf = table(TR["width"]["factor"], sc) * (DU[i] + DV[i]) / 2
-        taper = 1.0 if i < len(s_all) - 1 else 0.0  # close the tail tip
-        for k in range(around):
-            th = 2 * math.pi * k / around  # 0 dorsal, pi ventral, pi/2 Clay's left
-            c, sn = math.cos(th), math.sin(th)
-            v = (DU[i] if c > 0 else DV[i]) * math.copysign(abs(c) ** (2 / nsq), c)
-            w = wf * math.copysign(abs(sn) ** (2 / nsq), sn)
-            q = P[i] + (N[i] * v + Bv[i] * w) * taper
-            q, zv = sculpt_trunk(q, P[i], zone_value(sc, (1 - c) / 2, q[2], q[1]))
-            verts.append(tuple(q))
-            A.append(sc); Bf.append((1 - c) / 2); Z.append(zv); W.append(trunk_weights(sc, ranges))
-    for i in range(len(s_all) - 1):
-        for k in range(around):
-            a = i * around + k; b = i * around + (k + 1) % around
-            faces.append([a, a + around, b + around, b])
-    return H.add_part("Trunk", verts, faces, {"_PART": [20] * len(verts), "_A": A, "_B": Bf, "_ZONE": Z}, W)
+    trunk = SK.Trunk(s_all, P, N, Bv, lambda i, th: section_vw(max(s_all[i], 0.0), DU[i], DV[i], th))
+    _SKIN["trunk"], _SKIN["parts"] = trunk, SK.pieces(B["anatomy"])
+
+
+def skin_part(ranges):
+    """One skin over the trunk, bones and muscles (skin.py), skinned to the spine and limb bones."""
+    trunk, parts = _SKIN["trunk"], _SKIN["parts"]
+    V, F = SK.mesh(trunk, parts, B["anatomy"]["resolution"])
+    W, Z, A, Bf = SK.vertex_data(V, trunk, parts, lambda s: trunk_weights(s, ranges), zone_value)
+    return H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": [20] * len(V), "_A": A, "_B": Bf, "_ZONE": Z}, W)
 
 
 # ---------------------------------------------------------------- limbs
-def limb_frames(path, radii, step=0.004):
-    """Points along a limb spline, with N lateral (toward Clay's outside) and Bk pointing to the limb's back."""
-    C, R, sl, _, _ = H.spline_frames(path, radii, step)
-    T = np.gradient(C, axis=0); T /= np.linalg.norm(T, axis=1)[:, None]
-    side = math.copysign(1.0, C[0][0])
-    N, Bk = [], []
-    for t in T:
-        n = H.norm(np.array([side, 0, 0]) - t * (t[0] * side))
-        b = np.cross(t, n)
-        if b[2] > 0:  # make it point backward (-z)
-            b = -b
-        N.append(n); Bk.append(b)
-    return C, R, sl / sl[-1], np.array(N), np.array(Bk), sl[-1]
-
-
-def nearest_t(C, tl, p):
-    return float(tl[int(np.argmin(np.linalg.norm(C - np.asarray(p), axis=1)))])
-
-
-def limb_weights(t, marks, blend=0.06):
-    """marks: [(bone, t_start)] in order; blend the two bones at each joint."""
-    for k in range(len(marks)):
-        name, t0 = marks[k]
-        t1 = marks[k + 1][1] if k + 1 < len(marks) else 1.01
-        if t0 <= t < t1 or (k == 0 and t < t0):
-            if k + 1 < len(marks) and t > t1 - blend:
-                u = 0.5 * smoothstep(t1 - blend, t1 + blend, t); return [(name, 1 - u), (marks[k + 1][0], u)]
-            if k > 0 and t < t0 + blend:
-                u = 0.5 * (1 - smoothstep(t0 - blend, t0 + blend, t)); return [(name, 1 - u), (marks[k - 1][0], u)]
-            return [(name, 1.0)]
-    return [(marks[-1][0], 1.0)]
-
-
 def mirror(p, sgn):
     return np.array([sgn * p[0], p[1], p[2]])
 
@@ -335,38 +289,6 @@ def claw_tube(base, direction, length, radius, hook_deg, down=np.array([0, -1.0,
         pts.append(p)
     v, f, A, Bq = H.tube(pts, [radius, radius * 0.8, radius * 0.6, radius * 0.45, radius * 0.3, radius * 0.15, 0.002], around=10, step=0.004)
     return v, f
-
-
-def limb_loft(name, path, radii, aspect, cream, marks, root, sgn, around=40):
-    """A limb segment as a loft along its spline. marks: [(bone, point)] where each bone starts; the
-    first vertices blend into `root`. cream: {from, to, width} cream along the limb's back."""
-    C, R, tl, N, Bk, length = limb_frames(path, radii)
-    mk = [(bn, 0.0 if k == 0 else nearest_t(C, tl, pt)) for k, (bn, pt) in enumerate(marks)]
-    asp = np.interp(tl, np.linspace(0, 1, len(aspect)), aspect)
-    verts, faces, A, Bf, Z, W = [], [], [], [], [], []
-    for i in range(len(C)):
-        for k in range(around):
-            th = 2 * math.pi * k / around  # 0 outside, pi/2 back, pi inside, 3pi/2 front
-            verts.append(tuple(C[i] + (N[i] * math.cos(th) * asp[i] + Bk[i] * math.sin(th)) * R[i]))
-            cr = 0.0
-            if cream:
-                cr = smoothstep(cream["from"] - 0.05, cream["from"] + 0.05, tl[i]) * (1 - smoothstep(cream["to"] - 0.05, cream["to"] + 0.05, tl[i])) \
-                    * smoothstep(1 - cream["width"], 1 - cream["width"] + 0.15, max(0.0, math.sin(th)))
-            A.append(tl[i] * length); Bf.append((th if th < math.pi else th - 2 * math.pi) * R[i]); Z.append(cr)  # along/around the limb in model units; the wrap falls on the hidden inside
-            if root and tl[i] < 0.08:  # the root blends into the body
-                W.append([(mk[0][0], 0.5 + 0.5 * tl[i] / 0.08), (root, 0.5 - 0.5 * tl[i] / 0.08)])
-            else:
-                W.append(limb_weights(tl[i], mk))
-    for i in range(len(C) - 1):
-        for k in range(around):
-            a = i * around + k; b = i * around + (k + 1) % around
-            faces.append([a, b, b + around, a + around] if sgn > 0 else [a, a + around, b + around, b])
-    c0, c1 = len(verts), len(verts) + 1
-    verts += [tuple(C[0]), tuple(C[-1])]; A += [0, 1]; Bf += [0, 0]; Z += [0, 0]; W += [[(mk[0][0], 1.0)], [(mk[-1][0], 1.0)]]
-    for k in range(around):
-        a = k; b = (k + 1) % around
-        faces.append([b, a, c0]); faces.append([(len(C) - 1) * around + a, (len(C) - 1) * around + b, c1])
-    return H.add_part(name, verts, faces, {"_PART": [21] * len(verts), "_A": A, "_B": Bf, "_ZONE": Z}, W)
 
 
 def toes(kn, back, T, sgn, parent, prefix, sd):
@@ -396,8 +318,7 @@ def front_leg(sgn):
     """One front leg (sgn +1 left, -1 right): parts and bones."""
     L = B["front_leg"]; sd = "L" if sgn > 0 else "R"
     J = {k: mirror(v, sgn) for k, v in L["joints"].items()}
-    marks = [(f"upperarm.{sd}", J["shoulder"]), (f"forearm.{sd}", J["elbow"]), (f"hand.{sd}", J["wrist"])]
-    parts = [limb_loft(f"FrontLeg{sd}", [mirror(p, sgn) for p in L["path"]], L["radius"], L["aspect"], L["cream_back"], marks, "chest", sgn)]
+    parts = []  # the leg itself is part of the skin (bones and muscles)
     bones = [(f"upperarm.{sd}", tuple(J["shoulder"]), tuple(J["elbow"]), "chest"),
              (f"forearm.{sd}", tuple(J["elbow"]), tuple(J["wrist"]), f"upperarm.{sd}"),
              (f"hand.{sd}", tuple(J["wrist"]), tuple(J["knuckles"]), f"forearm.{sd}")]
@@ -410,14 +331,11 @@ def front_leg(sgn):
 
 
 def hind_leg(sgn):
-    """One hind leg: thigh, shin and the long digitigrade foot (its own loft, since the leg folds back on
-    itself at the heel), four splayed toes, a heel spur, and studs along the top of the foot."""
+    """One hind leg's bones and attachments: four splayed toes, a heel spur, and studs along the top of
+    the foot (the leg itself is part of the skin)."""
     L = B["hind_leg"]; sd = "L" if sgn > 0 else "R"
     J = {k: mirror(v, sgn) for k, v in L["joints"].items()}
-    parts = [limb_loft(f"HindLeg{sd}", [mirror(p, sgn) for p in L["leg_path"]], L["leg_radius"], L["leg_aspect"], L["cream_back"],
-                       [(f"thigh.{sd}", J["hip"]), (f"shin.{sd}", J["knee"])], "hips", sgn),
-             limb_loft(f"HindFoot{sd}", [mirror(p, sgn) for p in L["foot_path"]], L["foot_radius"], L["foot_aspect"], None,
-                       [(f"foot.{sd}", J["heel"])], None, sgn)]
+    parts = []
     bones = [(f"thigh.{sd}", tuple(J["hip"]), tuple(J["knee"]), "hips"),
              (f"shin.{sd}", tuple(J["knee"]), tuple(J["heel"]), f"thigh.{sd}"),
              (f"foot.{sd}", tuple(J["heel"]), tuple(J["ball"]), f"shin.{sd}")]
@@ -441,7 +359,8 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     tb, ranges = trunk_bones()
     objs, head_bones = H.head_parts()
-    objs.append(trunk_part(ranges))
+    skin_setup()
+    objs.append(skin_part(ranges))
     objs += carapace_parts(ranges)
     neck_end = TR["bones"]["chain_forward"][-1][0]
     bones = tb + [(n, h, t, p or neck_end) for n, h, t, p in head_bones]

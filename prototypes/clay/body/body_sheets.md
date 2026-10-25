@@ -22,6 +22,28 @@ has its own sheets in `../head/head_sheets.md`.
 | Hind legs and feet | thigh + shin loft, long digitigrade foot loft, four splayed toes, heel spur, studs on top | first pass |
 | Wings | arm with square plates along the leading edge, five fingers, membrane with a scalloped trailing edge | to do |
 
+## Bone, muscle, skin (the body's construction)
+
+The body is built from the inside out (`skin.py`, data in `body_design.json` "anatomy"):
+- **Trunk:** the measured sections along the spine. The chest is a deep **keel**, widest up at the shoulders and narrowing toward the breastbone (box set, *How to Draw*, limited edition). The belly tucks up into a waist before the haunches, and the tail is taller than it is wide.
+- **Skeleton:** the shoulder blade, humerus (with the point of the elbow), forearm bones and wrist, femur, tibia and heel. Front leg measured on the side sheet:
+  - shoulder joint at px 425, py 495, under the dark patch, at the front of the upper arm;
+  - shoulder blade running up and back to px 540, py 330;
+  - elbow at px 625, py 605;
+  - slim wrist at px 515, py 790.
+- **Muscles:** ellipsoid bellies laid from origin to insertion, each with the reference it comes from:
+  - shoulder cap (supraspinatus, infraspinatus, deltoid): the dark rounded shoulder patch;
+  - triceps, biceps, pectoral (ties the arm to the breastbone), latissimus;
+  - forearm extensors (front, orange) and flexors (back, cream);
+  - gluteals, quadriceps, hamstrings and adductors: the haunch;
+  - caudofemoralis: a reptile's great tail muscle, from the tail root to the thigh;
+  - calf (cream) and shin front;
+  - flat hand and long foot.
+  The legs follow a great cat's: elbows tucked in, legs hanging close beside the keel. The feet follow birds and dinosaurs.
+- **Skin:** one surface over all of it, a smooth union meshed with marching cubes. The shoulders grow out of the chest and back, and the haunches out of the hips and the tail root, with no seam. The dark back's plates are lifted onto the skin where the muscles swell it.
+
+**Earlier, wrong:** the legs were tubes stuck onto the outside of a barrel-shaped trunk, with a single bump for a shoulder and nothing for a haunch, so their tops looked chopped off.
+
 ## Trunk (neck, torso, tail)
 
 **References**

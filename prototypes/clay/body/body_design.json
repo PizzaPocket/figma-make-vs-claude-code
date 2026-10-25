@@ -56,8 +56,8 @@
       [5.7155, 0.1733, -0.4062, 0.0657, 0.0328]
     ],
     "width": {
-      "note": "half-width = factor * mean depth; widths are not in the side sheet: from the official front and three-quarter art (a broad barrel chest, thick neck)",
-      "factor": [[0.0, 0.85], [0.6, 0.95], [1.0, 1.0], [2.3, 0.95], [2.8, 0.9], [5.72, 0.85]]
+      "note": "Half-width = factor * mean depth at the widest level of each section. From the official front-facing art (box set, How to Draw, limited edition): the shoulders are about twice as wide as the neck at its base, but the chest is not a barrel. Its section is a deep keel, widest high up at the shoulders and narrowing toward the breastbone, so the front legs hang close beside it, like a cat's. The belly tucks up into a waist before the haunches. The tail is taller than it is wide.",
+      "factor": [[0.0, 0.85], [0.5, 0.8], [0.8, 0.74], [1.2, 0.72], [1.7, 0.7], [2.2, 0.78], [2.6, 0.7], [5.72, 0.66]]
     },
     "squareness": [[0.0, 2.4], [1.0, 2.2], [2.3, 2.2], [5.72, 2.0]],
     "zones": {
@@ -188,52 +188,19 @@
       "tail_from": 2.3,
       "tail_count": 12
     },
-    "sculpt": {
-      "note": "Muscle masses sculpted into the trunk, and colour patches over them (mirrored). The shoulder is not a separate piece: the scapula and deltoid swell the side of the chest over the top of the upper arm, and the dark back runs down over it as a rounded patch (side sheet px 400-575, py 380-532), rimmed below by small square plates.",
-      "masses": [
-        {
-          "name": "shoulder (scapula and deltoid)",
-          "centre": [0.5, 1.06, 0.62],
-          "radii": [0.3, 0.26, 0.28],
-          "amount": 0.07
-        }
-      ],
-      "patches": [
-        {
-          "name": "dark shoulder patch",
-          "centre_zy": [0.62, 1.1],
-          "radii": [0.25, 0.21],
-          "zone": 0.0,
-          "x_min": 0.25
-        }
-      ]
+    "keel": {
+      "note": "How much the section narrows from its widest level toward the underside (0 none, 0.5 to half width at the breastbone): the deep keel of the chest, a gentler one under the belly, none on the tail.",
+      "rows": [[0.0, 0.15], [0.5, 0.25], [0.8, 0.45], [1.3, 0.4], [1.8, 0.3], [2.3, 0.15], [2.7, 0.0], [5.72, 0.0]]
     }
   },
   "front_leg": {
-    "note": "Measured on the side sheet's near front leg (fleg crop, px 330-700, py 380-870): a big dark rounded shoulder mass rimmed below by small square plates; a heavy orange upper arm running down and back to an elbow that points backward (~0.64 long); a forearm column angling down and forward to a low wrist (~0.67), cream along its back; a compact hand (~0.3) with three big hooked dark claws and a dewclaw high on the back of the wrist. The sheet's far leg steps forward; the rest pose uses the near leg's pose on both sides. Thickness: the upper arm is a huge muscular mass (about 0.5 deep near the shoulder), the forearm a heavy column; the shoulder sits on the outside of the broad chest.",
+    "note": "Measured on the side sheet's near front leg (crop px 300-720, py 300-880). The dark shoulder patch is the shoulder blade and its muscles seen from the side; the shoulder joint sits at the front of the upper arm under it (px 425, py 495). The upper arm slopes down and back to an elbow at the bottom of the chest (px 625, py 605; its point at 649, 613); the forearm angles down and forward to a slim wrist (px 515, py 790, 0.155 deep against 0.37 below the elbow); the hand lies flat on the ground. Like a great cat's: the elbow tucked in against the chest, the leg hanging close beside the keel of the chest. Built as bones and muscles (anatomy).",
     "joints": {
-      "shoulder": [0.46, 1.04, 0.64],
-      "elbow": [0.5, 0.6, 0.17],
-      "wrist": [0.48, 0.11, 0.52],
-      "knuckles": [0.48, 0.05, 0.66]
-    },
-    "path": [
-      [0.46, 1.04, 0.64],
-      [0.49, 0.82, 0.42],
-      [0.5, 0.6, 0.17],
-      [0.49, 0.36, 0.33],
-      [0.48, 0.13, 0.5],
-      [0.48, 0.06, 0.6],
-      [0.48, 0.05, 0.66]
-    ],
-    "radius": [0.27, 0.23, 0.15, 0.13, 0.1, 0.085, 0.065],
-    "aspect": [0.75, 0.7, 0.75, 0.75, 0.85, 1.3, 1.4],
-    "aspect_note": "side-to-side width over front-to-back depth of each section (the hand is broad and flat)",
-    "cream_back": {
-      "from": 0.45,
-      "to": 0.9,
-      "width": 0.5,
-      "note": "along the back of the forearm and wrist (fraction of the limb's length; width as a fraction of the half-circumference)"
+      "scapula_top": [0.25, 1.458, 0.466],
+      "shoulder": [0.38, 0.977, 0.802],
+      "elbow": [0.4, 0.656, 0.219],
+      "wrist": [0.41, 0.117, 0.539],
+      "knuckles": [0.41, 0.05, 0.66]
     },
     "toes": {
       "count": 3,
@@ -249,31 +216,22 @@
       }
     },
     "dewclaw": {
-      "at": [0.52, 0.22, 0.46],
+      "at": [0.45, 0.22, 0.46],
       "direction": [0.15, 0.0, -1.0],
       "length": 0.07,
       "radius": 0.02
     }
   },
   "hind_leg": {
-    "note": "Measured on the side sheet (tail crop): the hind leg is drawn in a deep crouch. The thigh, mostly hidden behind the wing, runs down from the hip to a low knee (~px 895, py 720); the shin runs back to the heel near the ground (~px 1090, py 812), cream down its back; the long digitigrade foot runs forward from the heel along the ground to the ball of the foot (~px 900) with dark square studs along its top; four longer, splayed toes with claws; a spur claw at the heel points back. Thigh muscle mass from the official art (How to Draw, limited edition): a big rounded orange haunch.",
+    "note": "Measured on the side sheet (tail crop): the hind leg is drawn in a deep crouch. The thigh, mostly hidden behind the wing, runs down from the hip to a low knee (~px 895, py 720); the shin runs back to the heel near the ground (~px 1090, py 812), cream down its back; the long digitigrade foot runs forward from the heel along the ground to the ball of the foot (~px 900) with dark square studs along its top; four longer, splayed toes with claws; a spur claw at the heel points back. The haunch, from the official art (How to Draw, limited edition): a big rounded orange mass over the folded thigh, growing out of the hips and the root of the tail. Built as bones and muscles (anatomy), like a sitting great cat's, with a reptile's caudofemoralis tying the thigh to the tail.",
     "joints": {
-      "hip": [0.42, 0.9, -0.62],
-      "knee": [0.5, 0.33, -0.55],
-      "heel": [0.48, 0.07, -1.12],
-      "ball": [0.47, 0.045, -0.6]
+      "iliac_crest": [0.2, 1.22, -0.42],
+      "hip": [0.4, 0.9, -0.62],
+      "ischium": [0.22, 0.84, -0.95],
+      "knee": [0.46, 0.33, -0.55],
+      "heel": [0.45, 0.08, -1.1],
+      "ball": [0.45, 0.045, -0.62]
     },
-    "leg_path": [[0.42, 0.9, -0.62], [0.48, 0.6, -0.5], [0.5, 0.33, -0.55], [0.5, 0.2, -0.84], [0.48, 0.08, -1.1]],
-    "leg_radius": [0.33, 0.25, 0.15, 0.11, 0.08],
-    "leg_aspect": [0.75, 0.7, 0.8, 0.8, 0.9],
-    "cream_back": {
-      "from": 0.5,
-      "to": 1.0,
-      "width": 0.5
-    },
-    "foot_path": [[0.48, 0.07, -1.13], [0.48, 0.055, -0.9], [0.47, 0.045, -0.6]],
-    "foot_radius": [0.075, 0.065, 0.06],
-    "foot_aspect": [1.0, 1.5, 1.7],
     "toes": {
       "count": 4,
       "spread_deg": [-30, -10, 10, 30],
@@ -288,7 +246,7 @@
       }
     },
     "spur": {
-      "at": [0.48, 0.09, -1.16],
+      "at": [0.45, 0.09, -1.14],
       "direction": [0.0, -0.3, -1.0],
       "length": 0.08,
       "radius": 0.022
@@ -317,5 +275,289 @@
       "thickness": 0.02,
       "flare": 0.012
     }
+  },
+  "anatomy": {
+    "note": "Clay's body is built from the inside out: a skeleton of bones, muscles laid over it from origin to insertion, and one skin over everything (skin.py), so the shoulders grow out of the chest and back, and the haunches out of the hips and the tail. Quadruped anatomy as in a great cat (lion, tiger) for the legs; a reptile's tail root (caudofemoralis, as in lizards and dinosaurs); bird- and dinosaur-like feet. Left side; the right is mirrored. Each piece: from and to (model units), radii [out, across] where 'out' is measured along the hint direction (default: out from the body, +x), the blend radius k with its neighbours, the rig bones that move it, and its colour zone (0 dark, 0.5 orange, 1 cream; null takes the trunk's zone there). Bones show orange where they lie near the skin (the shin, the elbow, the wrist).",
+    "resolution": 0.012,
+    "bones": [
+      {
+        "name": "humerus",
+        "from": [0.38, 0.977, 0.802],
+        "to": [0.4, 0.656, 0.219],
+        "r": [0.06, 0.055],
+        "k": 0.04,
+        "rig": {
+          "upperarm": 1
+        }
+      },
+      {
+        "name": "olecranon (point of the elbow)",
+        "from": [0.4, 0.66, 0.2],
+        "to": [0.4, 0.633, 0.149],
+        "r": [0.05, 0.045],
+        "k": 0.03,
+        "rig": {
+          "upperarm": 0.5,
+          "forearm": 0.5
+        }
+      },
+      {
+        "name": "radius and ulna",
+        "from": [0.4, 0.656, 0.219],
+        "to": [0.41, 0.117, 0.539],
+        "r": [0.06, 0.045],
+        "k": 0.04,
+        "rig": {
+          "forearm": 1
+        }
+      },
+      {
+        "name": "wrist",
+        "from": [0.41, 0.13, 0.53],
+        "to": [0.41, 0.1, 0.56],
+        "r": [0.058, 0.058],
+        "k": 0.03,
+        "rig": {
+          "hand": 1
+        }
+      },
+      {
+        "name": "femur",
+        "from": [0.4, 0.9, -0.62],
+        "to": [0.46, 0.33, -0.55],
+        "r": [0.065, 0.06],
+        "k": 0.04,
+        "rig": {
+          "thigh": 1
+        }
+      },
+      {
+        "name": "tibia",
+        "from": [0.46, 0.33, -0.55],
+        "to": [0.45, 0.08, -1.1],
+        "r": [0.055, 0.045],
+        "k": 0.04,
+        "rig": {
+          "shin": 1
+        }
+      },
+      {
+        "name": "heel (calcaneus)",
+        "from": [0.45, 0.1, -1.08],
+        "to": [0.45, 0.09, -1.15],
+        "r": [0.05, 0.045],
+        "k": 0.03,
+        "rig": {
+          "foot": 1
+        }
+      }
+    ],
+    "muscles": [
+      {
+        "name": "shoulder cap: supraspinatus, infraspinatus and deltoid",
+        "why": "the dark rounded shoulder patch on the side sheet (px 400-567, py 300-521); How to Draw's rounded shoulder at the top of the near leg",
+        "from": [0.25, 1.44, 0.47],
+        "to": [0.44, 0.86, 0.72],
+        "radii": [0.085, 0.17],
+        "k": 0.06,
+        "rig": {
+          "chest": 0.6,
+          "upperarm": 0.4
+        },
+        "zone": 0.0
+      },
+      {
+        "name": "triceps",
+        "why": "the heavy upper-arm mass behind the humerus, from the shoulder blade to the point of the elbow (side sheet)",
+        "from": [0.3, 1.18, 0.42],
+        "to": [0.41, 0.64, 0.16],
+        "radii": [0.13, 0.19],
+        "k": 0.06,
+        "rig": {
+          "upperarm": 0.7,
+          "chest": 0.3
+        },
+        "zone": 0.5
+      },
+      {
+        "name": "biceps and brachialis",
+        "why": "the front of the upper arm under the shoulder point (side sheet)",
+        "from": [0.42, 0.98, 0.84],
+        "to": [0.43, 0.56, 0.3],
+        "radii": [0.1, 0.12],
+        "k": 0.05,
+        "rig": {
+          "upperarm": 0.8,
+          "forearm": 0.2
+        },
+        "zone": 0.5
+      },
+      {
+        "name": "pectoral",
+        "why": "ties the inside of the upper arm to the breastbone, so the leg grows out of the chest (TDP limited-edition cover: the arm's front edge runs on from the chest)",
+        "from": [0.05, 0.7, 0.8],
+        "to": [0.38, 0.8, 0.55],
+        "radii": [0.16, 0.09],
+        "hint": [0, 1, 0],
+        "k": 0.07,
+        "rig": {
+          "chest": 0.6,
+          "upperarm": 0.4
+        },
+        "zone": null
+      },
+      {
+        "name": "latissimus dorsi",
+        "why": "a flat sheet from the back to the upper arm, filling behind the shoulder blade",
+        "from": [0.26, 1.32, 0.12],
+        "to": [0.38, 0.84, 0.45],
+        "radii": [0.06, 0.17],
+        "k": 0.07,
+        "rig": {
+          "chest": 0.7,
+          "upperarm": 0.3
+        },
+        "zone": null
+      },
+      {
+        "name": "forearm extensors",
+        "why": "the front of the forearm: thick below the elbow, tapering to the slim wrist (side sheet)",
+        "from": [0.41, 0.639, 0.288],
+        "to": [0.41, 0.267, 0.485],
+        "radii": [0.09, 0.13],
+        "k": 0.05,
+        "rig": {
+          "forearm": 1
+        },
+        "zone": 0.5
+      },
+      {
+        "name": "forearm flexors",
+        "why": "the back of the forearm, cream on the side sheet from below the elbow to the wrist",
+        "from": [0.41, 0.598, 0.183],
+        "to": [0.41, 0.18, 0.461],
+        "radii": [0.09, 0.12],
+        "k": 0.05,
+        "rig": {
+          "forearm": 1
+        },
+        "zone": 1.0
+      },
+      {
+        "name": "hand (metacarpals)",
+        "why": "a compact, broad, flat hand on the ground (side sheet)",
+        "from": [0.41, 0.11, 0.53],
+        "to": [0.41, 0.05, 0.67],
+        "radii": [0.075, 0.045],
+        "k": 0.04,
+        "rig": {
+          "hand": 1
+        },
+        "zone": 0.5
+      },
+      {
+        "name": "gluteals",
+        "why": "the round top of the haunch, growing out of the hips (How to Draw)",
+        "from": [0.2, 1.22, -0.52],
+        "to": [0.43, 0.93, -0.6],
+        "radii": [0.1, 0.2],
+        "k": 0.07,
+        "rig": {
+          "hips": 0.6,
+          "thigh": 0.4
+        },
+        "zone": null
+      },
+      {
+        "name": "quadriceps",
+        "why": "the front of the thigh, down to the knee (How to Draw's haunch)",
+        "from": [0.4, 0.98, -0.5],
+        "to": [0.47, 0.36, -0.5],
+        "radii": [0.15, 0.2],
+        "k": 0.06,
+        "rig": {
+          "thigh": 0.8,
+          "hips": 0.2
+        },
+        "zone": 0.5
+      },
+      {
+        "name": "hamstrings (biceps femoris)",
+        "why": "the round back of the haunch, from the ischium to the top of the shin",
+        "from": [0.25, 0.86, -0.92],
+        "to": [0.46, 0.3, -0.68],
+        "radii": [0.15, 0.2],
+        "k": 0.06,
+        "rig": {
+          "thigh": 0.7,
+          "hips": 0.3
+        },
+        "zone": 0.5
+      },
+      {
+        "name": "caudofemoralis",
+        "why": "a reptile's (and dinosaur's) great tail muscle, from the tail's root to the thigh: the tail and haunch are one mass",
+        "from": [0.12, 0.92, -1.4],
+        "to": [0.38, 0.7, -0.66],
+        "radii": [0.1, 0.14],
+        "k": 0.08,
+        "rig": {
+          "hips": 0.5,
+          "thigh": 0.3,
+          "tail1": 0.2
+        },
+        "zone": null
+      },
+      {
+        "name": "adductors",
+        "why": "the inside of the thigh, tied to the belly",
+        "from": [0.08, 0.66, -0.48],
+        "to": [0.36, 0.55, -0.55],
+        "radii": [0.12, 0.08],
+        "hint": [0, 1, 0],
+        "k": 0.07,
+        "rig": {
+          "hips": 0.5,
+          "thigh": 0.5
+        },
+        "zone": null
+      },
+      {
+        "name": "calf (gastrocnemius)",
+        "why": "the back of the shin, cream on the side sheet, to the heel",
+        "from": [0.46, 0.4, -0.66],
+        "to": [0.45, 0.14, -1.06],
+        "radii": [0.08, 0.1],
+        "k": 0.05,
+        "rig": {
+          "shin": 1
+        },
+        "zone": 1.0
+      },
+      {
+        "name": "shin front (tibialis cranialis)",
+        "why": "the front of the shin, orange on the side sheet, from below the knee to the ankle",
+        "from": [0.47, 0.3, -0.6],
+        "to": [0.45, 0.12, -0.98],
+        "radii": [0.06, 0.07],
+        "k": 0.05,
+        "rig": {
+          "shin": 1
+        },
+        "zone": 0.5
+      },
+      {
+        "name": "foot (metatarsals)",
+        "why": "the long digitigrade foot lying along the ground (side sheet), as in birds and dinosaurs",
+        "from": [0.45, 0.08, -1.08],
+        "to": [0.45, 0.045, -0.62],
+        "radii": [0.065, 0.042],
+        "k": 0.04,
+        "rig": {
+          "foot": 1
+        },
+        "zone": 0.5
+      }
+    ]
   }
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 # Set up what the Clay model build needs, outside the repo (nothing here is committed):
-#   - Blender as a Python module (bpy 5.2.3, Python 3.13) plus numpy, scipy and Pillow, in a virtualenv;
+#   - Blender as a Python module (bpy 5.2.3, Python 3.13) plus numpy, scipy, Pillow and scikit-image, in a virtualenv;
 #   - three.js r128 and its GLTFLoader, for the render viewer;
 #   - the reference images (tools/fetch_refs.py).
 # Safe to run again: each step is skipped once done. Locations (override with env vars):
@@ -12,14 +12,14 @@ HERE="$(cd "$(dirname "$0")" && pwd)"
 ENV="${CLAY_ENV:-$HOME/.cache/clay-env}"
 THREE="${CLAY_THREE:-$HOME/.cache/clay-three}"
 
-if [ ! -x "$ENV/bin/python" ] || ! "$ENV/bin/python" -c "import bpy" 2>/dev/null; then
+if [ ! -x "$ENV/bin/python" ] || ! "$ENV/bin/python" -c "import bpy, skimage" 2>/dev/null; then
   echo "clay setup: creating $ENV with bpy (a large download, a few minutes)"
   if command -v uv >/dev/null; then
     uv venv --python 3.13 "$ENV"
-    uv pip install --python "$ENV/bin/python" bpy==5.2.3 numpy scipy pillow
+    uv pip install --python "$ENV/bin/python" bpy==5.2.3 numpy scipy pillow scikit-image
   else
     python3.13 -m venv "$ENV"
-    "$ENV/bin/pip" install --quiet bpy==5.2.3 numpy scipy pillow
+    "$ENV/bin/pip" install --quiet bpy==5.2.3 numpy scipy pillow scikit-image
   fi
 fi
 
