@@ -487,5 +487,79 @@
    "label": "side sheet",
    "ref": "{refs}/study/cheekbone_side.jpg"
   }
+ ],
+ "mouth": [
+  {
+   "label": "mouth closed, side",
+   "cam": [
+    3,
+    1.33,
+    1.75
+   ],
+   "target": [
+    0,
+    1.33,
+    1.75
+   ],
+   "fov": 8,
+   "pose": "neutral"
+  },
+  {
+   "label": "mouth open, side",
+   "cam": [
+    3,
+    1.33,
+    1.75
+   ],
+   "target": [
+    0,
+    1.33,
+    1.75
+   ],
+   "fov": 8,
+   "pose": {
+    "jaw": 0.35
+   }
+  },
+  {
+   "label": "mouth open, three-quarter front",
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "pose": {
+    "jaw": 0.35
+   }
+  },
+  {
+   "label": "mouth closed, three-quarter front",
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "pose": "neutral"
+  },
+  {
+   "label": "flight render (official)",
+   "ref": "{refs}/clayref/t_Clay_TDP_GN.jpg"
+  },
+  {
+   "label": "TDP limited edition (official)",
+   "ref": "{refs}/clayref/t_Clay_TDPLE.jpg"
+  }
  ]
 }

@@ -1088,7 +1088,9 @@ def head_parts():
                          [[("jaw", 1.0)]] * len(v)))
 
     # teeth: small flat triangular blades, evenly spaced along each lip edge, each pointing perpendicular to the
-    # lip line with its tip raked a little back toward the throat (flight render, limited edition)
+    # lip line with its tip raked a little back toward the throat (flight render, limited edition). The lower
+    # teeth rise plainly from the lower jaw; the upper ones grow from the roof of the mouth, inward and up
+    # behind the upper lip, which hides most of them (tuck_up, inset)
     TT = D["teeth"]
     for jaw_side, bone in ((False, "head"), (True, "jaw")):
         TS = TT["lower" if jaw_side else "upper"]
@@ -1104,9 +1106,9 @@ def head_parts():
         # meet (in front of it is the front muzzle's underside: skin, no teeth)
         FT = TT["front_lower" if jaw_side else "front"]
         if FT:
-            z0 = FT["z"]
+            z0 = FT["z"] - FT.get("tuck_back", 0.0)
             for x in np.linspace(-FT["half_span"], FT["half_span"], FT["count"]):
-                base = np.array([x, edge_y(z0), z0])
+                base = np.array([x, edge_y(z0) + FT.get("tuck_up", 0.0), z0])
                 sy = 1.0 if jaw_side else -1.0
                 d = norm(np.array([0.0, sy * math.cos(math.radians(TT["rake_deg"])), -math.sin(math.radians(TT["rake_deg"]))]))
                 tang = np.array([1.0, 0.0, 0.0]); length = FT["length"]; bl = length * TT["base_frac"]
@@ -1128,7 +1130,7 @@ def head_parts():
                 into = norm(into - (into @ tang) * tang)            # perpendicular to the lip line, into the mouth gap
                 rake = math.radians(TT["rake_deg"])
                 d = norm(into * math.cos(rake) - tang * math.sin(rake))  # tip raked back toward the throat
-                base = np.array([sgn * half_w(z), edge_y(z), z])
+                base = np.array([sgn * half_w(z), edge_y(z) + TS.get("tuck_up", 0.0), z])  # upper: up behind the lip
                 bl, bt = length * TT["base_frac"], TT["thickness"]
                 b0 = len(vs)
                 # a flat blade: base a thin diamond along the lip, apex at the tip

@@ -2,18 +2,19 @@
   "about": "Clay's head as fitted architectural pieces (see head_sheets.md): an orange face mass, a dark roof shell fitted over it whose back corners continue as the horns, a nose crest on the front of the roof, a hinged jaw, eyes with lids hinged on the canthal axis, and ear frills tucked under the horns. Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side reference; x = Clay's left.",
   "upper_head": {
     "columns": ["z", "top", "lower_edge", "half_width_top", "half_width_low"],
+    "top_note": "Between the brow (z 1.706) and where the nose begins (z 1.953) the top line is one smooth bend fitted to the traced points (each moved 0.022 at most): the trace stepped steep, flat, steep there, partly from the side sheet's head being turned a little toward the viewer.",
     "note": "The orange face mass under the roof. Upper lip line, traced on the side sheet (orange face over cream jaw) and the same in How to Draw and the flight render: from the bottom of the nose it slopes down and back, an overhanging lip that is lowest about a third of the way back (z 1.85); from there it rises in a long, slightly concave line to below the eye, then turns sharply up at the mouth corner (z 1.59) and runs back, gently rising, to the ear opening (z 1.41, y 1.656), where it curls up into the cheek's back edge (anatomy: back edge of the cheek). Traced on the centre of the drawn line. The muzzle hardly narrows toward the front and has near-vertical sides, but it has no flat front wall: its top comes down to meet the front of the upper jaw (the lip), so the roof runs all the way down to the front of the upper jaw, and the nose comes out of the roof's front.",
     "rows": [
       [2.017, 1.42, 1.358, 0.104, 0.112],
       [2.006, 1.438, 1.356, 0.106, 0.115],
       [1.988, 1.462, 1.348, 0.108, 0.118],
       [1.953, 1.505, 1.332, 0.111, 0.121],
-      [1.918, 1.574, 1.312, 0.115, 0.126],
-      [1.88, 1.65, 1.281, 0.12, 0.135],
-      [1.848, 1.714, 1.292, 0.13, 0.15],
-      [1.813, 1.746, 1.31, 0.143, 0.168],
-      [1.778, 1.77, 1.329, 0.15, 0.179],
-      [1.743, 1.834, 1.349, 0.156, 0.19],
+      [1.918, 1.5763, 1.312, 0.115, 0.126],
+      [1.88, 1.6458, 1.281, 0.12, 0.135],
+      [1.848, 1.698, 1.292, 0.13, 0.15],
+      [1.813, 1.7485, 1.31, 0.143, 0.168],
+      [1.778, 1.7921, 1.329, 0.15, 0.179],
+      [1.743, 1.8288, 1.349, 0.156, 0.19],
       [1.706, 1.86, 1.362, 0.169, 0.202],
       [1.673, 1.88, 1.376, 0.182, 0.213],
       [1.633, 1.89, 1.41, 0.195, 0.224],
@@ -568,6 +569,7 @@
     "size_note": "side sheet front outline: the tip juts furthest at y 1.44 (z 2.019); just under it a notch at y 1.414 (z 1.98) where the nose's underside meets the front of the upper jaw, which carries on down to the lip at z 2.0-2.01"
   },
   "teeth": {
+    "lip_note": "The upper lip hangs down over the upper teeth: in most images only the lower teeth show, rising plainly from the lower jaw, and the upper teeth show mainly with the mouth open. So the upper teeth grow from the roof of the mouth, inward (inset 0.03) and up (tuck_up 0.02) behind the lip, the front row set back too (the user's reading).",
     "note": "Flight render and limited edition: small, flat, triangular blades. The tooth rows start at the bite point (z 1.86), where the upper and lower fronts of the mouth meet when it is closed: a short row across the front of the mouth there, then rows back along each side lip, each tooth perpendicular to its lip edge, tips raked a little back. In front of the bite point is the front muzzle's underside: skin, no teeth. A little larger mid-row; no single big fang.",
     "rake_deg": 12,
     "base_frac": 0.45,
@@ -576,7 +578,8 @@
       "z": [1.835, 1.62],
       "count": 8,
       "length": [0.026, 0.04],
-      "inset": 0.012
+      "inset": 0.03,
+      "tuck_up": 0.02
     },
     "lower": {
       "z": [1.83, 1.63],
@@ -587,8 +590,10 @@
     "front": {
       "z": 1.855,
       "count": 4,
-      "half_span": 0.075,
-      "length": 0.024
+      "half_span": 0.065,
+      "length": 0.024,
+      "tuck_up": 0.02,
+      "tuck_back": 0.02
     },
     "front_lower": {
       "z": 1.848,
