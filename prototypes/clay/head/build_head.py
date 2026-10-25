@@ -128,6 +128,13 @@ def snout_ridge(z):
     return float(np.interp(-z, -R[:, 0], R[:, 1]))
 
 
+def corner_lift(z, x, wb):
+    """How far the upper jaw's lower edge is pulled up at x, at station z: at the front block its bottom corners
+    pull up before the lip turns back along the side."""
+    F = D["upper_head"]["front"]
+    return F["corner_lift"] * smoothstep(F["block_back_z"], UPPER[0, 0], z) * min(1.0, abs(x) / wb) ** 4
+
+
 def face_pt(z, th):
     """Point on the face at station z, angle th (0 = left lip edge, pi/2 = top, pi = right lip edge).
     Boxy cross-section (flat top, steep sides, cheeks wider than the top), then the brushes."""
@@ -139,6 +146,7 @@ def face_pt(z, th):
     x = a * math.copysign(abs(c) ** (2 / SQ), c)
     # gable: straight slopes down from a crisp ridge; the ridge stays on the measured profile, the shoulders drop
     y = low + yy - snout_ridge(z) * min(1.0, abs(x) / (wt * 0.98)) * (yy / b) ** 4
+    y += corner_lift(z, x, wb) * (1 - yy / b) ** 2  # the front's bottom corners pull up
     side = min(1.0, max(0.0, (abs(x) / wb - 0.35) / 0.4))  # brushes act on the sides, fading out on the top
     return x + math.copysign(brush_offset(z, y) * side, x), y
 
@@ -153,7 +161,8 @@ def face_normal(z, th):
 
 
 def upper_contour(z):
-    return [face_pt(z, math.pi * i / N_AROUND) for i in range(N_AROUND + 1)], interp(UPPER, z, 2)
+    low, wb = interp(UPPER, z, 2), interp(UPPER, z, 4)
+    return [face_pt(z, math.pi * i / N_AROUND) for i in range(N_AROUND + 1)], (lambda x: low + corner_lift(z, x, wb))
 
 
 def jaw_contour(z):
@@ -244,6 +253,30 @@ def shield(W, H, drop, r, n=16, bulge=0.0):
         nrm = np.array([b[1] - a[1], -(b[0] - a[0])]) / (np.linalg.norm(b - a) + 1e-9)  # outward (the outline runs counter-clockwise)
         pts += [(tuple(a + (b - a) * q / m + nrm * bulge * np.linalg.norm(b - a) * math.sin(math.pi * q / m)), tag[j]) for q in range(1, m)]
     return [p for p, _ in pts], [g for _, g in pts]
+
+
+def front_ridge():
+    """A small brown ridge across the top of the upper jaw's front face, right under the nose's front end: the
+    roof's front edge, wrapping across the front. A rounded bar, its ends tapering into the front corners."""
+    R = D["upper_head"]["front"]["ridge"]
+    z0 = UPPER[0, 0]
+    yc, ry, rz = R["y"], R["height"] / 2, R["depth"]
+    xw = abs(face_pt(z0, side_th(z0, yc))[0]) * R["width_frac"]
+    nu, nv = 40, 16
+    verts = []
+    for i in range(nu + 1):
+        u = -1 + 2 * i / nu
+        taper = math.sqrt(max(0.0, 1 - u ** 8))
+        for j in range(nv):
+            a = 2 * math.pi * j / nv
+            verts.append((u * xw, yc + ry * taper * math.cos(a), z0 - 0.004 + rz * taper * max(0.0, math.sin(a)) + 0.002 * math.sin(a)))
+    faces = []
+    for i in range(nu):
+        for j in range(nv):
+            p, q = i * nv + j, i * nv + (j + 1) % nv
+            faces.append([p, q, q + nv, p + nv])
+    n = len(verts)
+    return verts, faces, [0.02] * n, [0.45] * n, [0.0] * n
 
 
 def nose_part():
@@ -630,7 +663,7 @@ def band_zs(z_front, z_back, base_n):
 
 
 # ---------------------------------------------------------------- general pieces
-def loft(contour_fn, zs, cap_front=True, cap_back=True):
+def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None):
     """Rings of the contour along z, closed across the open side (palate / mouth floor)
     and capped at both ends. Returns verts, quads, and per-vertex (along, around) coords."""
     verts, faces, uv = [], [], []
@@ -645,7 +678,7 @@ def loft(contour_fn, zs, cap_front=True, cap_back=True):
         for j in range(1, 6):
             t = j / 6
             x = pts[-1][0] + (pts[0][0] - pts[-1][0]) * t
-            inner.append(len(verts)); verts.append((x, edge_y, z)); uv.append((z, -1.0))
+            inner.append(len(verts)); verts.append((x, edge_y(x) if callable(edge_y) else edge_y, z)); uv.append((z, -1.0))
         rings.append(ring + inner)
     M = len(rings[0])
     for k in range(len(rings) - 1):
@@ -657,9 +690,23 @@ def loft(contour_fn, zs, cap_front=True, cap_back=True):
         if not cap:
             continue
         r = rings[k]
+        if k == 0 and front_dent:
+            # the front face, filled with rings shrinking toward its middle, each set back by front_dent(y, f)
+            # (f: 1 at the outline, 0 in the middle), so the face can be concave
+            cx = sum(verts[i][0] for i in r) / M; cy = sum(verts[i][1] for i in r) / M
+            for f in (0.85, 0.7, 0.55, 0.4, 0.25, 0.1):
+                nr = []
+                for i in r:
+                    x, y, _ = verts[i]
+                    x, y = cx + (x - cx) * f, cy + (y - cy) * f
+                    nr.append(len(verts)); verts.append((x, y, zs[0] - front_dent(y, f))); uv.append((zs[0], 0.5))
+                for i in range(M):
+                    j = (i + 1) % M
+                    faces.append([r[j], r[i], nr[i], nr[j]])
+                r = nr
         c = len(verts)
         cx = sum(verts[i][0] for i in r) / M; cy = sum(verts[i][1] for i in r) / M
-        verts.append((cx, cy, zs[k] + (0.0 if k == 0 else -0.006))); uv.append((zs[k], 0.5))  # caps are outer skin; the front one is flat (box muzzle)
+        verts.append((cx, cy, zs[k] - (front_dent(cy, 0.0) if (k == 0 and front_dent) else 0.0) + (0.0 if k == 0 else -0.006))); uv.append((zs[k], 0.5))
         for i in range(M):
             j = (i + 1) % M
             faces.append([r[j], r[i], c] if k == 0 else [r[i], r[j], c])
@@ -891,7 +938,13 @@ def head_parts():
     # face: the orange mass, dense rings near the nose where the shape changes fastest
     z0, z1 = UPPER[0, 0], UPPER[-1, 0]
     zs = np.concatenate([np.linspace(z0, 1.86, 20), np.linspace(1.85, z1, 120)])
-    v, f, uv = loft(upper_contour, zs)
+    F = D["upper_head"]["front"]
+    lo0, top0 = interp(UPPER, z0, 2), interp(UPPER, z0, 1)
+
+    def front_dent(y, f):  # concave in profile: set back most just under the nose, none at the bottom edge
+        q = min(1.0, max(0.0, (y - lo0) / (top0 - lo0)))
+        return F["concave"] * math.sin(math.pi * q ** 0.8) * (1 - f ** 3)
+    v, f, uv = loft(upper_contour, zs, front_dent=front_dent)
     hf = []
     for (x, y, z), (_, w) in zip(v, uv):
         low, top = interp(UPPER, z, 2), interp(UPPER, z, 1)
@@ -916,6 +969,8 @@ def head_parts():
         rings.append((outer, inner)); at.append((fb, [fb] * len(outer)))
     v, f, A, B, Z = shell_loft(rings, at)
     objs.append(add_part("Roof", v, f, {"_PART": [10] * len(v), "_A": A, "_B": B, "_ZONE": Z}, rigid(len(v))))
+    v, f, A, B, NW = front_ridge()
+    objs.append(add_part("FrontRidge", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
     v, f, A, B, NW = nose_part()
     objs.append(add_part("Nose", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
     for k, (v, f, A, B, NW) in enumerate(roof_plates()):
@@ -941,6 +996,23 @@ def head_parts():
             edge_y = lambda z: interp(UPPER, z, 2)
             half_w = lambda z: interp(UPPER, z, 4) - TS["inset"]
         zs = np.linspace(TS["z"][0], TS["z"][1], TS["count"])
+        # the front teeth: a row across the front of the mouth at the bite point, where the upper and lower fronts
+        # meet (in front of it is the front muzzle's underside: skin, no teeth)
+        FT = TT["front_lower" if jaw_side else "front"]
+        if FT:
+            z0 = FT["z"]
+            for x in np.linspace(-FT["half_span"], FT["half_span"], FT["count"]):
+                base = np.array([x, edge_y(z0), z0])
+                sy = 1.0 if jaw_side else -1.0
+                d = norm(np.array([0.0, sy * math.cos(math.radians(TT["rake_deg"])), -math.sin(math.radians(TT["rake_deg"]))]))
+                tang = np.array([1.0, 0.0, 0.0]); length = FT["length"]; bl = length * TT["base_frac"]
+                b0 = len(vs)
+                for p in (tang * bl, np.array([0, 0, TT["thickness"]]), -tang * bl, np.array([0, 0, -TT["thickness"]])):
+                    vs.append(tuple(base + p - d * 0.004))
+                vs.append(tuple(base + d * length))
+                for j in range(4):
+                    fs.append([b0 + (j + 1) % 4, b0 + j, b0 + 4] if not jaw_side else [b0 + j, b0 + (j + 1) % 4, b0 + 4])
+                ws += [[(bone, 1.0)]] * 5
         for sgn in (1, -1):
             for k, z in enumerate(zs):
                 f = k / (len(zs) - 1)

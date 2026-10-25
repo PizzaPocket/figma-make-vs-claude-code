@@ -10,7 +10,7 @@ Work top to bottom: the head first, because the neck and body join onto it. Tick
   - the brown plate covers the whole flat front, full width, down to the lip; the orange face never sticks out past it;
   - one clean skin surface under the overhanging upper lip.
 - [ ] **Eyelids.** Partly done: round opening, thin lids hugging the eye, dark-brown iris, heavy dark ring. Left: a soft dome still shows behind the eye where the closed lids run back under the face, and the blink doesn't fully close at the back corner.
-- [x] **Teeth.** Flat triangular blades along the whole lip line, perpendicular to it, tips raked back (see head_sheets.md).
+- [x] **Mouth map and teeth.** The lip starts at the bite point (z 1.86); the front muzzle's underside in front of it has no teeth; front tooth rows across the bite, side rows behind; blades perpendicular to the lip, tips raked back (see head_sheets.md).
 - [ ] **Roof edge plates.** The plates along the traced edge of the brown roof read as one long strip. They should be separate square plates, with a small step at each joint.
 - [ ] **Ear curl.** The jaw line's curl round the ear opening is faint and can only climb straight up. Cut the ear opening as a notch so the edge can hook forward, as drawn.
 - [ ] **Jaw back edge.** It sits a little high and steep compared with the side sheet's line toward the throat notch.

@@ -168,9 +168,16 @@ The earlier figure of 26° was a straight line from the tear duct to where the c
 
   Poses mix them with the lid bones: neutral, blink, wide, happy, worried, angry and snarl, all in `head_design.json`.
 
+**Inner corner:** it drops below the round eye into a pointed teardrop holding the pink tear duct (72 degrees round the eyeball, turned 20 degrees further down, closing to a point). **Iris:** dark warm brown with a rich brown rim.
+
 **Round eye (every official image):** the lids open 48 (upper) and 50 (lower) degrees from the gaze, rounded at the measured corners (42 and 60 degrees). They hug the eyeball (thickness 0.05 r, scale 1.01), so there is less dome. The iris is dark warm brown with a large pupil inside a white ring, and a heavy dark ring runs round the whole opening, stopping at the corners. Moving the corners further round (55 degrees) opened a dark wedge behind the eye, so they stay where they were measured.
 
-**Teeth (flight render, limited edition):** small, flat, triangular ivory blades, evenly spaced along the whole lip line: 11 a side upper (z 1.975–1.62) and 8 lower (z 1.85–1.63), a little larger mid-row. Each points perpendicular to its lip edge, not straight down, with its tip raked 12 degrees back toward the throat. No single big fang.
+**Mouth map.** The bite point (z 1.86) is where the upper and lower fronts of the mouth meet when it is closed: on the side sheet, where the orange upper muzzle meets the cream chin. The lip line starts there.
+- In front of it is the **front muzzle**: under the nose its front face bulges out a little, then its underside sweeps back and down to the bite point. That underside is skin with no teeth. Its bottom corners pull up a little before turning back to the side muzzle.
+- A small brown ridge (the roof's front edge) wraps across the top of the front face, right under the nose.
+- The lower jaw's front is as wide as the upper mouth at the bite point, so the two fronts meet across it.
+
+**Teeth (flight render, limited edition):** small, flat, triangular ivory blades. A row of 4 across the front of the mouth at the bite point (upper and lower), then rows back along each side lip (upper z 1.835–1.62, lower 1.83–1.63). Each points perpendicular to its lip edge, tip raked 12 degrees back. No single big fang. An earlier pass ran them up the front muzzle's underside, which was wrong.
 
 ## Eye and lids (measurements)
 

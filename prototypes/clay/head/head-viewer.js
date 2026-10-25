@@ -79,7 +79,7 @@
             col = srgb(vec3(242.0, 236.0, 226.0));
             // wide-open eye: a white ring shows all round a warm brown iris, as in every official image
             col = mix(col, srgb(vec3(112.0, 66.0, 34.0)), 1.0 - smoothstep(0.155, 0.165, a)); // dark warm brown iris, as in every official image
-            col = mix(col, srgb(vec3(70.0, 38.0, 20.0)), (1.0 - smoothstep(0.15, 0.17, abs(a - 0.16) + 0.15)) * 0.8);
+            col = mix(col, srgb(vec3(92.0, 44.0, 14.0)), (1.0 - smoothstep(0.15, 0.185, abs(a - 0.152) + 0.15)) * 0.95); // a rich brown rim round the iris
             col = mix(col, vec3(0.01), 1.0 - smoothstep(0.085, 0.095, a)); // large pupil
             rough = 0.08;
           }
