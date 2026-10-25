@@ -947,6 +947,11 @@ def eye_frame(sgn):
     return g, a, u
 
 
+def rot(v, k, ang):
+    """Rotate v about unit axis k by ang (Rodrigues)."""
+    return v * math.cos(ang) + np.cross(k, v) * math.sin(ang) + k * (k @ v) * (1 - math.cos(ang))
+
+
 def expression_offsets(V, terms):
     """Offsets of the face's vertices for one muscle action: `push` moves a region (out, up, forward),
     `crease` folds the skin in along a line. Both act on the sides of the face like the anatomy brushes."""
