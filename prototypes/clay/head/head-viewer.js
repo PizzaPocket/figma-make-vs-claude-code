@@ -108,6 +108,8 @@
           diffuseColor.rgb = col;
         `)
         .replace("#include <roughnessmap_fragment>", "#include <roughnessmap_fragment>\nroughnessFactor = rough;")
+        // the wing membrane is thin: lit from behind it glows with the light through it (every flying cover, seen from below)
+        .replace("#include <emissivemap_fragment>", "#include <emissivemap_fragment>\n#ifndef CLAY\nif (isP(25.0) > 0.5) totalEmissiveRadiance += diffuseColor.rgb * 0.4;\n#endif")
         .replace("#include <normal_fragment_begin>", `#include <normal_fragment_begin>
           { vec3 sp = -vViewPosition; vec3 dx = dFdx(sp), dy = dFdy(sp); vec3 r1 = cross(dy, normal), r2 = cross(normal, dx);
             float det = dot(dx, r1); float h = -groove * 0.003; vec3 grad = sign(det) * (dFdx(h) * r1 + dFdy(h) * r2);

@@ -963,5 +963,87 @@
    "label": "JP design sheet (official)",
    "ref": "{refs}/study/jp_design_sheet.jpg"
   }
+ ],
+ "spread": [
+  {
+   "label": "spread, from below front",
+   "cam": [
+    2.5,
+    -3.0,
+    5.0
+   ],
+   "target": [
+    0,
+    1.0,
+    -0.3
+   ],
+   "fov": 50,
+   "pose": "neutral"
+  },
+  {
+   "label": "spread, from below",
+   "cam": [
+    0.01,
+    -6.5,
+    -0.3
+   ],
+   "target": [
+    0,
+    1.0,
+    -0.3
+   ],
+   "fov": 55,
+   "pose": "neutral"
+  },
+  {
+   "label": "spread, front",
+   "cam": [
+    0,
+    1.5,
+    9
+   ],
+   "target": [
+    0,
+    1.5,
+    0
+   ],
+   "fov": 45,
+   "pose": "neutral"
+  },
+  {
+   "label": "spread, three-quarter above",
+   "cam": [
+    6,
+    6,
+    5
+   ],
+   "target": [
+    0,
+    1.2,
+    -0.4
+   ],
+   "fov": 45,
+   "pose": "neutral"
+  },
+  {
+   "label": "spread, plain clay, from below front",
+   "cam": [
+    2.5,
+    -3.0,
+    5.0
+   ],
+   "target": [
+    0,
+    1.0,
+    -0.3
+   ],
+   "fov": 50,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "Umber render (official, house style)",
+   "ref": "{refs}/wiki/Umber_Render_-zstarchaserr.png"
+  }
  ]
 }

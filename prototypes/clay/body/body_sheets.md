@@ -182,3 +182,16 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 - **The fix:** the leg is now digitigrade, like a cat's or a dog's. The knee is forward at mid-height (0.46, z −0.46). The hock (heel) is raised behind it to about a quarter of the hip's height (0.22, z −0.86), with the spur on its back. The metatarsus runs down and forward to the toes (z −0.6). The calf and shin muscles are re-hung on the new joints and thickened.
 
 **Not used:** the Japanese design sheet, whose style differs from the rest of the official art.
+
+## Spread wings
+
+**References:** the covers seen from below: The Dragonet Prophecy (US and the full render), the Hybrid Prince cover (Umber, a MudWing, in house style), the limited edition and the SE poster.
+- **Arm:** the humerus runs out, up and a little back from the shoulder. The forearm runs out and forward to the wrist, forming the leading edge.
+- **Fingers:** the first finger carries the leading edge on to the wing's tip. The others fan back, the last pointing nearly straight back.
+- **Membrane:** scalloped between the fingers' tips. It also runs from the last finger back along the flank to the hip (the Umber render; hidden when the wing is folded).
+- **Light:** the membrane is thin. Seen from below against the sky it glows peach, so the shader adds the light coming through it.
+
+**Build:**
+- `build_body.py --wing-pose spread` builds the wing spread; the default is folded, the side sheet's pose. The spread pose is directions for the humerus, the forearm and each finger (`wing.spread`), and the bones keep their folded lengths.
+- The arm's muscles ride their bone: those on the humerus turn about the shoulder, those on the forearm about the elbow.
+- The flank panel runs between the last finger and the line wrist → elbow → flank → hip.

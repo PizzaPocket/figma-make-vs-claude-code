@@ -11,7 +11,7 @@ body_design.json and body_sheets.md):
 - hind legs: four toes (part of the skin) with claws, and a heel spur.
 Model space: x = Clay's left, y = up, z = forward; 1 unit = 343 px of the reference.
 
-    python3 build_body.py --out clay.glb
+    python3 build_body.py --out clay.glb [--wing-pose spread]
 """
 import json
 import math
@@ -27,6 +27,7 @@ import numpy as np  # noqa: E402
 
 ARGS = dict(zip(sys.argv[1::2], sys.argv[2::2]))
 OUT = ARGS.get("--out", "clay.glb")
+WING_POSE = ARGS.get("--wing-pose", "folded")  # folded (the side sheet) or spread (the flying covers)
 B = json.load(open(ARGS.get("--body", os.path.join(HERE, "body_design.json"))))
 TR = B["trunk"]
 
@@ -443,14 +444,54 @@ def spar(name, pts, radii, bn, around=12):
     return H.add_part(name, v, f, {"_PART": [24] * len(v), "_A": [a * total for a in A], "_B": Bq, "_ZONE": [0] * len(v)}, w)
 
 
+def align(a, b):
+    """The smallest rotation (a matrix) turning direction a onto direction b."""
+    a, b = H.norm(a), H.norm(b); v = np.cross(a, b); c = float(a @ b)
+    if np.linalg.norm(v) < 1e-9:
+        return np.eye(3)
+    K = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+    return np.eye(3) + K + K @ K / (1 + c)
+
+
+def wing_pose(sgn):
+    """The wing's joints and finger tips in the pose being built (WING_POSE), and how to carry a point
+    from the folded pose (the one the anatomy is measured in) into it: points on the humerus turn about
+    the shoulder, points on the forearm about the elbow. The spread pose keeps the folded bones' lengths."""
+    Wg = B["wing"]
+    J = {k: np.array(v, float) for k, v in Wg["joints"].items()}
+    tips = [np.array(t, float) for t in Wg["fingers"]]
+    if WING_POSE == "folded":
+        J2, tips2, Rh, Rf = J, tips, np.eye(3), np.eye(3)
+    else:
+        S = Wg["spread"]
+        Rh = align(J["elbow"] - J["shoulder"], S["humerus_dir"])
+        Rf = align(J["wrist"] - J["elbow"], S["forearm_dir"])
+        J2 = dict(J)
+        J2["elbow"] = J["shoulder"] + Rh @ (J["elbow"] - J["shoulder"])
+        J2["wrist"] = J2["elbow"] + Rf @ (J["wrist"] - J["elbow"])
+        tips2 = [J2["wrist"] + H.norm(np.array(d, float)) * np.linalg.norm(t - J["wrist"]) for t, d in zip(tips, S["finger_dirs"])]
+    def carry(p, bone):
+        p = np.asarray(p, float)
+        if bone == "wing_humerus":
+            return J2["shoulder"] + Rh @ (p - J["shoulder"])
+        if bone == "wing_forearm":
+            return J2["elbow"] + Rf @ (p - J["elbow"])
+        return p
+    m = lambda p: mirror(p, sgn)
+    return {k: m(v) for k, v in J2.items()}, [m(t) for t in tips2], carry, Rf
+
+
 def wing_arm(sgn, sd):
     """The wing's arm as flesh over bone, like the legs (skin.py): bone capsules and muscle bellies joined
     smoothly, meshed on their own. _A: length along the arm, _B: place round it, for the plate rows."""
     an = B["wing"]["anatomy"]
-    parts = [SK.Piece(b, sgn, "bone") for b in an["bones"]] + [SK.Piece(m, sgn, "muscle") for m in an["muscles"]]
+    J, _, carry, _ = wing_pose(sgn)
+    def posed(spec):  # each piece rides the bone that carries most of it
+        bone = max(spec["rig"].items(), key=lambda kv: kv[1])[0]
+        return dict(spec, **{"from": carry(spec["from"], bone).tolist(), "to": carry(spec["to"], bone).tolist()})
+    parts = [SK.Piece(posed(b), sgn, "bone") for b in an["bones"]] + [SK.Piece(posed(m), sgn, "muscle") for m in an["muscles"]]
     V, F = SK.mesh(None, parts, an["resolution"])
     W = SK.piece_weights(V, parts)
-    J = {k: mirror(v, sgn) for k, v in B["wing"]["joints"].items()}
     path = np.array([J["shoulder"], J["elbow"], J["wrist"]])
     seg = np.linalg.norm(np.diff(path, axis=0), axis=1)
     A, Bq = [], []
@@ -468,19 +509,22 @@ def wing_arm(sgn, sd):
 
 
 def wing(sgn):
-    """One wing (B["wing"]), built like a bat's arm and posed folded half open as on the side sheet: the
-    muscled arm, a thumb claw at the wrist, four jointed fingers with claws, and the membrane between the
-    forearm and the fingers, scalloped between the tips."""
+    """One wing (B["wing"]), built like a bat's arm: the muscled arm, a thumb claw at the wrist, four jointed
+    fingers with claws, and the membrane between the forearm and the fingers, scalloped between the tips.
+    Folded half open as on the side sheet, or spread (WING_POSE), when the membrane also runs from the last
+    finger back along the flank to the hip (the Umber render, the TDP cover)."""
     Wg = B["wing"]; sd = "L" if sgn > 0 else "R"
-    J = {k: mirror(v, sgn) for k, v in Wg["joints"].items()}
-    out = np.array([sgn * 1.0, 0, 0])
+    J, tips, _, Rf = wing_pose(sgn)
+    spread = WING_POSE != "folded"
+    # the side the membrane billows to: outward when folded against the flank, up when spread (the air under it)
+    out = np.array([0, 1.0, 0]) if spread else np.array([sgn * 1.0, 0, 0])
     parts = [wing_arm(sgn, sd)]
     bones = [(f"wing_humerus.{sd}", tuple(J["shoulder"]), tuple(J["elbow"]), "chest"),
              (f"wing_forearm.{sd}", tuple(J["elbow"]), tuple(J["wrist"]), f"wing_humerus.{sd}")]
     claw_part = lambda name, v, f, bn: H.add_part(name, v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)},
                                                   [[(bn, 1.0)]] * len(v))
     # the thumb: a short digit on the wrist's leading side, ending in a hooked claw
-    th = Wg["thumb"]; td = H.norm(mirror(th["direction"], sgn)); tb = f"wing_thumb.{sd}"
+    th = Wg["thumb"]; td = mirror(Rf @ H.norm(np.array(th["direction"], float)), sgn); tb = f"wing_thumb.{sd}"
     t1 = J["wrist"] + td * th["length"]
     parts.append(spar(f"WingThumb{sd}", [J["wrist"], t1], [th["radius"], th["radius"] * 0.8], tb))
     c = th["claw"]; v, f = claw_tube(t1 - td * 0.01, td, c["length"], c["radius"], c["hook_deg"], down=np.array([0, -1.0, 0]))
@@ -488,11 +532,12 @@ def wing(sgn):
     bones.append((tb, tuple(J["wrist"]), tuple(t1), f"wing_forearm.{sd}"))
     # the fingers: a metacarpal to a knuckle, a phalanx bent a little back from it to the tip
     spars = [(np.array([J["wrist"], J["elbow"]]), lambda u: f"wing_forearm.{sd}")]
+    fan = H.norm(np.cross(tips[0] - J["wrist"], tips[-1] - J["wrist"]))  # the fan's plane
     Fg, cl = Wg["finger"], Wg["claw"]
-    for k, tip in enumerate(Wg["fingers"]):
-        tip = mirror(tip, sgn); mb, pb = f"wing_finger{k + 1}.{sd}", f"wing_finger{k + 1}b.{sd}"
+    for k, tip in enumerate(tips):
+        mb, pb = f"wing_finger{k + 1}.{sd}", f"wing_finger{k + 1}b.{sd}"
         d = H.norm(tip - J["wrist"]); L = np.linalg.norm(tip - J["wrist"])
-        back = H.norm(np.cross(out, d))  # in the fan's plane, toward the trailing edge
+        back = H.norm(np.cross(fan, d))  # in the fan's plane, toward the trailing edge
         if back[2] > 0:
             back = -back
         kn = J["wrist"] + d * L * Fg["knuckle_at"] + back * L * Fg["knuckle_at"] * math.sin(math.radians(Fg["bend_deg"]))
@@ -504,15 +549,27 @@ def wing(sgn):
         parts.append(claw_part(f"WingClaw{k}{sd}", v, f, pb))
         bones += [(mb, tuple(J["wrist"]), tuple(kn), f"wing_forearm.{sd}"), (pb, tuple(kn), tuple(tip), mb)]
         spars.append((np.array(pts), lambda u, mb=mb, pb=pb, ka=ka: mb if u < ka else pb))
-    # membrane panels: between consecutive spars, u from the wrist (0) out to the tips (1), v across; the
-    # trailing edge sags back toward the wrist between the tips (the scallop), and the panel billows outward
-    M = Wg["membrane"]
+    M = dict(Wg["membrane"])
+    pairs = [(spars[k], spars[k + 1]) for k in range(len(spars) - 1)]
+    if spread:
+        # the flank panel: from the last finger, across the wrist, back along the arm and the flank to the hip
+        M["billow"] = Wg["spread"]["billow"]
+        body = [J["wrist"], J["elbow"]] + [mirror(p, sgn) for p in Wg["spread"]["body_attach"]]
+        nb = np.cumsum([0] + [np.linalg.norm(body[i + 1] - body[i]) for i in range(len(body) - 1)]); nb /= nb[-1]
+        def body_bone(u, nb=nb):
+            if u < nb[1]:
+                return f"wing_forearm.{sd}"
+            if u < nb[2]:
+                return f"wing_humerus.{sd}"
+            return "chest" if u < (nb[2] + 1) / 2 else "hips"
+        pairs.append((spars[-1], (np.array(body), body_bone)))
+    # membrane panels: between two spars, u from the wrist (0) out to the tips (1), v across; the
+    # trailing edge sags back toward the wrist between the tips (the scallop), and the panel billows
     def at(P, u):
         seg = np.linalg.norm(np.diff(P, axis=0), axis=1); cs = np.concatenate([[0], np.cumsum(seg)]) / seg.sum()
         return np.array([np.interp(u, cs, P[:, c]) for c in range(3)])
     nu, nv = 28, 18
-    for k in range(len(spars) - 1):
-        (PA, ba), (PB, bb) = spars[k], spars[k + 1]
+    for k, ((PA, ba), (PB, bb)) in enumerate(pairs):
         verts, faces, A, Bq, wts = [], [], [], [], []
         for i in range(nu + 1):
             for j in range(nv + 1):

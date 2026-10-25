@@ -353,6 +353,14 @@
       "knuckle_at": 0.45,
       "bend_deg": 6,
       "radius": [0.03, 0.022, 0.027, 0.017, 0.011]
+    },
+    "spread": {
+      "why": "The wings spread in flight, from the covers seen from below (The Dragonet Prophecy US cover and its full render, the Hybrid Prince cover's Umber render, the limited edition, the SE poster): the humerus out, up and a little back from the shoulder; the forearm out and forward to the wrist, the leading edge; the first finger on along the leading edge to the wing's tip, the others fanned back to the last pointing nearly straight back; the membrane between the fingers scalloped between their tips, and from the last finger back along the flank to the hip (the Umber render); billowed up by the air under it. Directions for the left wing [x, y, z]; the bones keep their folded lengths.",
+      "humerus_dir": [1.0, 0.45, -0.35],
+      "forearm_dir": [1.0, 0.2, 0.5],
+      "finger_dirs": [[1.0, 0.15, 0.15], [1.0, 0.1, -0.45], [0.8, 0.05, -1.0], [0.35, 0.0, -1.0]],
+      "body_attach": [[0.3, 1.12, 0.3], [0.36, 1.05, -0.2], [0.4, 0.95, -0.7]],
+      "billow": 0.12
     }
   },
   "front_leg": {
