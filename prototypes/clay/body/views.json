@@ -1212,5 +1212,145 @@
     "wings": 0.6
    }
   }
+ ],
+ "fronthalf": [
+  {
+   "label": "front half, turned 15 deg",
+   "cam": [
+    7.244443697168013,
+    1.25,
+    2.491142838268906
+   ],
+   "target": [
+    0,
+    1.05,
+    0.55
+   ],
+   "fov": 24,
+   "pose": "neutral"
+  },
+  {
+   "label": "front half, turned 25 deg",
+   "cam": [
+    6.797308402774875,
+    1.25,
+    3.7196369630552457
+   ],
+   "target": [
+    0,
+    1.05,
+    0.55
+   ],
+   "fov": 24,
+   "pose": "neutral"
+  },
+  {
+   "label": "front half, turned 35 deg",
+   "cam": [
+    6.143640332167439,
+    1.25,
+    4.851823272632845
+   ],
+   "target": [
+    0,
+    1.05,
+    0.55
+   ],
+   "fov": 24,
+   "pose": "neutral"
+  },
+  {
+   "label": "front half, turned 25 deg, plain clay",
+   "cam": [
+    6.797308402774875,
+    1.25,
+    3.7196369630552457
+   ],
+   "target": [
+    0,
+    1.05,
+    0.55
+   ],
+   "fov": 24,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "side sheet, front half (official)",
+   "ref": "{refs}/study/sheet_front_half.jpg"
+  }
+ ],
+ "shoulder": [
+  {
+   "label": "shoulder, plain clay, turned 25",
+   "cam": [
+    3.80649270555393,
+    1.2,
+    2.3249966993109377
+   ],
+   "target": [
+    0.1,
+    0.9,
+    0.55
+   ],
+   "fov": 30,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "shoulder, plain clay, turned 50",
+   "cam": [
+    2.6997079606834653,
+    1.2,
+    3.7673866610997075
+   ],
+   "target": [
+    0.1,
+    0.9,
+    0.55
+   ],
+   "fov": 30,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "shoulder, plain clay, front-ish",
+   "cam": [
+    0.7293223462011078,
+    1.2,
+    4.686192562651273
+   ],
+   "target": [
+    0.1,
+    0.9,
+    0.55
+   ],
+   "fov": 30,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "shoulder, painted, turned 25",
+   "cam": [
+    3.80649270555393,
+    1.2,
+    2.3249966993109377
+   ],
+   "target": [
+    0.1,
+    0.9,
+    0.55
+   ],
+   "fov": 30,
+   "pose": "neutral"
+  },
+  {
+   "label": "side sheet, front half (official)",
+   "ref": "{refs}/study/sheet_front_half.jpg"
+  },
+  {
+   "label": "limited edition (official)",
+   "ref": "{refs}/covers/t_Clay_LE_Render_zstarchaserr_png.jpg"
+  }
  ]
 }
