@@ -657,5 +657,88 @@
    "pose": "neutral",
    "clay": true
   }
+ ],
+ "feet": [
+  {
+   "label": "front foot, side",
+   "cam": [
+    2.0,
+    0.25,
+    0.62
+   ],
+   "target": [
+    0.41,
+    0.1,
+    0.62
+   ],
+   "fov": 20,
+   "pose": "neutral"
+  },
+  {
+   "label": "front foot, front three-quarter",
+   "cam": [
+    1.6,
+    0.7,
+    1.8
+   ],
+   "target": [
+    0.41,
+    0.08,
+    0.62
+   ],
+   "fov": 22,
+   "pose": "neutral"
+  },
+  {
+   "label": "front foot, plain clay, front three-quarter",
+   "cam": [
+    1.6,
+    0.7,
+    1.8
+   ],
+   "target": [
+    0.41,
+    0.08,
+    0.62
+   ],
+   "fov": 22,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "hind foot, side",
+   "cam": [
+    2.2,
+    0.3,
+    -0.55
+   ],
+   "target": [
+    0.45,
+    0.1,
+    -0.55
+   ],
+   "fov": 24,
+   "pose": "neutral"
+  },
+  {
+   "label": "hind foot, plain clay, front three-quarter",
+   "cam": [
+    1.8,
+    0.8,
+    0.8
+   ],
+   "target": [
+    0.45,
+    0.08,
+    -0.5
+   ],
+   "fov": 24,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "how to draw (official)",
+   "ref": "{refs}/study/htd_feet.jpg"
+  }
  ]
 }

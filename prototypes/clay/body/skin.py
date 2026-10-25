@@ -64,7 +64,7 @@ class Piece:
         return None if self.zone is None else np.full(len(X), float(self.zone))
 
 
-LIMB_BONES = {"upperarm", "forearm", "hand", "thigh", "shin", "foot", "wing_humerus", "wing_forearm"}
+LIMB_BONES = {"upperarm", "forearm", "hand", "thigh", "shin", "foot", "wing_humerus", "wing_forearm"} | {f"{p}{k}" for p in ("ftoe", "htoe") for k in range(1, 5)} | {"fthumb"}
 
 
 class Trunk:

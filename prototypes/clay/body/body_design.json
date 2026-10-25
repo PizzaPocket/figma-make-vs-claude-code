@@ -366,24 +366,32 @@
     },
     "toes": {
       "count": 4,
-      "spread_deg": [-30, -10, 10, 30],
-      "base_offset_x": [-0.09, -0.03, 0.03, 0.09],
-      "segments": [0.09, 0.07],
-      "radius": [0.045, 0.038],
-      "drop_deg": [15, 30],
+      "spread_deg": [-24, -8, 8, 24],
+      "base_offset_x": [-0.075, -0.025, 0.025, 0.075],
+      "segments": [0.06, 0.05, 0.04],
+      "radius": [0.042, 0.038, 0.033],
+      "drop_deg": [-15, 15, 45],
       "claw": {
-        "length": 0.13,
+        "length": 0.085,
         "radius": 0.03,
-        "hook_deg": 85
+        "hook_deg": 95,
+        "pitch_deg": 20
       },
-      "note": "Measured on the side sheet's near hand: wrist to toe tips about 0.46 (px 515 to 369), 0.12 deep at the knuckles. How to Draw and the TDP cover: a broad hand, about as wide as the forearm and more, with four long toes spread forward and big hooked dark talons."
+      "note": "Measured on the side sheet's near hand: wrist to toe tips about 0.46 (px 515 to 369), 0.12 deep at the knuckles. From the front (How to Draw, the SE poster, the GN cover): a broad hand, the four fingers thick and close together like a lizard's or a raptor's, fused into one mass at the palm and parted by grooves toward the tips; each finger three segments, rising to a knuckle bump and arching down to a rounded tip with a pad under it, a row of dark plates across its top, and a thick dark claw springing from the top of the tip, forward and hooking down to the ground (the side sheet: big sickle claws, about 0.1 long).",
+      "blend": 0.03
     },
-    "dewclaw": {
-      "at": [0.37, 0.2, 0.47],
-      "direction": [-0.3, -0.2, -1.0],
-      "length": 0.09,
-      "radius": 0.026,
-      "note": "on the inside of the back of the wrist, as on a cat's foreleg"
+    "thumb": {
+      "at_frac": 0.35,
+      "inset_x": -0.07,
+      "direction": [-0.35, -0.85, 0.4],
+      "segments": [0.05, 0.04],
+      "radius": [0.035, 0.03],
+      "claw": {
+        "length": 0.07,
+        "radius": 0.026,
+        "hook_deg": 90
+      },
+      "note": "The opposable thumb: on the inner side of the hand about a third of the way from the wrist to the knuckles (How to Draw's hooked claw high on the inner side of the foot; the SE poster's thumb branching off the inner hand with the cream palm between it and the fingers). Standing, it points down and a little forward and in, its claw hooked toward the ground."
     }
   },
   "hind_leg": {
@@ -400,25 +408,22 @@
       "count": 4,
       "spread_deg": [-30, -10, 10, 30],
       "base_offset_x": [-0.07, -0.025, 0.025, 0.07],
-      "segments": [0.09, 0.07, 0.05],
-      "radius": [0.034, 0.03, 0.026],
-      "drop_deg": [8, 15, 25],
+      "segments": [0.07, 0.06, 0.045],
+      "radius": [0.04, 0.035, 0.03],
+      "drop_deg": [-15, 15, 45],
       "claw": {
-        "length": 0.09,
-        "radius": 0.024,
-        "hook_deg": 70
-      }
+        "length": 0.08,
+        "radius": 0.027,
+        "hook_deg": 95,
+        "pitch_deg": 20
+      },
+      "blend": 0.03
     },
     "spur": {
       "at": [0.45, 0.09, -1.14],
       "direction": [0.0, -0.3, -1.0],
       "length": 0.08,
       "radius": 0.022
-    },
-    "studs": {
-      "count": 5,
-      "size": [0.035, 0.022, 0.04],
-      "lift": 0.065
     }
   },
   "anatomy": {

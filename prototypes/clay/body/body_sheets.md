@@ -141,3 +141,18 @@ Patterns are laid out in model units along and around each part, so they stay th
 - **Surface:** dark brown pebble scales, with a row of square plates along the outer edge (the side sheet).
 
 **To do:** the membrane panel from the last finger to the flank (hidden when folded). A raised pose like *How to Draw*'s.
+
+## Hands and feet
+
+**References:** How to Draw, the SE poster, the GN cover and render, the limited edition and the side sheet.
+- **One form:** the foot is one mass, not separate toes. The fingers are thick and close together, like a lizard's or a raptor's. They fuse at the palm and part by grooves toward the tips.
+- **Fingers:** three segments each, rising to a knuckle bump and arching down to a rounded tip with a pad under it.
+- **Claws:** thick, dark sickles. Each springs from the top of its toe's tip, runs forward and hooks down to the ground.
+- **Thumb:** the front hand has an opposable thumb on its inner side, about a third of the way from the wrist (How to Draw's hooked claw high on the inner foot; the poster's thumb branching off the inner hand). Standing, it points down and in, its claw hooked toward the fingers.
+
+**Build:**
+- Each toe, finger and thumb is part of the skin field (`toe_pieces`, `digit_specs`): a bone per segment and a pad under the tip. The first segment fuses into the hand or foot mass (blend 0.03); the rest part cleanly (0.012).
+- The claws are separate dark pieces (keratin). `claw_tube` now hooks toward `down`; it used to hook up.
+- The floating studs on the hind feet are gone.
+
+**To do:** the dark plates across the top of each finger segment (SE poster). Cream soles and palm.

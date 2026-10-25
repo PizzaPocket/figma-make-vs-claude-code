@@ -8,7 +8,7 @@ body_design.json and body_sheets.md):
 - the dark shell: the skin's dark region (the back, shoulder and hip caps, the top of the tail)
   raised as one smooth layer with a rolled rim running round its whole edge;
 - front legs: toes, hooked claws and a dewclaw on the hand;
-- hind legs: four splayed toes, a heel spur and studs along the top of the foot.
+- hind legs: four toes (part of the skin) with claws, and a heel spur.
 Model space: x = Clay's left, y = up, z = forward; 1 unit = 343 px of the reference.
 
     python3 build_body.py --out clay.glb
@@ -223,7 +223,11 @@ def skin_setup():
     """The trunk as a field (its measured sections along the spine) and the bones and muscles."""
     s_all, P, DU, DV, N, Bv = trunk_frames()
     trunk = SK.Trunk(s_all, P, N, Bv, lambda i, th: section_vw(max(s_all[i], 0.0), DU[i], DV[i], th))
-    _SKIN["trunk"], _SKIN["parts"] = trunk, SK.pieces(B["anatomy"])
+    toes = []
+    for L, prefix in ((B["front_leg"], "ftoe"), (B["hind_leg"], "htoe")):
+        sb, sm = toe_pieces(L, prefix)
+        toes += [SK.Piece(s, sgn, "bone") for sgn in (1, -1) for s in sb] + [SK.Piece(s, sgn, "muscle") for sgn in (1, -1) for s in sm]
+    _SKIN["trunk"], _SKIN["parts"] = trunk, SK.pieces(B["anatomy"]) + toes
 
 
 def band(x):
@@ -310,32 +314,84 @@ def claw_tube(base, direction, length, radius, hook_deg, down=np.array([0, -1.0,
     p, d = np.asarray(base, float), d0
     for k in range(6):
         p = p + d * length / 6
-        d = H.rot(d, axis, -math.radians(hook_deg) / 6)
+        d = H.rot(d, axis, math.radians(hook_deg) / 6)  # curling toward `down`
         pts.append(p)
-    v, f, A, Bq = H.tube(pts, [radius, radius * 0.8, radius * 0.6, radius * 0.45, radius * 0.3, radius * 0.15, 0.002], around=10, step=0.004)
+    v, f, A, Bq = H.tube(pts, [radius, radius * 0.92, radius * 0.78, radius * 0.6, radius * 0.42, radius * 0.22, 0.002], around=10, step=0.004)
     return v, f
 
 
-def toes(kn, back, T, sgn, parent, prefix, sd):
-    """Toes with hooked claws, fanned forward from the knuckle line. back: the point behind (wrist or heel)."""
+def toe_layout(kn, back, T):
+    """The toes on the left side: per toe its points (base, middle joint, tip) and the distal segment's
+    direction. kn: the knuckle line's centre, back: the point behind it (wrist or heel)."""
     fwd = H.norm(kn - back); fwd[1] = 0; fwd = H.norm(fwd)
-    parts, bones = [], []
+    out = []
     for k in range(T["count"]):
-        d = H.rot(fwd, np.array([0, 1.0, 0]), math.radians(T["spread_deg"][k]) * sgn)
+        d = H.rot(fwd, np.array([0, 1.0, 0]), math.radians(T["spread_deg"][k]))
         side = H.norm(np.cross(d, [0, 1.0, 0]))
-        base = kn + np.array([sgn * T["base_offset_x"][k], 0, 0]) - fwd * 0.02
-        pts, p, segs = [base], base, T["segments"]
-        for j, sl in enumerate(segs):
+        p = kn + np.array([T["base_offset_x"][k], 0, 0]) - fwd * 0.03
+        pts, dd = [p], d
+        for j, sl in enumerate(T["segments"]):
             dd = H.rot(d, side, -math.radians(T["drop_deg"][j]))
             p = p + dd * sl; pts.append(p)
+        out.append((pts, dd))
+    return out
+
+
+def thumb_layout(J, Th):
+    """The front hand's opposable thumb (left side): base on the inner side of the hand, then its two
+    segments, the second bent further down. Returns its points and the last segment's direction."""
+    base = J["wrist"] + (J["knuckles"] - J["wrist"]) * Th["at_frac"] + np.array([Th["inset_x"], 0, 0])
+    d = H.norm(np.array(Th["direction"], float))
+    side = H.norm(np.cross(d, [0, 1.0, 0]))
+    d2 = H.rot(d, side, -math.radians(20))
+    p1 = base + d * Th["segments"][0]
+    return [base, p1, p1 + d2 * Th["segments"][1]], d2
+
+
+def digit_specs(pts, dd, radii, bn, blend):
+    """One toe, finger or thumb as skin pieces: a bone per segment and a pad under its tip."""
+    sb = [{"name": f"{bn} phalanx {j + 1}", "from": pts[j].tolist(), "to": pts[j + 1].tolist(), "r": [radii[j], radii[j] * 0.9],
+           "k": blend if j == 0 else 0.012, "rig": {bn: 1.0}, "zone": 0.5} for j in range(len(pts) - 1)]
+    r = radii[-1]
+    a, b = pts[-2] + np.array([0, -r * 0.4, 0]), pts[-1] + dd * r * 0.2 + np.array([0, -r * 0.35, 0])
+    sm = [{"name": f"{bn} pad", "from": a.tolist(), "to": b.tolist(), "radii": [r * 0.75, r * 1.05], "hint": [0, -1.0, 0],
+           "k": 0.012, "rig": {bn: 1.0}, "zone": 0.8}]
+    return sb, sm
+
+
+def toe_pieces(L, prefix):
+    """The toes as part of the skin (skin.py), so the foot is one form: each toe a bone per segment,
+    fused into the hand or foot mass at its base and parted from its neighbours by grooves toward the
+    tips, with a pad under its tip (How to Draw, the side sheet: short thick toes ending in rounded
+    knuckles). Left-side specs; Piece mirrors them."""
+    J = {k: np.array(v) for k, v in L["joints"].items()}
+    kn, back = (J["knuckles"], J["wrist"]) if "knuckles" in J else (J["ball"], J["heel"])
+    T = L["toes"]; specs_b, specs_m = [], []
+    for k, (pts, dd) in enumerate(toe_layout(kn, back, T)):
+        sb, sm = digit_specs(pts, dd, T["radius"], f"{prefix}{k + 1}", T["blend"])
+        specs_b += sb; specs_m += sm
+    if "thumb" in L:
+        pts, dd = thumb_layout(J, L["thumb"])
+        sb, sm = digit_specs(pts, dd, L["thumb"]["radius"], "fthumb", T["blend"])
+        specs_b += sb; specs_m += sm
+    return specs_b, specs_m
+
+
+def toes(kn, back, T, sgn, parent, prefix, sd):
+    """The toes' bones and their claws (the toes themselves are part of the skin, toe_pieces). Each
+    claw springs from the top of its toe's tip, runs forward and hooks down to the ground."""
+    parts, bones = [], []
+    up = np.array([0, 1.0, 0])
+    for k, (pts, dd) in enumerate(toe_layout(kn, back, dict(T, spread_deg=[sgn * a for a in T["spread_deg"]],
+                                                            base_offset_x=[sgn * a for a in T["base_offset_x"]]))):
         bn = f"{prefix}{k + 1}.{sd}"
-        rads = list(T["radius"]) + [T["radius"][-1] * 0.9]
-        v, f, _, _ = H.tube(pts, rads[:len(pts)], around=12, step=0.004)
-        parts.append(H.add_part(f"{prefix}{k}{sd}", v, f, {"_PART": [21] * len(v), "_A": [0.97] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, [[(bn, 1.0)]] * len(v)))
-        cl = T["claw"]
-        v, f = claw_tube(p - dd * 0.01, dd, cl["length"], cl["radius"], cl["hook_deg"])
+        cl = T["claw"]; r = T["radius"][-1]
+        fwd = H.norm(np.array([dd[0], 0, dd[2]]))
+        base = pts[-1] + fwd * r * 0.3 + up * r * 0.3
+        d0 = H.norm(fwd * math.cos(math.radians(cl["pitch_deg"])) - up * math.sin(math.radians(cl["pitch_deg"])))
+        v, f = claw_tube(base, d0, cl["length"], cl["radius"], cl["hook_deg"])
         parts.append(H.add_part(f"{prefix}Claw{k}{sd}", v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, [[(bn, 1.0)]] * len(v)))
-        bones.append((bn, tuple(base), tuple(p), parent))
+        bones.append((bn, tuple(pts[0]), tuple(pts[-1]), parent))
     return parts, bones
 
 
@@ -349,15 +405,20 @@ def front_leg(sgn):
              (f"hand.{sd}", tuple(J["wrist"]), tuple(J["knuckles"]), f"forearm.{sd}")]
     tp, tb = toes(J["knuckles"], J["wrist"], L["toes"], sgn, f"hand.{sd}", "ftoe", sd)
     parts += tp; bones += tb
-    dc = L["dewclaw"]
-    v, f = claw_tube(mirror(dc["at"], sgn), mirror(dc["direction"], sgn), dc["length"], dc["radius"], 60)
-    parts.append(H.add_part(f"Dewclaw{sd}", v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, [[(f"forearm.{sd}", 1.0)]] * len(v)))
+    Th = L["thumb"]; bn = f"fthumb.{sd}"
+    pts, dd = thumb_layout({k: np.array(v, float) for k, v in L["joints"].items()}, Th)
+    pts = [mirror(p, sgn) for p in pts]; dd = mirror(dd, sgn)
+    cl, r = Th["claw"], Th["radius"][-1]
+    # along the thumb's tip, hooking forward toward the fingers it opposes
+    v, f = claw_tube(pts[-1] + dd * r * 0.3, dd, cl["length"], cl["radius"], cl["hook_deg"], down=np.array([0, 0, 1.0]))
+    parts.append(H.add_part(f"ThumbClaw{sd}", v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, [[(bn, 1.0)]] * len(v)))
+    bones.append((bn, tuple(pts[0]), tuple(pts[-1]), f"hand.{sd}"))
     return parts, bones
 
 
 def hind_leg(sgn):
-    """One hind leg's bones and attachments: four splayed toes, a heel spur, and studs along the top of
-    the foot (the leg itself is part of the skin)."""
+    """One hind leg's bones and attachments: the toes' bones and claws and a heel spur (the leg and toes
+    themselves are part of the skin)."""
     L = B["hind_leg"]; sd = "L" if sgn > 0 else "R"
     J = {k: mirror(v, sgn) for k, v in L["joints"].items()}
     parts = []
@@ -369,14 +430,6 @@ def hind_leg(sgn):
     sp = L["spur"]
     v, f = claw_tube(mirror(sp["at"], sgn), mirror(sp["direction"], sgn), sp["length"], sp["radius"], 40)
     parts.append(H.add_part(f"Spur{sd}", v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, [[(f"foot.{sd}", 1.0)]] * len(v)))
-    # studs: dark square plates along the top of the foot
-    st = L["studs"]; heel, ball = J["heel"], J["ball"]
-    for k in range(st["count"]):
-        t = (k + 0.5) / st["count"]
-        c = heel + (ball - heel) * t + np.array([0, st["lift"], 0])
-        v, f, uv = H.sphere(c, 1.0, lat=6, lon=8)
-        v = [tuple(c + (np.array(q) - c) * np.array(st["size"])) for q in v]
-        parts.append(H.add_part(f"Stud{k}{sd}", v, f, {"_PART": [22] * len(v), "_A": [0.5] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, [[(f"foot.{sd}", 1.0)]] * len(v)))
     return parts, bones
 
 
