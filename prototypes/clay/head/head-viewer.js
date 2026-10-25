@@ -49,12 +49,12 @@
             col = mix(col, vec3(0.012, 0.006, 0.005), smoothstep(0.25, 0.55, vAB.z)); // nostrils, sculpted into the nose plate
             rough = 0.5;
           }
-          if (isP(20.0) > 0.5) { // trunk: dark back, orange side, cream underside (vAB: s along the spine, side fraction, zone)
+          if (isP(20.0) > 0.5) { // trunk: dark back, orange side, cream underside (vAB: s along the spine, the trunk's share, zone)
             float zv = vAB.z;
             float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 14.0));
             vec3 back = mix(dark, line, lineAt(fract(vAB.x / 0.10), 0.04) * 0.6); // back plates ~0.08-0.12 apart (measured)
             vec3 side = mix(orange, line, pe * 0.25);
-            vec3 belly = mix(cream, line, lineAt(fract(vAB.x / 0.095), 0.035) * 0.45); // ventral bands ~0.09-0.10 apart (measured)
+            vec3 belly = mix(cream, line, lineAt(fract(vAB.x / 0.095), 0.035) * 0.45 * smoothstep(0.5, 0.8, vAB.y)); // ventral bands ~0.09-0.10 apart (measured), on the trunk only (vAB.y: its share)
             col = zv < 0.5 ? mix(back, side, zv * 2.0) : mix(side, belly, zv * 2.0 - 1.0);
             groove = pe * 0.3 * (1.0 - abs(zv - 0.5) * 2.0);
           }

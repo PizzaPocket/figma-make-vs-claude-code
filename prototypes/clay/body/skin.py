@@ -63,9 +63,6 @@ class Piece:
         """Its colour zone at points X: a number, or None (the trunk's zone there)."""
         return None if self.zone is None else np.full(len(X), float(self.zone))
 
-    def along(self, X):
-        return (X - self.a) @ self.ax
-
 
 LIMB_BONES = {"upperarm", "forearm", "hand", "thigh", "shin", "foot"}
 
@@ -263,7 +260,8 @@ def mesh(trunk, parts, h, pad=0.06):
 
 
 def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trust_s, blend=0.025):
-    """Per vertex: rig weights, colour zone, and the pattern coordinates (A along, B round).
+    """Per vertex: rig weights, colour zone, the pattern coordinate A (s along the spine) and f (round the body),
+    and T, the trunk's share of the surface there (the belly bands are drawn only where it is the trunk).
     Each part's say is how close it lies to the skin there (within ~blend of the nearest). The dark
     shell (dark_zone: 1 inside it) covers whatever lies under it, trunk or muscle."""
     _, dt, D = field(V, trunk, parts, all_parts=True)
@@ -273,9 +271,8 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trus
     allD = np.vstack([dt[None], D])
     infl = np.exp(-(allD - allD.min(axis=0)) / blend)
     infl /= infl.sum(axis=0)
-    AL = [p.along(V) for p in parts]
     ZP = [p.zone_at(V) for p in parts]
-    W, Z, A = [], [], []
+    W, Z, A, T = [], [], [], []
     for n in range(len(V)):
         sc = max(float(s[n]), 0.0)
         zt = trunk_zone(sc, float(f[n]), V[n, 2], V[n, 1])
@@ -283,7 +280,6 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trus
         for bn, wt in trunk_weights(sc):
             acc[bn] = acc.get(bn, 0.0) + infl[0, n] * wt
         z = infl[0, n] * zt
-        a = infl[0, n] * sc
         for k, p in enumerate(parts):
             ik = infl[k + 1, n]
             if ik < 1e-3:
@@ -291,11 +287,10 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trus
             for bn, wt in p.rig.items():
                 acc[bn] = acc.get(bn, 0.0) + ik * wt
             z += ik * (zt if ZP[k] is None else ZP[k][n])
-            a += ik * (10 + AL[k][n])
         top = sorted(acc.items(), key=lambda kv: -kv[1])[:4]
         tot = sum(wt for _, wt in top)
         # the tail's dark-top rule holds only on the tail itself: a limb lying near the tail (the forearm
         # beside its tip) is not part of it
         dk = dark_zone(sc, float(f[n]), V[n, 2], V[n, 1]) if (sc < tail_trust_s or dt[n] < 0.04) else 0.0
-        W.append([(bn, wt / tot) for bn, wt in top]); Z.append(z * (1 - dk)); A.append(a)
-    return W, Z, A, list(f)
+        W.append([(bn, wt / tot) for bn, wt in top]); Z.append(z * (1 - dk)); A.append(sc); T.append(float(infl[0, n]))
+    return W, Z, A, list(f), T
