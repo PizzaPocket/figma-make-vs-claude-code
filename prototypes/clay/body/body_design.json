@@ -495,10 +495,10 @@
       {
         "name": "thigh (quadriceps and hamstrings together)",
         "why": "How to Draw and the limited edition draw the haunch as one round mass over the folded thigh, not separate front and back muscles",
-        "from": [0.4, 0.95, -0.68],
+        "from": [0.38, 1.0, -0.7],
         "to": [0.47, 0.38, -0.56],
-        "radii": [0.16, 0.25],
-        "k": 0.12,
+        "radii": [0.14, 0.24],
+        "k": 0.14,
         "rig": {
           "thigh": 0.8,
           "hips": 0.2
@@ -548,7 +548,7 @@
       },
       {
         "name": "calf (gastrocnemius)",
-        "why": "the back of the shin, cream on the side sheet, to the heel",
+        "why": "the back of the shin, orange like the rest of the hind leg in How to Draw (seen from behind, a cream calf read as a peg under the haunch), to the heel",
         "from": [0.46, 0.4, -0.66],
         "to": [0.45, 0.14, -1.06],
         "radii": [0.1, 0.1],
@@ -556,7 +556,7 @@
         "rig": {
           "shin": 1
         },
-        "zone": 1.0
+        "zone": 0.5
       },
       {
         "name": "shin front (tibialis cranialis)",

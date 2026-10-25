@@ -104,3 +104,11 @@ Patterns are laid out in model units along and around each part, so they stay th
 **Known differences**
 - The bands on the neck converge on the inside of the curve; the sheet's neck plates look broader.
 - The mane spikes along the top are not built yet.
+
+## Haunch (How to Draw)
+
+**What it is:** the thigh is one long oval mass that blends into the flank. The calf below it is orange, the same colour as the thigh; it is not a cream peg.
+- Thigh muscle radii are [0.14, 0.24] with blend k 0.14.
+- The calf zone is 0.5.
+
+**Shell:** any skin area under the island size (200 verts) that the dark zone surrounds is filled in, so the shell has no pinholes.

@@ -195,6 +195,17 @@ def shell(V, F, Z, sh, N, s, f, band, level=0.25):
     border: inked) and a tint per plate."""
     Z = np.asarray(Z); F = np.asarray(F)
     inside = Z < level
+    # small islands of non-shell inside the shell (a few points where the colour flickers) are filled, so the shell
+    # has no pinholes: any patch outside it of fewer than `island` points that touches the shell is made shell
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+    E0 = np.vstack([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]])
+    out = ~inside
+    Eo = E0[out[E0[:, 0]] & out[E0[:, 1]]]
+    G = coo_matrix((np.ones(len(Eo)), (Eo[:, 0], Eo[:, 1])), shape=(len(V), len(V)))
+    _, lab = connected_components(G, directed=False)
+    size = np.bincount(lab)
+    inside = inside | (out & (size[lab] < sh.get("island", 200)))
     E = np.vstack([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]])
     E = E[inside[E[:, 0]] != inside[E[:, 1]]]
     t = ((level - Z[E[:, 0]]) / (Z[E[:, 1]] - Z[E[:, 0]]))[:, None]
