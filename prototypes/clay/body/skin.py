@@ -64,7 +64,7 @@ class Piece:
         return None if self.zone is None else np.full(len(X), float(self.zone))
 
 
-LIMB_BONES = {"upperarm", "forearm", "hand", "thigh", "shin", "foot"}
+LIMB_BONES = {"upperarm", "forearm", "hand", "thigh", "shin", "foot", "wing_humerus", "wing_forearm"}
 
 
 class Trunk:
@@ -129,9 +129,10 @@ def pieces(anat):
 
 
 def field(X, trunk, parts, all_parts=False):
-    """The body's field at points X: the trunk joined smoothly with every bone and muscle."""
-    dt = trunk.sdf(X)
+    """The body's field at points X: the trunk joined smoothly with every bone and muscle (or, with no
+    trunk, the pieces alone: the wing arm)."""
     D = [p.sdf(X) for p in parts]
+    dt = trunk.sdf(X) if trunk is not None else np.full(len(X), 1e3)
     d = dt.copy()
     for p, dp in zip(parts, D):
         d = smin(d, dp, p.k)
@@ -239,7 +240,7 @@ def shell(V, F, Z, sh, N, s, f, band, level=0.25):
 
 def mesh(trunk, parts, h, pad=0.06):
     """Marching cubes over the body's bounding box at spacing h. Returns verts (N, 3) and faces."""
-    pts = [trunk.P - trunk.R.max(axis=1)[:, None], trunk.P + trunk.R.max(axis=1)[:, None]]
+    pts = [trunk.P - trunk.R.max(axis=1)[:, None], trunk.P + trunk.R.max(axis=1)[:, None]] if trunk is not None else []
     for p in parts:
         r = max(p.r) if p.kind == "bone" else p.radii.max()
         pts += [np.minimum(p.a, p.b)[None] - r, np.maximum(p.a, p.b)[None] + r]
@@ -257,6 +258,21 @@ def mesh(trunk, parts, h, pad=0.06):
     if np.mean(probe) < 0:
         f = f[:, ::-1]
     return v, np.ascontiguousarray(f)
+
+
+def piece_weights(V, parts, blend=0.02):
+    """Rig weights for a surface over pieces alone: each piece's say is how close it lies to the skin."""
+    D = np.array([p.sdf(V) for p in parts])
+    infl = np.exp(-(D - D.min(axis=0)) / blend); infl /= infl.sum(axis=0)
+    W = []
+    for n in range(len(V)):
+        acc = {}
+        for k, p in enumerate(parts):
+            for bn, wt in p.rig.items():
+                acc[bn] = acc.get(bn, 0.0) + infl[k, n] * wt
+        top = sorted(acc.items(), key=lambda kv: -kv[1])[:4]; tot = sum(wt for _, wt in top)
+        W.append([(bn, wt / tot) for bn, wt in top])
+    return W
 
 
 def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trust_s, blend=0.025):

@@ -67,10 +67,11 @@
           }
           if (isP(22.0) > 0.5) { col = mix(dark, dark * 1.15, vAB.x); rough = 0.5; } // dark shoulder mass
           if (isP(23.0) > 0.5) { col = srgb(vec3(72.0, 50.0, 58.0)); rough = 0.25; } // claws
-          if (isP(24.0) > 0.5) { // wing bones: brown, with rows of small dark square plates along them (side sheet)
-            float a = fract(vAB.x / 0.045), b = fract(vAB.y * 3.0);
-            float sq = (1.0 - lineAt(a, 0.25)) * (1.0 - lineAt(b, 0.3));
-            col = mix(srgb(vec3(138.0, 66.0, 42.0)), line, sq * 0.85); rough = 0.5;
+          if (isP(24.0) > 0.5) { // wing arm and fingers: dark brown pebble scales, a row of square plates along the outer edge (side sheet)
+            float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0));
+            float a = fract(vAB.x / 0.05), bw = min(vAB.y, 1.0 - vAB.y);
+            float sq = (1.0 - lineAt(a, 0.18)) * (1.0 - smoothstep(0.07, 0.09, bw));
+            col = mix(mix(srgb(vec3(120.0, 58.0, 40.0)), line, pe * 0.3), mix(dark * 0.75, line, lineAt(a, 0.22) * 0.8), sq); rough = 0.5; groove = pe * 0.4;
           }
           if (isP(25.0) > 0.5) { // wing membrane: peach, lighter toward the tips, inked along the trailing edge
             col = mix(srgb(vec3(232.0, 128.0, 70.0)), srgb(vec3(246.0, 168.0, 106.0)), vAB.x);

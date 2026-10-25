@@ -234,16 +234,11 @@
     }
   },
   "wing": {
-    "note": "The near wing on the side sheet, folded half open: the arm runs from the shoulder back along the flank to the elbow (px 525,385 -> 785,425), the forearm drops straight down to a low wrist (765,760) with a thumb claw (735,800), and four plated fingers fan up and back from the wrist to hooked claws at their tips (1055,255; 1165,140; 1265,55; 1365,20). Peach membrane spans the forearm and the fingers, each panel's trailing edge scalloped between the tips (the scallop between fingers 1 and 2 dips to about 1090,320: a sixth of the finger's length). x from the model: the shoulder cap is 0.40 out, the flank under the arm 0.34-0.36, the hind thigh 0.57, so the arm lies on the flank (the sheet's arm is a broad band, py 395-460: 0.19 tall) and the fan stands just outside the thigh. [x, y, z].",
+    "note": "Built like a bat's arm (the official art draws it so: the spread wings of the limited-edition render and the full render, the raised wing in How to Draw), bone first, then muscle, then membrane. Upper arm: short and heavily muscled, a fleshy belly over the humerus that swells out of a round mound on the shoulder (the side sheet's scaly mound, px 490-560, py 340-400). Forearm: long, thick and fleshy for its first third below the elbow (the forearm muscles), then a bony shaft (tendons) to a knobby wrist; the elbow's point stands out behind. Thumb: a short digit on the wrist's leading side ending in a hooked claw. Fingers: four long ones from the wrist, each a metacarpal to a knuckle partway out and a phalanx to a small hooked claw past the membrane. Pose: the side sheet's folded wing. The arm runs from the shoulder back along the flank to the elbow (px 525,385 -> 785,425); the forearm drops straight down to a low wrist (765,760) with the thumb claw (735,800); the fingers fan up and back to their tips (1055,255; 1165,140; 1265,55; 1365,20), nearly parallel, the membrane between them in narrow strips, scalloped between the tips (a sixth of the finger's length). x from the model: the shoulder cap is 0.40 out, the flank under the arm 0.34-0.36, the hind thigh 0.57, so the arm lies on the flank (the sheet's arm is a broad band, py 395-460: 0.19 tall) and the fan stands just outside the thigh. [x, y, z].",
     "joints": {
-      "shoulder": [0.33, 1.3, 0.51],
-      "elbow": [0.38, 1.17, -0.25],
-      "wrist": [0.62, 0.22, -0.19]
-    },
-    "radius": {
-      "humerus": [0.095, 0.065],
-      "forearm": [0.06, 0.045],
-      "finger": [0.035, 0.026, 0.014]
+      "shoulder": [0.33, 1.3, 0.48],
+      "elbow": [0.41, 1.16, -0.25],
+      "wrist": [0.6, 0.22, -0.19]
     },
     "fingers": [[0.66, 1.676, -1.035], [0.68, 2.012, -1.356], [0.7, 2.259, -1.647], [0.72, 2.362, -1.939]],
     "finger_bow": 0.025,
@@ -253,14 +248,109 @@
       "hook_deg": 70
     },
     "thumb": {
-      "direction": [0.0, -0.8, 0.6],
-      "length": 0.07,
-      "radius": 0.02,
-      "hook_deg": 50
+      "length": 0.06,
+      "direction": [0.0, -0.6, 0.8],
+      "radius": 0.022,
+      "claw": {
+        "length": 0.07,
+        "radius": 0.02,
+        "hook_deg": 50
+      }
     },
     "membrane": {
       "sag": 0.16,
       "billow": 0.03
+    },
+    "anatomy": {
+      "resolution": 0.008,
+      "bones": [
+        {
+          "name": "humerus",
+          "from": [0.33, 1.3, 0.48],
+          "to": [0.41, 1.16, -0.25],
+          "r": [0.055, 0.045],
+          "k": 0.03,
+          "rig": {
+            "wing_humerus": 1.0
+          }
+        },
+        {
+          "name": "olecranon",
+          "why": "the elbow's point, behind the joint",
+          "from": [0.41, 1.16, -0.22],
+          "to": [0.42, 1.2, -0.32],
+          "r": [0.05, 0.03],
+          "k": 0.03,
+          "rig": {
+            "wing_forearm": 1.0
+          }
+        },
+        {
+          "name": "forearm",
+          "from": [0.41, 1.16, -0.25],
+          "to": [0.6, 0.22, -0.19],
+          "r": [0.045, 0.026],
+          "k": 0.03,
+          "rig": {
+            "wing_forearm": 1.0
+          }
+        },
+        {
+          "name": "wrist knob",
+          "why": "the carpals: a knob at the wrist the fingers and thumb spring from",
+          "from": [0.6, 0.26, -0.2],
+          "to": [0.62, 0.19, -0.18],
+          "r": [0.04, 0.038],
+          "k": 0.03,
+          "rig": {
+            "wing_forearm": 1.0
+          }
+        }
+      ],
+      "muscles": [
+        {
+          "name": "shoulder mound",
+          "why": "the deltoid and the wing's pectoral insertion: the side sheet's round scaly mound where the wing meets the back. Its front end dives into the shoulder, so the arm grows out of the body rather than resting on it",
+          "from": [0.2, 1.4, 0.72],
+          "to": [0.41, 1.28, 0.26],
+          "radii": [0.12, 0.1],
+          "hint": [1, 0.4, 0],
+          "k": 0.05,
+          "rig": {
+            "wing_humerus": 0.7,
+            "chest": 0.3
+          }
+        },
+        {
+          "name": "upper arm",
+          "why": "biceps and triceps: the thick belly of the upper arm, tapering into the elbow",
+          "from": [0.3, 1.32, 0.52],
+          "to": [0.42, 1.16, -0.2],
+          "radii": [0.1, 0.1],
+          "hint": [1, 0, 0],
+          "k": 0.05,
+          "rig": {
+            "wing_humerus": 1.0
+          }
+        },
+        {
+          "name": "forearm muscles",
+          "why": "the flexors and extensors: fleshy for the first third below the elbow, then only tendon over the bone",
+          "from": [0.41, 1.16, -0.25],
+          "to": [0.5, 0.7, -0.22],
+          "radii": [0.075, 0.065],
+          "hint": [1, 0, 0],
+          "k": 0.05,
+          "rig": {
+            "wing_forearm": 1.0
+          }
+        }
+      ]
+    },
+    "finger": {
+      "knuckle_at": 0.45,
+      "bend_deg": 6,
+      "radius": [0.03, 0.022, 0.027, 0.017, 0.011]
     }
   },
   "front_leg": {

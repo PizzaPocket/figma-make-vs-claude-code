@@ -119,16 +119,25 @@ Patterns are laid out in model units along and around each part, so they stay th
 
 **Build:** each is the same leaf as a mane blade, but one-sided: the leaf's lower half sinks into the shell, and its axis lies 6° off the surface (the `thorn` shape in the tail row).
 
-## Wings (first pass)
+## Wings
 
-**From the side sheet:** the near wing is folded half open.
-- **Arm:** a broad plated band running from the shoulder back along the flank to the elbow.
-- **Forearm:** drops straight down to a low wrist, which has a thumb claw.
-- **Fingers:** four plated fingers fan up and back from the wrist to hooked claws. They are nearly parallel, with narrow strips of membrane between them.
-- **Membrane:** peach, scalloped between the tips (a sixth of the finger's length).
+**What it is:** a bat's arm. Every official image draws it so: the limited-edition and full renders spread the wings, and *How to Draw* raises one. It is built bone first, then muscle, then membrane.
+- **Upper arm:** short and heavily muscled. A fleshy belly (biceps and triceps) over the humerus swells out of a round mound on the shoulder: the deltoid and the wing's pectoral insertion, the side sheet's scaly mound (px 490–560, py 340–400). The mound's front end dives into the shoulder, so the arm grows out of the body.
+- **Forearm:** long. It is thick and fleshy for its first third below the elbow (the flexors and extensors), then a bony shaft to a knobby wrist (the carpals). The elbow's point (the olecranon) stands out behind.
+- **Thumb:** a short digit on the wrist's leading side, ending in a hooked claw.
+- **Fingers:** four long ones from the wrist. Each is a metacarpal to a knuckle partway out (0.45), then a phalanx bent a little back, ending in a small hooked claw past the membrane.
+- **Membrane:** peach, between the forearm and the fingers, scalloped between the tips.
 
-All points are measured on the sheet. Out from the body, the arm lies on the flank (0.34–0.40) and the fan stands just outside the hind thigh (0.57).
+**Pose:** the side sheet's folded wing.
+- The arm runs from the shoulder back along the flank to the elbow (px 525,385 → 785,425). It is a broad band 0.19 tall.
+- The forearm drops straight down to a low wrist (765,760).
+- The fingers fan up and back to their tips, nearly parallel, with narrow strips of membrane between them.
+- Out from the body, the arm lies on the flank and the fan stands just outside the hind thigh (0.57).
 
 **Build:**
-- The bones are plated tubes with round joints, rigged as `wing_humerus` → `wing_forearm` → `wing_finger1-4` from the chest.
-- Each membrane panel is a grid between two spars, from the wrist out to the tips. Its trailing edge sags back between the tips, and it billows slightly outward. Its weights are split between the two spars.
+- The arm is its own small skin (`skin.py`, with no trunk): bone capsules and muscle bellies joined with a smooth minimum, meshed at 0.008, and weighted by nearest piece to `wing_humerus` and `wing_forearm`.
+- The fingers and thumb are tubes (with bones `wing_fingerN`, `wing_fingerNb` and `wing_thumb`).
+- Each membrane panel is a grid between two spars. It sags back between the tips and billows slightly. Its weights follow the bone under each spar.
+- **Surface:** dark brown pebble scales, with a row of square plates along the outer edge (the side sheet).
+
+**To do:** the membrane panel from the last finger to the flank (hidden when folded). A raised pose like *How to Draw*'s.

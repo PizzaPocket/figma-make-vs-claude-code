@@ -378,50 +378,76 @@ def hind_leg(sgn):
 
 
 def spar(name, pts, radii, bn, around=12):
-    """A wing bone: a plated tube. _A: length along it, _B: place round it (0..1), for the plate rows."""
+    """A finger: a plated tube. _A: length along it, _B: place round it (0..1), for the plate rows. bn: one
+    bone name, or a function of the fraction along it giving the bone."""
     v, f, A, _ = H.tube(pts, radii, around=around, step=0.004)
     total = sum(float(np.linalg.norm(np.subtract(pts[k + 1], pts[k]))) for k in range(len(pts) - 1))
     Bq = [(i % around) / around if i < len(v) - 2 else 0.0 for i in range(len(v))]
-    return H.add_part(name, v, f, {"_PART": [24] * len(v), "_A": [a * total for a in A], "_B": Bq, "_ZONE": [0] * len(v)},
-                      [[(bn, 1.0)]] * len(v))
+    w = [[(bn(a) if callable(bn) else bn, 1.0)] for a in A]
+    return H.add_part(name, v, f, {"_PART": [24] * len(v), "_A": [a * total for a in A], "_B": Bq, "_ZONE": [0] * len(v)}, w)
+
+
+def wing_arm(sgn, sd):
+    """The wing's arm as flesh over bone, like the legs (skin.py): bone capsules and muscle bellies joined
+    smoothly, meshed on their own. _A: length along the arm, _B: place round it, for the plate rows."""
+    an = B["wing"]["anatomy"]
+    parts = [SK.Piece(b, sgn, "bone") for b in an["bones"]] + [SK.Piece(m, sgn, "muscle") for m in an["muscles"]]
+    V, F = SK.mesh(None, parts, an["resolution"])
+    W = SK.piece_weights(V, parts)
+    J = {k: mirror(v, sgn) for k, v in B["wing"]["joints"].items()}
+    path = np.array([J["shoulder"], J["elbow"], J["wrist"]])
+    seg = np.linalg.norm(np.diff(path, axis=0), axis=1)
+    A, Bq = [], []
+    for p in V:  # nearest point on the shoulder-elbow-wrist line: length along it and the angle round it
+        best = None
+        for k in range(2):
+            d = path[k + 1] - path[k]; h = float(np.clip((p - path[k]) @ d / (d @ d), 0, 1))
+            q = path[k] + d * h; dist = np.linalg.norm(p - q)
+            if best is None or dist < best[0]:
+                best = (dist, seg[:k].sum() + h * seg[k], p - q, d)
+        _, s, r, d = best
+        e1 = H.norm(np.cross(d, [0, 0, 1.0]) if abs(H.norm(d)[2]) < 0.9 else np.cross(d, [0, 1.0, 0])); e2 = np.cross(H.norm(d), e1)
+        A.append(s); Bq.append((math.atan2(r @ e2, r @ e1) / (2 * math.pi)) % 1.0)
+    return H.add_part(f"WingArm{sd}", V.tolist(), F.tolist(), {"_PART": [24] * len(V), "_A": A, "_B": Bq, "_ZONE": [0] * len(V)}, W)
 
 
 def wing(sgn):
-    """One wing (B["wing"]), folded half open as on the side sheet: the arm along the flank, the forearm down
-    to a low wrist with a thumb claw, four fingers fanned up and back with hooked claws, and the membrane
-    between the forearm and the fingers, scalloped between the tips."""
+    """One wing (B["wing"]), built like a bat's arm and posed folded half open as on the side sheet: the
+    muscled arm, a thumb claw at the wrist, four jointed fingers with claws, and the membrane between the
+    forearm and the fingers, scalloped between the tips."""
     Wg = B["wing"]; sd = "L" if sgn > 0 else "R"
     J = {k: mirror(v, sgn) for k, v in Wg["joints"].items()}
-    R = Wg["radius"]
     out = np.array([sgn * 1.0, 0, 0])
-    parts = [spar(f"WingHumerus{sd}", [J["shoulder"], J["elbow"]], R["humerus"], f"wing_humerus.{sd}"),
-             spar(f"WingForearm{sd}", [J["elbow"], J["wrist"]], R["forearm"], f"wing_forearm.{sd}")]
+    parts = [wing_arm(sgn, sd)]
     bones = [(f"wing_humerus.{sd}", tuple(J["shoulder"]), tuple(J["elbow"]), "chest"),
              (f"wing_forearm.{sd}", tuple(J["elbow"]), tuple(J["wrist"]), f"wing_humerus.{sd}")]
-    for jn, r, bn in (("shoulder", R["humerus"][0], "humerus"), ("elbow", R["humerus"][1], "forearm"), ("wrist", R["forearm"][1] * 1.2, "forearm")):
-        v, f, _ = H.sphere(J[jn], r, lat=10, lon=14)  # round joints, so no tube's end shows
-        parts.append(H.add_part(f"Wing{jn.title()}{sd}", v, f, {"_PART": [24] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)},
-                                [[(f"wing_{bn}.{sd}", 1.0)]] * len(v)))
-    th = Wg["thumb"]
-    v, f = claw_tube(J["wrist"], mirror(th["direction"], sgn), th["length"], th["radius"], th["hook_deg"], down=np.array([0, 0, 1.0]))
-    parts.append(H.add_part(f"WingThumb{sd}", v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)},
-                            [[(f"wing_forearm.{sd}", 1.0)]] * len(v)))
-    # the spars the membrane hangs between, each from the wrist out: the forearm (to the elbow), then the fingers
-    spars = [(np.array([J["wrist"], J["elbow"]]), f"wing_forearm.{sd}")]
-    cl = Wg["claw"]
+    claw_part = lambda name, v, f, bn: H.add_part(name, v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)},
+                                                  [[(bn, 1.0)]] * len(v))
+    # the thumb: a short digit on the wrist's leading side, ending in a hooked claw
+    th = Wg["thumb"]; td = H.norm(mirror(th["direction"], sgn)); tb = f"wing_thumb.{sd}"
+    t1 = J["wrist"] + td * th["length"]
+    parts.append(spar(f"WingThumb{sd}", [J["wrist"], t1], [th["radius"], th["radius"] * 0.8], tb))
+    c = th["claw"]; v, f = claw_tube(t1 - td * 0.01, td, c["length"], c["radius"], c["hook_deg"], down=np.array([0, -1.0, 0]))
+    parts.append(claw_part(f"WingThumbClaw{sd}", v, f, tb))
+    bones.append((tb, tuple(J["wrist"]), tuple(t1), f"wing_forearm.{sd}"))
+    # the fingers: a metacarpal to a knuckle, a phalanx bent a little back from it to the tip
+    spars = [(np.array([J["wrist"], J["elbow"]]), lambda u: f"wing_forearm.{sd}")]
+    Fg, cl = Wg["finger"], Wg["claw"]
     for k, tip in enumerate(Wg["fingers"]):
-        tip = mirror(tip, sgn); bn = f"wing_finger{k + 1}.{sd}"
-        d = H.norm(tip - J["wrist"])
-        bow = H.norm(np.cross(d, out)) * Wg["finger_bow"]  # bowed slightly toward the leading edge
-        if bow[2] < 0:
-            bow = -bow
-        pts = [J["wrist"], J["wrist"] + (tip - J["wrist"]) * 0.5 + bow, tip]
-        parts.append(spar(f"WingFinger{k}{sd}", pts, R["finger"], bn))
-        v, f = claw_tube(tip - d * 0.01, d, cl["length"], cl["radius"], cl["hook_deg"], down=np.array([0, 0, 1.0]))
-        parts.append(H.add_part(f"WingClaw{k}{sd}", v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)},
-                                [[(bn, 1.0)]] * len(v)))
-        bones.append((bn, tuple(J["wrist"]), tuple(tip), f"wing_forearm.{sd}"))
-        spars.append((np.array(pts), bn))
+        tip = mirror(tip, sgn); mb, pb = f"wing_finger{k + 1}.{sd}", f"wing_finger{k + 1}b.{sd}"
+        d = H.norm(tip - J["wrist"]); L = np.linalg.norm(tip - J["wrist"])
+        back = H.norm(np.cross(out, d))  # in the fan's plane, toward the trailing edge
+        if back[2] > 0:
+            back = -back
+        kn = J["wrist"] + d * L * Fg["knuckle_at"] + back * L * Fg["knuckle_at"] * math.sin(math.radians(Fg["bend_deg"]))
+        pts = [J["wrist"], (J["wrist"] + kn) / 2, kn, (kn + tip) / 2, tip]
+        ka = Fg["knuckle_at"]
+        parts.append(spar(f"WingFinger{k}{sd}", pts, Fg["radius"], lambda a, mb=mb, pb=pb, ka=ka: mb if a < ka else pb))
+        dt = H.norm(tip - kn)
+        v, f = claw_tube(tip - dt * 0.01, dt, cl["length"], cl["radius"], cl["hook_deg"], down=np.array([0, 0, 1.0]))
+        parts.append(claw_part(f"WingClaw{k}{sd}", v, f, pb))
+        bones += [(mb, tuple(J["wrist"]), tuple(kn), f"wing_forearm.{sd}"), (pb, tuple(kn), tuple(tip), mb)]
+        spars.append((np.array(pts), lambda u, mb=mb, pb=pb, ka=ka: mb if u < ka else pb))
     # membrane panels: between consecutive spars, u from the wrist (0) out to the tips (1), v across; the
     # trailing edge sags back toward the wrist between the tips (the scallop), and the panel billows outward
     M = Wg["membrane"]
@@ -438,7 +464,7 @@ def wing(sgn):
                 ue = u * (1 - M["sag"] * math.sin(math.pi * vv))
                 p = at(PA, ue) * (1 - vv) + at(PB, ue) * vv + out * M["billow"] * math.sin(math.pi * vv) * math.sin(math.pi * ue)
                 verts.append(tuple(p)); A.append(ue); Bq.append(u)
-                wts.append([(ba, 1 - vv), (bb, vv)] if 0 < vv < 1 else [(ba if vv == 0 else bb, 1.0)])
+                wts.append([(ba(ue), 1 - vv), (bb(ue), vv)] if 0 < vv < 1 else [((ba if vv == 0 else bb)(ue), 1.0)])
         for i in range(nu):
             for j in range(nv):
                 a = i * (nv + 1) + j
