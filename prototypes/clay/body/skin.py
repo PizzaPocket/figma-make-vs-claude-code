@@ -94,16 +94,23 @@ class Trunk:
         v = np.einsum("ij,ij->i", d, self.N[idx]); w = np.einsum("ij,ij->i", d, self.Bv[idx]); t = np.einsum("ij,ij->i", d, self.T[idx])
         return idx, v, w, t
 
-    def sdf(self, X):
-        idx, v, w, t = self.local(X)
+    def _sdf_at(self, X, idx):
+        d0 = X - self.P[idx]
+        v = np.einsum("ij,ij->i", d0, self.N[idx]); w = np.einsum("ij,ij->i", d0, self.Bv[idx]); t = np.einsum("ij,ij->i", d0, self.T[idx])
         phi = np.arctan2(w, v)
         j = (phi + math.pi) / (2 * math.pi) * len(self.phi)
         j0 = np.floor(j).astype(int) % len(self.phi); j1 = (j0 + 1) % len(self.phi); f = j - np.floor(j)
         R = self.R[idx, j0] * (1 - f) + self.R[idx, j1] * f
         d = np.hypot(v, w) - R
         d = np.where(idx == 0, np.maximum(d, -t), d)
-        d = np.where(idx == len(self.P) - 1, np.maximum(d, t), d)
-        return d
+        return np.where(idx == len(self.P) - 1, np.maximum(d, t), d)
+
+    def sdf(self, X):
+        """Blended over the nearest few spine sections, so the surface doesn't step from one to the next."""
+        dist, idx = self.tree.query(X, k=3)
+        wts = 1.0 / np.maximum(dist, 1e-6) ** 2
+        D = np.stack([self._sdf_at(X, idx[:, k]) for k in range(3)], 1)
+        return (D * wts).sum(1) / wts.sum(1)
 
 
 def pieces(anat):
@@ -154,12 +161,28 @@ def smooth_normals(V, F, iters=3):
     return N / np.maximum(np.linalg.norm(N, axis=1), 1e-12)[:, None]
 
 
-def shell(V, F, Z, sh, N, level=0.25):
-    """The dark shell: the skin's dark region (zone below `level`) raised as one smooth layer, with a
-    rolled rim running round its whole edge. d is each vertex's distance in from the edge (the zone's
-    level line, found on the skin's edges); the height rises from 0 at the edge (its foot, rounded),
-    over the rim, and settles to the shell's thickness. Returns verts, faces, the source vertex of
-    each, and d. N: the skin's outward normals."""
+def spaced(P, gap):
+    """A subset of points P, none closer than gap to another (greedy, in order)."""
+    keep, grid = [], {}
+    for i, p in enumerate(P):
+        c = tuple((p // gap).astype(int))
+        near = [j for dx in (-1, 0, 1) for dy in (-1, 0, 1) for dz in (-1, 0, 1)
+                for j in grid.get((c[0] + dx, c[1] + dy, c[2] + dz), [])]
+        if all(np.linalg.norm(P[j] - p) >= gap for j in near):
+            keep.append(i); grid.setdefault(c, []).append(i)
+    return P[keep]
+
+
+def shell(V, F, Z, sh, N, s, f, band, level=0.25):
+    """The dark shell: the skin's dark region (zone below `level`) raised as one layer of plates.
+    d is each vertex's distance in from the shell's edge (the zone's level line, found on the skin's
+    edges). Along the edge runs a rolled rim divided into small square scutes (their centres spaced
+    evenly along the edge, so they go round the shoulder and hip caps too). Inside it the shell is
+    transverse bands (band(s): the band coordinate, one per band, from the spine position s), their
+    joints slanting forward down the side (slant * f, f the place round the body) like the sheet's,
+    each band a shingle thicker toward its back edge, with a groove at each joint. Returns verts,
+    faces, the source vertex of each, the distance to the nearest drawn line (edge, joint or scute
+    border: inked) and a tint per plate."""
     Z = np.asarray(Z); F = np.asarray(F)
     inside = Z < level
     E = np.vstack([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]])
@@ -169,11 +192,30 @@ def shell(V, F, Z, sh, N, level=0.25):
     d = np.where(inside, cKDTree(edge).query(V)[0], 0.0)
     keep = inside[F].any(axis=1)
     used = np.unique(F[keep]); remap = -np.ones(len(V), int); remap[used] = np.arange(len(used))
-    foot = np.sqrt(np.clip(d / sh["foot"], 0.0, 1.0))
-    rim = sh["rim_height"] * np.sin(math.pi * np.clip(d / sh["rim_width"], 0.0, 1.0)) ** 0.8
-    h = (sh["thickness"] + rim) * foot
-    S = V[used] + N[used] * h[used, None]
-    return S, remap[F[keep]], used, d[used]
+    Vu, Nu, du, su, fu = V[used], N[used], d[used], np.asarray(s)[used], np.asarray(f)[used]
+    rw = sh["rim_width"]
+    foot = np.sqrt(np.clip(du / sh["foot"], 0.0, 1.0))
+    rim = sh["rim_height"] * np.sin(math.pi * np.clip(du / rw, 0.0, 1.0)) ** 0.8
+    # bands: joints at whole band coordinates
+    bc = band(su + sh["band_slant"] * fu)
+    u = bc - np.floor(bc)
+    spacing = 1.0 / np.maximum(np.gradient(band(np.linspace(0, 6, 601)), 0.01), 1e-6)
+    sp = np.interp(su, np.linspace(0, 6, 601), spacing)
+    joint = np.minimum(u, 1 - u) * sp
+    in_band = np.clip((du - 0.85 * rw) / (0.15 * rw), 0.0, 1.0)
+    # rim scutes: cells round centres spaced along the edge
+    centres = spaced(edge, sh["scute_every"])
+    dd, ii = cKDTree(centres).query(Vu, k=2)
+    border = (dd[:, 1] - dd[:, 0]) / 2
+    in_rim = 1 - in_band
+    g, gw = sh["groove_depth"], sh["groove_width"]
+    groove = g * np.maximum(in_band * (1 - np.clip(joint / gw, 0, 1)), in_rim * (1 - np.clip(border / gw, 0, 1)) * (du > 0.004))
+    h = (sh["thickness"] + rim + sh["shingle"] * u * in_band) * foot - groove * foot
+    S = Vu + Nu * h[:, None]
+    ink = np.minimum(du, np.where(in_band > 0.5, joint, border))
+    plate = np.where(in_band > 0.5, np.floor(bc), 1000 + ii[:, 0])
+    tint = (np.sin(plate * 12.9898) * 43758.5453) % 1.0
+    return S, remap[F[keep]], used, ink, tint
 
 
 def mesh(trunk, parts, h, pad=0.06):

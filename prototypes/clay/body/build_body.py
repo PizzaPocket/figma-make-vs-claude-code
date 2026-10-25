@@ -78,6 +78,8 @@ def trunk_frames(step=0.01):
             z, y = z + (z - z1) / 0.02 * (-s), y + (y - y1) / 0.02 * (-s)
         w = smoothstep(t0, t0 + 0.3, sc)  # the tail's section is symmetric about its spine
         du, dv = du * (1 - w) + (du + dv) / 2 * w, dv * (1 - w) + (du + dv) / 2 * w
+        tip = min(1.0, (st[-1, 0] - sc) / tl["taper_length"]) ** tl["taper_power"]  # tapering to a point
+        du, dv = du * tip + 1e-3, dv * tip + 1e-3
         P.append([0.0, y, z]); DU.append(du); DV.append(dv)
     P = np.array(P)
     i0 = int(np.searchsorted(s_all, t0))
@@ -222,8 +224,14 @@ def skin_parts(ranges):
                                  TR["zones"]["lines_until_s"] + 0.15)
     Z = list(SK.smooth_on_mesh(V, F, Z))  # no pinholes in the shell, smooth edges to its colour regions
     skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": [20] * len(V), "_A": A, "_B": Bf, "_ZONE": Z}, W)
-    S, SF, src, d = SK.shell(V, F, Z, B["shell"], SK.smooth_normals(V, F))
-    shell = H.add_part("Shell", S.tolist(), SF.tolist(), {"_PART": [13] * len(S), "_A": list(d), "_B": [0.5] * len(S), "_ZONE": [0] * len(S)},
+    idx, _, _, _ = trunk.local(V)
+    sh = B["shell"]
+    K = np.array(sh["band_every"], float)  # [s, spacing]: the band coordinate counts bands along the spine
+    sg = np.linspace(0, 6, 601)
+    bcum = np.concatenate([[0], np.cumsum(np.diff(sg) / np.interp(sg[:-1], K[:, 0], K[:, 1]))])
+    band = lambda x: np.interp(x, sg, bcum)
+    S, SF, src, ink, tint = SK.shell(V, F, Z, sh, SK.smooth_normals(V, F), trunk.s[idx], np.array(Bf), band)
+    shell = H.add_part("Shell", S.tolist(), SF.tolist(), {"_PART": [13] * len(S), "_A": list(ink), "_B": list(tint), "_ZONE": [0] * len(S)},
                        [W[i] for i in src])
     return [skin, shell]
 

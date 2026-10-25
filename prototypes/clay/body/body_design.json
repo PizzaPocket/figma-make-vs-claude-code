@@ -228,7 +228,10 @@
       ],
       "ground_y": -0.03,
       "rest_from_s": 3.8,
-      "rest_to_s": 4.1
+      "rest_to_s": 4.1,
+      "taper_length": 0.9,
+      "taper_power": 0.75,
+      "taper_note": "Over its last 0.9 the tail tapers to a point, as in every reference."
     }
   },
   "front_leg": {
@@ -575,6 +578,13 @@
     "rim_width": 0.06,
     "rim_height": 0.024,
     "foot": 0.01,
-    "dark_below_f": 0.72
+    "dark_below_f": 0.72,
+    "band_every": [[0.0, 0.085], [2.2, 0.095], [2.8, 0.13], [4.8, 0.11], [5.72, 0.06]],
+    "band_slant": 0.08,
+    "shingle": 0.007,
+    "groove_depth": 0.008,
+    "groove_width": 0.007,
+    "scute_every": 0.05,
+    "plates_note": "From the side sheet: the back is transverse bands about 0.08-0.10 apart, their joints slanting forward down the side; on the tail, arched bands about 0.13 apart, closer toward the tip; the edge is beaded with small square scutes about 0.04-0.05 wide, continuously round the shoulder patch and along both edges of the tail. Each band is a shingle, thicker toward its back edge, with a groove at each joint; the rim is divided into scutes by grooves across it."
   }
 }
