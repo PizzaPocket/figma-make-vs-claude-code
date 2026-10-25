@@ -34,16 +34,18 @@
     ],
     "ridge_note": "The roof is a gable: two mirrored slopes falling from a crisp ridge down its whole length; the ridge is on the measured top profile and the shoulders drop below it (rows: z, drop at the shoulders). The plates are mirrored pairs meeting at the ridge.",
     "front": {
-      "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face bulges out a little (side sheet: the notch under the nose at z 1.98, out to z 2.01 at y 1.36), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose.",
+      "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face bulges out a little (side sheet: the notch under the nose at z 1.98, out to z 2.01 at y 1.36), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose. From above the front face is rounded across (convex: its middle 0.022 forward of its sides), and the brown ridge follows that curve. Its bottom edge, the front lip edge, arcs down in the middle (0.03 lower than at the corners).",
       "concave": 0.02,
-      "corner_lift": 0.02,
+      "corner_lift": 0.03,
       "block_back_z": 1.93,
       "ridge": {
-        "y": 1.405,
-        "height": 0.024,
-        "depth": 0.008,
-        "width_frac": 0.9
-      }
+        "note": "the roof's front edge: covers the front face above the eave (eave_y, where brown meets orange) up to the face's outline, so its top follows the muzzle front's convex, gabled curve; a raised piece of even thickness (depth) with rounded edges, under the nose",
+        "eave_y": 1.385,
+        "depth": 0.009,
+        "edge_round": 0.006
+      },
+      "convex": 0.022,
+      "lip_arc_power": 2
     }
   },
   "lower_jaw": {
