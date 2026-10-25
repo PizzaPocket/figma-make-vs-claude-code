@@ -9,7 +9,7 @@ Work top to bottom: the head first, because the neck and body join onto it. Tick
   - comma-shaped nostril slits cut into the sides of the bump near the front corners, angled up and back, opening forward and out; flat outer edge, solid bridge between them;
   - the brown plate covers the whole flat front, full width, down to the lip; the orange face never sticks out past it;
   - one clean skin surface under the overhanging upper lip.
-- [ ] **Eyelids.** Partly done: round opening, thin lids hugging the eye, dark-brown iris, heavy dark ring. Left: a soft dome still shows behind the eye where the closed lids run back under the face, and the blink doesn't fully close at the back corner.
+- [ ] **Eyelids.** Partly done: round opening, thin lids hugging the eye, dark-brown iris, heavy dark ring. The blink now turns about the canthal axis and closes fully along the lower lid's edge (6 in-between shapes). Left: a soft dome still shows behind the eye where the closed lids run back under the face.
 - [x] **Mouth map and teeth.** The lip starts at the bite point (z 1.86); the front muzzle's underside in front of it has no teeth; front tooth rows across the bite, side rows behind; blades perpendicular to the lip, tips raked back (see head_sheets.md).
 - [ ] **Roof edge plates.** The plates along the traced edge of the brown roof read as one long strip. They should be separate square plates, with a small step at each joint.
 - [ ] **Ear curl.** The jaw line's curl round the ear opening is faint and can only climb straight up. Cut the ear opening as a notch so the edge can hook forward, as drawn.

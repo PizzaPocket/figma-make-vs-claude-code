@@ -84,7 +84,7 @@
             rough = 0.08;
           }
           if (isP(12.0) > 0.5) { col = srgb(vec3(226.0, 140.0, 150.0)); rough = 0.3; } // caruncle
-          if (isP(7.0) > 0.5) { float pl = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0)); col = mix(line * 0.6, mix(orange, line, pl * 0.22), max(smoothstep(0.27, 0.37, vAB.x), vAB.y)); } // lid: a heavy dark ring round the opening (only between the eye's corners)
+          if (isP(7.0) > 0.5) { float pl = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0)); col = mix(line * 0.6, mix(orange, line, pl * 0.22), max(smoothstep(0.2, 0.28, vAB.x), vAB.y)); } // lid: a heavy dark ring round the opening (only between the eye's corners)
           if (isP(8.0) > 0.5) { col = mix(dark * 1.15, dark * 0.8, smoothstep(0.6, 1.0, vAB.x)); col = mix(col, line, smoothstep(0.25, 0.7, vAB.y) * 0.85); rough = 0.35; } // smooth horn, incised ring lines inked
           if (isP(9.0) > 0.5) { // ear frill: pale peach hollow, orange rolled rim round the edge
             float rim = max(smoothstep(0.5, 0.7, abs(vAB.y * 2.0 - 1.0)), smoothstep(0.8, 0.95, vAB.x));
@@ -143,7 +143,15 @@
       }
       // face: muscle actions as morph targets
       const dict = sk.morphTargetDictionary || {};
-      for (const name in dict) sk.morphTargetInfluences[dict[name]] = (morphs && morphs[name]) || 0;
+      const m = Object.assign({}, morphs || {});
+      // blink: in-between shapes blink1..blinkN along the lids' arc; a weight w blends the two steps either side of it
+      const nb = Object.keys(dict).filter(k => /^blink\d+$/.test(k)).length;
+      if (nb && m.blink !== undefined) {
+        const w = Math.max(0, Math.min(1, m.blink)) * nb, i = Math.floor(w), f = w - i;
+        if (i >= 1) m["blink" + i] = 1 - f;
+        if (i < nb) m["blink" + (i + 1)] = f;
+      }
+      for (const name in dict) sk.morphTargetInfluences[dict[name]] = m[name] || 0;
     }
     return {
       // pose: {jaw, tongue, lids: [upperIn, upperOut, lower], morphs: {action: weight}} (see head_design.json "expressions")

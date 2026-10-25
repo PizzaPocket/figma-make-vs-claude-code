@@ -146,7 +146,9 @@
         "note": "Not a bead: a small fleshy teardrop filling the inner corner between the two lid margins, lying on the eyeball, its point toward the corner, its round end toward the iris; pink, partly tucked under the lids.",
         "reach": 0.38,
         "bulge": 0.1
-      }
+      },
+      "blink_steps": 6,
+      "blink_note": "Each lid turns about the canthal axis, so its margin travels across the eye at right angles to the line between the corners; the lids meet along that line, a little below mid-eye (the upper lid does the moving). Stored as 6 in-between shapes along the arc so the lid stays on the eyeball's surface all the way down."
     },
     "clear_radius": [0.034, 0.052],
     "socket": {

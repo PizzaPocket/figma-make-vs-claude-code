@@ -1084,10 +1084,15 @@ def head_parts():
             # margins meet in a plain seam, not a dark rim, so the eye ends at its corners with no line trailing on
             beyond = [smoothstep(1.0, 1.12, abs(t) / math.cos(math.radians(EYE["lids"]["outer_canthus_deg" if t > 0 else "inner_canthus_deg"]))) for t in Ts]
             ob = add_part(f"Lid{'Upper' if upper else 'Lower'}{sd}", v, f, {"_PART": [7] * len(v), "_A": A, "_B": beyond, "_ZONE": [0] * len(v)}, ws)
-            # blink as a shape: the lid slides over the eyeball (a bone turn this large would tear the corners)
-            vb, _, _, _ = lid(c, R, a, g, u, upper, thick, psi_lat, psi_med, closed=1.0)
+            # blink: each lid turns about the canthal axis (its margin travels across the eye at right angles to the
+            # line between the corners, and the lids meet along that line). Stored as in-between shapes along that
+            # arc (blink1..blinkN, each the lid at k/N closed): a single straight-line blend would cut through the
+            # eyeball mid-blink. A bone turn this large would tear the corners, which are fixed to the face.
             ob.shape_key_add(name="Basis", from_mix=False)
-            ob.shape_key_add(name="blink", from_mix=False).data.foreach_set("co", to_blender(np.array(vb)).astype(np.float32).ravel())
+            NB = EYE["lids"]["blink_steps"]
+            for kb in range(1, NB + 1):
+                vb, _, _, _ = lid(c, R, a, g, u, upper, thick, psi_lat, psi_med, closed=kb / NB)
+                ob.shape_key_add(name=f"blink{kb}", from_mix=False).data.foreach_set("co", to_blender(np.array(vb)).astype(np.float32).ravel())
             objs.append(ob)
         for bn, axis in (("lidUpperIn", hinge), ("lidUpperOut", hinge), ("lidLower", -hinge)):
             lid_bones.append((f"{bn}.{sd}", c, c + axis * 0.04))

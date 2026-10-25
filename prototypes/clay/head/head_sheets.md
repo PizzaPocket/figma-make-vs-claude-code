@@ -168,6 +168,8 @@ The earlier figure of 26° was a straight line from the tear duct to where the c
 
   Poses mix them with the lid bones: neutral, blink, wide, happy, worried, angry and snarl, all in `head_design.json`.
 
+**Blink (anatomy):** each lid hinges on the canthal axis, the line between the eye's two corners, through the eyeball's centre. Closing, the lid turns about that axis, so its edge travels across the eye at right angles to the line between the corners, sliding over the eyeball's surface; the corners themselves, fixed to the face by the canthal tendons, do not move. The upper lid does the moving and meets the lower lid along its edge, so the closed eye is a seam running from the inner corner (low, at the front, by the tear duct) up and back to the outer corner. The blink is stored as 6 in-between shapes along that arc (blink1..blink6; a weight blends the two either side of it): one straight-line shape cut through the eyeball mid-blink, so the white showed through the lid.
+
 **Inner corner:** it drops below the round eye into a pointed teardrop holding the pink tear duct (72 degrees round the eyeball, turned 20 degrees further down, closing to a point). **Iris:** dark warm brown with a rich brown rim.
 
 **Round eye (every official image):** the lids open 48 (upper) and 50 (lower) degrees from the gaze, rounded at the measured corners (42 and 60 degrees). They hug the eyeball (thickness 0.05 r, scale 1.01), so there is less dome. The iris is dark warm brown with a large pupil inside a white ring, and a heavy dark ring runs round the whole opening, stopping at the corners. Moving the corners further round (55 degrees) opened a dark wedge behind the eye, so they stay where they were measured.
