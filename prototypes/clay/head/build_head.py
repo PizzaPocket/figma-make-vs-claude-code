@@ -639,6 +639,15 @@ def front_shell(V, F):
     inside = d > 0
     keep = inside[F].any(axis=1)
     used = np.unique(F[keep]); remap = -np.ones(len(V), int); remap[used] = np.arange(len(used))
+    # snap each outside vertex onto the edge line (d = 0) along its edges to inside neighbours, so the edge is smooth, not a sawtooth
+    Ek = np.vstack([F[keep][:, [0, 1]], F[keep][:, [1, 2]], F[keep][:, [2, 0]]]); Ek = np.vstack([Ek, Ek[:, ::-1]])
+    Ek = Ek[~inside[Ek[:, 0]] & inside[Ek[:, 1]]]
+    o, i = Ek[:, 0], Ek[:, 1]
+    t = (-d[o] / (d[i] - d[o]))[:, None]
+    P = V[o] + (V[i] - V[o]) * t
+    acc = np.zeros_like(V); cnt = np.zeros(len(V))
+    np.add.at(acc, o, P); np.add.at(cnt, o, 1)
+    V = V.copy(); V[cnt > 0] = acc[cnt > 0] / cnt[cnt > 0][:, None]; d = np.where(cnt > 0, 0.0, d)
     N = np.zeros_like(V)  # smooth outward normals
     fn = np.cross(V[F[:, 1]] - V[F[:, 0]], V[F[:, 2]] - V[F[:, 0]])
     for k in range(3):
