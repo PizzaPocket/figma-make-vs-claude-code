@@ -664,77 +664,128 @@ def carve_socket(V):
     return V
 
 
-def caruncle(c, a, g, u, er):
-    """The inner corner's fleshy teardrop, lying on the eyeball between the two lid margins: its point
-    in the corner, its round end toward the iris."""
-    K = EYE["lids"]["caruncle"]
-    tc = math.cos(math.radians(EYE["lids"]["inner_canthus_deg"]))
-    nt, nv = 10, 8
-    verts, faces = [], []
+def opening_frame(c, er):
+    """The eye's opening in side view: one teardrop outline, the round eye with its inner corner drawn down
+    and forward into a point, filled by the pink caruncle (side sheet). Returns the tip (z, y), the axis
+    e_p from the tip through the eyeball's centre, e_q across it toward the upper lid, the axis length,
+    and h(p): the opening's half-width at p along the axis (the circle, or the wedge from the tip)."""
+    O = EYE["opening"]
+    ang = math.radians(O["tip_angle_deg"])
+    c2 = np.array([c[2], c[1]])
+    d, r0 = O["tip_reach"] * er, O["radius"] * er
+    tip = c2 + np.array([math.cos(ang), -math.sin(ang)]) * d  # +z forward, -y down
+    ep = norm(c2 - tip)
+    eq = np.array([-ep[1], ep[0]])
+    if eq[1] < 0:
+        eq = -eq
+    ta = math.tan(math.radians(O["tip_half_angle_deg"]))
+    h = lambda p: max(math.sqrt(max(0.0, r0 * r0 - (p - d) ** 2)), p * ta if 0 <= p <= d else 0.0)
+    return tip, ep, eq, d + r0, h
+
+
+def eye_skin(c, er, sgn):
+    """|x| of what lies under the lids at (z, y): the outermost of the carved face and the eyeball. The face
+    is sampled once on a grid round the eye and interpolated."""
+    from scipy.interpolate import RegularGridInterpolator
+    Z = np.linspace(c[2] - 2.2 * er, c[2] + 2.2 * er, 33)
+    Y = np.linspace(c[1] - 2.2 * er, c[1] + 2.2 * er, 33)
+    P = np.array([[sgn * abs(face_pt(z, side_th(z, y))[0]), y, z] for z in Z for y in Y])
+    X = np.abs(carve_socket(P)[:, 0]).reshape(len(Z), len(Y))
+    face = RegularGridInterpolator((Z, Y), X, bounds_error=False, fill_value=None)
+    return lambda z, y: max(float(face((z, y))), abs(c[0]) + math.sqrt(max(0.0, er * er - (z - c[2]) ** 2 - (y - c[1]) ** 2)))
+
+
+def press_under_lids(V):
+    """Press the face's skin in under the lids' footprint (the teardrop opening and the lid band round it),
+    fading out at the band's edge, so the face never shows through the lids: they are fitted to a sampled
+    copy of the skin, which smooths over the crisp forms round the eye."""
+    O = EYE["opening"]; er = EYE["radius"]
+    V = V.copy()
+    for sgn in (1, -1):
+        c, _ = eye_seat(sgn)
+        tip, ep, eq, L, h = opening_frame(c, er)
+        ps = np.linspace(0.0, L, 200)
+        ring = np.array([tip + ep * p + eq * h(p) for p in ps] + [tip + ep * p - eq * h(p) for p in ps[::-1]])
+        band = O["band"] * er
+        for i, (x, y, z) in enumerate(V):
+            if x * sgn <= 0 or abs(z - c[2]) > L + band or abs(y - c[1]) > L + band:
+                continue
+            q = np.array([z, y]) - tip
+            p, w = q @ ep, q @ eq
+            inside = 0 <= p <= L and abs(w) <= h(p)
+            dist = 0.0 if inside else float(np.min(np.linalg.norm(ring - np.array([z, y]), axis=1)))
+            k = 1 - smoothstep(0.8 * band, 1.05 * band, dist)
+            if k > 0:
+                V[i, 0] -= sgn * O["press"] * er * k
+    return V
+
+
+def eye_lid(c, er, sgn, skin, upper, closed=0.0, nps=36, nf=14, nr=5):
+    """A lid as a sheet over the opening, seen from the side: from its margin on the outline out past the
+    dark ring, where it sinks into the skin. The two lids meet at the tip and at the back of the round, so
+    the dark ring runs unbroken round the whole teardrop. Blink: the upper margin slides across the
+    opening to the lower one, covering the eyeball and the caruncle. Returns verts, faces, _A (0 at the
+    margin, the dark ring, 1 past it) and tau (-1 at the tip, +1 at the back) per vertex."""
+    O = EYE["opening"]
+    tip, ep, eq, L, h = opening_frame(c, er)
+    s = 1 if upper else -1
+    thick, clear = er * EYE["lid_thickness"], er * O["clear"] + (0.0003 if upper else 0.0)
+    out = lambda p: tip + ep * p + eq * s * h(p)
+    verts, A, T = [], [], []
+    for i in range(nps + 1):
+        p = L * (1 - math.cos(math.pi * i / nps)) / 2
+        # the band runs straight out from the eye's centre: the teardrop is star-shaped about it, so the rows
+        # never cross (an outline normal folds the band at the inside corners where the point meets the
+        # round), and at the tip and the back both lids run out along the axis and meet
+        n = norm(out(p) - (tip + ep * (L - O["radius"] * er)))
+        m = out(p) if not upper else tip + ep * p + eq * (h(p) * (1 - 2 * closed) - closed * 0.03 * er)
+        edge = out(p) + n * O["band"] * er
+        # rows: the dark ring is its own rows at the margin, a fixed width (narrowing as the lid closes, so
+        # the closed eye is a line, not a dark band); the rest of the lid stretches out to its buried edge
+        span = np.linalg.norm(edge - m); dirn = (edge - m) / max(span, 1e-9)
+        ring = min(O["ring"] * er * (1 - 0.6 * closed), 0.6 * span)
+        for j in range(nf + 1):
+            dm = ring * (j / nr) ** 1.3 if j <= nr else ring + (span - ring) * ((j - nr) / (nf - nr)) ** 1.3
+            f = dm / max(span, 1e-9)
+            z, y = m + dirn * dm
+            sink = smoothstep(0.75, 1.0, f)
+            lift = (clear + thick * math.sin(math.pi / 2 * min(1.0, dm / (0.08 * er)))) * (1 - sink) - 0.0005 * sink
+            verts.append((sgn * (skin(z, y) + lift), y, z))
+            A.append(0.2 * j / nr if j <= nr else 1.0)
+            T.append(2 * p / L - 1)
+    faces = []
+    for i in range(nps):
+        for j in range(nf):
+            q = i * (nf + 1) + j
+            fc = [q, q + 1, q + nf + 2, q + nf + 1]
+            faces.append(fc if (sgn > 0) != upper else fc[::-1])
+    return verts, faces, A, T
+
+
+def caruncle(c, er, sgn, skin):
+    """The pink caruncle: a low fleshy pad filling the teardrop's point, from the tip to where the point
+    opens into the round of the eye, tucked a little under the lid margins."""
+    O = EYE["opening"]
+    tip, ep, eq, L, h = opening_frame(c, er)
+    ta = math.tan(math.radians(O["tip_half_angle_deg"]))
+    d, r0 = O["tip_reach"] * er, O["radius"] * er
+    pj = min(np.linspace(0.0, d, 400), key=lambda p: abs(p * ta - math.sqrt(max(0.0, r0 * r0 - (p - d) ** 2))) if p > d - r0 else 1.0)
+    nt, nv = 14, 8
+    verts = []
     for i in range(nt + 1):
-        sfr = i / nt
-        t = -tc * (1 - K["reach"] * sfr)
-        psi = math.acos(t)
-        pu, pl = lid_margin(t, True), -lid_margin(t, False)
-        mid, half = (pu + pl) / 2, (pu - pl) / 2 * math.sqrt(max(0.0, 1 - sfr ** 2)) * 0.85
+        p = pj * i / nt
+        hw = 1.1 * p * ta * math.sqrt(max(0.0, 1 - (p / pj) ** 4))
         for j in range(nv + 1):
-            v = j / nv
-            phi = mid - half + 2 * half * v
-            r = er * (1.01 + K["bulge"] * math.sin(math.pi * v) * math.sqrt(max(0.0, 1 - sfr ** 2)) * min(1.0, 3 * sfr))
-            ab, ub = bent_frame(a, g, u, t)
-            d = ab * math.cos(psi) + math.sin(psi) * (g * math.cos(phi) + ub * math.sin(phi))
-            verts.append(tuple(np.asarray(c) + d * r))
+            v = -1 + 2 * j / nv
+            z, y = tip + ep * p + eq * hw * v
+            verts.append((sgn * (skin(z, y) + O["caruncle_bump"] * er * math.sqrt(max(0.0, 1 - v * v))), y, z))
+    faces = []
     for i in range(nt):
         for j in range(nv):
             q = i * (nv + 1) + j
-            faces.append([q, q + 1, q + nv + 2, q + nv + 1])
+            fc = [q, q + 1, q + nv + 2, q + nv + 1]
+            faces.append(fc if sgn < 0 else fc[::-1])
     return verts, faces
-
-
-def tear_tail(c, a, g, u, er, sgn):
-    """The inner corner's teardrop carried on past the eyeball (side sheet: its tip hangs forward and down,
-    about 1.25 r from the eye centre, beyond the round of the eye): a pink tail laid on the skin, from the
-    corner along the same direction, round where it leaves the corner and tapering to a point, with a dark rim
-    (the eye's dark ring carried round it). Laid in side view; each point sits on whichever is outermost of the
-    carved face and the eyeball, just above it. _A: 1 along its middle, 0 at its edges."""
-    K = EYE["lids"]["caruncle"]
-    ang = math.radians(K["tail_angle_deg"])  # measured on the side sheet: forward and down from the eye centre
-    c2 = np.array([c[2], c[1]])
-    # it starts at the visible inner corner of the opening, where the margins meet, and runs to its tip
-    tq = -math.cos(math.radians(EYE["lids"]["inner_canthus_deg"]))
-    pu, pl = lid_margin(tq, True), -lid_margin(tq, False)
-    ab, ub = bent_frame(a, g, u, tq)
-    psi = math.acos(tq)
-    corner = np.asarray(c) + er * (ab * math.cos(psi) + math.sin(psi) * (g * math.cos((pu + pl) / 2) + ub * math.sin((pu + pl) / 2)))
-    k2 = np.array([corner[2], corner[1]])
-    tip = c2 + np.array([math.cos(ang), -math.sin(ang)]) * K["tail_reach"] * er  # +z forward, -y down
-    dv = norm(tip - k2)
-    nv = np.array([-dv[1], dv[0]])
-    L = np.linalg.norm(tip - k2)
-    w0 = K["tail_width"] * er
-    ns, nw = 14, 8
-    pts = []
-    for i in range(ns + 1):
-        s = -0.25 + 1.25 * i / ns  # starts a little back inside the corner, under the lids
-        w = w0 * (math.sqrt(max(0.0, 1 - ((s + 0.25) / 0.5 - 1) ** 2)) if s < 0.25 else (1 - (s - 0.25) / 0.75) ** 0.9)
-        for j in range(nw + 1):
-            v = -1 + 2 * j / nw
-            zy = k2 + dv * L * s + nv * w * v
-            z, y = zy
-            xf = abs(face_pt(z, side_th(z, y))[0])
-            xf = abs(carve_socket(np.array([[sgn * xf, y, z]]))[0][0])
-            dz, dy = z - c[2], y - c[1]
-            xs = abs(c[0]) + math.sqrt(max(0.0, (er * 1.01) ** 2 - dz * dz - dy * dy))
-            lift = 0.0025 * math.sqrt(max(0.0, 1 - v * v))
-            pts.append((sgn * (max(xf, xs) + 0.001 + lift), y, z))
-    faces = []
-    for i in range(ns):
-        for j in range(nw):
-            q = i * (nw + 1) + j
-            f = [q, q + 1, q + nw + 2, q + nw + 1]
-            faces.append(f if sgn > 0 else f[::-1])
-    A = [1 - abs(-1 + 2 * (k % (nw + 1)) / nw) for k in range(len(pts))]
-    return pts, faces, A
 
 
 def band_zs(z_front, z_back, base_n):
@@ -896,79 +947,6 @@ def eye_frame(sgn):
     return g, a, u
 
 
-def lid_margin(t, upper):
-    """Angle of a lid margin above (+) or below (-) the gaze, at position t = cos(psi) along the canthal
-    axis (+1 toward the outer/lateral end, -1 toward the inner/medial end). The corners of the eye (the
-    canthi) are not the ends of that axis, which lie buried under the face: they sit on the eyeball where
-    it meets the face, outer_canthus_deg / inner_canthus_deg from the gaze. Between them the two lids are
-    not mirror images: the upper margin peaks a little toward the inner corner, the lower dips lowest
-    toward the outer corner; the outer corner closes to a sharp point, the inner one is rounded round the
-    caruncle. Beyond the corners the margins meet and the lids are closed."""
-    Ls = EYE["lids"]; L = Ls["upper" if upper else "lower"]
-    tc = math.cos(math.radians(Ls["outer_canthus_deg"])) if t > 0 else math.cos(math.radians(Ls["inner_canthus_deg"]))
-    tau = min(1.0, abs(t) / tc) * (1 if t > 0 else -1)
-    p = L["corner_exp_lateral"] if t > 0 else L["corner_exp_medial"]
-    h = math.sin(math.radians(L["open_deg"])) * max(0.0, 1 - tau * tau) ** p * (1 + L["skew"] * tau)
-    return math.asin(min(0.98, h / max(1e-4, math.sqrt(max(0.0, 1 - t * t)))))
-
-
-def rot(v, k, ang):
-    """Rotate v about unit axis k by ang (Rodrigues)."""
-    return v * math.cos(ang) + np.cross(k, v) * math.sin(ang) + k * (k @ v) * (1 - math.cos(ang))
-
-
-def bent_frame(a, g, u, t):
-    """The eye's frame at position t along the canthal axis, bent so each corner sits at its own measured
-    angle: the axis through the centre has the mean tilt, and each half turns its corner further down
-    (toward the corner) by corner_bend_deg, growing from mid-eye to the corner."""
-    if abs(t) < 1e-9:
-        return a, u
-    tau = lid_tau(t)
-    bend = math.radians(EYE["corner_bend_deg"]["outer" if t > 0 else "inner"]) * smoothstep(0.0, 1.0, abs(tau))
-    end = a if t > 0 else -a
-    ang = bend if rot(end, g, 0.01)[1] < end[1] else -bend  # turn that corner downward
-    return rot(a, g, ang), rot(u, g, ang)
-
-
-def lid_tau(t):
-    """Position between the corners: 0 mid-eye, +-1 at the outer / inner corner (and beyond)."""
-    Ls = EYE["lids"]
-    tc = math.cos(math.radians(Ls["outer_canthus_deg"] if t > 0 else Ls["inner_canthus_deg"]))
-    return max(-1.0, min(1.0, t / tc))
-
-
-def lid(c, R, a, g, u, upper, thick, psi_lat, psi_med, closed=0.0, nps=40, nph=10):
-    """A lid: a thick shell around the eye. psi runs along the canthal axis from the outer corner (0)
-    to the inner corner (pi), so the lid pinches toward the corners; phi runs round the axis from the
-    margin back into the socket. The outer and inner layers meet in a rounded rim at the margin.
-    Returns verts, faces, _A (0 at the margin) and t (position along the axis) per vertex."""
-    sgn = 1 if upper else -1
-    phi1 = sgn * math.radians(170)
-    verts, faces, A, Ts = [], [], [], []
-    n = None
-    for i in range(nps + 1):
-        psi = psi_lat + (math.pi - psi_lat - psi_med) * i / nps
-        t = math.cos(psi)
-        phi0 = sgn * lid_margin(t, upper)
-        if closed:  # blink: the margin slides over the eyeball to where the lids meet, a little below mid-eye
-            meet = -EYE["lids"]["blink_meet"] * lid_margin(t, False)
-            phi0 = phi0 + (meet - phi0) * closed * EYE["lids"]["blink_share_" + ("upper" if upper else "lower")]
-        rim = [(R + thick * 0.5 * (1 - math.cos(math.pi * k / 4)), phi0 - sgn * math.radians(4) * math.sin(math.pi * k / 4)) for k in range(5)]
-        layers = [(R + thick, phi0 + (phi1 - phi0) * j / nph) for j in range(nph, 0, -1)] + \
-                 [(R + thick - (r - R), ph) for r, ph in rim] + \
-                 [(R, phi0 + (phi1 - phi0) * j / nph) for j in range(1, nph + 1)]
-        n = len(layers)
-        ab, ub = bent_frame(a, g, u, t)
-        for j, (rr, phi) in enumerate(layers):
-            d = ab * math.cos(psi) + math.sin(psi) * (g * math.cos(phi) + ub * math.sin(phi))
-            verts.append(tuple(np.asarray(c) + d * rr)); A.append(abs(j - (n - 1) / 2) / ((n - 1) / 2)); Ts.append(t)
-    for i in range(nps):
-        for j in range(n - 1):
-            p = i * n + j; q = p + n
-            faces.append([p, q, q + 1, p + 1])
-    return verts, faces, A, Ts
-
-
 def expression_offsets(V, terms):
     """Offsets of the face's vertices for one muscle action: `push` moves a region (out, up, forward),
     `crease` folds the skin in along a line. Both act on the sides of the face like the anatomy brushes."""
@@ -1033,7 +1011,7 @@ def head_parts():
     # the closed underside in front of the jaw is the overhanging upper lip (skin), not the palate
     part = [1.0 if uv[i][1] >= 0 or v[i][2] > JAW[0, 0] - 0.01 else 3.0 for i in range(len(v))]
     under = [1.0 if uv[i][1] < 0 else 0.0 for i in range(len(v))]  # _ZONE: the overhang's underside, smooth skin
-    V = carve_socket(np.array(v))
+    V = press_under_lids(carve_socket(np.array(v)))
     face = add_part("Face", V.tolist(), f, {"_PART": part, "_A": [u[0] for u in uv], "_B": hf, "_ZONE": under}, rigid(len(v)))
     objs.append(face)
     # expression shapes: one per facial muscle action, exported as morph targets (blend shapes)
@@ -1141,45 +1119,35 @@ def head_parts():
         g, a, u = eye_frame(sgn)
         v, f, uv = sphere(c, er, up=g)
         objs.append(add_part("Eye" + sd, v, f, {"_PART": [6] * len(v), "_A": [q[0] for q in uv], "_B": [0] * len(v), "_ZONE": [0] * len(v)}, rigid(len(v))))
-        # lids: thick shells hinged on the canthal axis. The upper lid is on two bones (inner and outer half)
-        # so its margin can tilt for expression; the lower lid on one. A positive turn about a bone closes its lid.
+        # lids: two sheets over the teardrop opening (eye_lid). The upper lid is on two bones (inner and outer
+        # half) so its margin can tilt for expression; the lower lid on one. A positive turn about a bone closes its lid.
         hinge = a if np.allclose(np.cross(a, u), g, atol=1e-6) else -a
-        R = er * EYE["lid_scale"]; thick = er * EYE["lid_thickness"]
-        psi_lat, psi_med = (math.radians(EYE["lids"][k]) for k in ("outer_corner_inset_deg", "inner_corner_inset_deg"))
+        skin = eye_skin(c, er, sgn)
+        NB = EYE["opening"]["blink_steps"]
         for upper in (True, False):
-            v, f, A, Ts = lid(c, R, a, g, u, upper, thick, psi_lat, psi_med)
-            # the lid moves most mid-eye and not at all at the corners, where it is fixed to the face (the
-            # canthal tendons): the rest of each vertex's weight stays on the head
+            v, f, A, Ts = eye_lid(c, er, sgn, skin, upper)
+            # the lid moves most mid-eye and not at all at the tip and the back, where it is fixed to the face:
+            # the rest of each vertex's weight stays on the head
             ws = []
-            for t in Ts:
-                tau = lid_tau(t)
+            for tau in Ts:
                 m = 1 - smoothstep(0.55, 1.0, abs(tau))
                 if upper:
                     wo = smoothstep(-0.6, 0.6, tau)
                     ws.append([(f"lidUpperOut.{sd}", m * wo), (f"lidUpperIn.{sd}", m * (1 - wo)), ("head", 1 - m + 1e-4)])
                 else:
                     ws.append([(f"lidLower.{sd}", m), ("head", 1 - m + 1e-4)])
-            # _B: how far past the eye's corner (0 inside the opening, 1 beyond): there the lids are closed and their
-            # margins meet in a plain seam, not a dark rim, so the eye ends at its corners with no line trailing on
-            beyond = [smoothstep(1.0, 1.12, abs(t) / math.cos(math.radians(EYE["lids"]["outer_canthus_deg" if t > 0 else "inner_canthus_deg"]))) for t in Ts]
-            ob = add_part(f"Lid{'Upper' if upper else 'Lower'}{sd}", v, f, {"_PART": [7] * len(v), "_A": A, "_B": beyond, "_ZONE": [0] * len(v)}, ws)
-            # blink: each lid turns about the canthal axis (its margin travels across the eye at right angles to the
-            # line between the corners, and the lids meet along that line). Stored as in-between shapes along that
-            # arc (blink1..blinkN, each the lid at k/N closed): a single straight-line blend would cut through the
-            # eyeball mid-blink. A bone turn this large would tear the corners, which are fixed to the face.
+            ob = add_part(f"Lid{'Upper' if upper else 'Lower'}{sd}", v, f, {"_PART": [7] * len(v), "_A": A, "_B": [0] * len(v), "_ZONE": [0] * len(v)}, ws)
+            # blink: the upper margin slides across the opening to the lower one, stored as in-between shapes
+            # (blink1..blinkN, each the lid at k/N closed) so it stays on the eyeball's surface on the way
             ob.shape_key_add(name="Basis", from_mix=False)
-            NB = EYE["lids"]["blink_steps"]
             for kb in range(1, NB + 1):
-                vb, _, _, _ = lid(c, R, a, g, u, upper, thick, psi_lat, psi_med, closed=kb / NB)
+                vb = eye_lid(c, er, sgn, skin, upper, closed=kb / NB if upper else 0.0)[0]
                 ob.shape_key_add(name=f"blink{kb}", from_mix=False).data.foreach_set("co", to_blender(np.array(vb)).astype(np.float32).ravel())
             objs.append(ob)
         for bn, axis in (("lidUpperIn", hinge), ("lidUpperOut", hinge), ("lidLower", -hinge)):
             lid_bones.append((f"{bn}.{sd}", c, c + axis * 0.04))
-        # caruncle: the fleshy teardrop in the inner corner
-        v, f = caruncle(c, a, g, u, er)
+        v, f = caruncle(c, er, sgn, skin)
         objs.append(add_part("Caruncle" + sd, v, f, {"_PART": [12] * len(v), "_A": [1] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, rigid(len(v))))
-        v, f, A = tear_tail(c, a, g, u, er, sgn)
-        objs.append(add_part("TearTail" + sd, v, f, {"_PART": [12] * len(v), "_A": A, "_B": [0] * len(v), "_ZONE": [0] * len(v)}, rigid(len(v))))
         # horn: a smooth tube with incised ring lines, starting buried in the roof; the roof plates are
         # sculpted up into its root (horn_fillet), so it grows out of the head rather than sitting on it
         path = [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]

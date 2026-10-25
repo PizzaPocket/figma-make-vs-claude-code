@@ -402,5 +402,90 @@
    "label": "official muzzles",
    "ref": "{refs}/study/muzzle_official.jpg"
   }
+ ],
+ "tear": [
+  {
+   "label": "tear, side, open",
+   "cam": [
+    3,
+    1.676,
+    1.703
+   ],
+   "target": [
+    0,
+    1.676,
+    1.703
+   ],
+   "fov": 1.6,
+   "pose": "neutral"
+  },
+  {
+   "label": "tear, side, half blink",
+   "cam": [
+    3,
+    1.676,
+    1.703
+   ],
+   "target": [
+    0,
+    1.676,
+    1.703
+   ],
+   "fov": 1.6,
+   "pose": {
+    "morphs": {
+     "blink": 0.5
+    }
+   }
+  },
+  {
+   "label": "tear, side, closed",
+   "cam": [
+    3,
+    1.676,
+    1.703
+   ],
+   "target": [
+    0,
+    1.676,
+    1.703
+   ],
+   "fov": 1.6,
+   "pose": "blink"
+  },
+  {
+   "label": "tear, three-quarter, open",
+   "cam": [
+    1.0,
+    1.76,
+    2.16
+   ],
+   "target": [
+    0.16,
+    1.676,
+    1.703
+   ],
+   "fov": 4.5,
+   "pose": "neutral"
+  },
+  {
+   "label": "tear, three-quarter, closed",
+   "cam": [
+    1.0,
+    1.76,
+    2.16
+   ],
+   "target": [
+    0.16,
+    1.676,
+    1.703
+   ],
+   "fov": 4.5,
+   "pose": "blink"
+  },
+  {
+   "label": "side sheet",
+   "ref": "{refs}/study/cheekbone_side.jpg"
+  }
  ]
 }

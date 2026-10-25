@@ -119,7 +119,7 @@
     ]
   },
   "eye": {
-    "note": "Round, wide-open eye tucked under the eave. Measured on a line map of the side sheet (eye centre px 120, py 250): the inner (medial) corner runs down and forward into a point, with the pink tear duct, about 58 degrees below horizontal from the centre and well out from the round eye; the outer (lateral) corner sits about 32 degrees above horizontal toward the back. So the canthal axis rises about 45 degrees toward the back and is bent, each corner turned 13 degrees further down. The inner corner is rounded and holds the caruncle; the outer closes to a point. The upper margin arcs highest a little toward the inner corner; the lower margin dips lowest toward the outer corner. The lids are thick shells with a rounded margin, hinged on the canthal axis.",
+    "note": "Round, wide-open eye under the eave; its opening is one teardrop outline: the round eye with its inner corner drawn down and forward into a point, which the pink caruncle fills (side sheet). The lids are two sheets over that outline, and the blink covers the eyeball and the caruncle together.",
     "centre_zy": [1.695, 1.692],
     "radius": 0.031,
     "sink": 0.9,
@@ -127,52 +127,26 @@
     "canthal_tilt_deg": 45,
     "lid_scale": 1.01,
     "lid_thickness": 0.05,
-    "lids": {
-      "upper": {
-        "open_deg": 48,
-        "skew": -0.05,
-        "corner_exp_lateral": 0.5,
-        "corner_exp_medial": 1.1
-      },
-      "lower": {
-        "open_deg": 50,
-        "skew": 0.05,
-        "corner_exp_lateral": 0.5,
-        "corner_exp_medial": 1.1
-      },
-      "columns_note": "outer/inner_canthus_deg: where the corners sit on the eyeball, measured from the gaze along the canthal axis. open_deg: how far the margin opens from the gaze at mid-eye; skew tilts where it peaks (negative = toward the inner corner); corner_exp near 0.5 keeps the corner rounded, 1 or more closes it to a point.",
-      "outer_corner_inset_deg": 2,
-      "inner_corner_inset_deg": 2,
-      "outer_canthus_deg": 42,
-      "inner_canthus_deg": 64,
-      "blink_meet": 0.95,
-      "blink_share_upper": 1.0,
-      "blink_share_lower": 0.0,
-      "caruncle": {
-        "note": "Not a bead: a small fleshy teardrop filling the inner corner between the two lid margins, lying on the eyeball, its point toward the corner, its round end toward the iris; pink, partly tucked under the lids.",
-        "reach": 0.38,
-        "bulge": 0.1,
-        "tail_reach": 1.17,
-        "tail_width": 0.22,
-        "tail_note": "the teardrop carried on past the eyeball as a pink tail on the skin: from the visible inner corner of the opening to its tip at tail_reach r from the eye centre, tail_angle_deg below horizontal and forward (side sheet), half-width tail_width r, round where it leaves the corner and tapering to a point, rimmed dark",
-        "tail_angle_deg": 58
-      },
-      "blink_steps": 6,
-      "blink_note": "Each lid turns about the canthal axis, so its margin travels across the eye at right angles to the line between the corners; the lids meet along that line, a little below mid-eye (the upper lid does the moving). Stored as 6 in-between shapes along the arc so the lid stays on the eyeball's surface all the way down."
-    },
     "clear_radius": [0.034, 0.052],
     "socket": {
       "note": "The face is carved into a socket that holds the eye assembly: inside the lids' footprint the skin runs in just under the lid dome, and a rounded rim (the orbital rim under the lid-ring muscle) turns it back out to the face.",
       "rim_frac": 0.95,
-      "rim_width": 0.02,
+      "rim_width": 0.008,
       "under": 0.002
     },
-    "corner_bend_deg": {
-      "outer": 28,
-      "inner": 6
-    },
-    "round_note": "Every official image shows a round eye: the opening nearly a circle (the lids open 48 and 50 degrees, corners at the measured 42 and 60 degrees from the gaze, rounded), a white ring round a large dark-brown iris and pupil, a heavy dark ring round the whole opening, and the pink tear duct at the lower front corner. The lids hug the eyeball (thickness 0.05 r), so there is no dome.",
-    "inner_note": "Measured on the side sheet by projecting the model's lid corners onto it (eye_map): the inner corner sits forward and down, 57-58 degrees below horizontal from the eye centre, at about the eyeball's edge, with the pink tear duct below it; the back corner rises 22-30 degrees above horizontal. So the inner corner is 64 degrees round the eyeball, turned 6 degrees down, and closes to a point (corner exponent 1.1); the outer corner is turned 28 degrees down. A 20-degree inner turn put it almost straight below the eye (83 degrees), which was wrong."
+    "opening": {
+      "note": "Measured on the side sheet (full-resolution crop, px 98-142, py 232-276), relative to the eyeball's centre in side view, in eyeball radii: the opening (the white's outer edge) is a circle of radius 0.71; the pink point's tip is 1.30 from the centre, 56 degrees below horizontal, forward; its sides close at about 13 degrees either side of the line to the centre. The dark ring round the whole outline is about 0.28 wide.",
+      "radius": 0.71,
+      "tip_reach": 1.3,
+      "tip_angle_deg": 56,
+      "tip_half_angle_deg": 13,
+      "ring": 0.28,
+      "band": 0.55,
+      "clear": 0.06,
+      "press": 0.2,
+      "caruncle_bump": 0.03,
+      "blink_steps": 6
+    }
   },
   "horn": {
     "note": "The horn grows out of the roof: its root is sculpted into the roof plates, which swell up and wrap its base (a smooth union with fillet radius `fillet`), so the roof's top line runs on into the horn's top line. From there it sweeps back and up in a long, nearly straight line, tapering slowly, and curls up only in the last stretch. Smooth, with hairline incised rings.",

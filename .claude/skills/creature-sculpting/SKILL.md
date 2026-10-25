@@ -128,6 +128,7 @@ Build each muscle action as a face morph target: a push of the region plus the c
 - **Follow the eyeliner's path.** If the art draws a closed round ring, the corner must close round where the ring ends. A corner placed too far back drags the dark rim into a wing.
 - **The margins are not mirror images.** The upper lid peaks toward the inner corner; the lower dips lowest toward the outer corner.
 - **Lids have thickness:** shells with a rounded margin, sliding over the eyeball. They are pinned at the corners, moving most mid-eye. A blink is a shape key of the lids; a large bone turn tears the corners.
+- **Read the opening as one outline first.** Clay's eye opening is a teardrop: the round eye with its inner corner drawn into the pink point. Build the lids over that outline and let the blink cover all of it. Corner angles, bent axes and separate tear-duct pieces were a long detour from a shape that was obvious in the drawing.
 - **The cheekbone is the socket's rim.** On Clay it is the heavy hooked line under the eye. Sculpt it as a `rim`: raised, gentle toward the eye, crisp on the outside where the line is drawn.
 
 ## Toolkit

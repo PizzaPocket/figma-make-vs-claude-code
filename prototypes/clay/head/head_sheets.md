@@ -136,43 +136,19 @@ It is a long, nearly straight sweep back and up that barely tapers, then narrows
 
 **Still to check:** the nose's size and how far it juts; the nostrils barely show yet; how it compares with the flight and limited-edition renders at matched angles.
 
-## Eye: corners, lids, socket, expression
+## Eye: one teardrop opening
 
-**Corner angles,** measured on a line map of the side sheet (`line_map.py`, px 100–140, py 235–270; eye centre px 120, py 250):
-- The **inner corner** runs down and forward into a point, with the pink tear duct, about **58° below horizontal** from the centre and well out from the round eye.
-- The **outer corner** sits only about **32° above horizontal** toward the back.
+**What the side sheet shows** (full-resolution crop, px 98-142, py 232-276): the eye's opening is one teardrop outline, a round eye whose inner corner is drawn down and forward into a point, with the pink caruncle filling the point. One dark ring runs round the whole outline. Measured from the eyeball's centre in side view, in eyeball radii: the opening (the white's edge) is a circle of radius 0.71; the point's tip is 1.30 out, 56 degrees below horizontal, forward; its sides close at about 13 degrees; the ring is about 0.28 wide.
 
-So the canthal axis rises about 45° toward the back, and is *bent*: each corner is turned a further 13° down (`corner_bend_deg`). The opening itself is round (margins open 44° and 47° from the gaze), not a narrow almond.
+**Build (kept simple):**
+- The outline is a circle plus a wedge from the tip (`opening_frame`).
+- The **lids** are two sheets over that outline, seen from the side (`eye_lid`): each runs from its margin on the outline straight out from the eye's centre, past the dark ring, and sinks into the skin. They meet at the tip and at the back of the round, so the ring is unbroken. The ring is its own rows at the margin.
+- **Blink:** the upper margin slides across the opening to the lower one, covering the eyeball and the caruncle together (6 in-between shapes). The ring narrows as it closes, so the closed eye is a line.
+- The **caruncle** is a low pink pad filling the point, tucked under the lid margins.
+- The face is pressed in under the lids' footprint (`press_under_lids`) so its crisp forms never show through.
+- Lid bones (two on the upper lid, one on the lower) and the expressions are unchanged.
 
-The earlier figure of 26° was a straight line from the tear duct to where the creases meet; that point is not the outer corner.
-
-**Eyeliner:** in the reference the dark outline is one closed, round ring round the whole eye, heaviest along the top and back. It ends there; it does not trail back into a wing. The separate crease line starts behind it. So the outer corner sits only 42° from the gaze, and both margins close round at it (corner exponent 0.55). Past each corner the lids are closed and meet in a plain seam: their dark margin rim stops at the corner (lid _B), or it reads as a line trailing back from the eye.
-
-**Seating:** the eye sits deeper (0.9·r) so the lids barely stand above the face: no dome behind the eye. The socket rolls in with a smooth minimum. Inside the lid shell the skin goes in behind the eyeball, never over it: skin left just outside the eyeball showed as an orange crescent between the white and the lid margin wherever the face stands higher than the eye (its back side).
-
-- **Corners:** the corners of the eye sit on the visible eyeball, 52° (outer) and 50° (inner) from the gaze along the canthal axis.
-  - The inner corner is rounded and holds the caruncle: a fleshy pink teardrop on the eyeball between the lid margins, point in the corner, round end toward the iris.
-  - The outer corner closes to a point.
-- **Margins:** the upper margin peaks toward the inner corner (skew -0.18). The lower margin dips lowest toward the outer corner (skew +0.2).
-- **Lid bones:** the upper lid is on two bones (inner and outer half), so the margin can tilt for expression. The lower lid is on one. All are pinned at the corners.
-- **Blink:** a shape key of the lids. The upper margin slides down to meet the lower one.
-- **Socket:** the face is carved to hold the eye assembly. Under the lids' footprint the skin runs in just below the lid dome, then a rounded rim turns it back out.
-  - The eye is seated 0.72·r along the face's true normal at the eye centre.
-  - No bone or muscle form raises the skin within 0.034–0.052 of the eye centre.
-- **Expressions:** muscle actions are face morph targets.
-  - `cheekRaise` (AU6/12)
-  - `lipRaise` (AU9/10)
-  - `lipCornerDown` (AU15)
-  - `browLower` (AU4)
-  - `innerBrowRaise` (AU1)
-
-  Poses mix them with the lid bones: neutral, blink, wide, happy, worried, angry and snarl, all in `head_design.json`.
-
-**Blink (anatomy):** each lid hinges on the canthal axis, the line between the eye's two corners, through the eyeball's centre. Closing, the lid turns about that axis, so its edge travels across the eye at right angles to the line between the corners, sliding over the eyeball's surface; the corners themselves, fixed to the face by the canthal tendons, do not move. The upper lid does the moving and meets the lower lid along its edge, so the closed eye is a seam running from the inner corner (low, at the front, by the tear duct) up and back to the outer corner. The blink is stored as 6 in-between shapes along that arc (blink1..blink6; a weight blends the two either side of it): one straight-line shape cut through the eyeball mid-blink, so the white showed through the lid.
-
-**Corners, checked by projecting the model's lid margins and corners onto the side sheet:** the inner corner sits forward and down, 58 degrees below horizontal from the eye centre, at the eyeball's edge, with the pink tear duct below it (64 degrees round the eyeball, turned 6 degrees down, closing to a point). The back corner rises 25 degrees (turned 28 degrees down). An earlier 20-degree inner turn put the inner corner almost straight below the eye (83 degrees): wrong. The blink's margins, open, half and closed, were overlaid the same way: each sweeps across the eye along the meridians through the two corners. **Iris:** dark warm brown with a rich brown rim.
-
-**Round eye (every official image):** the lids open 48 (upper) and 50 (lower) degrees from the gaze, rounded at the measured corners (42 and 60 degrees). They hug the eyeball (thickness 0.05 r, scale 1.01), so there is less dome. The iris is dark warm brown with a large pupil inside a white ring, and a heavy dark ring runs round the whole opening, stopping at the corners. Moving the corners further round (55 degrees) opened a dark wedge behind the eye, so they stay where they were measured.
+**Earlier attempts, wrong:** spherical lid shells hinged on a bent canthal axis, with the caruncle as a bead on the eyeball and a separate pink "tear tail" on the skin. When the eye closed, the tail stayed visible on top of the lid. Patching a lid flap onto the tail made it worse. The opening is simply a teardrop.
 
 **Mouth map.** The bite point (z 1.86) is where the upper and lower fronts of the mouth meet when it is closed: on the side sheet, where the orange upper muzzle meets the cream chin. The lip line starts there.
 - In front of it is the **front muzzle**: under the nose its front face bulges out a little, then its underside sweeps back and down to the bite point. That underside is skin with no teeth. Its bottom corners pull up a little before turning back to the side muzzle.
@@ -181,27 +157,6 @@ The earlier figure of 26° was a straight line from the tear duct to where the c
 - The lower jaw's front is as wide as the upper mouth at the bite point, so the two fronts meet across it.
 
 **Teeth (flight render, limited edition):** small, flat, triangular ivory blades. A row of 4 across the front of the mouth at the bite point (upper and lower), then rows back along each side lip (upper z 1.835–1.62, lower 1.83–1.63). Each points perpendicular to its lip edge, tip raked 12 degrees back. No single big fang. An earlier pass ran them up the front muzzle's underside, which was wrong.
-
-## Eye and lids (measurements)
-
-**Eyeball:**
-- Centre (z 1.695, y 1.692), measured at px 120, py 250. Radius 0.031.
-- Sunk 0.55·r into the face, under the eave.
-- Gaze is out and about 30° forward.
-
-**Canthal axis** (the eye's meridian):
-- It runs from the tear duct at the front-lower corner (px 114, py 262) to the back corner where the upper crease and the zig-zag lower crease meet (about px 140, py 249).
-- It rises **about 26° toward the back** in the side view.
-- In 3D it lies in the plane of the face side, perpendicular to the gaze, so the back corner sits further out than the front.
-
-**Lids:**
-- Each lid is a shell on a sphere 1.1× the eyeball, parametrised by:
-  - ψ along the canthal axis: both lids pinch to the corners, which gives the almond shape;
-  - φ around the axis.
-- The upper margin is 36° above the gaze and the lower margin 42° below. Both margins have a dark rim.
-- **Blink:** each lid bone lies along the canthal axis.
-  - A turn about the axis sweeps the upper lid forward and down across the eye (1.2 rad).
-  - The lower lid rises 0.25 rad to meet it.
 
 ## Anatomy under the face (bone, muscle, skin)
 

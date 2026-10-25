@@ -33,26 +33,20 @@ Session-start hook to add to `.claude/settings.json` (not added automatically):
 - **Nose:** an extruded shield-section mass coming out of the roof's front; the user said to leave it as it is.
 - **Jaw:** a separate piece outlined by the traced line, with a jowl and pebble skin.
 - **Teeth:** flat blades, a front row across the bite plus side rows, each perpendicular to its lip edge with the tip raked back.
-- **Eye:**
-  - round, with a dark-brown iris and a rich brown rim;
-  - corners projected onto the side sheet: inner corner 58° below horizontal, back corner 25° above;
-  - the blink turns about the canthal axis, stored as 6 in-between shapes.
+- **Eye:** round, with a dark-brown iris and a rich brown rim (opening and lids since rebuilt, below).
 
-## Next: the eyelids must cover the caruncle (from the user)
+## Eye (done in the next session)
 
-The top of the eyelid needs to extend until the top of the tip of the caruncle, so the blink covers the whole eyeball plus the caruncle. At present the upper lid's inner end stops short of the caruncle, which stays visible when the eye closes.
-
-Also in progress: the **tear tail** (`tear_tail` in `build_head.py`; `eye.lids.caruncle.tail_*` in `head_design.json`), a pink teardrop from the inner corner past the eyeball, rimmed dark. It's committed but too long and thin; the next step was `tail_reach` 1.17 (from 1.3) and `tail_width` 0.22 (from 0.17). Revisit it together with the lid fix above.
+Rebuilt simply: the opening is one teardrop outline (round eye, inner corner drawn down and forward into the pink point), measured from the side sheet; the lids are two sheets over it, and the blink covers the eyeball and the caruncle. See head_sheets.md, "Eye: one teardrop opening". Close-up views: the `tear` set in `head/views.json`.
 
 ## Known faults (head), most visible first
 
-1. Eyelids not covering the caruncle; tear tail proportions (above).
+1. Eye ring reads wide behind the eye in three-quarter views.
 2. Front ridge:
    - faint stretch marks in the shading across it;
    - a small fold where the side edge plates meet the front corners;
    - from straight in front, the turn from the roof slope to the front reads as a crease, where the flight render shows a soft round.
 3. Nostrils barely show on the nose.
-4. Lids still dome slightly behind the eye.
 5. Ear curl and jaw back edge (see `CHECKLIST.md`).
 
 Then the neck and body items in `CHECKLIST.md`.
