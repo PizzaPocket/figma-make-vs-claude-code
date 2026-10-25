@@ -59,6 +59,10 @@ class Piece:
         k1 = np.linalg.norm(q / self.radii ** 2, axis=1)
         return k0 * (k0 - 1) / np.maximum(k1, 1e-9)
 
+    def zone_at(self, X):
+        """Its colour zone at points X: a number, or None (the trunk's zone there)."""
+        return None if self.zone is None else np.full(len(X), float(self.zone))
+
     def along(self, X):
         return (X - self.a) @ self.ax
 
@@ -120,13 +124,56 @@ def field(X, trunk, parts, all_parts=False):
     return (d, dt, np.array(D)) if all_parts else d
 
 
-def lift_onto(q, out, trunk, parts, iters=4):
-    """Move points q (on the trunk) out along `out` onto the skin, where muscles swell it."""
-    q = np.array(q, float)
+def normals(V, F):
+    """Area-weighted vertex normals."""
+    N = np.zeros_like(V)
+    fn = np.cross(V[F[:, 1]] - V[F[:, 0]], V[F[:, 2]] - V[F[:, 0]])
+    for k in range(3):
+        np.add.at(N, F[:, k], fn)
+    return N / np.maximum(np.linalg.norm(N, axis=1), 1e-12)[:, None]
+
+
+def smooth_on_mesh(V, F, X, iters=8):
+    """Average a per-vertex value with its neighbours on the mesh, a few times: closes pinholes and
+    smooths the edges of a colour region."""
+    F = np.asarray(F); X = np.asarray(X, float).copy()
+    E = np.vstack([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]])
+    E = np.vstack([E, E[:, ::-1]])
+    deg = np.bincount(E[:, 0], minlength=len(V)).astype(float)
     for _ in range(iters):
-        d = field(q, trunk, parts)
-        q = q + out * np.maximum(-d, 0.0)[:, None]
-    return q
+        acc = np.bincount(E[:, 0], weights=X[E[:, 1]], minlength=len(V))
+        X = 0.5 * X + 0.5 * acc / np.maximum(deg, 1)
+    return X
+
+
+def smooth_normals(V, F, iters=3):
+    """The mesh's normals averaged with their neighbours': smooth, and defined even at points that
+    only touch slivers of triangles with no area."""
+    N = normals(V, F)
+    N = np.stack([smooth_on_mesh(V, F, N[:, k], iters) for k in range(3)], 1)
+    return N / np.maximum(np.linalg.norm(N, axis=1), 1e-12)[:, None]
+
+
+def shell(V, F, Z, sh, N, level=0.25):
+    """The dark shell: the skin's dark region (zone below `level`) raised as one smooth layer, with a
+    rolled rim running round its whole edge. d is each vertex's distance in from the edge (the zone's
+    level line, found on the skin's edges); the height rises from 0 at the edge (its foot, rounded),
+    over the rim, and settles to the shell's thickness. Returns verts, faces, the source vertex of
+    each, and d. N: the skin's outward normals."""
+    Z = np.asarray(Z); F = np.asarray(F)
+    inside = Z < level
+    E = np.vstack([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]])
+    E = E[inside[E[:, 0]] != inside[E[:, 1]]]
+    t = ((level - Z[E[:, 0]]) / (Z[E[:, 1]] - Z[E[:, 0]]))[:, None]
+    edge = V[E[:, 0]] + (V[E[:, 1]] - V[E[:, 0]]) * t
+    d = np.where(inside, cKDTree(edge).query(V)[0], 0.0)
+    keep = inside[F].any(axis=1)
+    used = np.unique(F[keep]); remap = -np.ones(len(V), int); remap[used] = np.arange(len(used))
+    foot = np.sqrt(np.clip(d / sh["foot"], 0.0, 1.0))
+    rim = sh["rim_height"] * np.sin(math.pi * np.clip(d / sh["rim_width"], 0.0, 1.0)) ** 0.8
+    h = (sh["thickness"] + rim) * foot
+    S = V[used] + N[used] * h[used, None]
+    return S, remap[F[keep]], used, d[used]
 
 
 def mesh(trunk, parts, h, pad=0.06):
@@ -143,12 +190,18 @@ def mesh(trunk, parts, h, pad=0.06):
         X = np.stack([np.full(Y.size, x), Y.ravel(), Z.ravel()], 1)
         G[i] = field(X, trunk, parts).reshape(Y.shape)
     v, f, _, _ = marching_cubes(G, 0.0, spacing=(h, h, h), gradient_direction="ascent")
-    return v + lo, f
+    v = v + lo
+    N = normals(v, f)  # wind the faces so their normals point out of the body (the field rises outward)
+    probe = field(v[::50] + N[::50] * h * 0.5, trunk, parts) - field(v[::50], trunk, parts)
+    if np.mean(probe) < 0:
+        f = f[:, ::-1]
+    return v, np.ascontiguousarray(f)
 
 
-def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, blend=0.025):
+def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trust_s, blend=0.025):
     """Per vertex: rig weights, colour zone, and the pattern coordinates (A along, B round).
-    Each part's say is how close it lies to the skin there (within ~blend of the nearest)."""
+    Each part's say is how close it lies to the skin there (within ~blend of the nearest). The dark
+    shell (dark_zone: 1 inside it) covers whatever lies under it, trunk or muscle."""
     _, dt, D = field(V, trunk, parts, all_parts=True)
     idx, v, w, _ = trunk.local(V)
     s = trunk.s[idx]
@@ -157,6 +210,7 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, blend=0.025):
     infl = np.exp(-(allD - allD.min(axis=0)) / blend)
     infl /= infl.sum(axis=0)
     AL = [p.along(V) for p in parts]
+    ZP = [p.zone_at(V) for p in parts]
     W, Z, A = [], [], []
     for n in range(len(V)):
         sc = max(float(s[n]), 0.0)
@@ -172,9 +226,12 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, blend=0.025):
                 continue
             for bn, wt in p.rig.items():
                 acc[bn] = acc.get(bn, 0.0) + ik * wt
-            z += ik * (zt if p.zone is None else p.zone)
+            z += ik * (zt if ZP[k] is None else ZP[k][n])
             a += ik * (10 + AL[k][n])
         top = sorted(acc.items(), key=lambda kv: -kv[1])[:4]
         tot = sum(wt for _, wt in top)
-        W.append([(bn, wt / tot) for bn, wt in top]); Z.append(z); A.append(a)
+        # the tail's dark-top rule holds only on the tail itself: a limb lying near the tail (the forearm
+        # beside its tip) is not part of it
+        dk = dark_zone(sc, float(f[n]), V[n, 2], V[n, 1]) if (sc < tail_trust_s or dt[n] < 0.04) else 0.0
+        W.append([(bn, wt / tot) for bn, wt in top]); Z.append(z * (1 - dk)); A.append(a)
     return W, Z, A, list(f)

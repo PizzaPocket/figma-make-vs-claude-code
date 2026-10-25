@@ -42,6 +42,10 @@ The body is built from the inside out (`skin.py`, data in `body_design.json` "an
   The legs follow a great cat's: elbows tucked in, legs hanging close beside the keel. The feet follow birds and dinosaurs.
 - **Skin:** one surface over all of it, a smooth union meshed with marching cubes. The shoulders grow out of the chest and back, and the haunches out of the hips and the tail root, with no seam. The dark back's plates are lifted onto the skin where the muscles swell it.
 
+- **Tail:** a chain of 36 caudal vertebrae, like a lizard's, each turning a little in pitch and yaw from the last, with its top always up. It drops from the hips to the ground behind the hind legs, then snakes round sideways (to Clay's left, toward the viewer of the side sheet) and forward along the ground, outside the hind foot. The side sheet draws that lower run below the feet because it is nearer the viewer. The tightest bend is about 16 degrees per vertebra. *Earlier, wrong:* the side view's loop was built as a bend straight down and over, so the tail lay upside down.
+- **Hips:** the section broadens over the hips, and the gluteals are one broad, flat pad from the spine to the hip joint, like a cat's croup. The haunch (one round thigh mass) grows out of the hip with no pit. The wing hides all of this on the sheet, so it mirrors the shoulder.
+- **Shell:** the dark back is one smooth shell over the skin's whole dark region: the back, both shoulder caps, both hip caps (the dark edge dips over the hip as it does over the shoulder) and the top of the tail. A rolled rim runs continuously round its whole edge. The dark region covers whatever lies under it, muscle or trunk, on the body's upper side only. *Earlier, wrong:* separate band plates and rim scutes, and colour painted on from the side view; the plates flared off the muscles like fins.
+
 **Earlier, wrong:** the legs were tubes stuck onto the outside of a barrel-shaped trunk, with a single bump for a shoulder and nothing for a haunch, so their tops looked chopped off.
 
 ## Trunk (neck, torso, tail)

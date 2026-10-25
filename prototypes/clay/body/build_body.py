@@ -5,7 +5,8 @@ body_design.json and body_sheets.md):
 - skin (skin.py): one surface over the trunk (neck, torso and tail, measured cross-sections along a
   curved spine), the limb bones and the muscles that work them, so the shoulders and haunches grow
   out of the body; skinned to the spine and limb bones;
-- the dark back: a carapace of plates over the trunk, lifted onto the skin where muscles swell it;
+- the dark shell: the skin's dark region (the back, shoulder and hip caps, the top of the tail)
+  raised as one smooth layer with a rolled rim running round its whole edge;
 - front legs: toes, hooked claws and a dewclaw on the hand;
 - hind legs: four splayed toes, a heel spur and studs along the top of the foot.
 Model space: x = Clay's left, y = up, z = forward; 1 unit = 343 px of the reference.
@@ -41,11 +42,33 @@ def smoothstep(e0, e1, x):
 
 
 # ---------------------------------------------------------------- trunk
+def tail_vertebrae():
+    """The s at each joint between caudal vertebrae: each a fixed fraction shorter than the one before,
+    from first_length, filling the tail from from_s to its tip."""
+    tl = TR["tail"]; n, a = tl["vertebrae"], tl["first_length"]
+    L = TR["stations"][-1][0] - tl["from_s"]
+    lo, hi = 0.5, 1.0
+    for _ in range(60):  # the ratio that makes n vertebrae sum to the tail's length
+        r = (lo + hi) / 2
+        lo, hi = (r, hi) if a * (1 - r ** n) / (1 - r) < L else (lo, r)
+    lengths = [a * r ** k for k in range(n)]
+    return list(tl["from_s"] + np.concatenate([[0], np.cumsum(lengths)]) * L / sum(lengths))
+
+
+def tail_heading(s):
+    """The tail's direction at s: pitch (+ up) and yaw (0 straight back, + toward Clay's left)."""
+    K = np.array(TR["tail"]["heading_keys"], float)
+    p, ya = math.radians(np.interp(s, K[:, 0], K[:, 1])), math.radians(np.interp(s, K[:, 0], K[:, 2]))
+    return np.array([math.sin(ya) * math.cos(p), math.sin(p), -math.cos(ya) * math.cos(p)])
+
+
 def trunk_frames(step=0.01):
-    """Spine points (bind pose), depths, and a parallel-transported frame (dorsal normal N, side B)."""
+    """Spine points (bind pose), depths, and a parallel-transported frame (dorsal normal N, side B).
+    The neck and torso follow the side sheet's traced spine; the tail is the vertebral chain, laid
+    along its heading from the hips and resting on the ground where it lies flat."""
     st = np.array(TR["stations"], float)
+    tl = TR["tail"]; t0 = tl["from_s"]
     s_all = np.arange(-TR["front_overlap"], st[-1, 0] + 1e-9, step)
-    pose = TR["tail_pose"]
     P, DU, DV = [], [], []
     for s in s_all:
         sc = max(s, 0.0)
@@ -53,10 +76,15 @@ def trunk_frames(step=0.01):
         if s < 0:  # run on into the head along the first tangent, so the join is hidden inside it
             z1, y1 = table(st, 0.02, 1), table(st, 0.02, 2)
             z, y = z + (z - z1) / 0.02 * (-s), y + (y - y1) / 0.02 * (-s)
-        lift = max(0.0, pose["ground_y"] + dv - y) * smoothstep(pose["ground_from_s"] - 0.4, pose["ground_from_s"], sc)
-        x = pose["curl_x"] * smoothstep(pose["curl_from_s"], st[-1, 0], sc) ** 1.5
-        P.append((x, y + lift, z)); DU.append(du); DV.append(dv)
+        w = smoothstep(t0, t0 + 0.3, sc)  # the tail's section is symmetric about its spine
+        du, dv = du * (1 - w) + (du + dv) / 2 * w, dv * (1 - w) + (du + dv) / 2 * w
+        P.append([0.0, y, z]); DU.append(du); DV.append(dv)
     P = np.array(P)
+    i0 = int(np.searchsorted(s_all, t0))
+    for i in range(i0 + 1, len(s_all)):
+        P[i] = P[i - 1] + tail_heading(s_all[i - 1]) * (s_all[i] - s_all[i - 1])
+        rest = smoothstep(tl["rest_from_s"], tl["rest_to_s"], s_all[i])  # lying on the ground
+        P[i, 1] += (tl["ground_y"] + DV[i] - P[i, 1]) * rest
     T = np.gradient(P, axis=0); T /= np.linalg.norm(T, axis=1)[:, None]
     N = []
     n = np.array([0, 1.0, 0]); n = H.norm(n - T[0] * (n @ T[0]))
@@ -103,9 +131,25 @@ def zone_value(s, f, z=None, y=None):
     if z is None:
         return by_fraction
     w = 0.012
-    dark = 1 - smoothstep(-w, w, poly_sdist(z, y, _ZONES["dark"]))
+    lim = B["shell"]["dark_below_f"]  # the dark region is on the body's upper side only
+    dark = (1 - smoothstep(-w, w, poly_sdist(z, y, _ZONES["dark"]))) * (1 - smoothstep(lim - 0.04, lim + 0.04, f))
     cream = 1 - smoothstep(-w, w, poly_sdist(z, y, _ZONES["cream"]))
     by_lines = 0.5 * (1 - dark) + 0.5 * cream * (1 - dark)
+    t = smoothstep(Zd["lines_until_s"] - 0.15, Zd["lines_until_s"] + 0.15, s)
+    return by_lines * (1 - t) + by_fraction * t
+
+
+def dark_value(s, f, z, y):
+    """1 inside the dark shell, 0 outside: on the neck and torso the sheet's dark region (a side-view
+    line, so only on the body's upper side, f < dark_below_f, and not across its underside); on the
+    tail the dark top by fraction."""
+    Zd = TR["zones"]
+    if not _ZONES:
+        _ZONES["dark"] = px_to_model(Zd["dark_region_px"]); _ZONES["cream"] = px_to_model(Zd["cream_region_px"])
+    fd = table(Zd["rows"], s, 1)
+    by_fraction = 1 - smoothstep(fd - 0.015, fd + 0.015, f)
+    lim = B["shell"]["dark_below_f"]
+    by_lines = (1 - smoothstep(-0.012, 0.012, poly_sdist(z, y, _ZONES["dark"]))) * (1 - smoothstep(lim - 0.04, lim + 0.04, f))
     t = smoothstep(Zd["lines_until_s"] - 0.15, Zd["lines_until_s"] + 0.15, s)
     return by_lines * (1 - t) + by_fraction * t
 
@@ -119,9 +163,8 @@ def trunk_bones():
     for name, s0, s1 in TR["bones"]["chain_forward"]:
         bones.append((name, at(s0), at(s1), parent)); ranges.append((name, min(s0, s1), max(s0, s1)))
         parent = name
-    t0, n = TR["bones"]["tail_from"], TR["bones"]["tail_count"]
-    t1 = TR["stations"][-1][0]
-    edges = [t0 + (t1 - t0) * (k / n) ** 0.85 for k in range(n + 1)]  # shorter segments toward the tip
+    edges = tail_vertebrae()[::3]  # one bone for every three caudal vertebrae
+    n = len(edges) - 1
     parent = TR["bones"]["chain_forward"][0][0]
     for k in range(n):
         name = f"tail{k + 1}"
@@ -157,104 +200,7 @@ def section_vw(s, du, dv, th):
     return v, w
 
 
-_TF = {}
 _SKIN = {}
-
-
-def trunk_surface(s, th):
-    """A point on the trunk (with its muscle masses) at spine position s and angle th (0 dorsal,
-    +pi/2 Clay's left), and the outward direction there."""
-    if not _TF:
-        _TF["f"] = trunk_frames()
-    s_all, P, DU, DV, N, Bv = _TF["f"]
-    i = int(np.clip(np.searchsorted(s_all, s), 1, len(s_all) - 1))
-    t = (s - s_all[i - 1]) / (s_all[i] - s_all[i - 1])
-    lerp = lambda X: X[i - 1] * (1 - t) + X[i] * t
-    p, du, dv, n, b = lerp(P), lerp(DU), lerp(DV), H.norm(lerp(N)), H.norm(lerp(Bv))
-    v, w = section_vw(max(s, 0.0), du, dv, th)
-    q = p + n * v + b * w
-    out = H.norm(q - p)
-    return q, out
-
-
-def carapace_edge(s):
-    """Angle from the dorsal line at which the dark back ends at s (the rim of the carapace)."""
-    for th in np.linspace(0.05, math.pi - 0.05, 120):
-        q, _ = trunk_surface(s, th)
-        if zone_value(s, (1 - math.cos(th)) / 2, q[2], q[1]) > 0.25:
-            return th
-    return math.pi - 0.05
-
-
-def carapace_plate(s0, s1, th0, th1, nv, ranges, thick, lift, flare=0.0, seed=0, wrap=False):
-    """A shell plate over the trunk between s0..s1 and angles th0..th1 (functions of s), raised by lift,
-    bevelled, thicker toward its back edge and overlapping the next one back. With flare, its outer edge
-    rolls outward like a turtle shell's margin."""
-    C = B["carapace"]; bev, ov, gap = C["bevel"], C["overlap"], C["gap"]
-    s0g, s1g = s0 + gap / 2, s1 - gap / 2 + ov
-    nu = max(4, int((s1g - s0g) / 0.01))
-    rnd = lambda x: math.sqrt(max(0.0, 1 - (1 - min(1.0, max(0.0, x))) ** 2))
-    verts, A, Bq, W = [], [], [], []
-    tint = (math.sin(seed * 12.9898) * 43758.5453) % 1.0
-    for i in range(nu + 1):
-        u = i / nu; sc = s0g + (s1g - s0g) * u
-        a0, a1 = th0(sc), th1(sc)
-        if not wrap:
-            a0, a1 = a0 + gap * 2, a1 - gap * 2
-        row = [trunk_surface(sc, a0 + (a1 - a0) * j / nv) for j in range(nv + 1)]
-        if _SKIN:  # where muscles swell the skin (the shoulder, the haunch), the plates ride over them
-            Q = SK.lift_onto([q for q, _ in row], np.array([o for _, o in row]), _SKIN["trunk"], _SKIN["parts"])
-            row = [(Q[j], o) for j, (_, o) in enumerate(row)]
-        acc = np.concatenate([[0], np.cumsum([np.linalg.norm(row[k + 1][0] - row[k][0]) for k in range(nv)])])
-        Lv, Ls = acc[-1] + 1e-6, s1g - s0g
-        for j, (q, out) in enumerate(row):
-            dist = min(u * Ls, (1 - u) * Ls * 2.5, acc[j], Lv - acc[j])
-            e = rnd(dist / bev)
-            rim = flare * smoothstep(0.5, 1.0, j / nv) if not wrap else 0.0
-            h = lift + (thick * (0.7 + 0.3 * u) + rim) * e
-            verts.append(tuple(q + out * h)); A.append(dist); Bq.append(tint); W.append(trunk_weights(sc, ranges))
-    faces = []
-    for i in range(nu):
-        for j in range(nv):
-            q = i * (nv + 1) + j
-            faces.append([q, q + 1, q + nv + 2, q + nv + 1])
-    return verts, faces, A, Bq, W
-
-
-def carapace_parts(ranges):
-    """The dark back as a turtle-shell carapace over the trunk: transverse bands wrapping over the top
-    down to the rim, and a rim of square marginal scutes along the measured dark edge (mirrored)."""
-    C = B["carapace"]
-    edge = {}
-    def th_edge(s):
-        k = round(s / 0.02) * 0.02
-        if k not in edge:
-            edge[k] = carapace_edge(k)
-        return edge[k]
-    parts = []
-    band_to = lambda s: th_edge(s) - C["rim"]["height"] / max(0.05, trunk_radius(s))
-    s, k = C["from_s"], 0
-    while s < C["to_s"]:
-        s1 = min(C["to_s"], s + C["band_every"] * (1 if s < TR["bones"]["tail_from"] else C["tail_scale"]))
-        v, f, A, Bq, W = carapace_plate(s, s1, lambda x: -band_to(x), band_to, 16, ranges, C["thickness"], C["lift"], seed=k, wrap=True)
-        parts.append(H.add_part(f"Back{k}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": Bq, "_ZONE": [0] * len(v)}, W))
-        s, k = s1, k + 1
-    R = C["rim"]
-    for side in (1, -1):
-        s, j = C["from_s"] + R["offset"], 0
-        while s < C["to_s"]:
-            s1 = min(C["to_s"], s + R["every"] * (1 if s < TR["bones"]["tail_from"] else C["tail_scale"]))
-            lo = (lambda x: band_to(x)) if side > 0 else (lambda x: -th_edge(x))
-            hi = (lambda x: th_edge(x)) if side > 0 else (lambda x: -band_to(x))
-            v, f, A, Bq, W = carapace_plate(s, s1, lo, hi, 4, ranges, R["thickness"], C["lift"], flare=R["flare"] if side > 0 else 0.0, seed=100 + j)
-            parts.append(H.add_part(f"Rim{j}{side}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": Bq, "_ZONE": [0] * len(v)}, W))
-            s, j = s1, j + 1
-    return parts
-
-
-def trunk_radius(s):
-    st = np.array(TR["stations"])
-    return (table(st, s, 3) + table(st, s, 4)) / 2
 
 
 def skin_setup():
@@ -264,12 +210,19 @@ def skin_setup():
     _SKIN["trunk"], _SKIN["parts"] = trunk, SK.pieces(B["anatomy"])
 
 
-def skin_part(ranges):
-    """One skin over the trunk, bones and muscles (skin.py), skinned to the spine and limb bones."""
+def skin_parts(ranges):
+    """One skin over the trunk, bones and muscles (skin.py), skinned to the spine and limb bones, and
+    the dark shell raised from it with a continuous rim round its edge."""
     trunk, parts = _SKIN["trunk"], _SKIN["parts"]
     V, F = SK.mesh(trunk, parts, B["anatomy"]["resolution"])
-    W, Z, A, Bf = SK.vertex_data(V, trunk, parts, lambda s: trunk_weights(s, ranges), zone_value)
-    return H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": [20] * len(V), "_A": A, "_B": Bf, "_ZONE": Z}, W)
+    W, Z, A, Bf = SK.vertex_data(V, trunk, parts, lambda s: trunk_weights(s, ranges), zone_value, dark_value,
+                                 TR["zones"]["lines_until_s"] + 0.15)
+    Z = list(SK.smooth_on_mesh(V, F, Z))  # no pinholes in the shell, smooth edges to its colour regions
+    skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": [20] * len(V), "_A": A, "_B": Bf, "_ZONE": Z}, W)
+    S, SF, src, d = SK.shell(V, F, Z, B["shell"], SK.smooth_normals(V, F))
+    shell = H.add_part("Shell", S.tolist(), SF.tolist(), {"_PART": [13] * len(S), "_A": list(d), "_B": [0.5] * len(S), "_ZONE": [0] * len(S)},
+                       [W[i] for i in src])
+    return [skin, shell]
 
 
 # ---------------------------------------------------------------- limbs
@@ -360,8 +313,7 @@ def main():
     tb, ranges = trunk_bones()
     objs, head_bones = H.head_parts()
     skin_setup()
-    objs.append(skin_part(ranges))
-    objs += carapace_parts(ranges)
+    objs += skin_parts(ranges)
     neck_end = TR["bones"]["chain_forward"][-1][0]
     bones = tb + [(n, h, t, p or neck_end) for n, h, t, p in head_bones]
     for sgn in (1, -1):

@@ -284,5 +284,87 @@
    "pose": "neutral",
    "clay": true
   }
+ ],
+ "hips": [
+  {
+   "label": "hips, side",
+   "cam": [
+    6,
+    0.85,
+    -0.7
+   ],
+   "target": [
+    0,
+    0.75,
+    -0.7
+   ],
+   "fov": 22,
+   "pose": "neutral"
+  },
+  {
+   "label": "hips, three-quarter back",
+   "cam": [
+    3.0,
+    2.4,
+    -3.6
+   ],
+   "target": [
+    0,
+    0.8,
+    -0.75
+   ],
+   "fov": 24,
+   "pose": "neutral"
+  },
+  {
+   "label": "hips, from above",
+   "cam": [
+    0.8,
+    5,
+    -0.9
+   ],
+   "target": [
+    0,
+    0.8,
+    -0.75
+   ],
+   "fov": 24,
+   "pose": "neutral"
+  },
+  {
+   "label": "hips, from behind",
+   "cam": [
+    0.3,
+    1.6,
+    -5.5
+   ],
+   "target": [
+    0,
+    0.8,
+    -0.75
+   ],
+   "fov": 24,
+   "pose": "neutral"
+  },
+  {
+   "label": "hips, plain clay, three-quarter back",
+   "cam": [
+    3.0,
+    2.4,
+    -3.6
+   ],
+   "target": [
+    0,
+    0.8,
+    -0.75
+   ],
+   "fov": 24,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "how to draw (official)",
+   "ref": "{refs}/covers/t_Clay_htd_png.jpg"
+  }
  ]
 }
