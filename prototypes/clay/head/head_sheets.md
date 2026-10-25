@@ -116,6 +116,8 @@ Behind the skull, that same line carries on as the top of the horn:
 
 The side sheet draws the head turned a few degrees toward the viewer. The front of its snout, a darker band from the tip back to a crease at px 80-95, is the muzzle's front face and front corner. Measured as if it were a true side view, that read as extra length and a forward slant, and the slant was then mirrored onto both sides of the head. With the muzzle about 0.21 wide, a turn of about 25 degrees accounts for about 0.07 of the sheet's snout. So every head part is compressed toward the eye from z 1.72 by 0.78 (snout_turn; the tip moves from 2.02 to 1.95), which also stands the front up straighter. Measurements below are as taken from the sheet, before that correction.
 
+**Roof front:** the front band and the snout's front are one piece raised from the face itself (front_shell), like the body's shell. It covers the front of the snout down to the roof's level lower edge, and the band's strip of the top and sides back to its joint. It has a rounded edge along the joint and the bottom, round the corners too, so it has no seams or notches. *Earlier, wrong:* the front band, a skirt hung from it, and the side band's lower end were separate surfaces that never met at the corners.
+
 **Top line:** between the brow (z 1.706) and where the nose begins (z 1.953), the roof's top line is one smooth bend fitted to the traced points (each moved 0.022 at most). The trace stepped steep, flat, steep there.
 
 ## Box muzzle, nose and nostrils

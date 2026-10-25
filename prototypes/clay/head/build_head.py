@@ -540,7 +540,10 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
         Lv = acc[-1] + 1e-6
         for j, (z, th, w) in enumerate(row):
             x, y = pts[j]; nx, ny = face_normal(z, th)
-            dist = min(1.0 if open_front else u * Ls, (1 - u) * Ls, acc[j], Lv - acc[j])  # open_front: no edge at the front (it carries on)
+            # open_front: no edge at the front (it carries on down the front face); and near the front its lower ends
+            # keep their full thickness, so the front piece's rounded bottom edge wraps round the corner into them
+            low = Lv - acc[j] + (0.03 * (1 - smoothstep(0.0, 0.5, u)) if open_front else 0.0)
+            dist = min(1.0 if open_front else u * Ls, (1 - u) * Ls, acc[j], low)
             edge = chamfer(dist)
             rim = flare * smoothstep(0.55, 1.0, w) if not wrap else 0.0  # a rim scute's lower edge rolls outward, like a turtle shell's margin
             h = (T + rim) * edge
@@ -600,6 +603,63 @@ def front_skirt(front_row, under, T):
     return rows
 
 
+def front_shell(V, F):
+    """The roof's front, raised from the face itself, like the body's shell: the front of the snout down to
+    the roof's lower edge, and the front band's strip of the top and sides back to its joint, lifted by
+    the plate's thickness over the underlay, with a rounded edge along the joint and along the bottom
+    (the lower edge runs level at the front, so it meets the orange muzzle in one smooth line right round
+    the corners). Being one surface, it has no seams or corners to fold. Returns verts, faces, _A (distance
+    to its edge) and tint."""
+    L = PLATES["layout"]["rows"][0]
+    s1 = L["joint_every"] - PLATES["gap"] / 2
+    a = np.array(sv_point(s1, 0.0)); b = np.array(sv_point(s1, eave_depth(s1)))
+    tdir = norm(b - a); nfw = np.array([-tdir[1], tdir[0]])
+    if nfw[0] < 0:
+        nfw = -nfw  # pointing forward
+    V = np.asarray(V, float); F = np.asarray(F)
+    # only the face's triangles near the front, split three times (each into four) so the piece's edges are smooth
+    near = (V[:, 2] > a[0] - 0.05).astype(bool)
+    F = F[near[F].any(axis=1)]
+    for _ in range(3):
+        mid, newV, newF = {}, list(V), []
+        def m(i, j):
+            k = (min(i, j), max(i, j))
+            if k not in mid:
+                mid[k] = len(newV); newV.append((V[i] + V[j]) / 2)
+            return mid[k]
+        for i, j, k in F:
+            ij, jk, ki = m(i, j), m(j, k), m(k, i)
+            newF += [[i, ij, ki], [ij, j, jk], [ki, jk, k], [ij, jk, ki]]
+        V, F = np.array(newV), np.array(newF)
+    zy = V[:, [2, 1]]
+    dj = (zy - a) @ nfw  # in front of the band's back joint
+    eave = np.interp(-V[:, 2], -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])
+    de = V[:, 1] - eave - 0.004  # above the roof's lower edge, clear of where the face curls under the lip
+    d = np.minimum(dj, de)
+    inside = d > 0
+    keep = inside[F].any(axis=1)
+    used = np.unique(F[keep]); remap = -np.ones(len(V), int); remap[used] = np.arange(len(used))
+    N = np.zeros_like(V)  # smooth outward normals
+    fn = np.cross(V[F[:, 1]] - V[F[:, 0]], V[F[:, 2]] - V[F[:, 0]])
+    for k in range(3):
+        np.add.at(N, F[:, k], fn)
+    E = np.vstack([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]]); E = np.vstack([E, E[:, ::-1]])
+    for _ in range(3):
+        acc = np.zeros_like(N)
+        for k in range(3):
+            acc[:, k] = np.bincount(E[:, 0], weights=N[E[:, 1], k], minlength=len(V))
+        N = 0.5 * N + 0.5 * acc / np.maximum(np.linalg.norm(acc, axis=1), 1e-12)[:, None] * np.linalg.norm(N, axis=1)[:, None]
+    N /= np.maximum(np.linalg.norm(N, axis=1), 1e-12)[:, None]
+    if np.mean(N[used] @ np.array([0.0, 1.0, 0.0])) < 0:
+        N = -N
+    du = np.clip(d[used], 0.0, None)
+    # it rounds down onto the underlay (not the face), so the underlay's edge never shows through it
+    h = roof_t(UPPER[0, 0])[0] + 0.0005 + PLATES["thickness"] * np.sqrt(np.clip(du / PLATES["layout"].get("front_edge_round", 0.008), 0.0, 1.0))
+    S = V[used] + N[used] * h[:, None]
+    tint = (math.sin(10 * 12.9898) * 43758.5453) % 1.0
+    return S.tolist(), remap[F[keep]].tolist(), list(du), [tint] * len(used)
+
+
 def roof_plates():
     """The roof, in few pieces of one kind: bands of tiles from the roof's front edge back, each a mirrored
     pair meeting at the ridge and running down each side to the rim; the rim of square marginal scutes
@@ -614,9 +674,7 @@ def roof_plates():
             dlo = row["d"][0]
             dhi = (lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002)) if row["d"][1] is not None else (lambda s: eave_depth(s) - 0.002)
             if row.get("wrap") and sc == 0.0:
-                # the front band is one piece, not a mirrored pair: it wraps over the ridge down to the eave and carries
-                # on, with no edge, into the front ridge over the front face (front_ridge)
-                out.append(plate(sc, s1, 0.0, lambda s: eave_depth(s) - 0.002, 20, 10 + seed, wrap=True, open_front=True))
+                pass  # the front band and the snout's front are one piece raised from the face (front_shell)
             elif row.get("wrap"):
                 # where the rim below would be too thin to be a plate (at the front, the eave comes up close), the
                 # band runs on down to the eave instead
@@ -1054,6 +1112,9 @@ def head_parts():
     V = press_under_lids(carve_socket(np.array(v)))
     face = add_part("Face", V.tolist(), f, {"_PART": part, "_A": [u[0] for u in uv], "_B": hf, "_ZONE": under}, rigid(len(v)))
     objs.append(face)
+    tris = np.array([[p[0], p[k], p[k + 1]] for p in f for k in range(1, len(p) - 1)])  # quads and fans as triangles
+    sv, sf, sa, sb = front_shell(V, tris)
+    objs.append(add_part("RoofFront", sv, sf, {"_PART": [13] * len(sv), "_A": sa, "_B": sb, "_ZONE": [0] * len(sv)}, rigid(len(sv))))
     # expression shapes: one per facial muscle action, exported as morph targets (blend shapes)
     face.shape_key_add(name="Basis", from_mix=False)
     for name, act in D["expressions"]["muscle_actions"].items():
