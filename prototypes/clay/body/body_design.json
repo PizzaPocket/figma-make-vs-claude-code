@@ -1,22 +1,22 @@
 {
   "about": "Clay's body (neck, torso, tail, then limbs and wings), element by element (see body_sheets.md). Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side sheet; x = Clay's left. The bind pose is the side sheet's pose, so the side view can be checked against the sheet directly; the tail's lower run is lifted onto the ground and curls toward the viewer (+x).",
   "trunk": {
-    "note": "Neck, torso and tail are one continuous mass, built as one loft along a curved spine with cross-sections perpendicular to it. Measured on the side sheet (trunk_overlay): the spine was traced through the middle of the body, and at each station the depth to the dorsal outline (top of the neck and back along the body under the mane, at the bases of the spike blades, not their tips; outer edge of the tail curl) and to the ventral outline (throat, chest at about elbow height where the upper arm hides it, belly, inner edge of the tail curl) was measured along the perpendicular. The neck is short and thick, the torso a deep barrel (~0.9 from back to belly), the tail thick (~0.25-0.38) nearly to its tip.",
+    "note": "Neck, torso and tail are one continuous mass, built as one loft along a curved spine with cross-sections perpendicular to it. Measured on the side sheet (trunk_overlay): the spine was traced through the middle of the body, and at each station the depth to the dorsal outline (top of the neck and back along the body under the mane, at the bases of the spike blades, not their tips; outer edge of the tail curl) and to the ventral outline (the throat and chest along the underside's midline, drawn down the middle of the cream throat band, not the outline in front of it, which is the far front leg's shoulder; at about elbow height where the near upper arm hides the chest; belly, inner edge of the tail curl) was measured along the perpendicular. The neck is short and thick, the torso a deep barrel (~0.9 from back to belly), the tail thick (~0.25-0.38) nearly to its tip.",
     "stations_columns": ["s", "z", "y", "dorsal", "ventral"],
     "stations": [
       [0.0, 1.3848, 1.656, 0.2473, 0.2116],
       [0.1166, 1.2889, 1.5897, 0.3075, 0.2131],
       [0.2333, 1.196, 1.5195, 0.3778, 0.2322],
-      [0.3499, 1.1093, 1.4415, 0.4113, 0.2394],
-      [0.4666, 1.0228, 1.3632, 0.4411, 0.2869],
-      [0.5832, 0.9365, 1.2847, 0.4769, 0.3842],
-      [0.6999, 0.8388, 1.2218, 0.4766, 0.5892],
-      [0.8165, 0.7375, 1.1642, 0.4876, 0.5823],
-      [0.9331, 0.6268, 1.1273, 0.4869, 0.5552],
-      [1.0498, 0.5162, 1.0904, 0.4938, 0.5264],
-      [1.1664, 0.4041, 1.0598, 0.4992, 0.4924],
-      [1.2831, 0.2884, 1.0448, 0.481, 0.4846],
-      [1.3997, 0.1728, 1.0297, 0.462, 0.4753],
+      [0.3499, 1.1093, 1.4415, 0.4113, 0.1949],
+      [0.4666, 1.0228, 1.3632, 0.4411, 0.2034],
+      [0.5832, 0.9365, 1.2847, 0.4769, 0.2407],
+      [0.6999, 0.8388, 1.2218, 0.4766, 0.3516],
+      [0.8165, 0.7375, 1.1642, 0.4876, 0.5019],
+      [0.9331, 0.6268, 1.1273, 0.4869, 0.576],
+      [1.0498, 0.5162, 1.0904, 0.4938, 0.5532],
+      [1.1664, 0.4041, 1.0598, 0.4992, 0.503],
+      [1.2831, 0.2884, 1.0448, 0.481, 0.4908],
+      [1.3997, 0.1728, 1.0297, 0.462, 0.4779],
       [1.5164, 0.0564, 1.0227, 0.4543, 0.4691],
       [1.633, -0.0601, 1.018, 0.4415, 0.4644],
       [1.7496, -0.1767, 1.0158, 0.4305, 0.4578],
@@ -238,26 +238,28 @@
       "shoulder": [0.38, 0.977, 0.802],
       "elbow": [0.4, 0.656, 0.219],
       "wrist": [0.41, 0.117, 0.539],
-      "knuckles": [0.41, 0.05, 0.66]
+      "knuckles": [0.41, 0.05, 0.72]
     },
     "toes": {
-      "count": 3,
-      "spread_deg": [-22, 0, 22],
-      "base_offset_x": [-0.055, 0, 0.055],
-      "segments": [0.07, 0.05],
-      "radius": [0.035, 0.028],
-      "drop_deg": [25, 35],
+      "count": 4,
+      "spread_deg": [-30, -10, 10, 30],
+      "base_offset_x": [-0.09, -0.03, 0.03, 0.09],
+      "segments": [0.09, 0.07],
+      "radius": [0.045, 0.038],
+      "drop_deg": [15, 30],
       "claw": {
-        "length": 0.1,
-        "radius": 0.026,
-        "hook_deg": 80
-      }
+        "length": 0.13,
+        "radius": 0.03,
+        "hook_deg": 85
+      },
+      "note": "Measured on the side sheet's near hand: wrist to toe tips about 0.46 (px 515 to 369), 0.12 deep at the knuckles. How to Draw and the TDP cover: a broad hand, about as wide as the forearm and more, with four long toes spread forward and big hooked dark talons."
     },
     "dewclaw": {
-      "at": [0.45, 0.22, 0.46],
-      "direction": [0.15, 0.0, -1.0],
-      "length": 0.07,
-      "radius": 0.02
+      "at": [0.37, 0.2, 0.47],
+      "direction": [-0.3, -0.2, -1.0],
+      "length": 0.09,
+      "radius": 0.026,
+      "note": "on the inside of the back of the wrist, as on a cat's foreleg"
     }
   },
   "hind_leg": {
@@ -451,10 +453,10 @@
       },
       {
         "name": "hand (metacarpals)",
-        "why": "a compact, broad, flat hand on the ground (side sheet)",
+        "why": "a broad, thick hand (side sheet: 0.12 deep at the knuckles; How to Draw: as wide as the forearm and more)",
         "from": [0.41, 0.11, 0.53],
-        "to": [0.41, 0.05, 0.67],
-        "radii": [0.09, 0.045],
+        "to": [0.41, 0.06, 0.73],
+        "radii": [0.13, 0.06],
         "k": 0.04,
         "rig": {
           "hand": 1

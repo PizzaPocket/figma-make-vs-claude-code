@@ -12,8 +12,10 @@ from PIL import Image, ImageDraw
 spine = [(225,262),(280,300),(330,345),(385,395),(445,430),(550,465),(650,478),(750,482),(850,478),(950,472),(1050,490),(1150,545),(1225,620),(1252,700),(1250,780),(1215,850),(1150,893),(1050,906),(950,904),(850,903),(760,908),(690,930),(645,962),(625,995)]
 # along the body under the mane: the bases of the neck's spike blades (scalloped plates), not their tips
 dorsal = [(233,188),(300,195),(360,205),(404,225),(430,240),(466,258),(510,276),(560,292),(600,300),(650,318),(750,333),(850,355),(950,385),(1050,430),(1150,505),(1230,590),(1290,690),(1312,780),(1295,850),(1250,895),(1185,935),(1092,955),(969,955),(846,943),(754,949),(661,974),(625,998)]
-# under the upper arm the chest is hidden: its underside runs at about elbow height (a cat's breastbone), not along the arm's bottom
-ventral = [(206,333),(240,372),(268,400),(285,440),(292,490),(296,540),(300,575),(330,605),(400,622),(500,630),(550,635),(650,640),(760,640),(850,620),(950,600),(1050,615),(1135,668),(1180,730),(1191,789),(1172,851),(1120,862),(1000,860),(850,860),(760,868),(690,900),(645,945),(625,995)]
+# the underside's midline (meridian), drawn down the middle of the cream throat band from the throat to mid-chest;
+# the outline in front of it there is the far front leg's shoulder and upper arm, not the chest. Behind it, where
+# the near upper arm hides the chest, the underside runs at about elbow height (a cat's breastbone)
+ventral = [(206,333),(240,372),(282,388),(310,424),(334,470),(350,510),(362,550),(380,590),(428,636),(500,636),(550,638),(650,640),(760,640),(850,620),(950,600),(1050,615),(1135,668),(1180,730),(1191,789),(1172,851),(1120,862),(1000,860),(850,860),(760,868),(690,900),(645,945),(625,995)]
 def dense(P, n=600):
     P=np.array(P,float); s=np.concatenate([[0],np.cumsum(np.linalg.norm(np.diff(P,axis=0),axis=1))])
     t=np.linspace(0,s[-1],n); return np.stack([np.interp(t,s,P[:,0]),np.interp(t,s,P[:,1])],1), t

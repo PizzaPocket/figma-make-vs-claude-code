@@ -134,6 +134,9 @@ def zone_value(s, f, z=None, y=None):
     lim = B["shell"]["dark_below_f"]  # the dark region is on the body's upper side only
     dark = (1 - smoothstep(-w, w, poly_sdist(z, y, _ZONES["dark"]))) * (1 - smoothstep(lim - 0.04, lim + 0.04, f))
     cream = 1 - smoothstep(-w, w, poly_sdist(z, y, _ZONES["cream"]))
+    # the cream underside: the sheet's cream region, or the underside of the body by its place round it
+    # (zones.rows), so the throat band wraps under the neck wherever the side view can't show it
+    cream = max(cream, smoothstep(fc - 0.015, fc + 0.015, f))
     by_lines = 0.5 * (1 - dark) + 0.5 * cream * (1 - dark)
     t = smoothstep(Zd["lines_until_s"] - 0.15, Zd["lines_until_s"] + 0.15, s)
     return by_lines * (1 - t) + by_fraction * t
