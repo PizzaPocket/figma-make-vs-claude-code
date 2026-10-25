@@ -449,5 +449,85 @@
    "label": "TDP limited edition (official)",
    "ref": "{refs}/clayref/Clay_TDPLE.jpg"
   }
+ ],
+ "tail": [
+  {
+   "label": "tail, side",
+   "cam": [
+    5,
+    0.5,
+    -1.5
+   ],
+   "target": [
+    0,
+    0.35,
+    -1.5
+   ],
+   "fov": 20,
+   "pose": "neutral"
+  },
+  {
+   "label": "tail, plain clay, side",
+   "cam": [
+    5,
+    0.5,
+    -1.5
+   ],
+   "target": [
+    0,
+    0.35,
+    -1.5
+   ],
+   "fov": 20,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "tail, from above",
+   "cam": [
+    0.3,
+    5,
+    -1.6
+   ],
+   "target": [
+    0,
+    0.2,
+    -1.6
+   ],
+   "fov": 28,
+   "pose": "neutral"
+  },
+  {
+   "label": "tail, plain clay, three-quarter back",
+   "cam": [
+    3,
+    1.6,
+    -4
+   ],
+   "target": [
+    0,
+    0.3,
+    -1.6
+   ],
+   "fov": 28,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "tail spikes, close",
+   "cam": [
+    3.2,
+    0.75,
+    -1.75
+   ],
+   "target": [
+    0,
+    0.55,
+    -1.75
+   ],
+   "fov": 14,
+   "pose": "neutral",
+   "clay": true
+  }
  ]
 }

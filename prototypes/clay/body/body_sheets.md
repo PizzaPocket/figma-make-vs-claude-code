@@ -112,3 +112,9 @@ Patterns are laid out in model units along and around each part, so they stay th
 - The calf zone is 0.5.
 
 **Shell:** any skin area under the island size (200 verts) that the dark zone surrounds is filled in, so the shell has no pinholes.
+
+## Tail spikes
+
+**From the side sheet:** the tail's spikes are thorns lying flat along its top. Each one's base is on the surface, its outer edge is convex, and its point faces back. They are about 2.4 times as long as they are tall. They are not raised blades.
+
+**Build:** each is the same leaf as a mane blade, but one-sided: the leaf's lower half sinks into the shell, and its axis lies 6° off the surface (the `thorn` shape in the tail row).

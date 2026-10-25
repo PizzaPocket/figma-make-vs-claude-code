@@ -271,11 +271,17 @@ def spike_parts(ranges, band):
             e = H.norm(N[i] - (N[i] @ d) * d)  # across the blade, in its plane
             base = P[i] + N[i] * (DU[i] + B["shell"]["thickness"] * 0.5) - d * 0.02  # rooted in the shell
             W, th = row["width"] * min(1.0, hgt / 0.06) ** 0.3, row["thickness"]
+            thorn = row.get("shape") == "thorn"
+            if thorn:  # lying along the top: base on the surface, convex outer edge, point at the back
+                L, W = hgt * row["length_per_height"], hgt
+                base = P[i] + N[i] * (DU[i] + B["shell"]["thickness"] * 0.5) - d * L * 0.5
             verts, faces, around, nt = [], [], 8, 10
             for a in range(nt + 1):
                 tt = a / nt
                 w = W * ((tt / 0.3) ** 0.6 if tt < 0.3 else ((1 - tt) / 0.7) ** 1.1)  # a leaf, widest a third of the way out
                 c = base + d * (L + 0.02) * tt
+                if thorn:  # one-sided: the leaf's lower half sinks into the shell
+                    c = base + d * L * tt + e * (w / 2 - 0.008); w = w / 2 + 0.008
                 for j in range(around):
                     ang = 2 * math.pi * j / around
                     verts.append(tuple(c + e * w * math.cos(ang) + Bv[i] * (th * (1 - tt) + 0.002) * math.sin(ang)))
