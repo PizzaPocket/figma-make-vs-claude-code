@@ -575,33 +575,26 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
 
 
 def front_skirt(front_row, under, T):
-    """The roof's front band carried on down over the front of the snout, as more rows of the same plate: from
-    its open front edge (front_row) down to the orange front muzzle at the eave, lying on the convex front face
-    at the plate's thickness, and at the bottom rolling in to the face in a small rounded step. This is the
-    front ridge: one piece with the band, so there is no seam."""
-    R = D["upper_head"]["front"]["ridge"]
+    """The roof's front: the front band carried on down over the snout's front face as one smooth piece, lying
+    on the slightly convex front at the plate's thickness, down to a level bottom edge at the overhang's lowest
+    height (eave_y) right across to the front corners, where it rolls in to the orange muzzle in a rounded edge,
+    as the roof's edge does all round. Where the band's front edge is already down at that height (its lower
+    ends, at the corners) the rows stay on it."""
+    ye = D["upper_head"]["front"]["ridge"]["eave_y"]
+    step = D["upper_head"]["front"]["ridge"]["edge_step"]
     z0 = UPPER[0, 0]
-    ye, step = R["eave_y"], R["edge_step"]
-    K = 14
+    K = 10
     rows = []
     for k in range(1, K + 1):
         f = k / K
         row = []
-        for p in front_row:
-            x0, y0, zp = p
-            # the bottom line rises at the corners with the front muzzle's lifted lower edge, staying above it
-            yex = max(ye, interp(UPPER, z0, 2) + corner_lift(z0, x0, interp(UPPER, z0, 4)) + R["above_lip"])
-            y = y0 + (yex - y0) * f
+        for x0, y0, zp in front_row:
+            reach = smoothstep(0.0, 0.02, y0 - ye)  # eases out toward the corners, where the edge is already low
+            y = y0 + (ye - y0) * f if y0 > ye else y0
             xo = abs(face_pt(z0, side_th(z0, min(max(y, interp(UPPER, z0, 2) + 1e-4), face_pt(z0, math.pi / 2)[1] - 1e-4)))[0]) + under + T
-            x = max(-xo, min(xo, x0))
-            thick = step + (T - step) * (1 - smoothstep(0.6, 1.0, f))  # thins toward the bottom edge
-            zt = z0 + front_setback(x, y) + under + thick
-            # where the band's front edge is already down at the eave (its lower ends) there is nothing to cover:
-            # the rows collapse onto the edge instead of folding
-            reach = smoothstep(0.0, 0.025, y0 - yex)
-            if reach < 1e-3:
-                row.append((x0, y0, zp)); continue
-            row.append((x0 + (x - x0) * reach, y, zp + (zt - zp) * smoothstep(0.0, 0.35, f) * reach))
+            x = x0 + (math.copysign(min(abs(x0), xo), x0) - x0) * reach
+            zt = z0 + front_setback(x, y) + under + T
+            row.append((x, y, zp + (zt - zp) * smoothstep(0.0, 0.3, f)))  # all of it comes onto the front face, closing the corners
         rows.append(row)
     rows.append([(x, y - 0.002, z - step) for x, y, z in rows[-1]])  # the bottom edge rolls in to the face
     return rows

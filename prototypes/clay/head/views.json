@@ -561,5 +561,149 @@
    "label": "TDP limited edition (official)",
    "ref": "{refs}/clayref/t_Clay_TDPLE.jpg"
   }
+ ],
+ "snout": [
+  {
+   "label": "snout, side",
+   "cam": [
+    3,
+    1.45,
+    1.86
+   ],
+   "target": [
+    0,
+    1.45,
+    1.86
+   ],
+   "fov": 7,
+   "pose": "neutral"
+  },
+  {
+   "label": "snout, three-quarter front",
+   "cam": [
+    1.4,
+    1.75,
+    3.1
+   ],
+   "target": [
+    0,
+    1.42,
+    1.9
+   ],
+   "fov": 10,
+   "pose": "neutral"
+  },
+  {
+   "label": "snout, front",
+   "cam": [
+    0,
+    1.5,
+    4.2
+   ],
+   "target": [
+    0,
+    1.42,
+    1.9
+   ],
+   "fov": 8,
+   "pose": "neutral"
+  },
+  {
+   "label": "snout, plain clay, side",
+   "cam": [
+    3,
+    1.45,
+    1.86
+   ],
+   "target": [
+    0,
+    1.45,
+    1.86
+   ],
+   "fov": 7,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "snout, plain clay, three-quarter",
+   "cam": [
+    1.4,
+    1.75,
+    3.1
+   ],
+   "target": [
+    0,
+    1.42,
+    1.9
+   ],
+   "fov": 10,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "snout, from above",
+   "cam": [
+    0.5,
+    3.2,
+    2.2
+   ],
+   "target": [
+    0,
+    1.42,
+    1.9
+   ],
+   "fov": 10,
+   "pose": "neutral"
+  }
+ ],
+ "snout_corner": [
+  {
+   "label": "corner, three-quarter",
+   "cam": [
+    0.9,
+    1.6,
+    2.9
+   ],
+   "target": [
+    0.115,
+    1.375,
+    2.0
+   ],
+   "fov": 3,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "corner, side",
+   "cam": [
+    3,
+    1.38,
+    2.0
+   ],
+   "target": [
+    0.115,
+    1.375,
+    2.0
+   ],
+   "fov": 2.5,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "corner, below-front",
+   "cam": [
+    0.5,
+    1.0,
+    3.0
+   ],
+   "target": [
+    0.115,
+    1.375,
+    2.0
+   ],
+   "fov": 3,
+   "pose": "neutral",
+   "clay": true
+  }
  ]
 }

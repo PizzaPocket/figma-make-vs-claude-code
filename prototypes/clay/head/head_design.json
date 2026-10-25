@@ -1,7 +1,13 @@
 {
   "about": "Clay's head as fitted architectural pieces (see head_sheets.md): an orange face mass, a dark roof shell fitted over it whose back corners continue as the horns, a nose crest on the front of the roof, a hinged jaw, eyes with lids hinged on the canthal axis, and ear frills tucked under the horns. Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side reference; x = Clay's left.",
   "upper_head": {
-    "columns": ["z", "top", "lower_edge", "half_width_top", "half_width_low"],
+    "columns": [
+      "z",
+      "top",
+      "lower_edge",
+      "half_width_top",
+      "half_width_low"
+    ],
     "top_note": "Between the brow (z 1.706) and where the nose begins (z 1.953) the top line is one smooth bend fitted to the traced points (each moved 0.022 at most): the trace stepped steep, flat, steep there, partly from the side sheet's head being turned a little toward the viewer.",
     "note": "The orange face mass under the roof. Upper lip line, traced on the side sheet (orange face over cream jaw) and the same in How to Draw and the flight render: from the bottom of the nose it slopes down and back, an overhanging lip that is lowest about a third of the way back (z 1.85); from there it rises in a long, slightly concave line to below the eye, then turns sharply up at the mouth corner (z 1.59) and runs back, gently rising, to the ear opening (z 1.41, y 1.656), where it curls up into the cheek's back edge (anatomy: back edge of the cheek). Traced on the centre of the drawn line. The muzzle hardly narrows toward the front and has near-vertical sides, but it has no flat front wall: its top comes down to meet the front of the upper jaw (the lip), so the roof runs all the way down to the front of the upper jaw, and the nose comes out of the roof's front.",
     "rows": [
@@ -35,26 +41,27 @@
     ],
     "ridge_note": "The roof is a gable: two mirrored slopes falling from a crisp ridge down its whole length; the ridge is on the measured top profile and the shoulders drop below it (rows: z, drop at the shoulders). The plates are mirrored pairs meeting at the ridge.",
     "front": {
-      "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face is convex (the side sheet's notch at z 1.98 is the nose's underside, not a hollow in the face), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose. From above the front face is rounded across (convex: its middle 0.025 forward of its sides; the roof's front band follows the same curve, so the front ridge runs on from it flush) and bulges forward in side profile (0.01, side sheet front outline), and the front ridge's front edge follows that curve. Its bottom edge, the front lip edge, arcs down in the middle (0.03 lower than at the corners).",
+      "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face is convex (the side sheet's notch at z 1.98 is the nose's underside, not a hollow in the face), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose. From above the front face is rounded across (convex: its middle 0.025 forward of its sides; the roof's front band follows the same curve, so the front ridge runs on from it flush) and bulges forward in side profile (0.01, side sheet front outline), and the front ridge's front edge follows that curve. Its bottom edge, the front lip edge, arcs down in the middle (0.03 lower than at the corners). Simplified: slightly convex, rounding forward (convex_side 0.016); its bottom corners lift only a little (0.012), so they meet the roof's level lower edge.",
       "concave": 0.0,
-      "corner_lift": 0.03,
+      "corner_lift": 0.012,
       "block_back_z": 1.93,
       "ridge": {
-        "note": "The front ridge (circled by the user on the flight render): a subtle extension of the roof's front. The roof's front band is one simple piece, not a mirrored pair: it wraps over the ridge down to the eave and carries on, with no edge, down over the front of the snout under the nose. Its only edge there is its bottom, where it meets the orange front muzzle (eave_y), which follows the front's convex curve, rolling over in a quarter round. Side sheet: the brown-to-orange line at the front sits at about 1.356-1.363 (z 1.99-1.95); the ridge's bottom edge and the plates beside it meet at 1.37, so they form one line and a band of orange front muzzle shows below, as in the flight render.",
+        "note": "The roof's front: the front band carries on down over the snout's front face as one smooth piece on the slightly convex front, to a level bottom edge at the overhang's lowest height (eave_y), right across to the front corners, rolling in to the orange muzzle in the same rounded edge the roof has all round (the user's reading). Simplified from an earlier version whose bottom edge rose at the corners and whose rows collapsed and folded (it looked crumpled).",
         "eave_y": 1.37,
-        "edge_round": 0.003,
-        "edge_step": 0.003,
-        "taper": 0.03,
-        "tuck_back": 0.006,
-        "above_lip": 0.02
+        "edge_step": 0.003
       },
       "convex": 0.025,
       "lip_arc_power": 2,
-      "convex_side": 0.01
+      "convex_side": 0.016
     }
   },
   "lower_jaw": {
-    "columns": ["z", "top", "bottom", "half_width"],
+    "columns": [
+      "z",
+      "top",
+      "bottom",
+      "half_width"
+    ],
     "note": "A separate piece from the neck, on its own hinge; traced on the side sheet. Set back under the overhanging upper lip (strong overbite): its chin is a short point at z 1.86, right under the lowest point of the lip. Its underside drops back to its lowest at z 1.77, then rises to the throat notch (z 1.60), where the neck begins. From there its back edge is the heavy line that runs back and up along the neck (z 1.55, y 1.41; z 1.44, y 1.46) and turns up into the ear opening (z 1.39). Its top edge runs just inside the upper lip line at the front and just above it (hidden inside the cheek) behind the mouth corner. At the back it is as wide as the cheek (the jowl), so it stands proud of the neck and its back edge reads as a step, not a seam. Skin: cream with faint pebble scales, like the face's but larger and softer; the neck's transverse bands start below its back edge. Its front is as wide as the upper jaw's mouth at the bite point, so the two fronts meet across the bite when the mouth is closed.",
     "rows": [
       [1.862, 1.278, 1.262, 0.125],
@@ -531,7 +538,10 @@
         },
         {
           "name": "edge row",
-          "d": [0.075, null],
+          "d": [
+            0.075,
+            null
+          ],
           "joint_every": 0.068,
           "thickness": 0.012,
           "rim_flare": 0.006,
