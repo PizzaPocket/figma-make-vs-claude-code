@@ -684,12 +684,12 @@
       },
       {
         "name": "adductors",
-        "why": "the inside of the thigh: from the underside of the pelvis (pubis and ischium, under the belly's midline) to the inner knee, a broad fan that ties the thigh to the belly, so there is no pit in the groin (it was 0.06 deep)",
+        "why": "the inside of the thigh: from the underside of the pelvis to the inner knee. Modest: from below (the Hybrid Prince cover's Umber) the thigh is a distinct oval set on the side and meets a slim belly in a clean crease, not a web; a bigger, wider-blended fill made the groin bulky.",
         "from": [0.06, 0.68, -0.62],
         "to": [0.4, 0.46, -0.5],
-        "radii": [0.13, 0.11],
+        "radii": [0.09, 0.07],
         "hint": [0, 1, 0],
-        "k": 0.18,
+        "k": 0.09,
         "rig": {
           "hips": 0.5,
           "thigh": 0.5
@@ -701,9 +701,9 @@
         "why": "the fold of skin and muscle from the belly to the front of the knee (a cat's flank fold): fills the hollow in front of the thigh (0.04 deep)",
         "from": [0.16, 0.8, -0.3],
         "to": [0.42, 0.5, -0.45],
-        "radii": [0.07, 0.09],
+        "radii": [0.05, 0.06],
         "hint": [1, 0, 0],
-        "k": 0.18,
+        "k": 0.08,
         "rig": {
           "hips": 0.5,
           "thigh": 0.5
@@ -715,8 +715,8 @@
         "why": "the inner hamstring, from the ischium under the tail's root to the back of the knee: fills the hollow behind the thigh beside the tail (0.03 deep)",
         "from": [0.12, 0.8, -0.98],
         "to": [0.43, 0.46, -0.6],
-        "radii": [0.09, 0.1],
-        "k": 0.18,
+        "radii": [0.08, 0.08],
+        "k": 0.1,
         "rig": {
           "thigh": 0.6,
           "hips": 0.4
