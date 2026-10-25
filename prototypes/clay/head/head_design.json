@@ -32,7 +32,7 @@
       [1.6, 0.045],
       [1.42, 0.03]
     ],
-    "ridge_note": "The roof is a gable: two mirrored slopes meeting at a crisp ridge down its whole length, the plates in mirrored pairs meeting at the ridge. Rows: z, ridge height over the shoulders."
+    "ridge_note": "The roof is a gable: two mirrored slopes falling from a crisp ridge down its whole length; the ridge is on the measured top profile and the shoulders drop below it (rows: z, drop at the shoulders). The plates are mirrored pairs meeting at the ridge."
   },
   "lower_jaw": {
     "columns": ["z", "top", "bottom", "half_width"],
@@ -540,13 +540,13 @@
   },
   "nose": {
     "note": "The nose is one extruded mass, its section like the border of the Superman shield: a flat top with square corners, short sides falling straight down, then two lower edges converging to a point. It comes out of the front of the roof, which slopes down to the front of the upper jaw, its axis level so its front face aims straight forward; organically softened: rounded corners, softly convex faces and a rounded rim round the front face; its back is buried in the snout. Side sheet: its top front corner is the nose tip, about (2.02-2.03, 1.443). The nostrils are slits in its two lower faces (the undersides), near the front.",
-    "front_top_zy": [2.036, 1.47],
-    "width": 0.16,
-    "height": 0.095,
-    "side_drop": 0.025,
-    "corner_radius": 0.016,
-    "pitch_deg": 0,
-    "length": 0.12,
+    "front_top_zy": [2.006, 1.468],
+    "width": 0.135,
+    "height": 0.052,
+    "side_drop": 0.016,
+    "corner_radius": 0.012,
+    "pitch_deg": -43,
+    "length": 0.07,
     "nostril": {
       "note": "t: distance along the nose's axis from the front face (negative = back); across: position across each lower face (0 = keel, 1 = outer edge); half_width in those units",
       "t_front": -0.004,
@@ -555,8 +555,11 @@
       "half_width": [0.16, 0.05],
       "depth": 0.009
     },
-    "pitch_note": "its axis runs level, so the front face aims straight forward",
+    "pitch_note": "its axis follows the roof's top at the front, falling 43 degrees toward the tip (side sheet: from (1.95, 1.517) to the tip (2.012, 1.459)), so its top surface is the roof's top surface carried on: it emerges from it smoothly (its back dips under the roof) and juts out at the tip.",
     "bulge": 0.06,
-    "front_round": 0.012
+    "front_round": 0.01,
+    "emerge": 0.01,
+    "sink": 0.04,
+    "size_note": "side sheet front outline: the tip juts furthest at y 1.44 (z 2.019); just under it a notch at y 1.414 (z 1.98) where the nose's underside meets the front of the upper jaw, which carries on down to the lip at z 2.0-2.01"
   }
 }

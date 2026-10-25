@@ -121,11 +121,11 @@ It is a long, nearly straight sweep back and up that barely tapers, then narrows
 
 ## Box muzzle, nose and nostrils
 
-**Roof: a gable.** Two mirrored slopes meet at a crisp ridge down the roof's whole length (upper_head.ridge: 0.045 over the shoulders along the snout, 0.03 at the back). Every band of plates is a mirrored pair meeting at the ridge in a seam, so the lines have reflective symmetry. The roof meets the snout's flat front face along a flat front edge (the plate layout starts exactly at the front plane, not past it).
+**Roof: a gable**, its ridge exactly on the side sheet's traced top outline (within ~0.01 from the nose tip to the skull); the shoulders drop below it. Two mirrored slopes meet at a crisp ridge down the roof's whole length (upper_head.ridge: 0.045 over the shoulders along the snout, 0.03 at the back). Every band of plates is a mirrored pair meeting at the ridge in a seam, so the lines have reflective symmetry. The roof meets the snout's flat front face along a flat front edge (the plate layout starts exactly at the front plane, not past it).
 
 **Nose (as the user reads the references): one extruded mass,** its section like the border of the Superman shield:
 - a flat top with square corners, short sides falling straight down, then two lower edges converging to a point;
-- it comes out of the roof's front, just above the lip, its axis level so its front face aims straight forward and the whole shield shows from the front;
+- its axis follows the roof's top at the front (falling 43 degrees toward the tip, traced on the side sheet), so its top surface is the roof's top surface carried on: it emerges from it smoothly (its back dips under the roof) and its front face aims forward at the tip (2.02, 1.445);
 - organically softened: rounded corners (radius 0.016), softly convex faces, and a rounded rim (radius 0.012) round the front face;
 - its back is buried in the snout;
 - below it, the main roof's front plate carries on down to the lip.

@@ -137,7 +137,8 @@ def face_pt(z, th):
     yy = b * abs(s) ** (2 / SQ)
     a = wb + (wt - wb) * (yy / b) ** 1.6
     x = a * math.copysign(abs(c) ** (2 / SQ), c)
-    y = low + yy + snout_ridge(z) * max(0.0, 1 - abs(x) / (wt * 0.98)) * (yy / b) ** 4  # gable: straight slopes to a crisp ridge
+    # gable: straight slopes down from a crisp ridge; the ridge stays on the measured profile, the shoulders drop
+    y = low + yy - snout_ridge(z) * min(1.0, abs(x) / (wt * 0.98)) * (yy / b) ** 4
     side = min(1.0, max(0.0, (abs(x) / wb - 0.35) / 0.4))  # brushes act on the sides, fading out on the top
     return x + math.copysign(brush_offset(z, y) * side, x), y
 
@@ -221,14 +222,16 @@ def shield(W, H, drop, r, n=16, bulge=0.0):
         p, q = np.array(P[i - 1]), np.array(P[(i + 1) % len(P)])
         c = np.array(c); a1, a2 = norm(p - c), norm(q - c)
         half = math.acos(max(-1.0, min(1.0, a1 @ a2))) / 2
-        dcut = r / math.tan(half)
+        # never round further than 45% along either edge (a short side would otherwise fold into a spike)
+        dcut = min(r / math.tan(half), 0.45 * min(np.linalg.norm(p - c), np.linalg.norm(q - c)))
+        r_c = dcut * math.tan(half)
         s0, s1 = c + a1 * dcut, c + a2 * dcut
-        ctr = c + norm(a1 + a2) * r / math.sin(half)
+        ctr = c + norm(a1 + a2) * r_c / math.sin(half)
         u0, u1 = math.atan2(*(s0 - ctr)[::-1]), math.atan2(*(s1 - ctr)[::-1])
         du = (u1 - u0 + math.pi) % (2 * math.pi) - math.pi
         for k in range(n + 1):
             u = u0 + du * k / n
-            out.append(tuple(ctr + r * np.array([math.cos(u), math.sin(u)])))
+            out.append(tuple(ctr + r_c * np.array([math.cos(u), math.sin(u)])))
             tag.append({0: 2, 1: 2, 2: 1, 3: 0, 4: 1}[i] if k < n // 2 else {0: 2, 1: 1, 2: 0, 3: 1, 4: 2}[i])
         # the straight edge to the next corner, divided so the faces can be sculpted (the nostrils)
         out.append(None); tag.append({0: 2, 1: 1, 2: 0, 3: 1, 4: 2}[i])
@@ -264,7 +267,8 @@ def nose_part():
         ring, a_r, n_r = [], [], []
         for (x, v), tg in zip(sec, tag):
             t = -db
-            pt = front + ax * (t_end(v) + t) + up * v + np.array([x, 0, 0])
+            sink = NS.get("sink", 0.0) * smoothstep(NS.get("emerge", 0.0), NS["length"], db)  # the back dips under the roof's surface
+            pt = front + ax * (t_end(v) + t) + up * (v - sink) + np.array([x, 0, 0])
             nw = 0.0
             if tg == 2:  # a nostril on each lower face: a slit along the axis, wide at the front end
                 s = (t - N["t_front"]) / (N["t_back"] - N["t_front"])
@@ -273,8 +277,9 @@ def nose_part():
                     w = N["half_width"][0] + (N["half_width"][1] - N["half_width"][0]) * min(1.0, max(0.0, s))
                     ends = smoothstep(-0.15, 0.05, s) * (1 - smoothstep(0.9, 1.1, s))
                     g = smoothstep(0.0, 1.0, max(0.0, 1 - abs(across) / w)) * ends
-                    if g > 0:  # cut in toward the nose's axis
-                        pt = pt + norm(front + ax * t - pt) * N["depth"] * g
+                    if g > 0:  # cut in toward the middle of the nose's section
+                        core = front + ax * (t_end(v) + t) - up * (NS["height"] * 0.45 + sink)
+                        pt = pt + norm(core - pt) * N["depth"] * g
                         nw = smoothstep(0.35, 0.8, g)
             ring.append(tuple(pt)); a_r.append(0.02); n_r.append(nw)
         rings.append(ring); A.append(a_r); NW.append(n_r)
@@ -322,7 +327,11 @@ def shell_loft(rings, attrs_per_ring):
         for i in range(M):
             j = (i + 1) % M
             faces.append([r0[i], r0[j], r1[j], r1[i]])
-    for k in (len(idx) - 1,):  # capped at the back only: the front end is open, no face across the snout's front
+    K = len(rings[0][0])  # the front end: no face across it, just the thin rim joining the outer and inner layers
+    r = idx[0]
+    for i in range(K - 1):
+        faces.append([r[i + 1], r[i], r[2 * K - 1 - i], r[2 * K - 2 - i]])
+    for k in (len(idx) - 1,):  # capped at the back
         r = idx[k]
         n = len(r)
         c = len(verts)
@@ -381,7 +390,7 @@ _PROFILE = {}
 def profile():
     if not _PROFILE:
         zs = np.linspace(UPPER[0, 0], ROOF["back_z"] - 0.02, 400)  # from the flat front edge, where the roof meets the front face
-        ys = np.array([interp(UPPER, z, 1) + snout_ridge(z) + roof_t(z)[0] for z in zs])
+        ys = np.array([interp(UPPER, z, 1) + roof_t(z)[0] for z in zs])
         P = np.stack([zs, ys], 1)
         s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(P, axis=0), axis=1))])
         T = np.gradient(P, axis=0); T /= np.linalg.norm(T, axis=1)[:, None]
@@ -423,7 +432,7 @@ def eave_depth(s):
     end smoothly instead of in 0.002 steps, which ridge a finely divided plate)."""
     def below(d):
         z, y = sv_point(s, d)
-        return y <= float(np.interp(-z, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) or y <= interp(UPPER, z, 2)
+        return y <= float(np.interp(-z, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) or y <= interp(UPPER, z, 2) + 0.012  # short of the lip's edge
     d = 0.0
     while d < 0.4 and not below(d):
         d += 0.002
@@ -521,9 +530,16 @@ def roof_plates():
             dlo = row["d"][0]
             dhi = (lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002)) if row["d"][1] is not None else (lambda s: eave_depth(s) - 0.002)
             if row.get("wrap"):
+                # where the rim below would be too thin to be a plate (at the front, the eave comes up close), the
+                # band runs on down to the eave instead
+                cap = row["d"][1]
+                if min(eave_depth(sc), eave_depth(s1)) - 0.002 - cap < L.get("min_rim", 0.025):
+                    dh2 = lambda s: eave_depth(s) - 0.002
+                else:
+                    dh2 = dhi
                 for side in (1, -1):
-                    out.append(plate(sc, s1, 0.0, dhi, 10, 10 + seed, wrap=side))
-            elif dhi(sc) - dlo > 0.006 and dhi(s1) - dlo > 0.006:
+                    out.append(plate(sc, s1, 0.0, dh2, 10, 10 + seed, wrap=side))
+            elif min(eave_depth(sc), eave_depth(s1)) - 0.002 - dlo >= L.get("min_rim", 0.025):
                 out.append(plate(sc, s1, dlo, dhi, 6, 10 + seed, thick=row.get("thickness"), flare=row.get("rim_flare", 0.0)))
             sc = s1; seed += 1
     return out
