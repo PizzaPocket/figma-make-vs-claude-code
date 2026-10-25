@@ -316,12 +316,13 @@ def shell_loft(rings, attrs_per_ring):
         for i in range(M):
             j = (i + 1) % M
             faces.append([r0[i], r0[j], r1[j], r1[i]])
-    for k in (0, len(idx) - 1):
+    for k in (len(idx) - 1,):  # capped at the back only: the front end is open, no face across the snout's front
         r = idx[k]
+        n = len(r)
         c = len(verts)
         verts.append(tuple(np.mean([verts[i] for i in r], 0))); A.append(A[r[0]]); B.append(0.0); Z.append(0.5)
-        for i in range(M):
-            j = (i + 1) % M
+        for i in range(n):
+            j = (i + 1) % n
             faces.append([r[j], r[i], c] if k == 0 else [r[i], r[j], c])
     return verts, faces, A, B, Z
 
@@ -500,39 +501,13 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
     return verts, faces, A, B, NW
 
 
-def front_plate():
-    """The tile over the flat front face of the snout: from the roof's front edge down to the lip, the same
-    kind of tile as the rest of the roof (even thickness, short wall, narrow chamfer). The nose comes out
-    of it. _A: distance to its nearest edge."""
-    T, gap = PLATES["thickness"], PLATES["gap"]
-    z0 = UPPER[0, 0]
-    under = roof_t(z0)[0]
-    ye = float(np.interp(-z0, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) + gap
-    apex = face_pt(z0, math.pi / 2)[1]
-    ys = [ye + (apex - ye) * w for w in edge_samples(30, 0.01)]
-    verts, A = [], []
-    for y in ys:
-        xw = abs(face_pt(z0, side_th(z0, y))[0]) - gap / 2  # the outline of the front: up the sides, then the gable
-        for w in edge_samples(40, 0.01):
-            x = (-1 + 2 * w) * xw
-            dist = min(y - ye, xw - abs(x), apex - y)
-            verts.append((x, y, z0 + under + T * chamfer(dist))); A.append(dist)
-    n = len(edge_samples(40, 0.01))
-    faces = []
-    for j in range(len(ys) - 1):
-        for i in range(n - 1):
-            q = j * n + i
-            faces.append([q, q + 1, q + n + 1, q + n])
-    return verts, faces, A, [0.3] * len(verts), [0.0] * len(verts)
-
-
 def roof_plates():
     """The roof, in few pieces of one kind: bands of tiles from the roof's front edge back, each a mirrored
     pair meeting at the ridge and running down each side to the rim; the rim of square marginal scutes
-    down to the eave; and one tile over the flat front face, which the nose comes out of."""
+    down to the eave. There is no plate on the front face."""
     L = PLATES["layout"]
     pr = profile(); smax = pr["s"][-1]
-    out, seed = [front_plate()], 0
+    out, seed = [], 0  # no plate on the front face: the references draw none there
     for row in L["rows"]:
         sc = 0.0  # the bands start at the roof's front edge
         while sc < smax - 0.01:
