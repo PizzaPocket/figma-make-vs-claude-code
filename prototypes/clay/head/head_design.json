@@ -2,12 +2,12 @@
   "about": "Clay's head as fitted architectural pieces (see head_sheets.md): an orange face mass, a dark roof shell fitted over it whose back corners continue as the horns, a nose crest on the front of the roof, a hinged jaw, eyes with lids hinged on the canthal axis, and ear frills tucked under the horns. Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side reference; x = Clay's left.",
   "upper_head": {
     "columns": ["z", "top", "lower_edge", "half_width_top", "half_width_low"],
-    "note": "The orange face mass under the roof. Upper lip line, traced on the side sheet (orange face over cream jaw) and the same in How to Draw and the flight render: from the bottom of the nose it slopes down and back, an overhanging lip that is lowest about a third of the way back (z 1.85); from there it rises in a long, slightly concave line to below the eye, then turns sharply up at the mouth corner (z 1.59) and runs back, gently rising, to the ear opening (z 1.41, y 1.656), where it curls up into the cheek's back edge (anatomy: back edge of the cheek). Traced on the centre of the drawn line. The muzzle is a box: it hardly narrows toward the front, with a flat top, near-vertical sides and a flat, near-vertical front face whose corners are only slightly rounded.",
+    "note": "The orange face mass under the roof. Upper lip line, traced on the side sheet (orange face over cream jaw) and the same in How to Draw and the flight render: from the bottom of the nose it slopes down and back, an overhanging lip that is lowest about a third of the way back (z 1.85); from there it rises in a long, slightly concave line to below the eye, then turns sharply up at the mouth corner (z 1.59) and runs back, gently rising, to the ear opening (z 1.41, y 1.656), where it curls up into the cheek's back edge (anatomy: back edge of the cheek). Traced on the centre of the drawn line. The muzzle hardly narrows toward the front and has near-vertical sides, but it has no flat front wall: its top comes down to meet the front of the upper jaw (the lip), so the roof runs all the way down to the front of the upper jaw, and the nose comes out of the roof's front.",
     "rows": [
-      [2.017, 1.443, 1.358, 0.104, 0.112],
-      [2.006, 1.465, 1.356, 0.106, 0.115],
-      [1.988, 1.487, 1.348, 0.108, 0.118],
-      [1.953, 1.516, 1.332, 0.111, 0.121],
+      [2.017, 1.37, 1.358, 0.104, 0.112],
+      [2.006, 1.395, 1.356, 0.106, 0.115],
+      [1.988, 1.435, 1.348, 0.108, 0.118],
+      [1.953, 1.505, 1.332, 0.111, 0.121],
       [1.918, 1.574, 1.312, 0.115, 0.126],
       [1.88, 1.65, 1.281, 0.12, 0.135],
       [1.848, 1.714, 1.292, 0.13, 0.15],
@@ -539,14 +539,14 @@
     "chamfer": 0.003
   },
   "nose": {
-    "note": "The nose is one extruded mass, its section like the border of the Superman shield: a flat top with square corners, short sides falling straight down, then two lower edges converging to a point. It comes out of the snout's flat front face, below the gabled roof's flat front edge and above the front lip, pitched upward, ending in a flat upright front face; its back is buried in the snout. The nostrils are slits in its two lower faces (the undersides), near the front.",
-    "front_top_zy": [2.06, 1.47],
-    "width": 0.17,
-    "height": 0.08,
+    "note": "The nose is one extruded mass, its section like the border of the Superman shield: a flat top with square corners, short sides falling straight down, then two lower edges converging to a point. It comes out of the front of the roof, which slopes down to the front of the upper jaw, pitched upward, ending in a flat upright front face; its back is buried in the snout. Side sheet: its top front corner is the nose tip, about (2.02-2.03, 1.443). The nostrils are slits in its two lower faces (the undersides), near the front.",
+    "front_top_zy": [2.04, 1.452],
+    "width": 0.16,
+    "height": 0.075,
     "side_drop": 0.02,
     "corner_radius": 0.006,
     "pitch_deg": 12,
-    "length": 0.1,
+    "length": 0.12,
     "nostril": {
       "note": "t: distance along the nose's axis from the front face (negative = back); across: position across each lower face (0 = keel, 1 = outer edge); half_width in those units",
       "t_front": -0.004,
