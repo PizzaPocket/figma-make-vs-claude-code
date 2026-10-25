@@ -269,41 +269,6 @@ def shield(W, H, drop, r, n=16, bulge=0.0):
     return [p for p, _ in pts], [g for _, g in pts]
 
 
-def front_ridge():
-    """The front ridge: the roof's front band carried on down over the front of the snout, under the nose, as one
-    simple piece (no mirrored plates, no edge where it turns over the front: it joins the front band without a
-    seam). It covers the front face above the eave; its only edge is its bottom, where it meets the orange front
-    muzzle, and since it lies on the convex front face that edge follows the face's convex curve. That edge rolls
-    over in a quarter round."""
-    R = D["upper_head"]["front"]["ridge"]
-    z0 = UPPER[0, 0]
-    ye = R["eave_y"]
-    yt = face_pt(z0, math.pi / 2)[1]
-    T = PLATES["thickness"] + roof_t(z0)[0]
-    rr = R["edge_round"]
-    nu, nv = 48, 18
-    rows = []
-    off = T  # the band stands this far out from the face, so the ridge reaches out as far to meet its edge with no gap
-    for j in range(nv + 1):
-        y = ye + (yt - ye) * (j / nv) ** 0.8
-        xo = abs(face_pt(z0, side_th(z0, min(y, yt - 1e-4)))[0]) + off * min(1.0, (y - ye) / 0.01)
-        row = []
-        for i in range(nu + 1):
-            x = (-1 + 2 * i / nu) * xo
-            # thinning toward the bottom edge, which meets the orange nearly flush, with a small rounded step
-            h = (R["edge_step"] + (T - R["edge_step"]) * smoothstep(0.0, R["taper"], y - ye)) * math.sqrt(max(0.0, 1 - (1 - min(1.0, (y - ye) / rr)) ** 2))
-            # round its outer edge (sides and top) back over the face's front corner, tucking under the front band's
-            # open edge, so no orange shows at the corner between them
-            wrap_w = max(smoothstep(0.9, 1.0, abs(x) / xo if xo else 0.0), smoothstep(0.88, 1.0, j / nv))
-            row.append((x, y, z0 + front_setback(x, y) * (1 - wrap_w) + h * (1 - wrap_w) - R["tuck_back"] * wrap_w))
-        rows.append(row)
-    verts = [p for row in rows for p in row]
-    W = nu + 1
-    faces = [[j * W + i, j * W + i + 1, (j + 1) * W + i + 1, (j + 1) * W + i] for j in range(nv) for i in range(nu)]
-    n = len(verts)
-    return verts, faces, [0.02] * n, [0.45] * n, [0.0] * n
-
-
 def nose_part():
     """The nose: one extruded mass emerging out of the roof, pitched upward, its section like the border of the
     Superman shield (flat top, short upright sides, lower edges converging to a point). It juts forward out of
@@ -566,6 +531,7 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
                 verts.append(tuple(q)); A.append(dist); B.append(tint); NW.append(0.0)
     n_side = 1 if wrap else 2
     nvv = len(rows[0]) - 1
+    skirt = front_skirt(verts[:nvv + 1], under, T) if open_front else []
     faces = []
     W = (nvv + 1) * n_side
     for i in range(len(rows) - 1):
@@ -575,7 +541,49 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
                 q1 = q0 + n_side
                 f = [q0, q1, q1 + W, q0 + W]
                 faces.append(f if (k == 0) else f[::-1])
+    if skirt:  # the same plate carries on down over the front face: more rows, stitched to its front row
+        prev = list(range(nvv + 1))
+        for srow in skirt:
+            cur = []
+            for p in srow:
+                cur.append(len(verts)); verts.append(tuple(p)); A.append(0.02); B.append(tint); NW.append(0.0)
+            for j in range(nvv):
+                faces.append([cur[j], cur[j + 1], prev[j + 1], prev[j]])
+            prev = cur
     return verts, faces, A, B, NW
+
+
+def front_skirt(front_row, under, T):
+    """The roof's front band carried on down over the front of the snout, as more rows of the same plate: from
+    its open front edge (front_row) down to the orange front muzzle at the eave, lying on the convex front face
+    at the plate's thickness, and at the bottom rolling in to the face in a small rounded step. This is the
+    front ridge: one piece with the band, so there is no seam."""
+    R = D["upper_head"]["front"]["ridge"]
+    z0 = UPPER[0, 0]
+    ye, step = R["eave_y"], R["edge_step"]
+    K = 14
+    rows = []
+    for k in range(1, K + 1):
+        f = k / K
+        row = []
+        for p in front_row:
+            x0, y0, zp = p
+            # the bottom line rises at the corners with the front muzzle's lifted lower edge, staying above it
+            yex = max(ye, interp(UPPER, z0, 2) + corner_lift(z0, x0, interp(UPPER, z0, 4)) + R["above_lip"])
+            y = y0 + (yex - y0) * f
+            xo = abs(face_pt(z0, side_th(z0, min(max(y, interp(UPPER, z0, 2) + 1e-4), face_pt(z0, math.pi / 2)[1] - 1e-4)))[0]) + under + T
+            x = max(-xo, min(xo, x0))
+            thick = step + (T - step) * (1 - smoothstep(0.6, 1.0, f))  # thins toward the bottom edge
+            zt = z0 + front_setback(x, y) + under + thick
+            # where the band's front edge is already down at the eave (its lower ends) there is nothing to cover:
+            # the rows collapse onto the edge instead of folding
+            reach = smoothstep(0.0, 0.025, y0 - yex)
+            if reach < 1e-3:
+                row.append((x0, y0, zp)); continue
+            row.append((x0 + (x - x0) * reach, y, zp + (zt - zp) * smoothstep(0.0, 0.35, f) * reach))
+        rows.append(row)
+    rows.append([(x, y - 0.002, z - step) for x, y, z in rows[-1]])  # the bottom edge rolls in to the face
+    return rows
 
 
 def roof_plates():
@@ -996,8 +1004,6 @@ def head_parts():
         rings.append((outer, inner)); at.append((fb, [fb] * len(outer)))
     v, f, A, B, Z = shell_loft(rings, at)
     objs.append(add_part("Roof", v, f, {"_PART": [10] * len(v), "_A": A, "_B": B, "_ZONE": Z}, rigid(len(v))))
-    v, f, A, B, NW = front_ridge()
-    objs.append(add_part("FrontRidge", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
     v, f, A, B, NW = nose_part()
     objs.append(add_part("Nose", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
     for k, (v, f, A, B, NW) in enumerate(roof_plates()):

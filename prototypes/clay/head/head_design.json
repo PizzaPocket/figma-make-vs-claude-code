@@ -44,7 +44,8 @@
         "edge_round": 0.003,
         "edge_step": 0.003,
         "taper": 0.03,
-        "tuck_back": 0.006
+        "tuck_back": 0.006,
+        "above_lip": 0.02
       },
       "convex": 0.025,
       "lip_arc_power": 2,
