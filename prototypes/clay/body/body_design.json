@@ -1,59 +1,59 @@
 {
   "about": "Clay's body (neck, torso, tail, then limbs and wings), element by element (see body_sheets.md). Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side sheet; x = Clay's left. The bind pose is the side sheet's pose, so the side view can be checked against the sheet directly; the tail's lower run is lifted onto the ground and curls toward the viewer (+x).",
   "trunk": {
-    "note": "Neck, torso and tail are one continuous mass, built as one loft along a curved spine with cross-sections perpendicular to it. Measured on the side sheet (trunk_overlay): the spine was traced through the middle of the body, and at each station the depth to the dorsal outline (top of neck and back, outer edge of the tail curl) and to the ventral outline (throat, chest, belly, inner edge of the tail curl) was measured along the perpendicular. The neck is short and thick, the torso a deep barrel (~0.9 from back to belly), the tail thick (~0.25-0.38) nearly to its tip.",
+    "note": "Neck, torso and tail are one continuous mass, built as one loft along a curved spine with cross-sections perpendicular to it. Measured on the side sheet (trunk_overlay): the spine was traced through the middle of the body, and at each station the depth to the dorsal outline (top of the neck and back along the body under the mane, at the bases of the spike blades, not their tips; outer edge of the tail curl) and to the ventral outline (throat, chest at about elbow height where the upper arm hides it, belly, inner edge of the tail curl) was measured along the perpendicular. The neck is short and thick, the torso a deep barrel (~0.9 from back to belly), the tail thick (~0.25-0.38) nearly to its tip.",
     "stations_columns": ["s", "z", "y", "dorsal", "ventral"],
     "stations": [
-      [0.0, 1.3848, 1.656, 0.315, 0.2116],
-      [0.1166, 1.2889, 1.5897, 0.3604, 0.2184],
-      [0.2333, 1.196, 1.5195, 0.4377, 0.2282],
-      [0.3499, 1.1093, 1.4415, 0.502, 0.2528],
-      [0.4666, 1.0228, 1.3632, 0.5418, 0.3035],
-      [0.5832, 0.9365, 1.2847, 0.5615, 0.4269],
-      [0.6999, 0.8388, 1.2218, 0.5677, 0.5524],
-      [0.8165, 0.7375, 1.1642, 0.5592, 0.6408],
-      [0.9331, 0.6268, 1.1273, 0.5343, 0.6403],
-      [1.0498, 0.5162, 1.0904, 0.5076, 0.6013],
-      [1.1664, 0.4041, 1.0598, 0.4824, 0.5588],
-      [1.2831, 0.2884, 1.0448, 0.4709, 0.5209],
-      [1.3997, 0.1728, 1.0297, 0.4581, 0.4967],
-      [1.5164, 0.0564, 1.0227, 0.4468, 0.4784],
-      [1.633, -0.0601, 1.018, 0.4364, 0.4661],
-      [1.7496, -0.1767, 1.0158, 0.4191, 0.4538],
-      [1.8663, -0.2932, 1.0205, 0.3967, 0.4367],
-      [1.9829, -0.4098, 1.0251, 0.3661, 0.4166],
-      [2.0996, -0.5262, 1.0316, 0.3307, 0.3982],
-      [2.2162, -0.6427, 1.0386, 0.2848, 0.3868],
-      [2.3328, -0.7587, 1.0384, 0.241, 0.3759],
-      [2.4495, -0.8735, 1.0177, 0.2017, 0.3693],
-      [2.5661, -0.9883, 0.997, 0.1679, 0.3599],
-      [2.6828, -1.094, 0.9508, 0.1383, 0.3451],
-      [2.7994, -1.1962, 0.8946, 0.1099, 0.3335],
-      [2.9161, -1.2984, 0.8383, 0.0924, 0.32],
-      [3.0327, -1.3835, 0.7593, 0.0792, 0.3083],
-      [3.1493, -1.466, 0.6769, 0.0714, 0.3012],
-      [3.266, -1.5387, 0.5883, 0.0757, 0.285],
-      [3.3826, -1.576, 0.4778, 0.0911, 0.2735],
-      [3.4993, -1.609, 0.3666, 0.121, 0.2384],
-      [3.6159, -1.6061, 0.25, 0.1508, 0.2144],
-      [3.7326, -1.598, 0.1347, 0.18, 0.1764],
-      [3.8492, -1.5458, 0.0304, 0.1841, 0.153],
-      [3.9658, -1.4869, -0.0679, 0.178, 0.1149],
-      [4.0825, -1.3896, -0.1323, 0.1568, 0.104],
-      [4.1991, -1.2886, -0.1867, 0.1524, 0.0977],
-      [4.3158, -1.1729, -0.2017, 0.1484, 0.1143],
-      [4.4324, -1.0573, -0.2168, 0.1489, 0.1232],
-      [4.5491, -0.941, -0.22, 0.1467, 0.1297],
-      [4.6657, -0.8243, -0.2177, 0.1442, 0.1299],
-      [4.7823, -0.7077, -0.2155, 0.1397, 0.1284],
+      [0.0, 1.3848, 1.656, 0.2473, 0.2116],
+      [0.1166, 1.2889, 1.5897, 0.3075, 0.2131],
+      [0.2333, 1.196, 1.5195, 0.3778, 0.2322],
+      [0.3499, 1.1093, 1.4415, 0.4113, 0.2394],
+      [0.4666, 1.0228, 1.3632, 0.4411, 0.2869],
+      [0.5832, 0.9365, 1.2847, 0.4769, 0.3842],
+      [0.6999, 0.8388, 1.2218, 0.4766, 0.5892],
+      [0.8165, 0.7375, 1.1642, 0.4876, 0.5823],
+      [0.9331, 0.6268, 1.1273, 0.4869, 0.5552],
+      [1.0498, 0.5162, 1.0904, 0.4938, 0.5264],
+      [1.1664, 0.4041, 1.0598, 0.4992, 0.4924],
+      [1.2831, 0.2884, 1.0448, 0.481, 0.4846],
+      [1.3997, 0.1728, 1.0297, 0.462, 0.4753],
+      [1.5164, 0.0564, 1.0227, 0.4543, 0.4691],
+      [1.633, -0.0601, 1.018, 0.4415, 0.4644],
+      [1.7496, -0.1767, 1.0158, 0.4305, 0.4578],
+      [1.8663, -0.2932, 1.0205, 0.3999, 0.4367],
+      [1.9829, -0.4098, 1.0251, 0.3694, 0.4156],
+      [2.0996, -0.5262, 1.0316, 0.3332, 0.3975],
+      [2.2162, -0.6427, 1.0386, 0.2904, 0.3814],
+      [2.3328, -0.7587, 1.0384, 0.2308, 0.3814],
+      [2.4495, -0.8735, 1.0177, 0.2017, 0.3649],
+      [2.5661, -0.9883, 0.997, 0.1726, 0.3615],
+      [2.6828, -1.094, 0.9508, 0.1294, 0.3532],
+      [2.7994, -1.1962, 0.8946, 0.1129, 0.3207],
+      [2.9161, -1.2984, 0.8383, 0.0873, 0.3266],
+      [3.0327, -1.3835, 0.7593, 0.0769, 0.3127],
+      [3.1493, -1.466, 0.6769, 0.0734, 0.2856],
+      [3.266, -1.5387, 0.5883, 0.064, 0.3052],
+      [3.3826, -1.576, 0.4778, 0.0898, 0.2643],
+      [3.4993, -1.609, 0.3666, 0.1194, 0.2511],
+      [3.6159, -1.6061, 0.25, 0.1537, 0.1999],
+      [3.7326, -1.598, 0.1347, 0.1793, 0.1921],
+      [3.8492, -1.5458, 0.0304, 0.2069, 0.1373],
+      [3.9658, -1.4869, -0.0679, 0.1662, 0.1296],
+      [4.0825, -1.3896, -0.1323, 0.1609, 0.0778],
+      [4.1991, -1.2886, -0.1867, 0.1432, 0.1047],
+      [4.3158, -1.1729, -0.2017, 0.1532, 0.1105],
+      [4.4324, -1.0573, -0.2168, 0.1489, 0.1276],
+      [4.5491, -0.941, -0.22, 0.1445, 0.1314],
+      [4.6657, -0.8243, -0.2177, 0.1468, 0.1302],
+      [4.7823, -0.7077, -0.2155, 0.1413, 0.1281],
       [4.899, -0.5911, -0.2144, 0.1311, 0.1269],
-      [5.0156, -0.4744, -0.2132, 0.1228, 0.125],
-      [5.1323, -0.3579, -0.2172, 0.1183, 0.1221],
-      [5.2489, -0.2415, -0.2237, 0.1144, 0.1138],
-      [5.3656, -0.1272, -0.2424, 0.1103, 0.1017],
-      [5.4822, -0.016, -0.2774, 0.0988, 0.0792],
-      [5.5988, 0.0857, -0.3317, 0.0785, 0.0506],
-      [5.7155, 0.1733, -0.4062, 0.0657, 0.0328]
+      [5.0156, -0.4744, -0.2132, 0.1209, 0.1257],
+      [5.1323, -0.3579, -0.2172, 0.1164, 0.1223],
+      [5.2489, -0.2415, -0.2237, 0.1175, 0.1184],
+      [5.3656, -0.1272, -0.2424, 0.1094, 0.1006],
+      [5.4822, -0.016, -0.2774, 0.104, 0.0861],
+      [5.5988, 0.0857, -0.3317, 0.083, 0.051],
+      [5.7155, 0.1733, -0.4062, 0.0484, 0.0146]
     ],
     "width": {
       "note": "Half-width = factor * mean depth at the widest level of each section. From the official front-facing art (box set, How to Draw, limited edition): the shoulders are about twice as wide as the neck at its base, but the chest is not a barrel. Its section is a deep keel, widest high up at the shoulders and narrowing toward the breastbone, so the front legs hang close beside it, like a cat's. The belly tucks up into a waist before the haunches. The tail is taller than it is wide.",
@@ -277,7 +277,7 @@
     }
   },
   "anatomy": {
-    "note": "Clay's body is built from the inside out: a skeleton of bones, muscles laid over it from origin to insertion, and one skin over everything (skin.py), so the shoulders grow out of the chest and back, and the haunches out of the hips and the tail. Quadruped anatomy as in a great cat (lion, tiger) for the legs; a reptile's tail root (caudofemoralis, as in lizards and dinosaurs); bird- and dinosaur-like feet. Left side; the right is mirrored. Each piece: from and to (model units), radii [out, across] where 'out' is measured along the hint direction (default: out from the body, +x), the blend radius k with its neighbours, the rig bones that move it, and its colour zone (0 dark, 0.5 orange, 1 cream; null takes the trunk's zone there). Bones show orange where they lie near the skin (the shin, the elbow, the wrist).",
+    "note": "Clay's body is built from the inside out: a skeleton of bones, muscles laid over it from origin to insertion, and one skin over everything (skin.py), so the shoulders grow out of the chest and back, and the haunches out of the hips and the tail. Quadruped anatomy as in a great cat (lion, tiger) for the legs; a reptile's tail root (caudofemoralis, as in lizards and dinosaurs); bird- and dinosaur-like feet. Left side; the right is mirrored. Each piece: from and to (model units), radii [out, across] where 'out' is measured along the hint direction (default: out from the body, +x), the blend radius k with its neighbours, the rig bones that move it, and its colour zone (0 dark, 0.5 orange, 1 cream; null takes the trunk's zone there). Bones show orange where they lie near the skin (the shin, the elbow, the wrist). Leg muscles are about 0.65-0.75 as wide side to side as they are deep, as in a cat; the shoulder cap and gluteals are flat layers over the blade and hip, so each shoulder and haunch reads as one mass. Neighbouring muscles blend over 0.07-0.12, so the shoulder and the haunch each read as one smooth mass, not separate balls; the shoulder's colour comes from the sheet's dark patch (the trunk's zones).",
     "resolution": 0.012,
     "bones": [
       {
@@ -355,24 +355,24 @@
     "muscles": [
       {
         "name": "shoulder cap: supraspinatus, infraspinatus and deltoid",
-        "why": "the dark rounded shoulder patch on the side sheet (px 400-567, py 300-521); How to Draw's rounded shoulder at the top of the near leg",
+        "why": "the dark rounded shoulder patch on the side sheet (px 400-567, py 300-521); How to Draw's rounded shoulder at the top of the near leg; a flat layer over the shoulder blade, so the shoulder reads as one mass with the triceps, not two humps",
         "from": [0.25, 1.44, 0.47],
         "to": [0.44, 0.86, 0.72],
-        "radii": [0.085, 0.17],
+        "radii": [0.06, 0.17],
         "k": 0.06,
         "rig": {
           "chest": 0.6,
           "upperarm": 0.4
         },
-        "zone": 0.0
+        "zone": null
       },
       {
         "name": "triceps",
-        "why": "the heavy upper-arm mass behind the humerus, from the shoulder blade to the point of the elbow (side sheet)",
-        "from": [0.3, 1.18, 0.42],
+        "why": "the heavy upper-arm mass behind the humerus, from behind the shoulder joint to the point of the elbow (side sheet); it starts below the shoulder cap, so the two read as one shoulder",
+        "from": [0.36, 0.98, 0.55],
         "to": [0.41, 0.64, 0.16],
-        "radii": [0.13, 0.19],
-        "k": 0.06,
+        "radii": [0.14, 0.18],
+        "k": 0.1,
         "rig": {
           "upperarm": 0.7,
           "chest": 0.3
@@ -384,8 +384,8 @@
         "why": "the front of the upper arm under the shoulder point (side sheet)",
         "from": [0.42, 0.98, 0.84],
         "to": [0.43, 0.56, 0.3],
-        "radii": [0.1, 0.12],
-        "k": 0.05,
+        "radii": [0.12, 0.12],
+        "k": 0.09,
         "rig": {
           "upperarm": 0.8,
           "forearm": 0.2
@@ -399,23 +399,10 @@
         "to": [0.38, 0.8, 0.55],
         "radii": [0.16, 0.09],
         "hint": [0, 1, 0],
-        "k": 0.07,
+        "k": 0.1,
         "rig": {
           "chest": 0.6,
           "upperarm": 0.4
-        },
-        "zone": null
-      },
-      {
-        "name": "latissimus dorsi",
-        "why": "a flat sheet from the back to the upper arm, filling behind the shoulder blade",
-        "from": [0.26, 1.32, 0.12],
-        "to": [0.38, 0.84, 0.45],
-        "radii": [0.06, 0.17],
-        "k": 0.07,
-        "rig": {
-          "chest": 0.7,
-          "upperarm": 0.3
         },
         "zone": null
       },
@@ -424,8 +411,8 @@
         "why": "the front of the forearm: thick below the elbow, tapering to the slim wrist (side sheet)",
         "from": [0.41, 0.639, 0.288],
         "to": [0.41, 0.267, 0.485],
-        "radii": [0.09, 0.13],
-        "k": 0.05,
+        "radii": [0.12, 0.13],
+        "k": 0.07,
         "rig": {
           "forearm": 1
         },
@@ -436,8 +423,8 @@
         "why": "the back of the forearm, cream on the side sheet from below the elbow to the wrist",
         "from": [0.41, 0.598, 0.183],
         "to": [0.41, 0.18, 0.461],
-        "radii": [0.09, 0.12],
-        "k": 0.05,
+        "radii": [0.11, 0.12],
+        "k": 0.07,
         "rig": {
           "forearm": 1
         },
@@ -448,7 +435,7 @@
         "why": "a compact, broad, flat hand on the ground (side sheet)",
         "from": [0.41, 0.11, 0.53],
         "to": [0.41, 0.05, 0.67],
-        "radii": [0.075, 0.045],
+        "radii": [0.09, 0.045],
         "k": 0.04,
         "rig": {
           "hand": 1
@@ -457,11 +444,11 @@
       },
       {
         "name": "gluteals",
-        "why": "the round top of the haunch, growing out of the hips (How to Draw)",
+        "why": "the round top of the haunch, growing out of the hips (How to Draw); flat over the hip, so the haunch is one round mass with the thigh",
         "from": [0.2, 1.22, -0.52],
         "to": [0.43, 0.93, -0.6],
-        "radii": [0.1, 0.2],
-        "k": 0.07,
+        "radii": [0.07, 0.2],
+        "k": 0.12,
         "rig": {
           "hips": 0.6,
           "thigh": 0.4
@@ -471,10 +458,10 @@
       {
         "name": "quadriceps",
         "why": "the front of the thigh, down to the knee (How to Draw's haunch)",
-        "from": [0.4, 0.98, -0.5],
+        "from": [0.42, 0.86, -0.5],
         "to": [0.47, 0.36, -0.5],
-        "radii": [0.15, 0.2],
-        "k": 0.06,
+        "radii": [0.14, 0.19],
+        "k": 0.12,
         "rig": {
           "thigh": 0.8,
           "hips": 0.2
@@ -486,8 +473,8 @@
         "why": "the round back of the haunch, from the ischium to the top of the shin",
         "from": [0.25, 0.86, -0.92],
         "to": [0.46, 0.3, -0.68],
-        "radii": [0.15, 0.2],
-        "k": 0.06,
+        "radii": [0.14, 0.19],
+        "k": 0.12,
         "rig": {
           "thigh": 0.7,
           "hips": 0.3
@@ -500,7 +487,7 @@
         "from": [0.12, 0.92, -1.4],
         "to": [0.38, 0.7, -0.66],
         "radii": [0.1, 0.14],
-        "k": 0.08,
+        "k": 0.12,
         "rig": {
           "hips": 0.5,
           "thigh": 0.3,
@@ -515,7 +502,7 @@
         "to": [0.36, 0.55, -0.55],
         "radii": [0.12, 0.08],
         "hint": [0, 1, 0],
-        "k": 0.07,
+        "k": 0.1,
         "rig": {
           "hips": 0.5,
           "thigh": 0.5
@@ -527,8 +514,8 @@
         "why": "the back of the shin, cream on the side sheet, to the heel",
         "from": [0.46, 0.4, -0.66],
         "to": [0.45, 0.14, -1.06],
-        "radii": [0.08, 0.1],
-        "k": 0.05,
+        "radii": [0.1, 0.1],
+        "k": 0.07,
         "rig": {
           "shin": 1
         },
@@ -539,7 +526,7 @@
         "why": "the front of the shin, orange on the side sheet, from below the knee to the ankle",
         "from": [0.47, 0.3, -0.6],
         "to": [0.45, 0.12, -0.98],
-        "radii": [0.06, 0.07],
+        "radii": [0.09, 0.07],
         "k": 0.05,
         "rig": {
           "shin": 1
@@ -551,7 +538,7 @@
         "why": "the long digitigrade foot lying along the ground (side sheet), as in birds and dinosaurs",
         "from": [0.45, 0.08, -1.08],
         "to": [0.45, 0.045, -0.62],
-        "radii": [0.065, 0.042],
+        "radii": [0.08, 0.042],
         "k": 0.04,
         "rig": {
           "foot": 1

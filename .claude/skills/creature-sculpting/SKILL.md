@@ -161,6 +161,7 @@ Build each muscle action as a face morph target: a push of the region plus the c
 **Scripts** (`scripts/`)
 - `study_crop.py`: a gridded full-resolution crop of a reference.
 - `line_map.py`: extracts a reference's ink lines into a clean, gridded line map.
+- `overlay_side.py`: renders a true side view at the side sheet's scale and lays the model's outline (cyan) and a half blend over the sheet. Use it to check any outline.
 - `render_sheet.py` with `shoot.js`: renders painted and plain-clay views, posed, next to reference crops, from a `views.json`. Needs Playwright's Chromium and three r128's `three.min.js` and `GLTFLoader.js` in a folder (`npm i three@0.128.0`).
 
 **Technical notes**
@@ -227,6 +228,8 @@ Check: <what to compare; known differences>
 
 **Body**
 - Build limbs as bones with muscles laid from origin to insertion, under one skin (a smooth union of fields), never as tubes stuck onto the body. A limb with no shoulder or haunch muscles reads as chopped off.
+- Trace the body's outline under the mane, spikes and frills, at their bases. Clay's first trace ran over the spike tips and made his neck and back too big. Where a limb hides the body (the chest under the upper arm), the body's line is anatomy (a cat's breastbone at elbow height), not the limb's outline.
+- One mass per joint: a flat layer over the shoulder blade or hip, then the big belly below it, blended wide (0.07-0.12). Two bellies side by side read as double shoulders or balloons.
 - The chest's section is a keel, not a barrel: widest up at the shoulders, so the legs hang close beside it, like a cat's.
 
 **Hands and feet**
