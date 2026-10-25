@@ -6,3 +6,7 @@ dist/
 cache/
 __pycache__/
 *.glb
+
+# Clay model: downloaded reference images and build output (never committed: the repo is public)
+prototypes/clay/refs/
+prototypes/clay/out/

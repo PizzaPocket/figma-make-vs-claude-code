@@ -50,7 +50,12 @@ def main():
         cmd = ["node", os.path.join(HERE, "shoot.js"), page, sf] + ([a.design] if a.design else [])
         subprocess.run(cmd, check=True)
     for i, s in enumerate(shots):
-        im = Image.open(s["ref"].replace("{refs}", a.refs)) if "ref" in s else Image.open(os.path.join(work, f"s{i}.png"))
+        path = s["ref"].replace("{refs}", a.refs) if "ref" in s else os.path.join(work, f"s{i}.png")
+        if os.path.exists(path):
+            im = Image.open(path)
+        else:  # a study crop not made in this checkout yet: say so on the sheet rather than fail
+            im = Image.new("RGB", (700, 520), (40, 34, 30))
+            ImageDraw.Draw(im).text((20, 250), "missing reference: " + os.path.relpath(path, a.refs), fill=(220, 120, 100))
         im = im.convert("RGB"); im.thumbnail((700, 520))
         tile = Image.new("RGB", (700, 520), (20, 17, 14)); tile.paste(im, ((700 - im.width) // 2, (520 - im.height) // 2))
         ImageDraw.Draw(tile).text((10, 8), s.get("label", ""), fill=(255, 220, 0))

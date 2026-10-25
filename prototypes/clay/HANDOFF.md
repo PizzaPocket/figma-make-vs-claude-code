@@ -12,9 +12,19 @@ State at the end of the session on branch `wings-of-fire-game`. Read with `CHECK
 
 ## Build and render
 
-Blender as a Python module lives in the session scratchpad (`blenv/bin/python`), along with the references (`clayref/`, `covers/`, `study/`) and helper scripts. A new session needs these set up again:
-- `head/build_head.py --out head.glb` builds the head; `body/build_body.py --out clay.glb` builds the whole creature.
-- `.claude/skills/creature-sculpting/scripts/render_sheet.py` renders a `views.json` set beside reference images (see the skill's Toolkit section).
+Run `prototypes/clay/tools/setup_env.sh` once per session (a few minutes the first time, then instant). To run it automatically, add a `SessionStart` hook in `.claude/settings.json` (see below). It installs, outside the repo:
+- Blender as a Python module (bpy 5.2.3) plus numpy, scipy and Pillow, in `~/.cache/clay-env`;
+- three.js r128 for the render viewer, in `~/.cache/clay-three`;
+- the reference images, downloaded from the wiki into `prototypes/clay/refs/`. That folder is git-ignored; only the list of sources is committed (`tools/fetch_refs.py`). They're fetched with `format=original` so the side sheet is byte-identical to the one everything was measured on.
+
+Then `prototypes/clay/tools/render.sh head|body SET OUT.jpg` builds and renders a `views.json` set beside the references; `NOBUILD=1` reuses the last build. Build output goes to the git-ignored `prototypes/clay/out/`. Study crops made by hand during the session (`refs/study/*`) aren't recreated: sheets show "missing reference" tiles until they're remade with the skill's `study_crop.py`.
+
+Session-start hook to add to `.claude/settings.json` (not added automatically):
+
+```json
+{"hooks": {"SessionStart": [{"hooks": [{"type": "command", "timeout": 600,
+  "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; \"$CLAUDE_PROJECT_DIR\"/prototypes/clay/tools/setup_env.sh >/tmp/clay-setup.log 2>&1 || echo 'clay setup failed: see /tmp/clay-setup.log'"}]}]}}
+```
 
 ## Done this session (head)
 
@@ -28,13 +38,15 @@ Blender as a Python module lives in the session scratchpad (`blenv/bin/python`),
   - corners projected onto the side sheet: inner corner 58° below horizontal, back corner 25° above;
   - the blink turns about the canthal axis, stored as 6 in-between shapes.
 
-## In progress when stopped
+## Next: the eyelids must cover the caruncle (from the user)
 
-- **Tear tail** (`tear_tail` in `build_head.py`; `eye.lids.caruncle.tail_*` in `head_design.json`): a pink teardrop from the eye's inner corner, forward and down past the eyeball, rimmed dark. It's committed but too long and thin. The next step was `tail_reach` 1.17 (from 1.3) and `tail_width` 0.22 (from 0.17), then compare with the side sheet's teardrop.
+The top of the eyelid needs to extend until the top of the tip of the caruncle, so the blink covers the whole eyeball plus the caruncle. At present the upper lid's inner end stops short of the caruncle, which stays visible when the eye closes.
+
+Also in progress: the **tear tail** (`tear_tail` in `build_head.py`; `eye.lids.caruncle.tail_*` in `head_design.json`), a pink teardrop from the inner corner past the eyeball, rimmed dark. It's committed but too long and thin; the next step was `tail_reach` 1.17 (from 1.3) and `tail_width` 0.22 (from 0.17). Revisit it together with the lid fix above.
 
 ## Known faults (head), most visible first
 
-1. Tear tail proportions (above).
+1. Eyelids not covering the caruncle; tear tail proportions (above).
 2. Front ridge:
    - faint stretch marks in the shading across it;
    - a small fold where the side edge plates meet the front corners;
