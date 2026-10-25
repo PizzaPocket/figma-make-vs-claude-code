@@ -144,7 +144,7 @@
       "outer_corner_inset_deg": 2,
       "inner_corner_inset_deg": 2,
       "outer_canthus_deg": 42,
-      "inner_canthus_deg": 72,
+      "inner_canthus_deg": 64,
       "blink_meet": 0.95,
       "blink_share_upper": 1.0,
       "blink_share_lower": 0.0,
@@ -164,11 +164,11 @@
       "under": 0.002
     },
     "corner_bend_deg": {
-      "outer": 13,
-      "inner": 20
+      "outer": 28,
+      "inner": 6
     },
     "round_note": "Every official image shows a round eye: the opening nearly a circle (the lids open 48 and 50 degrees, corners at the measured 42 and 60 degrees from the gaze, rounded), a white ring round a large dark-brown iris and pupil, a heavy dark ring round the whole opening, and the pink tear duct at the lower front corner. The lids hug the eyeball (thickness 0.05 r), so there is no dome.",
-    "inner_note": "Every image: the inner (front) corner drops below the round eye into a pointed teardrop holding the pink tear duct. So the inner corner sits further round the eyeball (72 degrees), turns further down (20-degree bend; 26 or more twists the lower lid through the face) and closes to a point (corner exponent 1.1)."
+    "inner_note": "Measured on the side sheet by projecting the model's lid corners onto it (eye_map): the inner corner sits forward and down, 57-58 degrees below horizontal from the eye centre, at about the eyeball's edge, with the pink tear duct below it; the back corner rises 22-30 degrees above horizontal. So the inner corner is 64 degrees round the eyeball, turned 6 degrees down, and closes to a point (corner exponent 1.1); the outer corner is turned 28 degrees down. A 20-degree inner turn put it almost straight below the eye (83 degrees), which was wrong."
   },
   "horn": {
     "note": "The horn grows out of the roof: its root is sculpted into the roof plates, which swell up and wrap its base (a smooth union with fillet radius `fillet`), so the roof's top line runs on into the horn's top line. From there it sweeps back and up in a long, nearly straight line, tapering slowly, and curls up only in the last stretch. Smooth, with hairline incised rings.",
