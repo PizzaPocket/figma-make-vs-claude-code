@@ -288,7 +288,8 @@ def front_ridge():
         row = []
         for i in range(nu + 1):
             x = (-1 + 2 * i / nu) * xo
-            h = T * math.sqrt(max(0.0, 1 - (1 - min(1.0, (y - ye) / rr)) ** 2))  # only the bottom edge rolls over
+            # thinning toward the bottom edge, which meets the orange nearly flush, with a small rounded step
+            h = (R["edge_step"] + (T - R["edge_step"]) * smoothstep(0.0, R["taper"], y - ye)) * math.sqrt(max(0.0, 1 - (1 - min(1.0, (y - ye) / rr)) ** 2))
             row.append((x, y, z0 + front_setback(x, y) + h))
         rows.append(row)
     verts = [p for row in rows for p in row]
@@ -528,6 +529,8 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
             for w in edge_samples(nv, 0.012):
                 v = wrap * w ** 1.3 if wrap is not True else -1 + 2 * w
                 z = zt + (za - zt) * abs(v)  # the joint runs straight from the ridge to the plate's lower end
+                if open_front and u == 0.0:
+                    z = zt  # an open front edge lies in the front plane, where the front ridge carries on from it
                 th = math.pi / 2 - v * (math.pi / 2 - tha)
                 row.append((z, th, w))
         else:

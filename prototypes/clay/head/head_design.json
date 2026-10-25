@@ -34,16 +34,18 @@
     ],
     "ridge_note": "The roof is a gable: two mirrored slopes falling from a crisp ridge down its whole length; the ridge is on the measured top profile and the shoulders drop below it (rows: z, drop at the shoulders). The plates are mirrored pairs meeting at the ridge.",
     "front": {
-      "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face bulges out a little (side sheet: the notch under the nose at z 1.98, out to z 2.01 at y 1.36), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose. From above the front face is rounded across (convex: its middle 0.022 forward of its sides), and the front ridge's front edge follows that curve. Its bottom edge, the front lip edge, arcs down in the middle (0.03 lower than at the corners).",
-      "concave": 0.02,
+      "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face is convex (the side sheet's notch at z 1.98 is the nose's underside, not a hollow in the face), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose. From above the front face is rounded across (convex: its middle 0.008 forward of its sides; more made the front ridge a shelf standing proud of the band behind it), and the front ridge's front edge follows that curve. Its bottom edge, the front lip edge, arcs down in the middle (0.03 lower than at the corners).",
+      "concave": 0.0,
       "corner_lift": 0.03,
       "block_back_z": 1.93,
       "ridge": {
-        "note": "The front ridge (circled by the user on the flight render): a subtle extension of the roof's front. The roof's front band is one simple piece, not a mirrored pair: it wraps over the ridge down to the eave and carries on, with no edge, down over the front of the snout under the nose. Its only edge there is its bottom, where it meets the orange front muzzle (eave_y), which follows the front's convex curve, rolling over in a quarter round.",
-        "eave_y": 1.385,
-        "edge_round": 0.006
+        "note": "The front ridge (circled by the user on the flight render): a subtle extension of the roof's front. The roof's front band is one simple piece, not a mirrored pair: it wraps over the ridge down to the eave and carries on, with no edge, down over the front of the snout under the nose. Its only edge there is its bottom, where it meets the orange front muzzle (eave_y), which follows the front's convex curve, rolling over in a quarter round. Side sheet: the brown-to-orange line at the front sits at about 1.356-1.363 (z 1.99-1.95); the ridge's bottom edge and the plates beside it meet at 1.37, so they form one line and a band of orange front muzzle shows below, as in the flight render.",
+        "eave_y": 1.37,
+        "edge_round": 0.003,
+        "edge_step": 0.003,
+        "taper": 0.03
       },
-      "convex": 0.022,
+      "convex": 0.008,
       "lip_arc_power": 2
     }
   },
@@ -77,10 +79,10 @@
   "dark_plate_edge": {
     "note": "The roof's lower edge, traced on the side sheet's colour boundary (dark roof over orange face) and checked against How to Draw and the flight render, which agree on its shape: the roof covers the whole nose, down to the lip at the front; from the nose the edge rises only gently for the front third of the muzzle, then turns sharply up in a near-vertical step at about mid-muzzle, climbs steeply and diagonally to the front of the eye, runs over the top of the eye (the eye tucked right under it), steps up again behind the eye and runs back toward the ear. The rim plates (edge row) follow this line.",
     "zy": [
-      [2.03, 1.392],
-      [2.012, 1.392],
-      [1.994, 1.388],
-      [1.953, 1.363],
+      [2.03, 1.37],
+      [2.012, 1.37],
+      [1.994, 1.368],
+      [1.953, 1.366],
       [1.918, 1.376],
       [1.895, 1.389],
       [1.872, 1.402],
