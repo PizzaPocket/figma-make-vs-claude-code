@@ -417,17 +417,30 @@
       },
       {
         "name": "pectoral",
-        "why": "ties the inside of the upper arm to the breastbone, so the leg grows out of the chest (TDP limited-edition cover: the arm's front edge runs on from the chest)",
-        "from": [0.05, 0.7, 0.8],
-        "to": [0.38, 0.8, 0.55],
-        "radii": [0.16, 0.09],
+        "why": "a lion's chest muscle: broad, flat and smooth, from the breastbone to the inside of the upper arm, so the leg grows out of the chest (TDP limited-edition cover). Set back from the front of the chest, which it had pushed too far forward.",
+        "from": [0.04, 0.74, 0.72],
+        "to": [0.32, 0.8, 0.58],
+        "radii": [0.17, 0.12],
         "hint": [0, 1, 0],
-        "k": 0.1,
+        "k": 0.12,
         "rig": {
           "chest": 0.6,
           "upperarm": 0.4
         },
         "zone": null
+      },
+      {
+        "name": "inner upper arm (biceps, brachialis, the triceps' inner head)",
+        "why": "TDP limited-edition cover and How to Draw: the inside of the upper arm is a big muscle mass merging into the chest, not a cylinder hanging beside it with a groove between (the user's reading)",
+        "from": [0.3, 0.95, 0.72],
+        "to": [0.33, 0.6, 0.3],
+        "radii": [0.11, 0.15],
+        "k": 0.1,
+        "rig": {
+          "upperarm": 0.8,
+          "chest": 0.2
+        },
+        "zone": 0.5
       },
       {
         "name": "forearm extensors",

@@ -69,10 +69,15 @@ def trunk_frames(step=0.01):
     st = np.array(TR["stations"], float)
     tl = TR["tail"]; t0 = tl["from_s"]
     s_all = np.arange(-TR["front_overlap"], st[-1, 0] + 1e-9, step)
+    # smooth curves through the measured stations (straight segments between them kinked the surface at each one):
+    # a cubic spline for the spine, shape-preserving curves for the depths
+    from scipy.interpolate import CubicSpline, PchipInterpolator
+    curves = [CubicSpline(st[:, 0], st[:, 1]), CubicSpline(st[:, 0], st[:, 2]),
+              PchipInterpolator(st[:, 0], st[:, 3]), PchipInterpolator(st[:, 0], st[:, 4])]
     P, DU, DV = [], [], []
     for s in s_all:
-        sc = max(s, 0.0)
-        z, y, du, dv = (table(st, sc, c) for c in (1, 2, 3, 4))
+        sc = min(max(s, 0.0), st[-1, 0])
+        z, y, du, dv = (float(c(sc)) for c in curves)
         if s < 0:  # run on into the head along the first tangent, so the join is hidden inside it
             z1, y1 = table(st, 0.02, 1), table(st, 0.02, 2)
             z, y = z + (z - z1) / 0.02 * (-s), y + (y - y1) / 0.02 * (-s)
@@ -235,7 +240,7 @@ def skin_parts(ranges):
                                  TR["zones"]["lines_until_s"] + 0.15)
     Z = list(SK.smooth_on_mesh(V, F, Z))  # no pinholes in the shell, smooth edges to its colour regions
     skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": [20] * len(V), "_A": A, "_B": Bf, "_ZONE": Z}, W)
-    idx, _, _, _ = trunk.local(V)
+    idx = trunk.local(V)[0]
     sh = B["shell"]
     S, SF, src, ink, tint = SK.shell(V, F, Z, sh, SK.smooth_normals(V, F), trunk.s[idx], np.array(Bf), band)
     shell = H.add_part("Shell", S.tolist(), SF.tolist(), {"_PART": [13] * len(S), "_A": list(ink), "_B": list(tint), "_ZONE": [0] * len(S)},

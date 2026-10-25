@@ -88,29 +88,39 @@ class Trunk:
             R[i] = np.interp(self.phi, ang[o], rad[o], period=2 * math.pi)
         self.R = R
 
-    def local(self, X):
-        _, idx = self.tree.query(X)
-        d = X - self.P[idx]
-        v = np.einsum("ij,ij->i", d, self.N[idx]); w = np.einsum("ij,ij->i", d, self.Bv[idx]); t = np.einsum("ij,ij->i", d, self.T[idx])
-        return idx, v, w, t
+    def _segment(self, X):
+        """Each point's place along the spine, continuously: the segment it projects onto and how far along it."""
+        _, i = self.tree.query(X)
+        n = len(self.P)
+        t = np.einsum("ij,ij->i", X - self.P[i], self.T[i])
+        i0 = np.where(t >= 0, i, i - 1).clip(0, n - 2)
+        seg = self.P[i0 + 1] - self.P[i0]
+        L2 = np.einsum("ij,ij->i", seg, seg)
+        u = (np.einsum("ij,ij->i", X - self.P[i0], seg) / L2).clip(0.0, 1.0)
+        return i0, u
 
-    def _sdf_at(self, X, idx):
-        d0 = X - self.P[idx]
-        v = np.einsum("ij,ij->i", d0, self.N[idx]); w = np.einsum("ij,ij->i", d0, self.Bv[idx]); t = np.einsum("ij,ij->i", d0, self.T[idx])
+    def local(self, X):
+        """The point's offsets in the spine's frame there (v toward the back, w to the left, t along), and the
+        nearest spine sample, with the frame interpolated between samples so nothing steps."""
+        i0, u = self._segment(X)
+        lerp = lambda A: A[i0] * (1 - u)[:, None] + A[i0 + 1] * u[:, None]
+        P, N, Bv, T = lerp(self.P), lerp(self.N), lerp(self.Bv), lerp(self.T)
+        d = X - P
+        v = np.einsum("ij,ij->i", d, N); w = np.einsum("ij,ij->i", d, Bv); t = np.einsum("ij,ij->i", d, T)
+        idx = np.where(u < 0.5, i0, i0 + 1)
+        return idx, v, w, t, i0, u
+
+    def sdf(self, X):
+        """The distance from each point to the trunk's section there, interpolated along the spine."""
+        idx, v, w, t, i0, u = self.local(X)
         phi = np.arctan2(w, v)
         j = (phi + math.pi) / (2 * math.pi) * len(self.phi)
         j0 = np.floor(j).astype(int) % len(self.phi); j1 = (j0 + 1) % len(self.phi); f = j - np.floor(j)
-        R = self.R[idx, j0] * (1 - f) + self.R[idx, j1] * f
+        Rr = lambda i: self.R[i, j0] * (1 - f) + self.R[i, j1] * f
+        R = Rr(i0) * (1 - u) + Rr(i0 + 1) * u
         d = np.hypot(v, w) - R
-        d = np.where(idx == 0, np.maximum(d, -t), d)
-        return np.where(idx == len(self.P) - 1, np.maximum(d, t), d)
-
-    def sdf(self, X):
-        """Blended over the nearest few spine sections, so the surface doesn't step from one to the next."""
-        dist, idx = self.tree.query(X, k=3)
-        wts = 1.0 / np.maximum(dist, 1e-6) ** 2
-        D = np.stack([self._sdf_at(X, idx[:, k]) for k in range(3)], 1)
-        return (D * wts).sum(1) / wts.sum(1)
+        d = np.where((i0 == 0) & (u <= 0.0), np.maximum(d, -t), d)
+        return np.where((i0 == len(self.P) - 2) & (u >= 1.0), np.maximum(d, t), d)
 
 
 def pieces(anat):
@@ -245,7 +255,7 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trus
     Each part's say is how close it lies to the skin there (within ~blend of the nearest). The dark
     shell (dark_zone: 1 inside it) covers whatever lies under it, trunk or muscle."""
     _, dt, D = field(V, trunk, parts, all_parts=True)
-    idx, v, w, _ = trunk.local(V)
+    idx, v, w, _, _, _ = trunk.local(V)
     s = trunk.s[idx]
     f = (1 - v / np.maximum(np.hypot(v, w), 1e-9)) / 2  # 0 along the top of the spine, 1 underneath
     allD = np.vstack([dt[None], D])
