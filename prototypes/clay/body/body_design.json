@@ -229,9 +229,8 @@
       "ground_y": -0.03,
       "rest_from_s": 3.8,
       "rest_to_s": 4.1,
-      "taper_length": 0.9,
-      "taper_power": 0.75,
-      "taper_note": "Over its last 0.9 the tail tapers to a point, as in every reference."
+      "taper_power": 1.1,
+      "taper_note": "Like a gecko's, the tail is fat at its root and tapers steadily all the way to a point (half-depth r0 * (remaining / length)^taper_power), as in every reference. Following the sheet's depths kept it nearly the same thickness down its lower run, like an earthworm."
     }
   },
   "front_leg": {
@@ -586,5 +585,30 @@
     "groove_width": 0.007,
     "scute_every": 0.05,
     "plates_note": "From the side sheet: the back is transverse bands about 0.08-0.10 apart, their joints slanting forward down the side; on the tail, arched bands about 0.13 apart, closer toward the tip; the edge is beaded with small square scutes about 0.04-0.05 wide, continuously round the shoulder patch and along both edges of the tail. Each band is a shingle, thicker toward its back edge, with a groove at each joint; the rim is divided into scutes by grooves across it."
+  },
+  "spikes": {
+    "note": "Blades along the top of the shell's midline, raked back. The neck's mane, from the side sheet: blades from the base of the neck to the shoulders, their bases on the body's top line and their tips on the old outline trace (which ran along the spike tips): tallest, about 0.12 above the back, at mid-neck (px 480), falling to small spikes along the back. The tail's: leaf-shaped dark spikes about 0.1 long and 0.045 wide, one per band, lying raked back along its top and smaller toward the tip. height is above the back, perpendicular to it; each blade's length is height / sin(rake).",
+    "rows": [
+      {
+        "name": "mane",
+        "from_s": 0.12,
+        "to_s": 2.2,
+        "every": 0.06,
+        "rake_deg": 28,
+        "width": 0.045,
+        "thickness": 0.012,
+        "height": [[0.12, 0.035], [0.35, 0.055], [0.6, 0.09], [0.93, 0.12], [1.1, 0.07], [1.3, 0.03], [2.2, 0.02]]
+      },
+      {
+        "name": "tail",
+        "from_s": 2.7,
+        "to_s": 5.3,
+        "every": "band",
+        "rake_deg": 22,
+        "width": 0.05,
+        "thickness": 0.014,
+        "height": [[2.7, 0.045], [4.0, 0.035], [5.3, 0.015]]
+      }
+    ]
   }
 }

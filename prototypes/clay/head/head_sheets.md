@@ -106,18 +106,15 @@ Behind the skull, that same line carries on as the top of the horn:
 
 **Thickness:** the horns are thick, as in the art. The root is about r 0.05–0.06 where it leaves the roof, with a broad corner section (out to 1.3 rad over the shoulder), and tapers to 0.04, 0.03 and 0.02 before the tip.
 
-**Path:** measured edges, centreline through:
-- (1.487, 1.887) r 0.036
-- (1.37, 1.957) r 0.028
-- (1.297, 1.999) r 0.022
-- (1.245, 2.046) r 0.016
-- tip (1.213, 2.096)
-
-It is a long, nearly straight sweep back and up that barely tapers, then narrows and curls up more steeply at the end. It splays slightly outward, x 0.17 → 0.23.
+**Path: a simple S** (s_curve in head_design.json). The horn rises steeply out of the back of the head (48 degrees above straight back), flattens as it sweeps back (7 degrees at mid-length), then curls up toward the tip (62 degrees). The length (0.485) is fitted so the tip lands on the side sheet's (px 283, py 116). It splays outward from x 0.15 to 0.23. *Earlier, wrong:* a path through six hand-placed points, which zigzagged.
 
 **Surface:** smooth, *lined but not bumpy*.
 - The rings are hairline incisions (depth 0.0007, width 0.0014, every 0.03), inked in the shader.
 - They start just past the root and fade out at 88% of the length.
+
+## The sheet's head turn (snout length)
+
+The side sheet draws the head turned a few degrees toward the viewer. The front of its snout, a darker band from the tip back to a crease at px 80-95, is the muzzle's front face and front corner. Measured as if it were a true side view, that read as extra length and a forward slant, and the slant was then mirrored onto both sides of the head. With the muzzle about 0.21 wide, a turn of about 25 degrees accounts for about 0.07 of the sheet's snout. So every head part is compressed toward the eye from z 1.72 by 0.78 (snout_turn; the tip moves from 2.02 to 1.95), which also stands the front up straighter. Measurements below are as taken from the sheet, before that correction.
 
 ## Box muzzle, nose and nostrils
 

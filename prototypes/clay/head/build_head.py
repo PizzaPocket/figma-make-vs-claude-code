@@ -33,6 +33,26 @@ ROOF = D["roof"]
 PLATES = D["roof_plates"]
 CREST = D["nose_crest"]
 HORN = D["horn"]
+
+
+def horn_path():
+    """The horn's centreline: a simple S. It rises steeply out of the back of the head, flattens as it
+    sweeps back (a downward arc), then curls up toward the tip (an upward arc): its heading eases
+    between three angles above straight back (s_curve.heading_deg), over its length, splaying outward
+    from x root to x tip. Returns points and the radius at each."""
+    S = HORN["s_curve"]
+    a0, a1, a2 = S["heading_deg"]
+    n = 24
+    p = np.array(S["root_zy"], float); pts = [p.copy()]
+    for i in range(n):
+        t = (i + 0.5) / n
+        s1 = smoothstep(0.0, 0.5, t); s2 = smoothstep(0.55, 1.0, t)
+        th = math.radians(a0 + (a1 - a0) * s1 + (a2 - a1) * s2)
+        p = p + np.array([-math.cos(th), math.sin(th)]) * S["length"] / n
+        pts.append(p.copy())
+    xs = np.linspace(S["x"][0], S["x"][1], n + 1)
+    R = np.interp(np.linspace(0, 1, n + 1), np.linspace(0, 1, len(HORN["radius"])), HORN["radius"])
+    return [[x, y, z] for x, (z, y) in zip(xs, pts)], list(R)
 FRILL = D["ear_frill"]
 N_AROUND = 96  # points around the face contour (fine enough to carry the lid creases)
 
@@ -371,8 +391,9 @@ _HORN_AXES = {}
 def horn_axis(sgn):
     """Centreline and radii of one horn, sampled along its spline."""
     if sgn not in _HORN_AXES:
-        path = [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]
-        C, R, _, _, _ = spline_frames(path, HORN["radius"], 0.004)
+        hp, hr = horn_path()
+        path = [[sgn * p[0], p[1], p[2]] for p in hp]
+        C, R, _, _, _ = spline_frames(path, hr, 0.004)
         _HORN_AXES[sgn] = (C, R)
     return _HORN_AXES[sgn]
 
@@ -999,6 +1020,27 @@ def add_part(name, verts, faces, attrs, bone_weights):
     return ob
 
 
+def snout_z(z):
+    """The side sheet's head is turned a few degrees toward the viewer, so the front of its snout shows
+    the muzzle's front face and front corner; measured as if it were a true side view, that added
+    length and a forward slant to the snout (the user's reading). The snout is compressed toward the
+    eye from snout_turn.from_z by snout_turn.scale, which takes the turn back out."""
+    T = D["snout_turn"]
+    return np.where(z > T["from_z"], T["from_z"] + (z - T["from_z"]) * T["scale"], z)
+
+
+def warp_snout(objs, bones):
+    """Apply snout_z to every head part (its vertices and every shape key) and to the bones."""
+    for ob in objs:
+        keys = ob.data.shape_keys.key_blocks if ob.data.shape_keys else []
+        for data in [ob.data.vertices] + [k.data for k in keys]:
+            co = np.zeros(len(data) * 3, np.float32); data.foreach_get("co", co); co = co.reshape(-1, 3)
+            co[:, 1] = -snout_z(-co[:, 1])  # Blender's y is -z
+            data.foreach_set("co", co.ravel())
+    w = lambda p: (p[0], p[1], float(snout_z(np.array(p[2]))))
+    return [(n, w(h0), w(h1), par) for n, h0, h1, par in bones]
+
+
 def head_parts():
     """Build every head part as a Blender object. Returns the objects and the head's bones as
     (name, head, tail, parent) with the head bone's parent left as None, for the caller to attach."""
@@ -1155,8 +1197,9 @@ def head_parts():
         objs.append(add_part("Caruncle" + sd, v, f, {"_PART": [12] * len(v), "_A": [1] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, rigid(len(v))))
         # horn: a smooth tube with incised ring lines, starting buried in the roof; the roof plates are
         # sculpted up into its root (horn_fillet), so it grows out of the head rather than sitting on it
-        path = [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]
-        v, f, A, B = tube(path, HORN["radius"], around=24, step=0.001, grooves=HORN["grooves"])
+        hp, hr = horn_path()
+        path = [[sgn * p[0], p[1], p[2]] for p in hp]
+        v, f, A, B = tube(path, hr, around=24, step=0.001, grooves=HORN["grooves"])
         objs.append(add_part("Horn" + sd, v, f, {"_PART": [8] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
         # ear frill: an almond leaf lying close along the side of the head under the horn, pointing back and
         # up; cupped (pale hollow inside) with an orange rolled rim along its top edge, like a horse's ear laid back
@@ -1191,6 +1234,7 @@ def head_parts():
              ("tongue2", (0, 1.38, 1.66), (0, 1.34, 1.75), "tongue1"),
              ("tongue3", (0, 1.34, 1.75), (0, 1.31, 1.84), "tongue2")]
     bones += [(bn, h0, h1, "head") for bn, h0, h1 in lid_bones]
+    bones = warp_snout(objs, bones)
     return objs, bones
 
 

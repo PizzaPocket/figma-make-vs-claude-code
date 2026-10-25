@@ -78,8 +78,11 @@ def trunk_frames(step=0.01):
             z, y = z + (z - z1) / 0.02 * (-s), y + (y - y1) / 0.02 * (-s)
         w = smoothstep(t0, t0 + 0.3, sc)  # the tail's section is symmetric about its spine
         du, dv = du * (1 - w) + (du + dv) / 2 * w, dv * (1 - w) + (du + dv) / 2 * w
-        tip = min(1.0, (st[-1, 0] - sc) / tl["taper_length"]) ** tl["taper_power"]  # tapering to a point
-        du, dv = du * tip + 1e-3, dv * tip + 1e-3
+        if sc > t0:  # a gecko's tail: fat at the root, tapering steadily all the way to a point
+            r0 = (table(st, t0, 3) + table(st, t0, 4)) / 2
+            r = r0 * max(0.0, (st[-1, 0] - sc) / (st[-1, 0] - t0)) ** tl["taper_power"] + 1e-3
+            k = smoothstep(t0, t0 + 0.4, sc)
+            du, dv = du * (1 - k) + r * k, dv * (1 - k) + r * k
         P.append([0.0, y, z]); DU.append(du); DV.append(dv)
     P = np.array(P)
     i0 = int(np.searchsorted(s_all, t0))
@@ -215,6 +218,14 @@ def skin_setup():
     _SKIN["trunk"], _SKIN["parts"] = trunk, SK.pieces(B["anatomy"])
 
 
+def band(x):
+    """The shell's band coordinate at spine position x: one per plate band (shell.band_every)."""
+    K = np.array(B["shell"]["band_every"], float)
+    sg = np.linspace(0, 6, 601)
+    bcum = np.concatenate([[0], np.cumsum(np.diff(sg) / np.interp(sg[:-1], K[:, 0], K[:, 1]))])
+    return np.interp(x, sg, bcum)
+
+
 def skin_parts(ranges):
     """One skin over the trunk, bones and muscles (skin.py), skinned to the spine and limb bones, and
     the dark shell raised from it with a continuous rim round its edge."""
@@ -226,10 +237,6 @@ def skin_parts(ranges):
     skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": [20] * len(V), "_A": A, "_B": Bf, "_ZONE": Z}, W)
     idx, _, _, _ = trunk.local(V)
     sh = B["shell"]
-    K = np.array(sh["band_every"], float)  # [s, spacing]: the band coordinate counts bands along the spine
-    sg = np.linspace(0, 6, 601)
-    bcum = np.concatenate([[0], np.cumsum(np.diff(sg) / np.interp(sg[:-1], K[:, 0], K[:, 1]))])
-    band = lambda x: np.interp(x, sg, bcum)
     S, SF, src, ink, tint = SK.shell(V, F, Z, sh, SK.smooth_normals(V, F), trunk.s[idx], np.array(Bf), band)
     shell = H.add_part("Shell", S.tolist(), SF.tolist(), {"_PART": [13] * len(S), "_A": list(ink), "_B": list(tint), "_ZONE": [0] * len(S)},
                        [W[i] for i in src])
@@ -237,6 +244,45 @@ def skin_parts(ranges):
 
 
 # ---------------------------------------------------------------- limbs
+def spike_parts(ranges, band):
+    """The mane and the tail spikes (B["spikes"]): thin leaf-shaped blades on the shell's midline,
+    raked back, each moving with the spine bone under it."""
+    s_all, P, DU, DV, N, Bv = trunk_frames()
+    T = np.gradient(P, axis=0); T /= np.linalg.norm(T, axis=1)[:, None]
+    parts = []
+    for row in B["spikes"]["rows"]:
+        if row["every"] == "band":  # one per plate band, at its middle
+            k0, k1 = int(math.ceil(band(row["from_s"]))), int(math.floor(band(row["to_s"])))
+            sg = np.linspace(0, 6, 6001); bg = band(sg)
+            ss = [float(np.interp(k + 0.5, bg, sg)) for k in range(k0, k1)]
+        else:
+            ss = list(np.arange(row["from_s"], row["to_s"], row["every"]))
+        rake = math.radians(row["rake_deg"])
+        for n, s in enumerate(ss):
+            i = int(np.argmin(abs(s_all - s)))
+            hgt = table(row["height"], s)
+            L = hgt / math.sin(rake)
+            d = H.norm(T[i] * math.cos(rake) + N[i] * math.sin(rake))
+            e = H.norm(N[i] - (N[i] @ d) * d)  # across the blade, in its plane
+            base = P[i] + N[i] * (DU[i] + B["shell"]["thickness"] * 0.5) - d * 0.02  # rooted in the shell
+            W, th = row["width"] * min(1.0, hgt / 0.06) ** 0.3, row["thickness"]
+            verts, faces, around, nt = [], [], 8, 10
+            for a in range(nt + 1):
+                tt = a / nt
+                w = W * ((tt / 0.3) ** 0.6 if tt < 0.3 else ((1 - tt) / 0.7) ** 1.1)  # a leaf, widest a third of the way out
+                c = base + d * (L + 0.02) * tt
+                for j in range(around):
+                    ang = 2 * math.pi * j / around
+                    verts.append(tuple(c + e * w * math.cos(ang) + Bv[i] * (th * (1 - tt) + 0.002) * math.sin(ang)))
+            for a in range(nt):
+                for j in range(around):
+                    p0 = a * around + j; p1 = a * around + (j + 1) % around
+                    faces.append([p0, p1, p1 + around, p0 + around])
+            parts.append(H.add_part(f"Spike{row['name']}{n}", verts, faces, {"_PART": [13] * len(verts), "_A": [0.02] * len(verts), "_B": [0.25] * len(verts),
+                                    "_ZONE": [0] * len(verts)}, [trunk_weights(s, ranges)] * len(verts)))
+    return parts
+
+
 def mirror(p, sgn):
     return np.array([sgn * p[0], p[1], p[2]])
 
@@ -325,6 +371,7 @@ def main():
     objs, head_bones = H.head_parts()
     skin_setup()
     objs += skin_parts(ranges)
+    objs += spike_parts(ranges, band)
     neck_end = TR["bones"]["chain_forward"][-1][0]
     bones = tb + [(n, h, t, p or neck_end) for n, h, t, p in head_bones]
     for sgn in (1, -1):

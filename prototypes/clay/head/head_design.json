@@ -149,17 +149,14 @@
       "blink_steps": 6
     }
   },
+  "snout_turn": {
+    "note": "The side sheet draws the head turned a few degrees toward the viewer: the front of its snout (a darker band from the tip back to a crease at px 80-95) is the muzzle's front face and front corner. Measured as a true side view, that read as extra length and a forward slant. With the muzzle about 0.21 wide, a turn of about 25 degrees accounts for about 0.07 of the sheet's snout, so the snout is compressed toward the eye from z 1.72 by 0.78 (the tip from 2.02 to 1.95), which also stands its front up straighter (the user's reading).",
+    "from_z": 1.72,
+    "scale": 0.78
+  },
   "horn": {
-    "note": "The horn grows out of the roof: its root is sculpted into the roof plates, which swell up and wrap its base (a smooth union with fillet radius `fillet`), so the roof's top line runs on into the horn's top line. From there it sweeps back and up in a long, nearly straight line, tapering slowly, and curls up only in the last stretch. Smooth, with hairline incised rings.",
-    "path": [
-      [0.15, 1.855, 1.62],
-      [0.172, 1.887, 1.487],
-      [0.198, 1.957, 1.37],
-      [0.214, 1.999, 1.297],
-      [0.224, 2.046, 1.245],
-      [0.23, 2.096, 1.213]
-    ],
-    "radius": [0.05, 0.05, 0.04, 0.03, 0.02, 0.003],
+    "note": "The horn grows out of the roof: its root is sculpted into the roof plates, which swell up and wrap its base (a smooth union with fillet radius `fillet`), so the roof's top line runs on into the horn's top line. From there it is a simple S: rising out of the head, flattening as it sweeps back, curling up at the tip (s_curve). Smooth, with hairline incised rings.",
+    "radius": [0.05, 0.047, 0.04, 0.031, 0.02, 0.003],
     "grooves": {
       "every": 0.03,
       "depth": 0.0007,
@@ -167,7 +164,14 @@
       "start_s": 0.17,
       "end_frac": 0.88
     },
-    "fillet": 0.016
+    "fillet": 0.016,
+    "s_curve": {
+      "note": "From the side sheet and every official image: the horn comes out of the back of the head rising steeply, flattens as it sweeps back (a smooth downward arc), and curls up toward the tip (an upward arc): a simple S. Root (buried in the roof) at z 1.62, y 1.855; heading 48 degrees above straight back at the root, 7 at mid-length, 62 at the tip; length 0.485, fitted so the tip lands on the sheet's (px 283, py 116). It splays outward from x 0.15 to 0.23. An earlier path through six hand-placed points zigzagged.",
+      "root_zy": [1.62, 1.855],
+      "heading_deg": [48, 7, 62],
+      "length": 0.485,
+      "x": [0.15, 0.23]
+    }
   },
   "ear_frill": {
     "note": "Measured on the side sheet (frill crop, px 205-262, py 188-224): an almond leaf about 0.18 long and 0.06 wide, from its base at the back of the cheek (front-lower end) back and up to its tip under the horn. It lies close along the side of the head, its face turned outward (the side sheet shows its whole face), cupped like a horse's ear laid back: pale peach hollow inside, an orange rim, the top edge rolled out and over. Its top edge runs back under the horn.",

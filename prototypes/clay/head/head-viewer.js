@@ -31,7 +31,7 @@
             float pe = (1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0))) * (1.0 - vAB.z); // the overhang's underside is smooth skin
             col = mix(orange, line, pe * 0.22);
             float ear = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.410, vObj.y - 1.652)));
-            float pit = 1.0 - smoothstep(0.004, 0.008, length(vec2(vObj.z - 1.818, vObj.y - 1.505)));
+            float pit = 1.0 - smoothstep(0.004, 0.008, length(vec2(vObj.z - 1.796, vObj.y - 1.505)));
             col = mix(col, line * 0.5, max(ear, pit) * step(0.08, abs(vObj.x)));
             groove = pe * 0.5;
           }
