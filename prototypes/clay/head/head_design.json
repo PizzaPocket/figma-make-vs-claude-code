@@ -34,7 +34,7 @@
     ],
     "ridge_note": "The roof is a gable: two mirrored slopes falling from a crisp ridge down its whole length; the ridge is on the measured top profile and the shoulders drop below it (rows: z, drop at the shoulders). The plates are mirrored pairs meeting at the ridge.",
     "front": {
-      "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face is convex (the side sheet's notch at z 1.98 is the nose's underside, not a hollow in the face), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose. From above the front face is rounded across (convex: its middle 0.008 forward of its sides; more made the front ridge a shelf standing proud of the band behind it), and the front ridge's front edge follows that curve. Its bottom edge, the front lip edge, arcs down in the middle (0.03 lower than at the corners).",
+      "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face is convex (the side sheet's notch at z 1.98 is the nose's underside, not a hollow in the face), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose. From above the front face is rounded across (convex: its middle 0.025 forward of its sides; the roof's front band follows the same curve, so the front ridge runs on from it flush) and bulges forward in side profile (0.01, side sheet front outline), and the front ridge's front edge follows that curve. Its bottom edge, the front lip edge, arcs down in the middle (0.03 lower than at the corners).",
       "concave": 0.0,
       "corner_lift": 0.03,
       "block_back_z": 1.93,
@@ -43,10 +43,12 @@
         "eave_y": 1.37,
         "edge_round": 0.003,
         "edge_step": 0.003,
-        "taper": 0.03
+        "taper": 0.03,
+        "tuck_back": 0.006
       },
-      "convex": 0.008,
-      "lip_arc_power": 2
+      "convex": 0.025,
+      "lip_arc_power": 2,
+      "convex_side": 0.01
     }
   },
   "lower_jaw": {

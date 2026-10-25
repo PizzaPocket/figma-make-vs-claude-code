@@ -138,7 +138,8 @@ def front_setback(x, y):
     q = min(1.0, max(0.0, (y - lo) / (top - lo)))
     xo = abs(face_pt(z0, side_th(z0, min(max(y, lo + 1e-4), top - 1e-4)))[0]) or 1e-6
     across = max(0.0, 1 - (x / xo) ** 2) * (1 - smoothstep(0.8, 1.0, q))  # zero all round the outline, its peak included
-    return across * (F["convex"] - F["concave"] * math.sin(math.pi * q ** 0.8))
+    # convex forward both ways: rounded across from above, and bulging in side profile between the nose and the lip
+    return across * (F["convex"] + F.get("convex_side", 0.0) * math.sin(math.pi * q) - F["concave"] * math.sin(math.pi * q ** 0.8))
 
 
 def corner_lift(z, x, wb):
@@ -282,15 +283,19 @@ def front_ridge():
     rr = R["edge_round"]
     nu, nv = 48, 18
     rows = []
+    off = T  # the band stands this far out from the face, so the ridge reaches out as far to meet its edge with no gap
     for j in range(nv + 1):
         y = ye + (yt - ye) * (j / nv) ** 0.8
-        xo = abs(face_pt(z0, side_th(z0, min(y, yt - 1e-4)))[0])
+        xo = abs(face_pt(z0, side_th(z0, min(y, yt - 1e-4)))[0]) + off * min(1.0, (y - ye) / 0.01)
         row = []
         for i in range(nu + 1):
             x = (-1 + 2 * i / nu) * xo
             # thinning toward the bottom edge, which meets the orange nearly flush, with a small rounded step
             h = (R["edge_step"] + (T - R["edge_step"]) * smoothstep(0.0, R["taper"], y - ye)) * math.sqrt(max(0.0, 1 - (1 - min(1.0, (y - ye) / rr)) ** 2))
-            row.append((x, y, z0 + front_setback(x, y) + h))
+            # round its outer edge (sides and top) back over the face's front corner, tucking under the front band's
+            # open edge, so no orange shows at the corner between them
+            wrap_w = max(smoothstep(0.9, 1.0, abs(x) / xo if xo else 0.0), smoothstep(0.88, 1.0, j / nv))
+            row.append((x, y, z0 + front_setback(x, y) * (1 - wrap_w) + h * (1 - wrap_w) - R["tuck_back"] * wrap_w))
         rows.append(row)
     verts = [p for row in rows for p in row]
     W = nu + 1
@@ -529,9 +534,11 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
             for w in edge_samples(nv, 0.012):
                 v = wrap * w ** 1.3 if wrap is not True else -1 + 2 * w
                 z = zt + (za - zt) * abs(v)  # the joint runs straight from the ridge to the plate's lower end
-                if open_front and u == 0.0:
-                    z = zt  # an open front edge lies in the front plane, where the front ridge carries on from it
                 th = math.pi / 2 - v * (math.pi / 2 - tha)
+                if open_front and u == 0.0:
+                    # an open front edge follows the front face's convex curve, where the front ridge carries on from it
+                    xf, yf = face_pt(zt, th)
+                    z = zt + front_setback(xf, yf)
                 row.append((z, th, w))
         else:
             dl = d0 + gap / 2
