@@ -125,8 +125,8 @@ It is a long, nearly straight sweep back and up that barely tapers, then narrows
 
 **Nose (as the user reads the references): one extruded mass,** its section like the border of the Superman shield:
 - a flat top with square corners, short sides falling straight down, then two lower edges converging to a point;
-- it comes out of the snout's flat front face, below the roof's front edge and above the front lip, pitched upward (its axis rises 12 degrees toward the front);
-- it ends in a flat upright front face, so the whole shield shows from the front;
+- it comes out of the roof's front, just above the lip, its axis level so its front face aims straight forward and the whole shield shows from the front;
+- organically softened: rounded corners (radius 0.016), softly convex faces, and a rounded rim (radius 0.012) round the front face;
 - its back is buried in the snout;
 - below it, the main roof's front plate carries on down to the lip.
 

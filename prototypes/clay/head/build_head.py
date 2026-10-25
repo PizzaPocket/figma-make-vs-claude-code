@@ -209,10 +209,11 @@ def crest_height(z, th):
     return (h * (1 - u * u) ** 0.8 if abs(u) < 1 else 0.0), 0.0
 
 
-def shield(W, H, drop, r, n=16):
+def shield(W, H, drop, r, n=16, bulge=0.0):
     """The nose's section, like the border of the Superman shield: a flat top with square corners, short
     sides falling straight down, then two lower edges converging to a point at the bottom. Corners rounded
-    with radius r. Returns (x, v) points counter-clockwise from the bottom point, and each point's side:
+    with radius r; each straight edge swells outward by bulge (a fraction of its length), so the faces are softly
+    convex. Returns (x, v) points counter-clockwise from the bottom point, and each point's side:
     0 top, 1 upright side, 2 lower edge (the undersides, where the nostrils open)."""
     P = [(0.0, -H), (W / 2, -drop), (W / 2, 0.0), (-W / 2, 0.0), (-W / 2, -drop)]
     out, tag = [], []
@@ -237,7 +238,8 @@ def shield(W, H, drop, r, n=16):
             pts.append((p, tag[j])); continue
         a, b = np.array(out[j - 1]), np.array(out[(j + 1) % len(out)])
         m = max(2, int(np.linalg.norm(b - a) / 0.004))
-        pts += [(tuple(a + (b - a) * q / m), tag[j]) for q in range(1, m)]
+        nrm = np.array([b[1] - a[1], -(b[0] - a[0])]) / (np.linalg.norm(b - a) + 1e-9)  # outward (the outline runs counter-clockwise)
+        pts += [(tuple(a + (b - a) * q / m + nrm * bulge * np.linalg.norm(b - a) * math.sin(math.pi * q / m)), tag[j]) for q in range(1, m)]
     return [p for p, _ in pts], [g for _, g in pts]
 
 
@@ -247,7 +249,7 @@ def nose_part():
     the snout's front above the front lip, with a flat upright front face; its back sinks into the roof. The nostrils
     are slits cut into its two lower faces, near the front. _ZONE: nostril."""
     NS = D["nose"]
-    sec, tag = shield(NS["width"], NS["height"], NS["side_drop"], NS["corner_radius"])
+    sec, tag = shield(NS["width"], NS["height"], NS["side_drop"], NS["corner_radius"], bulge=NS.get("bulge", 0.0))
     p = math.radians(NS["pitch_deg"])
     ax = np.array([0.0, math.sin(p), math.cos(p)])      # forward and up
     up = np.array([0.0, math.cos(p), -math.sin(p)])     # the section's v direction
@@ -276,11 +278,15 @@ def nose_part():
                         nw = smoothstep(0.35, 0.8, g)
             ring.append(tuple(pt)); a_r.append(0.02); n_r.append(nw)
         rings.append(ring); A.append(a_r); NW.append(n_r)
-    # the front face: a narrow rounded bevel, then flat
-    last = np.array(rings[-1]); c = last.mean(0)
+    # the front face: its rim rounds over (a quarter round of radius front_round), then it is flat
+    last = np.array(rings[-1])
     fwd = np.array([0.0, 0.0, 1.0])
-    for f, dt in ((0.96, 0.003), (0.9, 0.004)):
-        rings.append([tuple(c + (q - c) * f + fwd * dt) for q in last]); A.append([0.0] * len(last)); NW.append([0.0] * len(last))
+    S = np.array(sec); M2 = len(S)
+    n2 = np.array([norm(np.array([S[(i + 1) % M2][1] - S[i - 1][1], -(S[(i + 1) % M2][0] - S[i - 1][0])])) for i in range(M2)])  # outward, in the section
+    rf = NS.get("front_round", 0.004)
+    for a in np.radians([20, 40, 60, 75, 90]):
+        ring = [tuple(q - (np.array([n2[i][0], 0, 0]) + up * n2[i][1]) * rf * (1 - math.cos(a)) + fwd * rf * math.sin(a)) for i, q in enumerate(last)]
+        rings.append(ring); A.append([0.0] * len(last)); NW.append([0.0] * len(last))
     verts, faces, AA, NN = [], [], [], []
     M = len(rings[0])
     for r, a_r, n_r in zip(rings, A, NW):

@@ -539,13 +539,13 @@
     "chamfer": 0.003
   },
   "nose": {
-    "note": "The nose is one extruded mass, its section like the border of the Superman shield: a flat top with square corners, short sides falling straight down, then two lower edges converging to a point. It comes out of the front of the roof, which slopes down to the front of the upper jaw, pitched upward, ending in a flat upright front face; its back is buried in the snout. Side sheet: its top front corner is the nose tip, about (2.02-2.03, 1.443). The nostrils are slits in its two lower faces (the undersides), near the front.",
-    "front_top_zy": [2.04, 1.452],
+    "note": "The nose is one extruded mass, its section like the border of the Superman shield: a flat top with square corners, short sides falling straight down, then two lower edges converging to a point. It comes out of the front of the roof, which slopes down to the front of the upper jaw, its axis level so its front face aims straight forward; organically softened: rounded corners, softly convex faces and a rounded rim round the front face; its back is buried in the snout. Side sheet: its top front corner is the nose tip, about (2.02-2.03, 1.443). The nostrils are slits in its two lower faces (the undersides), near the front.",
+    "front_top_zy": [2.036, 1.47],
     "width": 0.16,
-    "height": 0.075,
-    "side_drop": 0.02,
-    "corner_radius": 0.006,
-    "pitch_deg": 12,
+    "height": 0.095,
+    "side_drop": 0.025,
+    "corner_radius": 0.016,
+    "pitch_deg": 0,
     "length": 0.12,
     "nostril": {
       "note": "t: distance along the nose's axis from the front face (negative = back); across: position across each lower face (0 = keel, 1 = outer edge); half_width in those units",
@@ -555,6 +555,8 @@
       "half_width": [0.16, 0.05],
       "depth": 0.009
     },
-    "pitch_note": "it comes out of the snout's flat front face, below the roof's front edge, and is pitched upward: its axis rises 12 degrees toward the front."
+    "pitch_note": "its axis runs level, so the front face aims straight forward",
+    "bulge": 0.06,
+    "front_round": 0.012
   }
 }
