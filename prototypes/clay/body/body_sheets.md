@@ -20,7 +20,7 @@ has its own sheets in `../head/head_sheets.md`.
 | Mane | spines along the neck and back, on spring bones | to do |
 | Front legs and hands | shoulder sculpted into the trunk (dark patch), upper arm, forearm, compact hand: big hooked claws, high dewclaw | first pass |
 | Hind legs and feet | thigh + shin loft, long digitigrade foot loft, four splayed toes, heel spur, studs on top | first pass |
-| Wings | arm with square plates along the leading edge, five fingers, membrane with a scalloped trailing edge | to do |
+| Wings | arm with square plates along the leading edge, five fingers, membrane with a scalloped trailing edge | first pass |
 
 ## Bone, muscle, skin (the body's construction)
 
@@ -118,3 +118,17 @@ Patterns are laid out in model units along and around each part, so they stay th
 **From the side sheet:** the tail's spikes are thorns lying flat along its top. Each one's base is on the surface, its outer edge is convex, and its point faces back. They are about 2.4 times as long as they are tall. They are not raised blades.
 
 **Build:** each is the same leaf as a mane blade, but one-sided: the leaf's lower half sinks into the shell, and its axis lies 6° off the surface (the `thorn` shape in the tail row).
+
+## Wings (first pass)
+
+**From the side sheet:** the near wing is folded half open.
+- **Arm:** a broad plated band running from the shoulder back along the flank to the elbow.
+- **Forearm:** drops straight down to a low wrist, which has a thumb claw.
+- **Fingers:** four plated fingers fan up and back from the wrist to hooked claws. They are nearly parallel, with narrow strips of membrane between them.
+- **Membrane:** peach, scalloped between the tips (a sixth of the finger's length).
+
+All points are measured on the sheet. Out from the body, the arm lies on the flank (0.34–0.40) and the fan stands just outside the hind thigh (0.57).
+
+**Build:**
+- The bones are plated tubes with round joints, rigged as `wing_humerus` → `wing_forearm` → `wing_finger1-4` from the chest.
+- Each membrane panel is a grid between two spars, from the wrist out to the tips. Its trailing edge sags back between the tips, and it billows slightly outward. Its weights are split between the two spars.

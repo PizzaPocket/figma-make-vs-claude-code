@@ -29,7 +29,7 @@ Work top to bottom: the head first, because the neck and body join onto it. Tick
 - [ ] **Toes.** Sculpt the toes into the hands and feet; only the claws are separate pieces.
 - [ ] **Tail.** Build the hook at the tip and the row of tail spikes.
 - [ ] **Mane.** Not built.
-- [ ] **Wings.** Not built: an arm with square plates, five fingers, a scalloped membrane.
+- [ ] **Wings.** First pass built in the side sheet's folded pose (`wing` in body_design.json): the arm along the flank, the forearm down to a low wrist with a thumb claw, four plated fingers with claws, and the membrane scalloped between the tips. Still to do: posing (the official art raises them), membrane colour and thickness at the edges, and plates with depth.
 - [ ] **Widths.** Body widths are estimates; check them against the front and three-quarter art.
 
 ## Checks (before ticking anything)
