@@ -837,5 +837,131 @@
    "pose": "neutral",
    "clay": true
   }
+ ],
+ "legs": [
+  {
+   "label": "legs, side, plain clay",
+   "cam": [
+    6,
+    0.6,
+    -0.1
+   ],
+   "target": [
+    0,
+    0.45,
+    -0.1
+   ],
+   "fov": 24,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "legs, three-quarter front, plain clay",
+   "cam": [
+    4.2,
+    1.4,
+    3.4
+   ],
+   "target": [
+    0.2,
+    0.45,
+    -0.05
+   ],
+   "fov": 28,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "legs, three-quarter front",
+   "cam": [
+    4.2,
+    1.4,
+    3.4
+   ],
+   "target": [
+    0.2,
+    0.45,
+    -0.05
+   ],
+   "fov": 28,
+   "pose": "neutral"
+  },
+  {
+   "label": "front leg, front, plain clay",
+   "cam": [
+    0.9,
+    0.6,
+    3.2
+   ],
+   "target": [
+    0.4,
+    0.45,
+    0.5
+   ],
+   "fov": 24,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "JP design sheet (official)",
+   "ref": "{refs}/study/jp_design_sheet.jpg"
+  },
+  {
+   "label": "side sheet (official)",
+   "ref": "{refs}/clayref/t_ClayTemplateS978.jpg"
+  }
+ ],
+ "hindleg": [
+  {
+   "label": "hind leg, side",
+   "cam": [
+    3.2,
+    0.5,
+    -0.65
+   ],
+   "target": [
+    0.4,
+    0.4,
+    -0.65
+   ],
+   "fov": 26,
+   "pose": "neutral"
+  },
+  {
+   "label": "hind leg, side, plain clay",
+   "cam": [
+    3.2,
+    0.5,
+    -0.65
+   ],
+   "target": [
+    0.4,
+    0.4,
+    -0.65
+   ],
+   "fov": 26,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "hind leg, three-quarter back, plain clay",
+   "cam": [
+    2.4,
+    0.9,
+    -2.6
+   ],
+   "target": [
+    0.4,
+    0.35,
+    -0.7
+   ],
+   "fov": 28,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "JP design sheet (official)",
+   "ref": "{refs}/study/jp_design_sheet.jpg"
+  }
  ]
 }

@@ -400,9 +400,9 @@
       "iliac_crest": [0.2, 1.22, -0.42],
       "hip": [0.4, 0.9, -0.62],
       "ischium": [0.22, 0.84, -0.95],
-      "knee": [0.46, 0.33, -0.55],
-      "heel": [0.45, 0.08, -1.1],
-      "ball": [0.45, 0.045, -0.62]
+      "knee": [0.46, 0.46, -0.46],
+      "heel": [0.45, 0.22, -0.86],
+      "ball": [0.45, 0.05, -0.6]
     },
     "toes": {
       "count": 4,
@@ -420,11 +420,12 @@
       "blend": 0.03
     },
     "spur": {
-      "at": [0.45, 0.09, -1.14],
-      "direction": [0.0, -0.3, -1.0],
+      "at": [0.45, 0.25, -0.92],
+      "direction": [0.0, -0.5, -1.0],
       "length": 0.08,
       "radius": 0.022
-    }
+    },
+    "joints_why": "Digitigrade, like a cat's or a dog's: the knee forward at mid-height, the hock (heel) raised behind it to about a quarter of the hip's height with a dark spur on its back, and the metatarsus running down and forward to the toes (the JP design sheet, the only standing view of the hind leg; the side sheet's wing hides it)."
   },
   "anatomy": {
     "note": "Clay's body is built from the inside out: a skeleton of bones, muscles laid over it from origin to insertion, and one skin over everything (skin.py), so the shoulders grow out of the chest and back, and the haunches out of the hips and the tail. Quadruped anatomy as in a great cat (lion, tiger) for the legs; a reptile's tail root (caudofemoralis, as in lizards and dinosaurs); bird- and dinosaur-like feet. Left side; the right is mirrored. Each piece: from and to (model units), radii [out, across] where 'out' is measured along the hint direction (default: out from the body, +x), the blend radius k with its neighbours, the rig bones that move it, and its colour zone (0 dark, 0.5 orange, 1 cream; null takes the trunk's zone there). Bones show orange where they lie near the skin (the shin, the elbow, the wrist). Leg muscles are about 0.65-0.75 as wide side to side as they are deep, as in a cat; the shoulder cap and gluteals are flat layers over the blade and hip, so each shoulder and haunch reads as one mass. Neighbouring muscles blend over 0.07-0.12, so the shoulder and the haunch each read as one smooth mass, not separate balls; the shoulder's colour comes from the sheet's dark patch (the trunk's zones). The dark shell (zones.dark_region_px, on the body's upper side) covers whatever lies under it, muscle or trunk: the shoulder and the haunch each get a brown cap where the dark edge dips over them.",
@@ -455,17 +456,18 @@
         "name": "radius and ulna",
         "from": [0.4, 0.656, 0.219],
         "to": [0.41, 0.117, 0.539],
-        "r": [0.06, 0.045],
+        "r": [0.065, 0.075],
         "k": 0.04,
         "rig": {
           "forearm": 1
-        }
+        },
+        "why": "thick down to the wrist: the side sheet's forearm is a column about 0.2 wide in profile right down to a wrist that does not narrow"
       },
       {
         "name": "wrist",
         "from": [0.41, 0.13, 0.53],
         "to": [0.41, 0.1, 0.56],
-        "r": [0.058, 0.058],
+        "r": [0.075, 0.07],
         "k": 0.03,
         "rig": {
           "hand": 1
@@ -474,7 +476,7 @@
       {
         "name": "femur",
         "from": [0.4, 0.9, -0.62],
-        "to": [0.46, 0.33, -0.55],
+        "to": [0.46, 0.46, -0.46],
         "r": [0.065, 0.06],
         "k": 0.04,
         "rig": {
@@ -483,9 +485,9 @@
       },
       {
         "name": "tibia",
-        "from": [0.46, 0.33, -0.55],
-        "to": [0.45, 0.08, -1.1],
-        "r": [0.055, 0.045],
+        "from": [0.46, 0.46, -0.46],
+        "to": [0.45, 0.22, -0.86],
+        "r": [0.055, 0.05],
         "k": 0.04,
         "rig": {
           "shin": 1
@@ -493,13 +495,14 @@
       },
       {
         "name": "heel (calcaneus)",
-        "from": [0.45, 0.1, -1.08],
-        "to": [0.45, 0.09, -1.15],
-        "r": [0.05, 0.045],
+        "from": [0.45, 0.24, -0.86],
+        "to": [0.45, 0.27, -0.94],
+        "r": [0.05, 0.04],
         "k": 0.03,
         "rig": {
           "foot": 1
-        }
+        },
+        "why": "the point of the hock, behind the ankle joint"
       }
     ],
     "muscles": [
@@ -573,7 +576,7 @@
         "name": "forearm extensors",
         "why": "the front of the forearm: thick below the elbow, tapering to the slim wrist (side sheet)",
         "from": [0.41, 0.639, 0.288],
-        "to": [0.41, 0.267, 0.485],
+        "to": [0.41, 0.17, 0.52],
         "radii": [0.12, 0.13],
         "k": 0.07,
         "rig": {
@@ -585,7 +588,7 @@
         "name": "forearm flexors",
         "why": "the back of the forearm, cream on the side sheet from below the elbow to the wrist",
         "from": [0.41, 0.598, 0.183],
-        "to": [0.41, 0.18, 0.461],
+        "to": [0.41, 0.14, 0.49],
         "radii": [0.11, 0.12],
         "k": 0.07,
         "rig": {
@@ -623,7 +626,7 @@
         "name": "thigh (quadriceps and hamstrings together)",
         "why": "How to Draw and the limited edition draw the haunch as one round mass over the folded thigh, not separate front and back muscles",
         "from": [0.38, 1.0, -0.7],
-        "to": [0.47, 0.38, -0.56],
+        "to": [0.47, 0.5, -0.47],
         "radii": [0.14, 0.24],
         "k": 0.14,
         "rig": {
@@ -636,7 +639,7 @@
         "name": "hamstrings (biceps femoris)",
         "why": "fills the back of the haunch down to the top of the shin",
         "from": [0.25, 0.86, -0.92],
-        "to": [0.46, 0.3, -0.68],
+        "to": [0.46, 0.46, -0.6],
         "radii": [0.1, 0.12],
         "k": 0.12,
         "rig": {
@@ -663,7 +666,7 @@
         "name": "adductors",
         "why": "the inside of the thigh: from the underside of the pelvis (pubis and ischium, under the belly's midline) to the inner knee, a broad fan that ties the thigh to the belly, so there is no pit in the groin (it was 0.06 deep)",
         "from": [0.06, 0.68, -0.62],
-        "to": [0.4, 0.42, -0.58],
+        "to": [0.4, 0.46, -0.5],
         "radii": [0.13, 0.11],
         "hint": [0, 1, 0],
         "k": 0.18,
@@ -677,7 +680,7 @@
         "name": "flank fold",
         "why": "the fold of skin and muscle from the belly to the front of the knee (a cat's flank fold): fills the hollow in front of the thigh (0.04 deep)",
         "from": [0.16, 0.8, -0.3],
-        "to": [0.42, 0.45, -0.5],
+        "to": [0.42, 0.5, -0.45],
         "radii": [0.07, 0.09],
         "hint": [1, 0, 0],
         "k": 0.18,
@@ -691,7 +694,7 @@
         "name": "semitendinosus",
         "why": "the inner hamstring, from the ischium under the tail's root to the back of the knee: fills the hollow behind the thigh beside the tail (0.03 deep)",
         "from": [0.12, 0.8, -0.98],
-        "to": [0.42, 0.42, -0.68],
+        "to": [0.43, 0.46, -0.6],
         "radii": [0.09, 0.1],
         "k": 0.18,
         "rig": {
@@ -716,9 +719,9 @@
       {
         "name": "calf (gastrocnemius)",
         "why": "the back of the shin, orange like the rest of the hind leg in How to Draw (seen from behind, a cream calf read as a peg under the haunch), to the heel",
-        "from": [0.46, 0.4, -0.66],
-        "to": [0.45, 0.14, -1.06],
-        "radii": [0.1, 0.1],
+        "from": [0.46, 0.47, -0.58],
+        "to": [0.45, 0.27, -0.89],
+        "radii": [0.11, 0.11],
         "k": 0.07,
         "rig": {
           "shin": 1
@@ -728,9 +731,9 @@
       {
         "name": "shin front (tibialis cranialis)",
         "why": "the front of the shin, orange on the side sheet, from below the knee to the ankle",
-        "from": [0.47, 0.3, -0.6],
-        "to": [0.45, 0.12, -0.98],
-        "radii": [0.09, 0.07],
+        "from": [0.47, 0.43, -0.5],
+        "to": [0.45, 0.24, -0.8],
+        "radii": [0.09, 0.075],
         "k": 0.05,
         "rig": {
           "shin": 1
@@ -740,9 +743,9 @@
       {
         "name": "foot (metatarsals)",
         "why": "the long digitigrade foot lying along the ground (side sheet), as in birds and dinosaurs",
-        "from": [0.45, 0.08, -1.08],
-        "to": [0.45, 0.045, -0.62],
-        "radii": [0.08, 0.042],
+        "from": [0.45, 0.22, -0.86],
+        "to": [0.45, 0.05, -0.6],
+        "radii": [0.08, 0.05],
         "k": 0.04,
         "rig": {
           "foot": 1
@@ -782,7 +785,7 @@
       {
         "name": "tail",
         "from_s": 2.7,
-        "to_s": 5.3,
+        "to_s": 5.0,
         "every": "band",
         "rake_deg": 6,
         "shape": "thorn",

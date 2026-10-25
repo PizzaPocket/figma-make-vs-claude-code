@@ -168,3 +168,17 @@ Patterns are laid out in model units along and around each part, so they stay th
 The four use a wider blend (0.18), so they melt into the belly rather than sitting on it. The remaining crease, under the tail's root where the two inner hamstrings meet, is natural.
 
 **How I measured:** marching cubes at 0.02, then each surface point's depth below a 60-step Laplacian smoothing of the mesh. Clusters deeper than 0.025 are pits.
+
+## Lower legs (forearm, wrist, shin, ankle)
+
+**Foreleg:**
+- **On the side sheet:** the forearm is a column about 0.2 wide in profile, carried right down to a wrist that does not narrow. Below it a short, broad hand lies flat, with the toes in front.
+- **Before the fix:** the forearm muscles were ellipsoids ending in points above the wrist, leaving a thin, boneless-looking wrist.
+- **The fix:** the muscles now run down to the wrist, and the radius and ulna thicken toward it (0.065 → 0.075).
+
+**Hind leg:**
+- **References:** the side sheet's wing hides it. The hanging hind feet on the limited edition, the SE poster and the Umber render (house style) show a long metatarsus with the heel raised.
+- **Before the fix:** the heel sat on the ground 0.48 behind the toes, like a crouching frog.
+- **The fix:** the leg is now digitigrade, like a cat's or a dog's. The knee is forward at mid-height (0.46, z −0.46). The hock (heel) is raised behind it to about a quarter of the hip's height (0.22, z −0.86), with the spur on its back. The metatarsus runs down and forward to the toes (z −0.6). The calf and shin muscles are re-hung on the new joints and thickened.
+
+**Not used:** the Japanese design sheet, whose style differs from the rest of the official art.
