@@ -151,7 +151,11 @@
       "caruncle": {
         "note": "Not a bead: a small fleshy teardrop filling the inner corner between the two lid margins, lying on the eyeball, its point toward the corner, its round end toward the iris; pink, partly tucked under the lids.",
         "reach": 0.38,
-        "bulge": 0.1
+        "bulge": 0.1,
+        "tail_reach": 1.17,
+        "tail_width": 0.22,
+        "tail_note": "the teardrop carried on past the eyeball as a pink tail on the skin: from the visible inner corner of the opening to its tip at tail_reach r from the eye centre, tail_angle_deg below horizontal and forward (side sheet), half-width tail_width r, round where it leaves the corner and tapering to a point, rimmed dark",
+        "tail_angle_deg": 58
       },
       "blink_steps": 6,
       "blink_note": "Each lid turns about the canthal axis, so its margin travels across the eye at right angles to the line between the corners; the lids meet along that line, a little below mid-eye (the upper lid does the moving). Stored as 6 in-between shapes along the arc so the lid stays on the eyeball's surface all the way down."

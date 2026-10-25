@@ -62,6 +62,10 @@ The user reviews every step by eye. Their notes are the most valuable input, and
 - **The references decide.** When the model and the art disagree, the model is wrong.
 - Left and right are mirrored: model the left side and mirror it.
 - Organic, not mechanical. Plates and scales vary in size and follow the form; never use a regular grid or brick pattern.
+- **When the user names a part, ask what it is before building.** "Front ridge" was built three wrong ways (a bar, part of the nose, a separate shelf) before the user explained it: an extension of the roof's front. Restate your reading in one line and build the simplest version of that.
+- **Simple first.** When the user says a form is too complicated, rebuild it from fewer, plainer pieces, not by adding corrections to the complicated one.
+- **Check geometry numerically, not only by eye.** Probe which mesh is on top at a spot (a gap, a flap), and project measured landmarks (eye corners, lid margins) onto the reference. Both found causes that renders hid: the brown hanging below a lifted lip corner, an inner eye corner turned to 83° instead of 57°.
+- **Don't stop at a list of known faults.** If a render still shows a fault you can fix, fix it before reporting.
 
 ## Construction principles
 
@@ -81,6 +85,8 @@ The user reviews every step by eye. Their notes are the most valuable input, and
 - **Measure pattern rhythm.** Scan across the ink lines on the sheet to get each pattern's spacing (bands, plates, scales). Lay patterns out in model units, not normalised parameters, so sizes stay true on thick and thin parts. Put the pattern's wrap-around seam on a hidden side.
 - **Resolution must match the sharpest edge.** The mesh spacing must be finer than the narrowest crease or overhang, or it renders soft.
 - **Smooth, never stepped.** When carving or uniting surfaces (sockets, fillets), use a smooth minimum, and clamp it so it never cuts into a neighbouring part.
+- **One piece means one mesh.** A part that should read as continuous with another (the front ridge with the roof's front band) must be built as more rows of the same surface. A separate mesh fitted flush still reads as tacked on.
+- **Blink along the meridians.** Lids hinge on the canthal axis (the line between the corners, through the eyeball's centre); the margin sweeps across the eye at right angles to it. Store the blink as several in-between shapes along that arc: one straight-line shape cuts through the eyeball mid-blink.
 
 ## Sculpt from the inside out: bone, muscle, skin
 

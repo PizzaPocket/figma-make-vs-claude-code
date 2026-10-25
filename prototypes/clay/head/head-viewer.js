@@ -83,7 +83,7 @@
             col = mix(col, vec3(0.01), 1.0 - smoothstep(0.085, 0.095, a)); // large pupil
             rough = 0.08;
           }
-          if (isP(12.0) > 0.5) { col = srgb(vec3(226.0, 140.0, 150.0)); rough = 0.3; } // caruncle
+          if (isP(12.0) > 0.5) { col = mix(line * 0.6, srgb(vec3(226.0, 140.0, 150.0)), smoothstep(0.2, 0.45, vAB.x)); rough = 0.3; } // caruncle and tear tail, the tail rimmed dark
           if (isP(7.0) > 0.5) { float pl = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0)); col = mix(line * 0.6, mix(orange, line, pl * 0.22), max(smoothstep(0.2, 0.28, vAB.x), vAB.y)); } // lid: a heavy dark ring round the opening (only between the eye's corners)
           if (isP(8.0) > 0.5) { col = mix(dark * 1.15, dark * 0.8, smoothstep(0.6, 1.0, vAB.x)); col = mix(col, line, smoothstep(0.25, 0.7, vAB.y) * 0.85); rough = 0.35; } // smooth horn, incised ring lines inked
           if (isP(9.0) > 0.5) { // ear frill: pale peach hollow, orange rolled rim round the edge

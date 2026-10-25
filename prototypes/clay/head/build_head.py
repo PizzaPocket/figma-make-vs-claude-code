@@ -691,6 +691,52 @@ def caruncle(c, a, g, u, er):
     return verts, faces
 
 
+def tear_tail(c, a, g, u, er, sgn):
+    """The inner corner's teardrop carried on past the eyeball (side sheet: its tip hangs forward and down,
+    about 1.25 r from the eye centre, beyond the round of the eye): a pink tail laid on the skin, from the
+    corner along the same direction, round where it leaves the corner and tapering to a point, with a dark rim
+    (the eye's dark ring carried round it). Laid in side view; each point sits on whichever is outermost of the
+    carved face and the eyeball, just above it. _A: 1 along its middle, 0 at its edges."""
+    K = EYE["lids"]["caruncle"]
+    ang = math.radians(K["tail_angle_deg"])  # measured on the side sheet: forward and down from the eye centre
+    c2 = np.array([c[2], c[1]])
+    # it starts at the visible inner corner of the opening, where the margins meet, and runs to its tip
+    tq = -math.cos(math.radians(EYE["lids"]["inner_canthus_deg"]))
+    pu, pl = lid_margin(tq, True), -lid_margin(tq, False)
+    ab, ub = bent_frame(a, g, u, tq)
+    psi = math.acos(tq)
+    corner = np.asarray(c) + er * (ab * math.cos(psi) + math.sin(psi) * (g * math.cos((pu + pl) / 2) + ub * math.sin((pu + pl) / 2)))
+    k2 = np.array([corner[2], corner[1]])
+    tip = c2 + np.array([math.cos(ang), -math.sin(ang)]) * K["tail_reach"] * er  # +z forward, -y down
+    dv = norm(tip - k2)
+    nv = np.array([-dv[1], dv[0]])
+    L = np.linalg.norm(tip - k2)
+    w0 = K["tail_width"] * er
+    ns, nw = 14, 8
+    pts = []
+    for i in range(ns + 1):
+        s = -0.25 + 1.25 * i / ns  # starts a little back inside the corner, under the lids
+        w = w0 * (math.sqrt(max(0.0, 1 - ((s + 0.25) / 0.5 - 1) ** 2)) if s < 0.25 else (1 - (s - 0.25) / 0.75) ** 0.9)
+        for j in range(nw + 1):
+            v = -1 + 2 * j / nw
+            zy = k2 + dv * L * s + nv * w * v
+            z, y = zy
+            xf = abs(face_pt(z, side_th(z, y))[0])
+            xf = abs(carve_socket(np.array([[sgn * xf, y, z]]))[0][0])
+            dz, dy = z - c[2], y - c[1]
+            xs = abs(c[0]) + math.sqrt(max(0.0, (er * 1.01) ** 2 - dz * dz - dy * dy))
+            lift = 0.0025 * math.sqrt(max(0.0, 1 - v * v))
+            pts.append((sgn * (max(xf, xs) + 0.001 + lift), y, z))
+    faces = []
+    for i in range(ns):
+        for j in range(nw):
+            q = i * (nw + 1) + j
+            f = [q, q + 1, q + nw + 2, q + nw + 1]
+            faces.append(f if sgn > 0 else f[::-1])
+    A = [1 - abs(-1 + 2 * (k % (nw + 1)) / nw) for k in range(len(pts))]
+    return pts, faces, A
+
+
 def band_zs(z_front, z_back, base_n):
     """Stations for the roof: even spacing plus a tight pair at every band step so the steps stay crisp."""
     zs = list(np.linspace(z_front, z_back, base_n))
@@ -1131,7 +1177,9 @@ def head_parts():
             lid_bones.append((f"{bn}.{sd}", c, c + axis * 0.04))
         # caruncle: the fleshy teardrop in the inner corner
         v, f = caruncle(c, a, g, u, er)
-        objs.append(add_part("Caruncle" + sd, v, f, {"_PART": [12] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, rigid(len(v))))
+        objs.append(add_part("Caruncle" + sd, v, f, {"_PART": [12] * len(v), "_A": [1] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, rigid(len(v))))
+        v, f, A = tear_tail(c, a, g, u, er, sgn)
+        objs.append(add_part("TearTail" + sd, v, f, {"_PART": [12] * len(v), "_A": A, "_B": [0] * len(v), "_ZONE": [0] * len(v)}, rigid(len(v))))
         # horn: a smooth tube with incised ring lines, starting buried in the roof; the roof plates are
         # sculpted up into its root (horn_fillet), so it grows out of the head rather than sitting on it
         path = [[sgn * p[0], p[1], p[2]] for p in HORN["path"]]
