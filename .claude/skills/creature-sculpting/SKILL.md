@@ -248,6 +248,11 @@ Check: <what to compare; known differences>
 - One mass per joint: a flat layer over the shoulder blade or hip, then the big belly below it, blended wide (0.07-0.12). Two bellies side by side read as double shoulders or balloons.
 - The chest's section is a keel, not a barrel: widest up at the shoulders, so the legs hang close beside it, like a cat's.
 
+**Looking at a part**
+- Judge a plate or face square to its own plane. Clay's muzzle shield seen straight down the y axis foreshortened its steep front and hid the hammer-shaped broadening that defines his face. A camera along the shield's normal showed it at once.
+- A feature that sits "at the front edge" must follow the surface that is really there. The nose followed the top profile, which ended a plate row short of the shield's true front, and kept landing a row back until it was laid along the measured front shelf.
+- A face that is "pitched forward" slopes down toward the tip, foot ahead of top. Leaned the other way it undercuts into a hood with a dark slot beneath.
+
 **Hands and feet**
 - The front hands are compact, with big hooked claws and a high dewclaw.
 - The hind feet are long and digitigrade, with a heel spur and studs along the top.

@@ -395,3 +395,13 @@ Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout co
 ### Eye at rest (walkthrough)
 - **Lid:** the upper lid rests only 0.12 closed (it was 0.26).
 - **Gaze:** points straight out with a little forward and slightly down (`eye.gaze` [0.98, -0.12, 0.12]), so from the side the iris sits centred in the round of the opening, as a horse's eye does at rest. With the old gaze (a little up, more forward) the iris sat high and forward, white showing below and behind it, and he seemed to peer up toward the top of his head.
+
+### Upper muzzle as a hammer; the shield one piece; the lion's nose on its front edge (user)
+- **Look square to the shield's plane.** The `topview` views look down the shield's normal (about 27° off straight down), not down the y axis. Seen straight down, the steep front slope foreshortens and the hammer disappears.
+- **Hammer:** seen square to the shield, the upper muzzle waists in to 0.126 at z 1.85 and broadens to 0.163 (top) / 0.17 (low) at the front (`upper_head.rows`, `hammer_note`). The front corners are cut across by a straight chamfer with softened ends (`muzzle_taper.corner_shape` "chamfer"), angular but not a box corner. The low width is barely more than the top width at the front, so the shield does not fold down over the sides there.
+- **Shield, one solid piece** (`muzzle_shield()`): the face's own loft, cut to the region inside the plate edge, subdivided and raised by the shield's thickness with its edge rounded. Its plating is carved into it. The old ring-built shell and its tacked-on front cap and skirt are gone.
+- **Lion's nose:**
+  - **Section:** a rounded ridge (squareness 3.5), 25% wider than before (cap half-width 0.052) and standing 0.046 proud. At squareness 7 the bridge's top fluted out into a box at the cap.
+  - **Placement:** the cap sits almost on the shield's front edge. Ahead of the top profile the nose runs on along the shield's measured front shelf (`lion_nose.front_run`), and its face lands 0.022 along it.
+  - **Cap face:** a plane pitched forward 30° from upright and sloping down toward the tip, so its foot is ahead of its top. It is domed out 0.009 so it reads slightly convex. Leaning the other way, it undercut into a hood.
+  - **Nostrils:** commas on the side-front edges, where the face turns into the sides (path in fractions of the cap's half-width and of the face's height). They are cut along the face's normal and in from the side.

@@ -953,5 +953,61 @@
    "label": "worried, mouth",
    "pose": "worried"
   }
+ ],
+ "topview": [
+  {
+   "label": "muzzle shield, square to its plane, plain clay",
+   "cam": [
+    0.0,
+    3.806,
+    6.352
+   ],
+   "target": [
+    0.0,
+    1.55,
+    1.89
+   ],
+   "fov": 7.0,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "muzzle shield, square to its plane",
+   "cam": [
+    0.0,
+    3.806,
+    6.352
+   ],
+   "target": [
+    0.0,
+    1.55,
+    1.89
+   ],
+   "fov": 7.0,
+   "pose": "neutral"
+  },
+  {
+   "label": "head, front three-quarter above",
+   "cam": [
+    1.2,
+    2.6,
+    3.0
+   ],
+   "target": [
+    0,
+    1.55,
+    1.8
+   ],
+   "fov": 16,
+   "pose": "neutral"
+  },
+  {
+   "label": "top-view painting (official)",
+   "ref": "{refs}/study/top_head.jpg"
+  },
+  {
+   "label": "top shot (official)",
+   "ref": "{refs}/clayref/ClayTopShot.png"
+  }
  ]
 }

@@ -230,7 +230,10 @@ def muzzle_taper(z):
     f = 1 - (1 - MT["tip_width"]) * t ** MT["power"]
     tc = (z - (z0 - MT["corner_radius"])) / MT["corner_radius"]
     if tc > 0:
-        f *= MT["corner_min"] + (1 - MT["corner_min"]) * math.sqrt(max(0.0, 1 - min(tc, 1.0) ** 2))
+        if MT.get("corner_shape") == "chamfer":  # a straight cut across the corner, its ends softened
+            f *= 1 - (1 - MT["corner_min"]) * smoothstep(0.0, 0.25, tc) * min(tc, 1.0)
+        else:
+            f *= MT["corner_min"] + (1 - MT["corner_min"]) * math.sqrt(max(0.0, 1 - min(tc, 1.0) ** 2))
     return f
 
 
@@ -376,84 +379,96 @@ def profile_sd(Q):
     return s_out, d_out
 
 
-def muzzle_shield():
-    """The muzzle shield: one solid piece over the top of the head from the snout's front back to the roof's
-    end, its edge rounded all round, wrapping down over the front of the snout (front_skirt). Its plating is
-    carved into it, like an ankylosaur's fused skull armour: grooves at the band joints, down the ridge and
-    along the rim row, and a low dome in each tile (muzzle_shield). Returns verts, faces, _A (distance to the
+def muzzle_shield(V, F):
+    """The muzzle shield: one solid piece raised from the face itself, over the region above its edge line
+    (shield_eave_y: back along the sides and across the front face at the same height), so the top, the angular
+    front corners and the upper front are one continuous surface with no seams or fitted front cap. Lifted by its
+    thickness along the face's smoothed normals, rounding down onto the face at its edge (edge_round), with its
+    plating carved in like an ankylosaur's fused skull armour: grooves at the band joints, down the ridge and along
+    the rim row (roof_plates.layout), and a low dome in each tile. Returns verts, faces, _A (distance to the
     nearest groove or edge, where the shader darkens), _B (tile tint)."""
     SH = D["muzzle_shield"]; L = PLATES["layout"]["rows"]
     je, d_row, jr = L[0]["joint_every"], L[0]["d"][1], L[1]["joint_every"]
-    T, under, inset, K = SH["thickness"], SH["under"], SH["inset"], SH["K"]
-    G = SH["groove"]
-    z0 = UPPER[0, 0]
-    zs = np.arange(z0, ROOF["back_z"] - 1e-9, -SH["dz"])
+    T, under, G = SH["thickness"], SH["under"], SH["groove"]
+    V = np.asarray(V, float)
+    F = np.array([[p[0], p[k], p[k + 1]] for p in F for k in range(1, len(p) - 1)])  # quads and fans as triangles
+    def dist(P):  # how far inside the shield's region: above its edge line, in front of its back end
+        ye = np.array([shield_eave_y(z) for z in P[:, 2]])
+        return np.minimum(P[:, 1] - ye - SH["edge_gap"], P[:, 2] - ROOF["back_z"])
+    near = dist(V) > -0.03
+    F = F[near[F].any(axis=1)]
+    for _ in range(SH["subdivide"]):  # split each triangle into four, so the grooves and the edge are smooth
+        mid, newV, newF = {}, list(V), []
+        def m(i, j):
+            k = (min(i, j), max(i, j))
+            if k not in mid:
+                mid[k] = len(newV); newV.append((V[i] + V[j]) / 2)
+            return mid[k]
+        for i, j, k in F:
+            ij, jk, ki = m(i, j), m(j, k), m(k, i)
+            newF += [[i, ij, ki], [ij, j, jk], [ki, jk, k], [ij, jk, ki]]
+        V, F = np.array(newV), np.array(newF)
+    d = dist(V)
+    inside = d > 0
+    keep = inside[F].any(axis=1)
+    F = F[keep]
+    # snap each outside vertex onto the edge line along its edges to inside neighbours, so the edge is smooth
+    Ek = np.vstack([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]]); Ek = np.vstack([Ek, Ek[:, ::-1]])
+    Ek = Ek[~inside[Ek[:, 0]] & inside[Ek[:, 1]]]
+    o, i = Ek[:, 0], Ek[:, 1]
+    t = (-d[o] / (d[i] - d[o]))[:, None]
+    acc = np.zeros_like(V); cnt = np.zeros(len(V))
+    np.add.at(acc, o, V[o] + (V[i] - V[o]) * t); np.add.at(cnt, o, 1)
+    V = V.copy(); V[cnt > 0] = acc[cnt > 0] / cnt[cnt > 0][:, None]; d = np.where(cnt > 0, 0.0, d)
+    used = np.unique(F); remap = -np.ones(len(V), int); remap[used] = np.arange(len(used))
+    # smooth outward normals
+    N = np.zeros_like(V)
+    fn = np.cross(V[F[:, 1]] - V[F[:, 0]], V[F[:, 2]] - V[F[:, 0]])
+    for k in range(3):
+        np.add.at(N, F[:, k], fn)
+    E = np.vstack([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]]); E = np.vstack([E, E[:, ::-1]])
+    for _ in range(4):
+        accn = np.zeros_like(N)
+        for k in range(3):
+            accn[:, k] = np.bincount(E[:, 0], weights=N[E[:, 1], k], minlength=len(V))
+        N = 0.5 * N + 0.5 * accn / np.maximum(np.linalg.norm(accn, axis=1), 1e-12)[:, None] * np.linalg.norm(N, axis=1)[:, None]
+    N /= np.maximum(np.linalg.norm(N, axis=1), 1e-12)[:, None]
+    if np.mean(N[used] @ np.array([0.0, 1.0, 0.0])) < 0:
+        N = -N
+    Vu, Nu, du = V[used], N[used], np.clip(d[used], 0.0, None)
+    # the plating, in profile coordinates (s along the top profile from the front edge, depth d below it)
+    sv, dv = profile_sd(Vu[:, [2, 1]])
+    eds = {}
     tint = lambda k: (math.sin(k * 12.9898) * 43758.5453) % 1.0
-    rings = []  # (outer K, inner K, A K, B K)
-    for z in zs:
-        the = shield_eave_th(z)
-        ths = the + (math.pi - 2 * the) * np.arange(K) / (K - 1)
-        F = np.array([face_pt(z, th) for th in ths]); Nn = np.array([face_normal(z, th) for th in ths])
-        acc = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(F, axis=0), axis=1))])
-        de = np.minimum(acc, acc[-1] - acc)
-        de = np.minimum(de, (z - ROOF["back_z"]) * 1.0)
-        sv, dv = profile_sd(np.stack([np.full(K, z), F[:, 1]], 1))
-        ed = dv.max()  # the eave's depth at this station
-        rim = ed - d_row >= PLATES["layout"].get("min_rim", 0.025)
-        outer, inner, A, B, E = [], [], [], [], []
-        for k in range(K):
-            x, y = F[k]; nx, ny = Nn[k]; sk, dk = sv[k], dv[k]
-            band = (not rim) or dk < d_row
-            if band:  # the top bands: joints across every je (none at the front edge), the ridge down the middle
-                gd = [abs(sk - je * max(1, round(sk / je)))] + ([abs(x)] if sk > je else [])
-                fs, fd = (sk / je) % 1.0, min(1.0, dk / (d_row if rim else max(ed, 1e-6)))
-                tk = int(sk // je) * 2 + (x > 0)
-            else:  # the rim row: square marginal scutes, joints every jr
-                gd = [abs(sk - jr * round(sk / jr))]
-                fs, fd = (sk / jr) % 1.0, (dk - d_row) / max(ed - d_row, 1e-6)
-                tk = 100 + int(sk // jr) * 2 + (x > 0)
-            if rim:
-                gd.append(abs(dk - d_row))
-            gmin = min(gd)
-            dome = SH["dome"] * math.sin(math.pi * fs) ** 0.6 * math.sin(math.pi * min(max(fd, 0.0), 1.0)) ** 0.6
-            g = 1 - smoothstep(0.0, G["width"], gmin)
-            edge = math.sqrt(min(1.0, max(0.0, de[k] / SH["edge_round"])))
-            h = (T + dome - G["depth"] * g) * edge
-            n3 = np.array([nx, ny, 0.0])
-            q = horn_fillet(np.array([x + nx * (under + h), y + ny * (under + h), z]), n3, edge)
-            outer.append(q); inner.append(np.array([x - nx * inset, y - ny * inset, z]))
-            A.append(min(gmin, de[k])); B.append(tint(tk)); E.append(edge)
-        rings.append((outer, inner, A, B))
-        if len(rings) == 1:
-            E0 = np.array(E)
-    # the front: carried on down over the snout's front face to its rounded bottom edge (front_skirt)
-    o0, i0 = rings[0][0], rings[0][1]
-    so = np.array(front_skirt([tuple(p) for p in o0], under, T))
-    si = np.array(front_skirt([tuple(p) for p in i0], -inset, 0.0))
-    # its thickness rounds off like the rest of the shield's edge: toward the side ends (where the top ring's edge
-    # has already rounded off) and toward its bottom edge
-    full = np.concatenate([np.array(o0)[None], so])
-    seg = np.linalg.norm(np.diff(full, axis=0), axis=2)
-    dist_b = np.cumsum(seg[::-1], axis=0)[::-1]  # along each column, to the bottom row
-    dist_b = np.concatenate([dist_b[1:], np.zeros((1, K))])
-    f = E0[None, :] * np.sqrt(np.clip(dist_b / SH["edge_round"], 0.0, 1.0))
-    so = si + (so - si) * f[..., None]
-    front = [(list(map(np.array, a)), list(map(np.array, b)), [0.02] * K, [tint(0)] * K) for a, b in zip(so, si)]
-    rings = front[::-1] + rings
-    verts, faces, AA, BB = [], [], [], []
-    for outer, inner, A, B in rings:
-        verts += [tuple(p) for p in outer] + [tuple(p) for p in inner[::-1]]
-        AA += list(A) + [0.0] * K; BB += list(B) + list(B[::-1])
-    M = 2 * K
-    for r in range(len(rings) - 1):
-        for i in range(M):
-            j = (i + 1) % M
-            faces.append([r * M + i, r * M + j, (r + 1) * M + j, (r + 1) * M + i])
-    for r in (0, len(rings) - 1):  # close both ends: the rim from the outer layer to the inner
-        for i in range(K - 1):
-            f = [r * M + i, r * M + i + 1, r * M + M - 2 - i, r * M + M - 1 - i]
-            faces.append(f if r else f[::-1])
-    return verts, faces, AA, BB
+    out, A, B = [], [], []
+    for k in range(len(Vu)):
+        x = Vu[k, 0]; sk, dk = sv[k], dv[k]
+        zk = Vu[k, 2]
+        key = round(sk, 2)
+        if key not in eds:  # the eave's depth at this s: where the edge line meets the profile's normal
+            zz, yy = sv_point(max(sk, 0.0), 0.0)
+            ye = shield_eave_y(zz)
+            eds[key] = max(0.0, yy - ye)
+        ed = eds[key]
+        rim = ed - d_row >= PLATES["layout"].get("min_rim", 0.025) and sk > 0
+        if sk <= je or (not rim) or dk < d_row:  # the top bands (the front band runs on down the front unbroken)
+            gd = ([abs(sk - je * max(1, round(sk / je)))] if sk > je * 0.5 else [1.0]) + ([abs(x)] if sk > je else [])
+            fs, fd = (max(sk, 0.0) / je) % 1.0, min(1.0, max(dk, 0.0) / (d_row if rim else max(ed, 1e-6)))
+            tk = int(max(sk, 0.0) // je) * 2 + (x > 0)
+        else:  # the rim row: square marginal scutes
+            gd = [abs(sk - jr * round(sk / jr))]
+            fs, fd = (sk / jr) % 1.0, (dk - d_row) / max(ed - d_row, 1e-6)
+            tk = 100 + int(sk // jr) * 2 + (x > 0)
+        if rim and sk > je:
+            gd.append(abs(dk - d_row))
+        gmin = min(gd)
+        dome = SH["dome"] * math.sin(math.pi * fs) ** 0.6 * math.sin(math.pi * min(max(fd, 0.0), 1.0)) ** 0.6 if sk > 0 else 0.0
+        g = 1 - smoothstep(0.0, G["width"], gmin)
+        edge = math.sqrt(min(1.0, du[k] / SH["edge_round"]))
+        h = under * 0.5 + (T + dome - G["depth"] * g) * edge
+        q = horn_fillet(Vu[k] + Nu[k] * h, Nu[k], edge)
+        out.append(tuple(q)); A.append(min(gmin, du[k])); B.append(tint(tk))
+    return out, remap[F].tolist(), A, B
 
 
 def lion_nose():
@@ -472,8 +487,15 @@ def lion_nose():
     pr = profile()
     nsup, sink, NA = NS["squareness"], NS["sink"], 72
     rings = []
-    for sv_ in np.linspace(s_root, 0.0, 130):  # on past the face, to be cut back to it
-        zc, yc = sv_point(sv_, 0.0)
+    # ahead of the top profile (s < 0) the nose runs on along the shield's front shelf (front_run, the shield top's
+    # centre line in side view), out to the hammer's front edge where the shield turns down
+    run = np.array(NS["front_run"]); run_s = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(run, axis=0), axis=1))])
+    def centre(sv_):
+        if sv_ >= 0:
+            return sv_point(sv_, 0.0)
+        return sv_point(0.0, 0.0) + np.array([np.interp(-sv_, run_s, run[:, k]) for k in (0, 1)]) - run[0]
+    for sv_ in np.linspace(s_root, s_front - 0.03, 150):  # on past the face, to be cut back to it
+        zc, yc = centre(sv_)
         n = np.array([np.interp(sv_, pr["s"], pr["N"][:, k]) for k in (0, 1)]); n = n / np.linalg.norm(n)
         out = -n  # outward from the head, in side view (z, y)
         base = np.array([0.0, yc, zc]) + np.array([0.0, out[1], out[0]]) * (SH["under"] + SH["thickness"] - roof_t(zc)[0])
@@ -490,30 +512,43 @@ def lion_nose():
         rings.append(ring)
     V = np.array([p for r in rings for p in r])
     M = len(rings[0])
-    # the leather cap's face: an upright plane (facing forward, as a lion's nose leather does) through the cap's top
-    # front corner at s_front, its edge rounded over bev (a smooth minimum), so the face reads as its own plane
-    zt, yt = sv_point(s_front, 0.0)
-    z_face = zt + (SH["under"] + SH["thickness"]) * 0.5
-    dz = V[:, 2] - z_face
-    hh = np.clip(0.5 + 0.5 * dz / bev, 0.0, 1.0)
-    V[:, 2] = V[:, 2] * (1 - hh) + z_face * hh - bev * hh * (1 - hh)  # polynomial smooth min of z and z_face
-    on_face = V[:, 2] > z_face - 0.002
+    # the leather cap's face: a plane pitched forward by face_pitch (sloping down toward the muzzle's tip, its foot ahead
+    # of its top, never undercut) through
+    # the cap's mid height at s_front, domed out a little (face_dome) so it is slightly convex, its edge rounded over
+    # bev (a smooth minimum), so the face reads as its own plane
+    zt, yt = centre(s_front)
+    a_ = math.radians(NS["face_pitch"])
+    nf = np.array([0.0, math.sin(a_), math.cos(a_)])  # facing forward and a little up: it pitches down to the tip
+    p0 = np.array([0.0, yt + (SH["under"] + SH["thickness"]) + 0.5 * float(hf(s_front)), zt + (SH["under"] + SH["thickness"]) * 0.5])
+    R = float(wf(s_front))
+    def face_d(P):
+        rel = P - p0; d = rel @ nf
+        ip = rel - np.outer(d, nf)
+        r2 = (ip[:, 0] / R) ** 2 + (ip[:, 1] / (0.7 * R)) ** 2
+        return d - NS["face_dome"] * np.clip(1 - r2, 0.0, 1.0)
+    e = face_d(V)
+    hh = np.clip(0.5 + 0.5 * e / bev, 0.0, 1.0)
+    V += np.outer(e * (1 - hh) - bev * hh * (1 - hh) - e, nf)  # polynomial smooth min of the distance and 0
+    e = face_d(V)
     NW = np.zeros(len(V))
+    on_face = e > -0.002
     yf = V[on_face, 1]; y0, y1 = yf.min(), yf.max()
-    N_ = NS["nostril"]; C = np.array(N_["path"])  # (x, fraction up the face) on the cap's face
-    for i in np.where(V[:, 2] > z_face - bev)[0]:
-        q = np.array([abs(V[i, 0]), (V[i, 1] - y0) / max(y1 - y0, 1e-6)])
+    N_ = NS["nostril"]; C = np.array(N_["path"])  # (fraction of the cap's half-width out, fraction up the face)
+    for i in np.where(e > -2.5 * bev)[0]:  # on the face and round its side-front edge
+        q = np.array([abs(V[i, 0]) / R, (V[i, 1] - y0) / max(y1 - y0, 1e-6)])
+        sc = np.array([R, y1 - y0])
         best, tb = 1e9, 0.0
         for k in range(len(C) - 1):
-            a0, b0 = C[k], C[k + 1]; ab = (b0 - a0) * np.array([1.0, y1 - y0]); qq = (q - a0) * np.array([1.0, y1 - y0])
+            a0, b0 = C[k], C[k + 1]; ab = (b0 - a0) * sc; qq = (q - a0) * sc
             t = min(1.0, max(0.0, qq @ ab / (ab @ ab)))
             dd = np.linalg.norm(qq - ab * t)
             if dd < best:
                 best, tb = dd, (k + t) / (len(C) - 1)
         wN = N_["half_width"][0] + (N_["half_width"][1] - N_["half_width"][0]) * tb
         g = smoothstep(0.0, 1.0, max(0.0, 1 - best / wN))
-        if g > 0:  # cut back into the nose
-            V[i, 2] -= N_["depth"] * g
+        if g > 0:  # cut back into the nose, along the face's normal and in from its side
+            cut = nf + np.array([math.copysign(0.5 * smoothstep(0.7, 1.0, q[0]), V[i, 0]), 0.0, 0.0]); cut /= np.linalg.norm(cut)
+            V[i] -= cut * N_["depth"] * g
             NW[i] = smoothstep(0.3, 0.75, g)
     faces = []
     for k in range(len(rings) - 1):
@@ -612,32 +647,6 @@ def side_th(z, y):
         mid = (lo + hi) / 2
         lo, hi = (mid, hi) if face_pt(z, mid)[1] < y else (lo, mid)
     return (lo + hi) / 2
-
-
-def front_skirt(front_row, under, T):
-    """The roof's front: the front band carried on down over the snout's front face as one smooth piece, lying
-    on the slightly convex front at the plate's thickness, down to a level bottom edge at the overhang's lowest
-    height (eave_y) right across to the front corners, where it rolls in to the orange muzzle in a rounded edge,
-    as the roof's edge does all round. Where the band's front edge is already down at that height (its lower
-    ends, at the corners) the rows stay on it."""
-    ye = D["upper_head"]["front"]["ridge"]["eave_y"]
-    step = D["upper_head"]["front"]["ridge"]["edge_step"]
-    z0 = UPPER[0, 0]
-    K = 10
-    rows = []
-    for k in range(1, K + 1):
-        f = k / K
-        row = []
-        for x0, y0, zp in front_row:
-            reach = smoothstep(0.0, 0.02, y0 - ye)  # eases out toward the corners, where the edge is already low
-            y = y0 + (ye - y0) * f if y0 > ye else y0
-            xo = abs(face_pt(z0, side_th(z0, min(max(y, interp(UPPER, z0, 2) + 1e-4), face_pt(z0, math.pi / 2)[1] - 1e-4)))[0]) + under + T
-            x = x0 + (math.copysign(min(abs(x0), xo), x0) - x0) * reach
-            zt = z0 + front_setback(x, y) + under + T
-            row.append((x, y, zp + (zt - zp) * smoothstep(0.0, 0.3, f)))  # all of it comes onto the front face, closing the corners
-        rows.append(row)
-    rows.append([(x, y - 0.002, z - step) for x, y, z in rows[-1]])  # the bottom edge rolls in to the face
-    return rows
 
 
 def eye_seat(sgn):
@@ -1069,7 +1078,7 @@ def head_parts():
         key.data.foreach_set("co", to_blender(V + expression_offsets(V, act["terms"])).astype(np.float32).ravel())
 
     # the muzzle shield: one solid piece with its plating carved in, and the lion's nose rising out of it
-    v, f, A, B = muzzle_shield()
+    v, f, A, B = muzzle_shield(V, f)
     objs.append(add_part("Shield", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
     v, f, A, B, NW = lion_nose()
     objs.append(add_part("Nose", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
