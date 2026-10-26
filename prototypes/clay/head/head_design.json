@@ -34,6 +34,7 @@
       [1.36, 1.872, 1.79, 0.208, 0.224]
     ],
     "squareness": 5.0,
+    "muzzle_taper": {"from_z": 1.72, "tip_width": 0.86, "power": 2.2, "corner_radius": 0.03, "corner_min": 0.88, "note": "Bone and muscle, not a box (user: square corners are not believable). The flat top is the nasal bones, the steep sides the upper jaw's bones, and the front the premaxilla: a rounded U in top view (ClayTopShot, the covers). So the muzzle narrows from the eye forward in one long convex curve to 0.86 of its width at the tip, and a small radius (0.03) rounds the front corners. An earlier try narrowed only the last 0.08 to 0.62: a pinched, concave beak under the wider roof plates."},
     "ridge": [
       [2.017, 0.045],
       [1.6, 0.045],

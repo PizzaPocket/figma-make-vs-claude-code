@@ -169,6 +169,20 @@ def corner_lift(z, x, wb):
     return F["corner_lift"] * smoothstep(F["block_back_z"], UPPER[0, 0], z) * min(1.0, abs(x) / wb) ** F.get("lip_arc_power", 2)
 
 
+def muzzle_taper(z):
+    """Width factor for the front muzzle in top view (upper_head.muzzle_taper): one long convex curve from the eye to
+    the tip, narrowing slowly at first and faster toward the front (the premaxilla's rounded U), then a small radius
+    rounding the front corners. Convex all the way, so the roof and its plates, built on the face, round with it."""
+    MT = D["upper_head"]["muzzle_taper"]
+    z0 = UPPER[0, 0]
+    t = min(1.0, max(0.0, (z - MT["from_z"]) / (z0 - MT["from_z"])))
+    f = 1 - (1 - MT["tip_width"]) * t ** MT["power"]
+    tc = (z - (z0 - MT["corner_radius"])) / MT["corner_radius"]
+    if tc > 0:
+        f *= MT["corner_min"] + (1 - MT["corner_min"]) * math.sqrt(max(0.0, 1 - min(tc, 1.0) ** 2))
+    return f
+
+
 def face_pt(z, th):
     """Point on the face at station z, angle th (0 = left lip edge, pi/2 = top, pi = right lip edge).
     Boxy cross-section (flat top, steep sides, cheeks wider than the top), then the brushes."""
@@ -176,7 +190,7 @@ def face_pt(z, th):
     b = top - low
     c, s = math.cos(th), math.sin(th)
     yy = b * abs(s) ** (2 / SQ)
-    a = wb + (wt - wb) * (yy / b) ** 1.6
+    a = (wb + (wt - wb) * (yy / b) ** 1.6) * muzzle_taper(z)
     x = a * math.copysign(abs(c) ** (2 / SQ), c)
     # gable: straight slopes down from a crisp ridge; the ridge stays on the measured profile, the shoulders drop
     y = low + yy - snout_ridge(z) * min(1.0, abs(x) / (wt * 0.98)) * (yy / b) ** 4
