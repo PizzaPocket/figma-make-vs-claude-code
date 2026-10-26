@@ -2711,5 +2711,103 @@
    "pose": "neutral",
    "clay": true
   }
+ ],
+ "mouth": [
+  {
+   "label": "mouth open, side",
+   "cam": [
+    1.6,
+    1.55,
+    1.65
+   ],
+   "target": [
+    0.0,
+    1.5,
+    1.6
+   ],
+   "fov": 24,
+   "pose": {
+    "jaw": 0.35
+   }
+  },
+  {
+   "label": "mouth open, side, plain clay",
+   "cam": [
+    1.6,
+    1.55,
+    1.65
+   ],
+   "target": [
+    0.0,
+    1.5,
+    1.6
+   ],
+   "fov": 24,
+   "pose": {
+    "jaw": 0.35
+   },
+   "clay": true
+  },
+  {
+   "label": "mouth open, three-quarter front",
+   "cam": [
+    -1.0,
+    1.6,
+    2.9
+   ],
+   "target": [
+    0.0,
+    1.5,
+    1.6
+   ],
+   "fov": 26,
+   "pose": {
+    "jaw": 0.35,
+    "head": [
+     -0.4,
+     0.2
+    ]
+   }
+  },
+  {
+   "label": "mouth open, front, plain clay",
+   "cam": [
+    0.0,
+    1.55,
+    3.0
+   ],
+   "target": [
+    0.0,
+    1.5,
+    1.6
+   ],
+   "fov": 24,
+   "pose": {
+    "jaw": 0.35
+   },
+   "clay": true
+  },
+  {
+   "label": "mouth open, from below, plain clay",
+   "cam": [
+    0.9,
+    0.6,
+    2.4
+   ],
+   "target": [
+    0.0,
+    1.5,
+    1.6
+   ],
+   "fov": 26,
+   "pose": {
+    "jaw": 0.35
+   },
+   "clay": true
+  },
+  {
+   "label": "Dragonet Prophecy cover (official)",
+   "ref": "{refs}/study/tdple_head.jpg"
+  }
  ]
 }

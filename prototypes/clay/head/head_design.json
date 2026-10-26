@@ -183,16 +183,18 @@
   },
   "ear_frill": {
     "note": "Measured on the side sheet (frill crop, px 205-262, py 188-224): an almond leaf about 0.18 long and 0.06 wide, from its base at the back of the cheek (front-lower end) back and up to its tip under the horn. It lies close along the side of the head, its face turned outward (the side sheet shows its whole face), cupped like a horse's ear laid back: pale peach hollow inside, an orange rim, the top edge rolled out and over. Its top edge runs back under the horn. Tip re-measured on the gridded crop (px 258, py 190): it had been placed 0.05 too far back and 0.04 too high, so it stood up behind the horn like a spike. Seated outside the neck's shell (whose rim stands at x 0.26-0.27 under the ear's base, probed on the built model), so it shows as a leaf at the back corner of the head, angled a little out toward its tip, as on the Dragonet Prophecy cover.",
-    "base": [0.29, 1.775, 1.425],
-    "tip": [0.262, 1.866, 1.289],
+    "base": [0.275, 1.78, 1.44],
+    "tip": [0.24, 1.866, 1.289],
     "width": 0.075,
     "face_up": 0.1,
     "face_forward": 0.12,
     "roll_deg": [95, 150],
     "depth": 0.45,
-    "root_sink": 0.02,
-    "root_len": 0.25,
-        "thickness": 0.007
+    "root_sink": 0.012,
+    "root_len": 0.3,
+    "root_width": 0.8,
+        "thickness": 0.007,
+    "body": 0.06
   },
   "roof": {
     "note": "A thin dark underlay fitted over the face; the visible roof is the plates laid on it (roof_plates). Its eave line is dark_plate_edge.",

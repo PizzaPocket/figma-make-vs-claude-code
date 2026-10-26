@@ -128,12 +128,13 @@
           if (isP(7.0) > 0.5) { float pl = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0)); col = mix(line * 0.6, mix(orange, line, pl * 0.22), max(smoothstep(0.2, 0.28, vAB.x), vAB.y)); } // lid: a heavy dark ring round the opening (only between the eye's corners)
           if (isP(8.0) > 0.5) { col = mix(dark * 1.15, dark * 0.8, smoothstep(0.6, 1.0, vAB.x)); col = mix(col, line, smoothstep(0.25, 0.7, vAB.y) * 0.85); rough = 0.35; } // smooth horn, incised ring lines inked
           if (isP(9.0) > 0.5) { // ear: pale peach hollow, the upper front edge rolled over in an orange rim with a dark fold
-            // line where it turns in, a thin orange lower edge, dark outline; orange behind (vAB: along, across 0 lower -> 1 upper, back)
+            // line where it turns in, a thin orange lower edge, dark outline; dark behind (vAB: along, across 0 lower -> 1 upper, back)
             // the hollow's front edge sweeps from the upper rim at a third of the way along down to the lower edge at half way (side sheet)
             float front = vAB.x - (0.5 - 0.2 * (vAB.y - 0.1) / 0.62);
             float rimU = smoothstep(0.70, 0.76, vAB.y), rimL = 1.0 - smoothstep(0.06, 0.12, vAB.y), rimF = 1.0 - smoothstep(-0.02, 0.03, front);
             col = mix(srgb(vec3(250.0, 200.0, 150.0)), srgb(vec3(246.0, 166.0, 107.0)), vAB.x * 0.5);
-            col = mix(col, orange, max(max(max(rimU, rimL), rimF), vAB.z));
+            col = mix(col, orange, max(max(rimU, rimL), rimF));
+            col = mix(col, dark, vAB.z); // the back of the ear is the head's dark skin round its root
             float fold = max((1.0 - smoothstep(0.012, 0.03, abs(vAB.y - 0.73))) * step(0.0, front), (1.0 - smoothstep(0.008, 0.025, abs(front))) * step(vAB.y, 0.73));
             float edge = max(1.0 - smoothstep(0.0, 0.025, vAB.y), smoothstep(0.975, 1.0, vAB.y));
             col = mix(col, line, max(fold * (1.0 - vAB.z), edge) * 0.85); }

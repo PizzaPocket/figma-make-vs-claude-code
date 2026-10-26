@@ -1280,12 +1280,14 @@ def head_parts():
         dk, th = FRILL["depth"], FRILL["thickness"]
 
         def ear_pt(a, c, out):
-            half = FRILL["width"] / 2 * math.sin(math.pi * (0.12 + 0.88 * a)) ** 0.75 * (1 - 0.35 * a)
+            # broad at the root (root_width of the widest), where it grows out of the head, narrowing to the tip
+            half = FRILL["width"] / 2 * max(math.sin(math.pi * (0.12 + 0.88 * a)) ** 0.75, FRILL["root_width"] * (1 - a)) * (1 - 0.35 * a)
             t = c * (up if c > 0 else lo)  # angle round the arc from the bottom of the hollow
             o = base + L * a * length + nrm * half * dk
             p = o + W * half * math.sin(t) - nrm * half * dk * math.cos(t)
-            if out:  # the back surface, the thickness further from the arc's centre
-                q = p - o; p = p + q / (np.linalg.norm(q) + 1e-9) * th * (1 - 0.6 * a)
+            if out:  # the back: a solid body behind the hollow, deep at the root and running into the head, thin at the tip
+                q = p - o; q = q / (np.linalg.norm(q) + 1e-9)
+                p = p + norm(0.4 * q - nrm) * (th * (1 - 0.6 * a) + FRILL["body"] * (1 - a) ** 1.5)
             return p - nrm * FRILL["root_sink"] * max(0.0, 1 - a / FRILL["root_len"]) ** 2  # the root dives into the head
 
         vs, fs, us, bs, zs = [], [], [], [], []

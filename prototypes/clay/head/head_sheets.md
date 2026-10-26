@@ -247,3 +247,13 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 **Still to do:** a small round knob where the shell's rim ends at the cheek line under the ear's base.
 - **Knob under the ear, fixed:** it was the neck shell's rim stopping dead behind the cheek line, 0.03 proud of the face beside it. The shell and its rim now taper to nothing over the last 0.06 before the line (`anatomy.head_weld.shell_taper`), so the rim band runs out into the S line as drawn.
 - **Face contour resolution:** doubled (`N_AROUND` 192), so the trimmed face edge follows the cheek line in steps of about 0.01 instead of 0.02.
+
+## Ear, attached (user: "floating off his head")
+
+**Fault:** it was a thin shell standing off the shell of the neck, with air behind it. On the Dragonet Prophecy cover the ear grows out of the head's top-back corner, with a broad root fused to the head.
+
+**Built:**
+- **Root:** the base sits at the face's top-back corner (0.275, 1.78, 1.44), broad at the root (`root_width`) and sunk a little into the head.
+- **Body:** behind the hollow the ear is a solid body (`body` 0.06 at the root, thinning to the tip) that runs back into the head, so there is no gap behind it from any side.
+- **Paint:** the back is the head's dark skin round its root.
+- **Tip:** it lies closer along the neck (x 0.24).
