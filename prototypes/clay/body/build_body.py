@@ -91,6 +91,9 @@ def trunk_frames(step=0.01):
         if sc > t0:  # a gecko's tail: fat at the root, tapering steadily all the way to a point
             r0 = (table(st, t0, 3) + table(st, t0, 4)) / 2
             r = r0 * max(0.0, (st[-1, 0] - sc) / (st[-1, 0] - t0)) ** tl["taper_power"] + 1e-3
+            # ending in a small rounded tip (tip_radius) rather than a point thinner than the mesh can hold
+            tr = tl["tip_radius"]; u = (sc - (st[-1, 0] - tr)) / tr
+            r = max(r, tr * math.sqrt(max(0.0, 1 - min(max(u, 0.0), 1.0) ** 2)))
             k = smoothstep(t0, t0 + 0.4, sc)
             du, dv = du * (1 - k) + r * k, dv * (1 - k) + r * k
         P.append([0.0, y, z]); DU.append(du); DV.append(dv)

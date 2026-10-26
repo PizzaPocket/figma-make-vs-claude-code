@@ -328,3 +328,6 @@ In a true side overlay the model's folded fan is narrow (about 9° between the f
 - the far wing's plain fingers behind them, offset up and toward the head by the sheet's slight elevation, ending at (915, 195), (1030, 95), (1140, 45) and (1265, 20).
 
 The broad fan is the two wings overlapping. Evaluated at the fold animation's end, the built model's claws land on the near wing's tips.
+
+## Tail tip
+Tapering to a point, the tail's last 0.16 was thinner than the skin's mesh spacing (0.012), so it broke into floating specks beyond the tip. It now ends in a small rounded tip of radius 0.012 (`trunk.tail.tip_radius`). As a safety net, the skin mesher drops stray islands smaller than a twentieth of the largest piece.

@@ -249,7 +249,9 @@
       "rest_from_s": 3.8,
       "rest_to_s": 4.1,
       "taper_power": 1.1,
-      "taper_note": "Like a gecko's, the tail is fat at its root and tapers steadily all the way to a point (half-depth r0 * (remaining / length)^taper_power), as in every reference. Following the sheet's depths kept it nearly the same thickness down its lower run, like an earthworm."
+      "taper_note": "Like a gecko's, the tail is fat at its root and tapers steadily all the way to a point (half-depth r0 * (remaining / length)^taper_power), as in every reference. Following the sheet's depths kept it nearly the same thickness down its lower run, like an earthworm.",
+      "tip_radius": 0.012,
+      "tip_note": "The tail ends in a small rounded tip of radius 0.012 (the skin's mesh spacing): tapering to a point, its last 0.16 was thinner than the mesh could hold and broke off into floating specks."
     }
   },
   "wing": {

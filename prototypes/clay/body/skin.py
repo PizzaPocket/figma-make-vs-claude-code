@@ -312,6 +312,17 @@ def mesh(trunk, parts, h, pad=0.06):
         G[i] = field(X, trunk, parts).reshape(Y.shape)
     v, f, _, _ = marching_cubes(G, 0.0, spacing=(h, h, h), gradient_direction="ascent")
     v = v + lo
+    # drop stray islands (a thin end the grid can't hold breaks into specks): keep pieces of at least a twentieth
+    # of the largest
+    from scipy.sparse import coo_matrix
+    from scipy.sparse.csgraph import connected_components
+    Eg = np.vstack([f[:, [0, 1]], f[:, [1, 2]]])
+    _, lab = connected_components(coo_matrix((np.ones(len(Eg)), (Eg[:, 0], Eg[:, 1])), shape=(len(v), len(v))), directed=False)
+    size = np.bincount(lab)
+    keep_v = size[lab] >= size.max() / 20
+    keep_f = keep_v[f].all(axis=1)
+    used = np.where(keep_v)[0]; remap = -np.ones(len(v), int); remap[used] = np.arange(len(used))
+    v, f = v[used], remap[f[keep_f]]
     N = normals(v, f)  # wind the faces so their normals point out of the body (the field rises outward)
     probe = field(v[::50] + N[::50] * h * 0.5, trunk, parts) - field(v[::50], trunk, parts)
     if np.mean(probe) < 0:
