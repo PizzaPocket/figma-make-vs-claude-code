@@ -1908,5 +1908,104 @@
     "wings": 0.8
    }
   }
+ ],
+ "qa2": [
+  {
+   "label": "wing shoulder, folded, side",
+   "cam": [
+    2.6,
+    1.4,
+    0.35
+   ],
+   "target": [
+    0.4,
+    1.05,
+    0.35
+   ],
+   "fov": 32,
+   "pose": "neutral"
+  },
+  {
+   "label": "wing shoulder, folded, plain clay",
+   "cam": [
+    2.6,
+    1.4,
+    0.35
+   ],
+   "target": [
+    0.4,
+    1.05,
+    0.35
+   ],
+   "fov": 32,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "membrane line, spread, low side",
+   "cam": [
+    3.0,
+    0.6,
+    -0.1
+   ],
+   "target": [
+    0.4,
+    1.1,
+    -0.1
+   ],
+   "fov": 36,
+   "pose": {
+    "wings": 0
+   }
+  },
+  {
+   "label": "chest, front three-quarter",
+   "cam": [
+    2.0,
+    1.2,
+    3.4
+   ],
+   "target": [
+    0.1,
+    0.9,
+    0.6
+   ],
+   "fov": 34,
+   "pose": "neutral"
+  },
+  {
+   "label": "fingers, spread, from below",
+   "cam": [
+    2.4,
+    -1.0,
+    -0.6
+   ],
+   "target": [
+    1.8,
+    1.6,
+    -0.6
+   ],
+   "fov": 50,
+   "pose": {
+    "wings": 0
+   },
+   "clay": true
+  },
+  {
+   "label": "fingers, folded, side",
+   "cam": [
+    4.0,
+    1.2,
+    -0.7
+   ],
+   "target": [
+    0.6,
+    1.0,
+    -0.7
+   ],
+   "fov": 40,
+   "pose": "neutral",
+   "clay": true
+  }
  ]
 }

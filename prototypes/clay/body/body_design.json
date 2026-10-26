@@ -204,8 +204,8 @@
         [100, 342]
       ],
       "lines_until_s": 2.45,
-      "cream_halfwidth": [[0.0, 0.2], [0.5, 0.17], [1.2, 0.17], [1.5, 1.0], [5.72, 1.0]],
-      "cream_halfwidth_why": "From the front (limited edition, How to Draw, the box set): the cream throat band runs down the chest as a central band of plates about half the chest's width, and the orange of the neck's side wraps round the shoulders' inner faces down into the forelegs. Behind the forelegs (s > 1.3) the cream widens to meet the dark edge, as on the sheet.",
+      "cream_halfwidth": [[0.0, 0.22], [0.5, 0.25], [0.8, 0.33], [1.1, 0.37], [1.4, 1.0], [5.72, 1.0]],
+      "cream_halfwidth_why": "The cream comes down the neck as the throat band and broadens over the chest to meet the front of the foreleg shoulders, where it merges with the belly (the official art): about 0.25 either side of the midline at the base of the neck, 0.33-0.37 across the chest; behind the forelegs (s > 1.4) it widens to meet the carapace's edge. Earlier it was held to a thin central strip (0.17), which left a wide orange front to the shoulders.",
       "dark_edge_arc_why": "The shoulder armor reaches less far down (its bottom at py ~506, was 532) and its hind point rises (px 605, py 447); from there the carapace's lower edge is one smooth arc (py ~425 at its top) to the front of the hip armor (px 840), the cream of the flank directly below it all the way; the hip armor's front then runs down the thigh from there. The wing's arm roots at the shoulder armor's hind point, and its membrane meets the body along this junction, under the carapace's edge."
     },
     "front_overlap": 0.06,
@@ -331,13 +331,26 @@
       ],
       "muscles": [
         {
-          "name": "shoulder mound",
-          "why": "the wing's shoulder: deltoid and the pectoral insertion, a rounded mound where the arm roots at the shoulder armor's hind point, reaching forward under the armor toward the foreleg's shoulder, so the wing reads as a branch off the same shoulder",
-          "from": [0.3, 1.1, 0.62],
-          "to": [0.41, 1.12, 0.16],
-          "radii": [0.11, 0.1],
+          "name": "wing shoulder (the wing's deltoid)",
+          "why": "The wing's shoulder: from the arm's socket (the head of the humerus) forward over the top of the foreleg's shoulder, where every reference shows it (the side sheet's scaly mound in front of the arm, Umber's plated shoulder). It lies on the body, outside the shoulder armor, carrying the wing's armor on its top, so the arm has a defined shoulder rather than a cut-off cap; weighted mostly to the chest, it stays on the shoulder as the wing moves.",
+          "from": [0.44, 1.14, 0.24],
+          "to": [0.52, 1.06, 0.62],
+          "radii": [0.13, 0.11],
           "hint": [1, 0.4, 0],
-          "k": 0.05,
+          "k": 0.08,
+          "rig": {
+            "chest": 0.8,
+            "wing_humerus": 0.2
+          }
+        },
+        {
+          "name": "socket",
+          "why": "the head of the humerus in its socket, under the wing's shoulder",
+          "from": [0.36, 1.13, 0.32],
+          "to": [0.4, 1.13, 0.14],
+          "radii": [0.085, 0.08],
+          "hint": [1, 0, 0],
+          "k": 0.06,
           "rig": {
             "wing_humerus": 0.7,
             "chest": 0.3
@@ -394,8 +407,6 @@
         "hook_deg": 70
       }
     },
-    "body_attach": [[0.39, 1.09, 0.2], [0.41, 1.12, 0.0], [0.42, 1.12, -0.2], [0.42, 1.09, -0.4]],
-    "body_attach_why": "Where the membrane meets the body: just under the carapace's lower edge, along its arc from the wing's root at the shoulder armor's hind point to the front of the hip armor (px ~840), on the cream all the way.",
     "joints_why": "The wing's arm roots at the shoulder armor's hind point, low on the side just behind and above the foreleg's shoulder: it branches off the same shoulder as the foreleg, sharing its skeleton (the scapula), rather than sprouting from high on the back.",
     "armor": {
       "why": "The wing arm's dark armor is a distinct shell over the top of the arm, like the back's carapace: banded plates with a rolled rim, standing proud of the orange skin, which shows on the underside (Umber: the arm's top dark and plated, its underside red-orange). Folded, the arm is rolled so the armor faces outward and the orange inward (all the references).",
@@ -412,7 +423,15 @@
       "scute_every": 0.045,
       "island": 60
     },
-    "fold_clearance_why": "Folded, the fan stands well outside the haunch (the thigh reaches x 0.57-0.6 under it; the wrist sits at 0.72, the tips at 0.80-0.86), with the elbow finger lying inside the fingers (x 0.5) along the side, so nothing passes through the body, the legs or the rest of the wing. Measured: every finger, the forearm, the elbow finger and the membrane between them clear the body (clipcheck)."
+    "fold_clearance_why": "Folded, the fan stands well outside the haunch (the thigh reaches x 0.57-0.6 under it; the wrist sits at 0.72, the tips at 0.80-0.86), with the elbow finger lying inside the fingers (x 0.5) along the side, so nothing passes through the body, the legs or the rest of the wing. Measured: every finger, the forearm, the elbow finger and the membrane between them clear the body (clipcheck).",
+    "membrane_line": {
+      "from_px": 612,
+      "to_px": 840,
+      "every_px": 12,
+      "below": 0.025,
+      "out": 0.004,
+      "why": "Where the membrane meets the body: just under the carapace's lower edge, following its arch exactly (sampled from zones.dark_edge_px every 12 px, on the body's surface) from the wing's root behind the shoulder armor (px 612) to the front of the hip armor (px 840)."
+    }
   },
   "front_leg": {
     "note": "Measured on the side sheet's near front leg (crop px 300-720, py 300-880). The dark shoulder patch is the shoulder blade and its muscles seen from the side; the shoulder joint sits at the front of the upper arm under it (px 425, py 495). The upper arm slopes down and back to an elbow at the bottom of the chest (px 625, py 605; its point at 649, 613); the forearm angles down and forward to a slim wrist (px 515, py 790, 0.155 deep against 0.37 below the elbow); the hand lies flat on the ground. Like a great cat's: the elbow tucked in against the chest, the leg hanging close beside the keel of the chest. Built as bones and muscles (anatomy).",

@@ -233,3 +233,10 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 - **Wing root:** at the shoulder armor's hind point, lower and nearer the foreleg's shoulder, so the wing branches off the same shoulder.
 - **Carapace edge:** one arc from the shoulder armor to the hip armor, with cream right below. The membrane meets the body along it, and the hip armor's front starts where it ends.
 - **Wing arm armor:** a distinct shell built by the back's carapace builder (`wing.armor`), with banded plates and a rolled rim over the arm's top. The arm under it is orange skin. The fingers are plain orange.
+
+## Review round: wing shoulder, membrane line, chest cream, finger bones
+
+- **Wing shoulder:** a muscle mass in the wing arm's own mesh, from the arm's socket forward over the top of the foreleg's shoulder (every reference). It lies on top of the shoulder armor, about 0.12 proud, armored on top and orange beneath. Weighted mostly to the chest, it stays on the shoulder as the wing moves. The socket is a separate small piece under it.
+- **Membrane line:** sampled every 12 px along the carapace's lower edge (`zones.dark_edge_px`) between the wing's root and the hip armor. Each sample sits on the body's surface just under the rim, so the membrane follows the arch exactly.
+- **Chest cream:** the throat band broadens over the chest to the front of the foreleg shoulders (about 0.33–0.37 either side of the midline) and merges with the belly.
+- **Finger bones:** three per finger (metacarpal, two phalanges), meeting at the knuckles. The skin, claw and membrane follow the bone under each segment. The fold turns each finger's bones together, so the knuckles stay coherent from spread to folded.
