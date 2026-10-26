@@ -391,3 +391,7 @@ Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout co
 - **Taller:** with the lip line straightened, the orange front below the shield runs from the skirt (y 1.37) down to the lip at 1.268–1.277, more than twice its old height.
 - **Fuller:** it bulges 0.035 at mid-height and rounds across broadly (`front.across_power` 2.5), with the muzzle's corners rounding more (`muzzle_taper` corner radius 0.05, down to 0.8 of the width). The whisker pads are broad (0.055) and the philtrum is a faint groove.
 - **Measured:** narrow pads had left a valley at x ±0.08 at every height, and a parabolic bulge ended in a ledge where the front met the corner. Ray-cast across the front, the remaining slope change at the corners is about 0.005.
+
+### Eye at rest (walkthrough)
+- **Lid:** the upper lid rests only 0.12 closed (it was 0.26).
+- **Gaze:** points straight out with a little forward and slightly down (`eye.gaze` [0.98, -0.12, 0.12]), so from the side the iris sits centred in the round of the opening, as a horse's eye does at rest. With the old gaze (a little up, more forward) the iris sat high and forward, white showing below and behind it, and he seemed to peer up toward the top of his head.
