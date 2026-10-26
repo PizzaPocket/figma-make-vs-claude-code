@@ -183,6 +183,16 @@ def muzzle_taper(z):
     return f
 
 
+def lip_tuck(z):
+    """Width factor (<= 1) at the upper lip's edge, station z (upper_head.lip_tuck): the cheek is flesh draped over
+    the upper teeth and the lower jaw, so along the mouth the lip edge comes in to just outside the lower jaw
+    instead of standing out as a puffed shelf; faded out at the mouth corner and at the front muzzle."""
+    LT = D["upper_head"]["lip_tuck"]
+    w = smoothstep(*LT["from_z"], z) * (1 - smoothstep(*LT["to_z"], z))
+    target = interp(JAW, z, 3) + LT["overhang"]
+    return 1 - w * max(0.0, 1 - target / interp(UPPER, z, 4))
+
+
 def face_pt(z, th):
     """Point on the face at station z, angle th (0 = left lip edge, pi/2 = top, pi = right lip edge).
     Boxy cross-section (flat top, steep sides, cheeks wider than the top), then the brushes."""
@@ -192,6 +202,7 @@ def face_pt(z, th):
     yy = b * abs(s) ** (2 / SQ)
     a = (wb + (wt - wb) * (yy / b) ** 1.6) * muzzle_taper(z)
     x = a * math.copysign(abs(c) ** (2 / SQ), c)
+    x *= 1 - (1 - lip_tuck(z)) * (1 - yy / b) ** D["upper_head"]["lip_tuck"]["power"]  # the cheek drapes in to the lip
     # gable: straight slopes down from a crisp ridge; the ridge stays on the measured profile, the shoulders drop
     y = low + yy - snout_ridge(z) * min(1.0, abs(x) / (wt * 0.98)) * (yy / b) ** 4
     y += corner_lift(z, x, wb) * (1 - yy / b) ** 2  # the front's bottom corners pull up
@@ -1217,7 +1228,7 @@ def head_parts():
             half_w = lambda z: interp(JAW, z, 3) - TS["inset"]
         else:
             edge_y = lambda z: interp(UPPER, z, 2)
-            half_w = lambda z: interp(UPPER, z, 4) - TS["inset"]
+            half_w = lambda z: interp(UPPER, z, 4) * muzzle_taper(z) * lip_tuck(z) - TS["inset"]
         zs = np.linspace(TS["z"][0], TS["z"][1], TS["count"])
         # the front teeth: a row across the front of the mouth at the bite point, where the upper and lower fronts
         # meet (in front of it is the front muzzle's underside: skin, no teeth)

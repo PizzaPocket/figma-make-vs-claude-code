@@ -306,3 +306,6 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 
 ### Ear, re-sculpted as a stalked tulip flap
 The ear is no longer a solid wedge. It is a thin flap of skin (0.008) growing from a narrow stalk (0.18 of its widest half-width) out of the face's flesh. It widens to its fullest at 0.55 of its length and narrows to the tip. Its section curls 110° at the lower edge and 165° at the upper front, so the orange outside rolls over the cream hollow like a tulip petal. That matches the side sheet's ear: a pale hollow with an orange rolled rim. The root keeps the face's look, so the stalk reads as face flesh.
+
+### Upper mouth: cheek flesh draped over the teeth (lip_tuck)
+The user saw the upper mouth as puffed out. Measured on the build, the upper lip's edge stood 0.04–0.055 outside the lower jaw on each side along the whole mouth, a shelf overhanging the bite. In the references the cheek lies over the teeth: the upper teeth sit just outside the lower ones, with the lip skin over them. So the lip edge now comes in to 0.012 outside the lower jaw. The cheek curves in to it near the lip only (power 2.5), and the tuck fades out at the mouth corner (z 1.58–1.63) and in front of the bite (z 1.84–1.88). The upper teeth follow the tucked edge (inset 0.012), and they now also follow the muzzle taper, which they previously ignored.

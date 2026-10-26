@@ -51,6 +51,13 @@
       "convex": 0.025,
       "lip_arc_power": 2,
       "convex_side": 0.016
+    },
+    "lip_tuck": {
+      "from_z": [1.58, 1.63],
+      "to_z": [1.84, 1.88],
+      "overhang": 0.012,
+      "power": 2.5,
+      "note": "User: the upper mouth looked puffed out, where the references show cheek flesh over the teeth and jaws. Measured on the build: the upper lip's edge stood 0.04-0.055 outside the lower jaw on each side along the whole mouth (wb 0.19-0.235 against the jaw's 0.14-0.18), a shelf overhanging the bite. Anatomy: the upper teeth sit just outside the lower ones and the lip skin lies over them, so the lip edge comes in to 0.012 outside the lower jaw, the cheek above curving in to it (power 2.5: the tuck is concentrated near the lip, the cheek's upper part is unchanged). Faded out at the mouth corner (z 1.58-1.63, the jowl over the jaw muscle) and in front of the bite (z 1.84-1.88, the front muzzle). The upper teeth follow the tucked edge."
     }
   },
   "lower_jaw": {
@@ -571,8 +578,9 @@
       "z": [1.835, 1.62],
       "count": 8,
       "length": [0.0364, 0.056],
-      "inset": 0.03,
-      "tuck_up": 0.02
+      "inset": 0.012,
+      "tuck_up": 0.02,
+      "inset_note": "From the tucked lip edge: the upper teeth stand just outside the lower ones (lower inset 0.016 from the jaw edge)."
     },
     "lower": {
       "z": [1.83, 1.63],
