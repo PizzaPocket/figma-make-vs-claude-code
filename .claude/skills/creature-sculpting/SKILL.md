@@ -193,7 +193,7 @@ Check: <what to compare; known differences>
 **Muzzle**
 - Bone and muscle, not a box: the premaxilla rounds the front into a U in top view, and the front is convex everywhere (an earlier box read square, then caved-in concave when its front was traced from the three-quarter sheet).
 - The muzzle shield: one solid piece over the top and down round the front corner, plating carved into it.
-- The nose: a lion's (see the evidence rule): its bridge rises out of the middle of the shield, runs down its top, and ends in a rounded cap before the shield's tip; comma nostrils in the cap's front, a philtrum below.
+- The nose: a lion's: a short bridge, a crisp box (flat top, upright sides), ending in the leather cap whose front is its own upright plane facing forward (cut perpendicular to a steep slope, a face points down), just behind the shield's front; comma nostrils in that face.
 - Under the shield's front, orange whisker pads drape over the front teeth into the lips; the cheeks are flesh draped over the teeth and jaw, not a puffed shelf.
 
 **Roof rim and lip**
@@ -224,12 +224,15 @@ Check: <what to compare; known differences>
 
 **Jaw**
 - A dragon's lower jaw from its bones, not traced from the three-quarter sheet: the dentary carries the teeth forward to a rounded U-shaped chin (the symphysis) just behind the snout's tip, under a slight overbite. It deepens steadily backward under the jaw muscles (surangular, angular), and the retroarticular process curves up behind the hinge.
+- The lip line is nearly straight: level at the front, rising gently back to the mouth corner. A lip edge that rises toward the snout's tip makes the jaw curve up like a bowl ("a Nike check").
+- Judge the jaw in a true side view: its underside must be one elegant line from the chin into the throat. Where a separate part meets the skin, run the weld line along the part's own outline (the jaw's underside), never across it: a vertical cut left a stair step.
 - The hinge sits under the back of the eye; the jaw drops down and back, and the cheek skin stretches across the corner of the gape (a web), not a rigid slot.
 - The cream lower jaw continues up behind the mouth corner as a jowl under the ear.
 - Teeth are recurved cones, oval in section; the tongue is a muscular, grooved body on bones; the lips have fleshy margins moved by FACS lip actions.
 
 **Ear**
 - A flap of skin on a thin stalk out of the face's flesh, flaring and curling like a tulip petal: orange outside, cream inside. Built as a separate hovering leaf or a solid wedge, it failed.
+- Behind the head the neck's top is lower than the ear's top edge, so the neck's shell there is defined by its place round the body (a band over the top), not by a side-view line, to pass above the ear and meet the head's shield.
 - It sits high at the back of the cheek, under the horn, its tip curving back toward the horn's underside. Shells near it are set clear of its path by design.
 - The ear opening is a small hole below it.
 
