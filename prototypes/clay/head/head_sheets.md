@@ -369,3 +369,6 @@ The tooth rows run the whole jaw. The upper row sits 0.01 outside the lower, nev
 ### Shield skirt edge; whisker pads
 - The shield's front skirt now rounds off toward its side ends and its bottom edge, like the rest of the shield's edge. At full thickness out to its ends it stood out as square tabs at the bottom corners.
 - Lion's whisker pads (`upper_head.front.whisker_pads`) swell 0.008 either side of a philtrum groove on the orange front below the shield's rim, sculpted into the front face. They stay subtle, since the covers show only a narrow orange lip band there.
+
+### Teeth: fewer and stouter
+Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout cones show per side of each jaw, with gaps between them. The model had nine or ten small spikes per side, a saw blade. Now upper 7 per side (0.042–0.064 long) and lower 6 (0.03–0.046).

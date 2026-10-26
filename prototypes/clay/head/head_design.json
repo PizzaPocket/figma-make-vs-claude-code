@@ -759,8 +759,8 @@
     "thickness": 0.018,
     "upper": {
       "z": [1.955, 1.62],
-      "count": 10,
-      "length": [0.0364, 0.056],
+      "count": 7,
+      "length": [0.042, 0.064],
       "inset": 0.012,
       "tuck_up": 0.02,
       "inset_note": "From the tucked lip edge: the upper teeth stand just outside the lower ones (lower inset 0.016 from the jaw edge).",
@@ -769,8 +769,8 @@
     },
     "lower": {
       "z": [1.945, 1.63],
-      "count": 9,
-      "length": [0.0253, 0.0391],
+      "count": 6,
+      "length": [0.03, 0.046],
       "inset": 0.016
     },
     "front": {
@@ -790,7 +790,8 @@
     "shape_note": "Re-read on the two open-mouth paintings (Dragonet Prophecy cover, ClayTopShot): cones, not flat blades, about 1.4x the earlier length for the upper teeth (hidden behind the lip when shut), 1.15x for the lower (which show along the closed lip); round-based (thickness about the base's width), still tips raked back, still no single big fang. Sculpted as a reptile's teeth (user: not flat triangle shards): each a cone rooted 0.004 into the gum, its section an oval flattened side to side (along the jaw 0.45 of its length across the base, 0.012 thick), tapering to a sharp tip that curves back toward the throat by 0.18 of its length (front row 0.09, flattened front to back).",
     "recurve": 0.18,
     "size_note": "Stout cones as the covers paint them: across the base 0.6 of the tooth's length along the jaw, 0.018 thick.",
-    "row_note": "The rows run the whole jaw, to the front of the mouth (they stopped at a bite point at z 1.86 while the jaw was traced short from the side sheet)."
+    "row_note": "The rows run the whole jaw, to the front of the mouth (they stopped at a bite point at z 1.86 while the jaw was traced short from the side sheet).",
+    "count_note": "Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout cones show along each side of each jaw, with gaps between them, not a saw of small spikes. Upper 7 per side (0.042-0.064 long), lower 6 (0.03-0.046)."
   },
   "mouth": {
     "why": "The mouth opens by stretching skin, not as two rigid pieces parting (user; Dragonet Prophecy cover). The cover's open mouth is a deep cavity, its floor a trough for the tongue under an arched palate, and the gape ends in a rounded corner of cheek skin under the eye. The lips stay joined from the corner back to the hinge, where the jaw's bone runs on inside the cheek.",
