@@ -1234,7 +1234,7 @@ def head_parts():
         objs.append(add_part(f"RoofPlate{k}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
 
     # lower jaw skin
-    zj = np.concatenate([np.linspace(JAW[0, 0], 1.80, 10), np.linspace(1.79, JAW[-1, 0], 24)])
+    zj = np.concatenate([np.linspace(JAW[0, 0], 1.80, 18), np.linspace(1.79, JAW[-1, 0], 24)])
     v, f, uv = loft(jaw_contour, zj, inner_dip=lambda z: -MO["floor_trough"] * inside(z))
     part = [2.0 if u[1] >= 0 else 3.0 for u in uv]
     jaw = add_part("Jaw", v, f, {"_PART": part, "_A": [u[0] for u in uv], "_B": [u[1] for u in uv], "_ZONE": [0] * len(v)},
@@ -1266,7 +1266,8 @@ def head_parts():
                     up = upper_contour(z)[0]; lo = jaw_contour(z)[0]
                     U = np.array([*(up[0] if sgn > 0 else up[-1]), z]); Lp = np.array([*(lo[0] if sgn > 0 else lo[-1]), z])
                     P = U + (Lp - U) * w
-                    P[0] -= sgn * (0.0 if layer == 0 else MO["web_thickness"])  # the lining a little inside the skin
+                    # the lining a little inside the skin, thickening toward the corner into the lips' fleshy commissure
+                    P[0] -= sgn * (0.0 if layer == 0 else MO["web_thickness"] + MO["corner_thickness"] * u ** 3)
                     vs.append(tuple(P)); ws.append([("head", 1 - w), ("jaw", w)])
                     # outside: orange along the upper lip, cream jowl below it (the cover); inside: the mouth's lining
                     ps.append((1.0 if w < MO["web_orange_to"] else 2.0) if layer == 0 else 3.0); As.append(u); Bs.append(w)
@@ -1277,6 +1278,26 @@ def head_parts():
                 for j in range(NV):
                     q = [b0 + i * (NV + 1) + j, b0 + (i + 1) * (NV + 1) + j, b0 + (i + 1) * (NV + 1) + j + 1, b0 + i * (NV + 1) + j + 1]
                     fs.append(q if (sgn > 0) == (layer == 0) else q[::-1])
+        # the front edge closed: the skin rolls round into the lining in a half round bowed forward (the mouth's
+        # corner, a fleshy commissure, not two loose sheets showing their edges)
+        NR = 6
+        o0, i0 = NU * (NV + 1), (NU + 1) * (NV + 1) + NU * (NV + 1)  # the front rows of the two layers
+        rows = [[o0 + j for j in range(NV + 1)]]
+        for k in range(1, NR):
+            a = math.pi * k / NR
+            row = []
+            for j in range(NV + 1):
+                O, I = np.array(vs[o0 + j]), np.array(vs[i0 + j])
+                half = np.linalg.norm(O - I) / 2
+                P = O + (I - O) * (1 - math.cos(a)) / 2 + np.array([0.0, 0.0, 1.0]) * half * math.sin(a)
+                row.append(len(vs)); vs.append(tuple(P)); ws.append(ws[o0 + j])
+                ps.append(ps[o0 + j] if k < NR / 2 else 3.0); As.append(1.0); Bs.append(Bs[o0 + j]); bulge.append(bulge[o0 + j])
+            rows.append(row)
+        rows.append([i0 + j for j in range(NV + 1)])
+        for r0, r1 in zip(rows, rows[1:]):
+            for j in range(NV):
+                q = [r0[j], r0[j + 1], r1[j + 1], r1[j]]
+                fs.append(q if sgn > 0 else q[::-1])
         web = add_part("CheekWeb" + ("L" if sgn > 0 else "R"), vs, fs, {"_PART": ps, "_A": As, "_B": Bs, "_ZONE": [0] * len(vs)}, ws)
         web.shape_key_add(name="Basis", from_mix=False)
         web.shape_key_add(name="jawOpen", from_mix=False).data.foreach_set(
@@ -1457,10 +1478,10 @@ def head_parts():
                              rigid(len(vs))))
 
     bones = [("head", (0, 1.57, 1.36), (0, 1.44, 2.017), None),
-             ("jaw", HINGE, (0, 1.24, 1.86), "head"),
-             ("tongue1", (0, 1.42, 1.56), (0, 1.38, 1.66), "jaw"),
-             ("tongue2", (0, 1.38, 1.66), (0, 1.34, 1.75), "tongue1"),
-             ("tongue3", (0, 1.34, 1.75), (0, 1.31, 1.84), "tongue2")]
+             ("jaw", HINGE, (0, 1.24, 1.985), "head"),
+             ("tongue1", (0, 1.42, 1.56), (0, 1.37, 1.68), "jaw"),
+             ("tongue2", (0, 1.37, 1.68), (0, 1.32, 1.80), "tongue1"),
+             ("tongue3", (0, 1.32, 1.80), (0, 1.29, 1.93), "tongue2")]
     bones += [(bn, h0, h1, "head") for bn, h0, h1 in lid_bones]
     bones = warp_snout(objs, bones)
     return objs, bones

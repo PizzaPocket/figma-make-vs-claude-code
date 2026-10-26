@@ -54,7 +54,7 @@
     },
     "lip_tuck": {
       "from_z": [1.58, 1.63],
-      "to_z": [1.84, 1.88],
+      "to_z": [1.95, 1.99],
       "overhang": 0.012,
       "power": 2.5,
       "note": "User: the upper mouth looked puffed out, where the references show cheek flesh over the teeth and jaws. Measured on the build: the upper lip's edge stood 0.04-0.055 outside the lower jaw on each side along the whole mouth (wb 0.19-0.235 against the jaw's 0.14-0.18), a shelf overhanging the bite. Anatomy: the upper teeth sit just outside the lower ones and the lip skin lies over them, so the lip edge comes in to 0.012 outside the lower jaw, the cheek above curving in to it (power 2.5: the tuck is concentrated near the lip, the cheek's upper part is unchanged). Faded out at the mouth corner (z 1.58-1.63, the jowl over the jaw muscle) and in front of the bite (z 1.84-1.88, the front muzzle). The upper teeth follow the tucked edge."
@@ -62,26 +62,27 @@
   },
   "lower_jaw": {
     "columns": ["z", "top", "bottom", "half_width"],
-    "note": "A separate piece from the neck, on its own hinge; traced on the side sheet. Set back under the overhanging upper lip (strong overbite): its chin is a short point at z 1.86, right under the lowest point of the lip. Its underside drops back to its lowest at z 1.77, then rises to the throat notch (z 1.60), where the neck begins. From there its back edge is the heavy line that runs back and up along the neck (z 1.55, y 1.41; z 1.44, y 1.46) and turns up into the ear opening (z 1.39). Its top edge runs just inside the upper lip line at the front and just above it (hidden inside the cheek) behind the mouth corner. At the back it is as wide as the cheek (the jowl), so it stands proud of the neck and its back edge reads as a step, not a seam. Skin: cream with faint pebble scales, like the face's but larger and softer; the neck's transverse bands start below its back edge. Its front is as wide as the upper jaw's mouth at the bite point, so the two fronts meet across the bite when the mouth is closed.",
+    "note": "A dragon's lower jaw, built from its bones rather than traced (user: the side sheet is a three-quarter view of the snout, so the short chin it seemed to show at z 1.86 was the front of the chin seen at an angle). The dentary carries the teeth forward to a rounded U-shaped chin (the symphysis) at z 1.985, just behind the upper jaw's front under a slight overbite; its tip rounds up and in over the last 0.03 (half-width 0.125 at z 1.86 narrowing to 0.06). Along the tooth row it is about 0.065 deep at the front, deepening steadily backward (0.105 at z 1.75, 0.17 at the mouth corner) as the surangular and angular bones under the jaw muscle (masseter, pterygoid) take over; its underside is one long, gently convex line from under the chin up to the back, where the retroarticular process curves up behind the hinge into the ear opening (z 1.39). Its top edge runs just inside the upper lip line at the front and inside the cheek behind the mouth corner. At the back it is as wide as the cheek (the jowl). Skin: cream with faint pebble scales.",
     "rows": [
-      [1.862, 1.278, 1.262, 0.125],
-      [1.85, 1.282, 1.245, 0.13],
-      [1.83, 1.296, 1.23, 0.135],
-      [1.808, 1.304, 1.216, 0.138],
-      [1.79, 1.314, 1.21, 0.14],
-      [1.773, 1.322, 1.206, 0.142],
-      [1.738, 1.343, 1.226, 0.145],
-      [1.703, 1.356, 1.245, 0.15],
+      [1.985, 1.292, 1.262, 0.06],
+      [1.975, 1.288, 1.24, 0.085],
+      [1.96, 1.285, 1.226, 0.1],
+      [1.93, 1.282, 1.216, 0.11],
+      [1.9, 1.28, 1.213, 0.117],
+      [1.862, 1.278, 1.213, 0.125],
+      [1.83, 1.296, 1.216, 0.135],
+      [1.79, 1.314, 1.222, 0.14],
+      [1.738, 1.343, 1.236, 0.145],
+      [1.703, 1.356, 1.248, 0.15],
       [1.668, 1.37, 1.262, 0.16],
-      [1.647, 1.39, 1.29, 0.166],
-      [1.627, 1.42, 1.324, 0.172],
-      [1.6, 1.466, 1.38, 0.18],
-      [1.58, 1.541, 1.395, 0.188],
-      [1.545, 1.584, 1.411, 0.2],
-      [1.487, 1.608, 1.432, 0.215],
-      [1.44, 1.633, 1.458, 0.228],
-      [1.41, 1.66, 1.48, 0.236],
-      [1.398, 1.66, 1.53, 0.232],
+      [1.627, 1.42, 1.284, 0.172],
+      [1.6, 1.466, 1.3, 0.18],
+      [1.58, 1.541, 1.312, 0.188],
+      [1.545, 1.584, 1.33, 0.2],
+      [1.487, 1.608, 1.36, 0.215],
+      [1.44, 1.633, 1.4, 0.228],
+      [1.41, 1.66, 1.44, 0.236],
+      [1.398, 1.66, 1.52, 0.232],
       [1.392, 1.64, 1.58, 0.222]
     ],
     "hinge": [0.0, 1.6, 1.45],
@@ -513,8 +514,8 @@
         "terms": [
           {
             "kind": "push",
-            "centre": [1.76, 1.33],
-            "radii": [0.09, 0.035],
+            "centre": [1.84, 1.3],
+            "radii": [0.12, 0.035],
             "move": [0.004, -0.02, 0.0]
           }
         ]
@@ -689,46 +690,47 @@
     "base_frac": 0.6,
     "thickness": 0.018,
     "upper": {
-      "z": [1.835, 1.62],
-      "count": 8,
+      "z": [1.955, 1.62],
+      "count": 10,
       "length": [0.0364, 0.056],
       "inset": 0.012,
       "tuck_up": 0.02,
       "inset_note": "From the tucked lip edge: the upper teeth stand just outside the lower ones (lower inset 0.016 from the jaw edge)."
     },
     "lower": {
-      "z": [1.83, 1.63],
-      "count": 7,
+      "z": [1.945, 1.63],
+      "count": 9,
       "length": [0.0253, 0.0391],
       "inset": 0.016
     },
     "front": {
-      "z": 1.855,
+      "z": 1.985,
       "count": 4,
-      "half_span": 0.065,
+      "half_span": 0.06,
       "length": 0.0336,
       "tuck_up": 0.02,
-      "tuck_back": 0.02
+      "tuck_back": 0.012
     },
     "front_lower": {
-      "z": 1.848,
+      "z": 1.97,
       "count": 4,
-      "half_span": 0.07,
+      "half_span": 0.06,
       "length": 0.0253
     },
     "shape_note": "Re-read on the two open-mouth paintings (Dragonet Prophecy cover, ClayTopShot): cones, not flat blades, about 1.4x the earlier length for the upper teeth (hidden behind the lip when shut), 1.15x for the lower (which show along the closed lip); round-based (thickness about the base's width), still tips raked back, still no single big fang. Sculpted as a reptile's teeth (user: not flat triangle shards): each a cone rooted 0.004 into the gum, its section an oval flattened side to side (along the jaw 0.45 of its length across the base, 0.012 thick), tapering to a sharp tip that curves back toward the throat by 0.18 of its length (front row 0.09, flattened front to back).",
     "recurve": 0.18,
-    "size_note": "Stout cones as the covers paint them: across the base 0.6 of the tooth's length along the jaw, 0.018 thick."
+    "size_note": "Stout cones as the covers paint them: across the base 0.6 of the tooth's length along the jaw, 0.018 thick.",
+    "row_note": "The rows run the whole jaw, to the front of the mouth (they stopped at a bite point at z 1.86 while the jaw was traced short from the side sheet)."
   },
   "mouth": {
     "why": "The mouth opens by stretching skin, not as two rigid pieces parting (user; Dragonet Prophecy cover). The cover's open mouth is a deep cavity, its floor a trough for the tongue under an arched palate, and the gape ends in a rounded corner of cheek skin under the eye. The lips stay joined from the corner back to the hinge, where the jaw's bone runs on inside the cheek.",
     "corner_z": 1.59,
-    "corner_note": "the mouth corner on the side sheet: where the upper lip line turns sharply up (upper_head note)",
+    "corner_note": "The web's front edge is closed by a half round from the skin into the lining, and the web thickens toward it (0.004 + 0.008 u^3), so the mouth's corner is a fleshy commissure. Before, the two loose sheets 0.004 apart showed as a thin pale sliver at the corner of the open mouth.",
     "corner_round": 0.035,
     "web_back_z": 1.45,
     "web_thickness": 0.004,
     "hinge_z": 1.45,
-    "inside_from": [1.84, 1.8],
+    "inside_from": [1.98, 1.94],
     "palate_arch": 0.035,
     "floor_trough": 0.03,
     "web_orange_to": 0.2,
@@ -741,7 +743,7 @@
       "note": "The lips' fleshy margins (user: lips convincing for expression and speech): a rounded rim 0.004 proud along each lip, centred 0.006 from its edge, on the upper lip (face) and the lower (jaw), so the mouth has soft lips that the muscle actions move, not cut edges."
     },
     "tongue": {
-      "tip_z": 1.835,
+      "tip_z": 1.93,
       "root_z": 1.56,
       "width": 0.05,
       "thickness": [0.012, 0.03],
@@ -749,6 +751,7 @@
       "groove": 0.004,
       "lift": 0.004,
       "note": "A muscular tongue (user: convincing for speech): rounded across, a shallow median groove (0.004) down its middle, thick at the root (0.03) thinning to 0.012, its tip broad and rounded over the last 0.14 of its length, lifting a little off the floor, lying in the floor's trough. On three bones (tongue1-3) so it can curl up for speech sounds."
-    }
+    },
+    "corner_thickness": 0.008
   }
 }
