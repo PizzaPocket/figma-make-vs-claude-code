@@ -321,3 +321,10 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 - **Feet and toes:** they lie along the ground, so the rows run across the toes (by z).
 - **Between the two:** the finished patterns are blended, not their coordinates, which made moiré at the wrists and ankles.
 - **Soles:** the undersides of the feet stay cream (`limb_zone`).
+
+## Checked: the folded fan's width (no change)
+In a true side overlay the model's folded fan is narrow (about 9° between the first and last finger), while the side sheet's looks broad. Zoomed in, the sheet draws two layers:
+- the near wing's studded fingers, ending at claws at (1055, 255), (1165, 140), (1260, 55) and (1365, 20), which are the model's finger tips exactly;
+- the far wing's plain fingers behind them, offset up and toward the head by the sheet's slight elevation, ending at (915, 195), (1030, 95), (1140, 45) and (1265, 20).
+
+The broad fan is the two wings overlapping. Evaluated at the fold animation's end, the built model's claws land on the near wing's tips.
