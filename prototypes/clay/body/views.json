@@ -2917,5 +2917,54 @@
    },
    "clay": true
   }
+ ],
+ "tailturn": [
+  {
+   "label": "tail turn, from outside behind",
+   "cam": [
+    1.6,
+    0.9,
+    -2.9
+   ],
+   "target": [
+    0.4,
+    0.2,
+    -1.65
+   ],
+   "fov": 24,
+   "pose": "neutral"
+  },
+  {
+   "label": "tail turn, plain clay, from outside behind",
+   "cam": [
+    1.6,
+    0.9,
+    -2.9
+   ],
+   "target": [
+    0.4,
+    0.2,
+    -1.65
+   ],
+   "fov": 24,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "tail turn, plain clay, from above",
+   "cam": [
+    0.5,
+    2.6,
+    -1.6
+   ],
+   "target": [
+    0.45,
+    0.2,
+    -1.55
+   ],
+   "fov": 28,
+   "pose": "neutral",
+   "clay": true
+  }
  ]
 }

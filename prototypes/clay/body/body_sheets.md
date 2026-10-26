@@ -337,3 +337,4 @@ Tapering to a point, the tail's last 0.16 was thinner than the skin's mesh spaci
 - **The fix:** where the tail lies on the ground, its top now turns to face up (`trunk.tail.top_up_s`, s 3.5 to 4.1).
 - **The colour:** the dark top narrows there from half the girth to 0.3 of it (`zones.rows`).
 - **Result:** as on the side sheet, the ground run shows its cream, banded side to the viewer, with the dark top and spikes along its upper edge.
+- **No orange fringe on the tail:** the tail's dark top meets its cream side directly. On the tail's own skin (trunk share above 0.6, s > 2.7), the skin outside the shell is snapped to cream after the zone smoothing (`zones.tail_cream_from_s`). Smoothed, its ramp from dark to cream had shown as a flickering orange fringe along the shell's edge.

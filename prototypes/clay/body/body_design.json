@@ -80,10 +80,10 @@
         [0.75, 0.33, 0.6],
         [1.0, 0.42, 0.45],
         [2.2, 0.42, 0.45],
-        [2.6, 0.5, 0.52],
-        [3.5, 0.5, 0.52],
-        [3.9, 0.3, 0.33],
-        [5.72, 0.3, 0.33]
+        [2.6, 0.5, 0.5],
+        [3.5, 0.5, 0.5],
+        [3.9, 0.3, 0.3],
+        [5.72, 0.3, 0.3]
       ],
       "dark_edge_px": [
         [199, 234],
@@ -210,7 +210,8 @@
       "cream_halfwidth": [[0.0, 0.22], [0.5, 0.25], [0.8, 0.33], [1.1, 0.37], [1.4, 1.0], [5.72, 1.0]],
       "cream_halfwidth_why": "The cream comes down the neck as the throat band and broadens over the chest to meet the front of the foreleg shoulders, where it merges with the belly (the official art): about 0.25 either side of the midline at the base of the neck, 0.33-0.37 across the chest; behind the forelegs (s > 1.4) it widens to meet the carapace's edge. Earlier it was held to a thin central strip (0.17), which left a wide orange front to the shoulders.",
       "dark_edge_arc_why": "The shoulder armor reaches less far down (its bottom at py ~506, was 532) and its hind point rises (px 605, py 447); from there the carapace's lower edge is one smooth arc (py ~425 at its top) to the front of the hip armor (px 840), the cream of the flank directly below it all the way; the hip armor's front then runs down the thigh from there. The wing's arm roots at the shoulder armor's hind point, and its membrane meets the body along this junction, under the carapace's edge.",
-      "tail_zone_why": "Side sheet (tail crop): the tail's upright run behind the hind leg is dark with plates on its outer side and cream along its inner edge (dark to half way round); its run along the ground, curling toward the viewer, shows cream with transverse bands nearly all over, the dark top only a narrow edge carrying the spikes. So the dark top narrows from half the girth (s 3.5) to 0.3 of it (s 3.9) as the tail turns onto the ground."
+      "tail_zone_why": "Side sheet (tail crop): the tail's upright run behind the hind leg is dark with plates on its outer side and cream along its inner edge (dark to half way round); its run along the ground, curling toward the viewer, shows cream with transverse bands nearly all over, the dark top only a narrow edge carrying the spikes. So the dark top narrows from half the girth (s 3.5) to 0.3 of it (s 3.9) as the tail turns onto the ground. On the tail the dark meets the cream directly (no orange between): a band 0.02-0.03 wide showed only as a flickering orange fringe along the shell's edge.",
+      "tail_cream_from_s": 2.7
     },
     "front_overlap": 0.06,
     "bones": {

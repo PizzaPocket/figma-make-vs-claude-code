@@ -350,7 +350,11 @@ def skin_parts(ranges, ear_pts=None):
     W, Z, A, Bf, Tr = SK.vertex_data(V, trunk, parts, lambda s: trunk_weights(s, ranges), zone_value, dark_value,
                                  TR["zones"]["lines_until_s"] + 0.15, N=SK.normals(V, F), S_rig=S_rig)
     W = head_weld_weights(V, W, parts)
-    Z = list(SK.smooth_on_mesh(V, F, Z))  # no pinholes in the shell, smooth edges to its colour regions
+    Z = SK.smooth_on_mesh(V, F, Z)  # no pinholes in the shell, smooth edges to its colour regions
+    # on the tail the dark meets the cream directly: outside the shell the smoothed value is snapped to cream, or its
+    # ramp from dark to cream shows as an orange fringe along the shell's edge
+    s_v = trunk.s[trunk.local(V)[0]]
+    Z = list(np.where((s_v > TR["zones"]["tail_cream_from_s"]) & (np.asarray(Tr) > 0.6) & (np.asarray(Z) >= 0.25), 1.0, Z))
     Tr = list(SK.smooth_on_mesh(V, F, Tr))
     # the distance round the trunk from the top of the spine (angle times the section's mean radius), for laying the
     # scales out in rows; carried in _PART's fraction (20 + around / 4, under 20.4, still part 20), as the other
