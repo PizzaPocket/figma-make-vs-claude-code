@@ -137,7 +137,11 @@
             col = mix(col, dark, vAB.z); // the back of the ear is the head's dark skin round its root
             float fold = max((1.0 - smoothstep(0.012, 0.03, abs(vAB.y - 0.73))) * step(0.0, front), (1.0 - smoothstep(0.008, 0.025, abs(front))) * step(vAB.y, 0.73));
             float edge = max(1.0 - smoothstep(0.0, 0.025, vAB.y), smoothstep(0.975, 1.0, vAB.y));
-            col = mix(col, line, max(fold * (1.0 - vAB.z), edge) * 0.85); }
+            col = mix(col, line, max(fold * (1.0 - vAB.z), edge) * 0.85);
+            // the root (vAB.x < 0) is the face's own skin rising into the ear: its pebbled orange, giving way along the fillet
+            float face = 1.0 - smoothstep(-0.25, 0.0, vAB.x);
+            float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0));
+            col = mix(col, mix(orange, line, pe * 0.22), face); groove = pe * 0.5 * face; }
           #ifdef CLAY
           col = srgb(vec3(190.0, 180.0, 170.0)); groove = 0.0; rough = 0.7;
           #endif

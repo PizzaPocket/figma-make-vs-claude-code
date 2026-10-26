@@ -186,18 +186,19 @@
   },
   "ear_frill": {
     "note": "Measured on the side sheet (frill crop, px 205-262, py 188-224): an almond leaf about 0.18 long and 0.06 wide, from its base at the back of the cheek (front-lower end) back and up to its tip under the horn. It lies close along the side of the head, its face turned outward (the side sheet shows its whole face), cupped like a horse's ear laid back: pale peach hollow inside, an orange rim, the top edge rolled out and over. Its top edge runs back under the horn. Tip re-measured on the gridded crop (px 258, py 190): it had been placed 0.05 too far back and 0.04 too high, so it stood up behind the horn like a spike. Seated outside the neck's shell (whose rim stands at x 0.26-0.27 under the ear's base, probed on the built model), so it shows as a leaf at the back corner of the head, angled a little out toward its tip, as on the Dragonet Prophecy cover.",
-    "base": [0.275, 1.78, 1.44],
+    "base": [0.0, 1.785, 1.47],
     "tip": [0.24, 1.866, 1.289],
     "width": 0.075,
     "face_up": 0.1,
     "face_forward": 0.12,
     "roll_deg": [95, 150],
     "depth": 0.45,
-    "root_sink": 0.012,
-    "root_len": 0.3,
-    "root_width": 0.8,
-        "thickness": 0.007,
-    "body": 0.06
+    "thickness": 0.007,
+    "body": 0.035,
+    "stand_off": 0.012,
+    "fillet_a": 0.2,
+    "foot": [0.06, 0.034],
+    "construction_note": "Grown out of the face (user: the ear hovered off the head; build it from the face's own surface). The loft starts from a footprint on the face's surface at the top-back corner of the cheek (base y 1.785, z 1.47: where the side sheet's S line behind the cheek begins at the ear's base), an oval 0.06 along the ear by 0.034 across, and rises tangentially out of it (fillet over the first fifth) into the ear's section: the hollow and rolled rim, then round the solid back. The root keeps the face's pebbled orange."
   },
   "roof": {
     "note": "A thin dark underlay fitted over the face; the visible roof is the plates laid on it (roof_plates). Its eave line is dark_plate_edge.",

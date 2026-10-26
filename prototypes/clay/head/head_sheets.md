@@ -289,3 +289,11 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
   - **Fix:** the lip's lower edge at the front stations now sits level with the bite, rising only over a small radius at the tip (`upper_head.front_lip_note`). The front comes down under the plate almost flush (1.992, 1.982, 1.975, 1.947, 1.928) and rolls back into the lip; 93% of the front measures convex.
   - **Also fixed:** the palate arch's falloff ran the wrong way and arched the lip's underside at the front. It now arches only inside the mouth.
   - **Failed on the way:** a sculpted dome on the face. It overshot into a bumper and broke the front plate built on it.
+
+## Ear grown out of the face (user: hovering off the face; build it from the face)
+
+- **Section:** one closed loop: the hollow (an arc curling up at the lower edge and over at the upper front edge into the rolled rim), then back round its solid back.
+- **Root:** the loft starts from a footprint on the face's own surface at the top-back corner of the cheek (y 1.785, z 1.47), where the side sheet's S line behind the cheek begins at the ear's base. It is an oval 0.06 along the ear by 0.034 across, and the surface rises out of it tangentially (a fillet over the first fifth) into the section.
+- **Paint:** the root keeps the face's pebbled orange, giving way to the ear's colours along the fillet.
+- **Shell:** the neck shell now tapers to nothing over 0.13 behind the cheek line (`head_weld.shell_taper`), so its lumpy rim no longer piles up round the ear's root.
+- **Still to improve:** close up the ear is thin, and the face of its root is a flat facet.

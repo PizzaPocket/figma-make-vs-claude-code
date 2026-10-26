@@ -877,7 +877,7 @@
       "rise": 60.0,
       "clip_k": 0.008,
       "handover": [-0.08, -0.01],
-      "shell_taper": 0.06,
+      "shell_taper": 0.13,
       "rise_note": "behind the line the skin may stand out from the head's surface by rise * (distance behind)^2, joined with a smooth maximum of radius clip_k (a hard cut leaves a kink the mesh steps on)",
       "handover_note": "skin weights: the head's and jaw's from the line forward, the neck's from handover[0] behind it"
     }

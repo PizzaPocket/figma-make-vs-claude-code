@@ -1321,50 +1321,58 @@ def head_parts():
         v, f, A, B = tube(path, hr, around=24, step=0.001, grooves=HORN["grooves"])
         objs.append(add_part("Horn" + sd, v, f, {"_PART": [8] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
         # ear: laid back along the side of the head under the horn, pointing back and up, like a horse's ear laid
-        # flat. Each cross-section is an arc round the ear's axis: shallow at the bottom of the hollow, curling up
-        # the lower edge and further over the upper front edge into a rolled rim. Pale inside, orange behind, with
-        # thickness, closed round its edges
-        base = np.array([sgn * FRILL["base"][0], FRILL["base"][1], FRILL["base"][2]])
+        # flat, and grown out of the face itself. Its section is one closed loop: the hollow (pale, an arc curling up
+        # at the lower edge and over at the upper front edge into a rolled rim), then back round its solid back. The
+        # loft starts from a footprint lying on the face's own surface at the top-back corner of the cheek, where the
+        # S line behind the cheek begins, and rises out of it tangentially (a fillet) into that section, so the face's
+        # skin runs on into the ear with no seam (the root keeps the face's pebbled orange: _A < 0)
+        face_x = lambda y, z: abs(face_pt(z, side_th(z, y))[0])
+        b_yz = np.array(FRILL["base"][1:])
+        base = np.array([sgn * (face_x(*b_yz) + FRILL["stand_off"]), *b_yz])
         tipp = np.array([sgn * FRILL["tip"][0], FRILL["tip"][1], FRILL["tip"][2]])
         L = tipp - base; length = np.linalg.norm(L); L /= length
         nrm = norm([sgn * 1.0, FRILL["face_up"], FRILL["face_forward"]]); nrm = norm(nrm - L * (nrm @ L))
         W = np.cross(nrm, L); W = W if W[1] > 0 else -W  # across the ear, toward its upper front edge
-        G, H = 24, 20
+        G, H, NF = 26, 20, 8
         lo, up = (math.radians(a) for a in FRILL["roll_deg"])
         dk, th = FRILL["depth"], FRILL["thickness"]
 
         def ear_pt(a, c, out):
-            # broad at the root (root_width of the widest), where it grows out of the head, narrowing to the tip
-            half = FRILL["width"] / 2 * max(math.sin(math.pi * (0.12 + 0.88 * a)) ** 0.75, FRILL["root_width"] * (1 - a)) * (1 - 0.35 * a)
+            half = FRILL["width"] / 2 * math.sin(math.pi * (0.12 + 0.88 * a)) ** 0.75 * (1 - 0.35 * a)
             t = c * (up if c > 0 else lo)  # angle round the arc from the bottom of the hollow
             o = base + L * a * length + nrm * half * dk
             p = o + W * half * math.sin(t) - nrm * half * dk * math.cos(t)
-            if out:  # the back: a solid body behind the hollow, deep at the root and running into the head, thin at the tip
+            if out:  # the back: a solid body behind the hollow, thick toward the root, thin at the tip
                 q = p - o; q = q / (np.linalg.norm(q) + 1e-9)
                 p = p + norm(0.4 * q - nrm) * (th * (1 - 0.6 * a) + FRILL["body"] * (1 - a) ** 1.5)
-            return p - nrm * FRILL["root_sink"] * max(0.0, 1 - a / FRILL["root_len"]) ** 2  # the root dives into the head
+            return p
 
+        M = 2 * (H + 1)
+        loop = [(0, j) for j in range(H + 1)] + [(1, j) for j in range(H, -1, -1)]  # hollow lower->upper, back upper->lower
+        a1 = FRILL["fillet_a"]
+        sec1 = [ear_pt(a1, -1 + 2 * j / H, layer) for layer, j in loop]
+        # the footprint: an oval on the face round the root, the hollow's side forward-out, the back's side behind
+        Ls = norm(np.array([0.0, L[1], L[2]])); Ws = norm(np.array([0.0, W[1], W[2]]))
+        foot = []
+        for k in range(M):
+            ph = math.pi * (k / (M - 1)) * 2 - math.pi / 2
+            yz = b_yz + (Ws[1:] * FRILL["foot"][1] * math.sin(ph) + Ls[1:] * FRILL["foot"][0] * (1 + math.cos(ph)) * 0.5)
+            foot.append(np.array([sgn * (face_x(*yz) - 0.002), *yz]))
         vs, fs, us, bs, zs = [], [], [], [], []
-        grid = {}
-        for layer in (0, 1):
-            for i in range(G + 1):
-                for j in range(H + 1):
-                    a, c = i / G, -1 + 2 * j / H
-                    grid[layer, i, j] = len(vs)
-                    vs.append(tuple(ear_pt(a, c, layer))); us.append(a); bs.append(j / H); zs.append(float(layer))
+        for i in range(G + 1):
+            for k, (layer, j) in enumerate(loop):
+                if i <= NF:  # the fillet: from the footprint on the face, rising tangentially into the section
+                    e = (i / NF) ** 2
+                    P = foot[k] + (sec1[k] - foot[k]) * e
+                    us.append(-1.0 + i / NF)
+                else:
+                    P = ear_pt(a1 + (1 - a1) * (i - NF) / (G - NF), -1 + 2 * j / H, layer)
+                    us.append(a1 + (1 - a1) * (i - NF) / (G - NF))
+                vs.append(tuple(P)); bs.append(j / H); zs.append(float(layer))
         for i in range(G):
-            for j in range(H):
-                q = [grid[0, i, j], grid[0, i + 1, j], grid[0, i + 1, j + 1], grid[0, i, j + 1]]
+            for k in range(M):
+                q = [i * M + k, (i + 1) * M + k, (i + 1) * M + (k + 1) % M, i * M + (k + 1) % M]
                 fs.append(q if sgn > 0 else q[::-1])
-                q = [grid[1, i, j], grid[1, i, j + 1], grid[1, i + 1, j + 1], grid[1, i + 1, j]]
-                fs.append(q if sgn > 0 else q[::-1])
-        for i in range(G):  # the edges, closing the two layers
-            for j, flip in ((0, False), (H, True)):
-                q = [grid[0, i, j], grid[1, i, j], grid[1, i + 1, j], grid[0, i + 1, j]]
-                fs.append(q[::-1] if (flip != (sgn < 0)) else q)
-        for j in range(H):  # the base, buried in the head
-            q = [grid[0, 0, j], grid[0, 0, j + 1], grid[1, 0, j + 1], grid[1, 0, j]]
-            fs.append(q if sgn > 0 else q[::-1])
         objs.append(add_part("Frill" + ("L" if sgn > 0 else "R"), vs, fs, {"_PART": [9] * len(vs), "_A": us, "_B": bs, "_ZONE": zs},
                              rigid(len(vs))))
 
