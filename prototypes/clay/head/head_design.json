@@ -50,7 +50,15 @@
       },
       "convex": 0.025,
       "lip_arc_power": 2,
-      "convex_side": 0.016
+      "convex_side": 0.016,
+      "whisker_pads": {
+        "centre_xy": [0.045, 1.35],
+        "radii": [0.03, 0.02],
+        "amount": 0.008,
+        "philtrum_width": 0.007,
+        "philtrum_depth": 0.004,
+        "note": "A male lion's muzzle under the nose (user: a lion's nose on a dinosaur's mouth): two fleshy whisker pads swelling forward 0.008 either side of the philtrum's groove, on the orange front below the shield's rim, over the front teeth. Sculpted into the front face (front_setback), so the shield's front skirt above follows them."
+      }
     },
     "lip_tuck": {
       "from_z": [1.58, 1.63],
@@ -834,7 +842,8 @@
       "margin": 0.022,
       "ear_top": [[1.39, 1.879], [1.41, 1.868], [1.43, 1.855], [1.45, 1.834], [1.47, 1.815], [1.49, 1.79], [1.51, 1.77]],
       "note": "Designed in (user: the part near the ears kept reaching out and clipping them): the ear's top edge per station, measured from the built ear mesh (FrillL, max y per 0.02 of z), plus a margin. Behind the eye the shield's lower edge runs above it (a smooth max with the traced edge), so the shield never meets the ear's path. Re-measure if the ear moves."
-    }
+    },
+    "skirt_note": "The front skirt's thickness rounds off toward its side ends and its bottom edge (edge_round), like the rest of the shield's edge; at full thickness to its ends it stood out as square tabs at the bottom corners."
   },
   "lion_nose": {
     "note": "A male lion's nose on the muzzle shield (user, and the Dragonet Prophecy cover and top-view painting): its bridge rises out of the shield's top about the middle of the muzzle (s_root), runs forward and down along the top, broadening and gaining height, flat-topped, and ends in a rounded leather cap whose front stops s_front back from the shield's front edge; the shield's rim carries on round the front ahead of and below it. Same material and colour as the shield: it reads by form. s is distance along the top profile from the shield's front edge (0 at z 2.017; 0.30 at z 1.87; before the snout warp).",

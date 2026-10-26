@@ -202,7 +202,13 @@ def front_setback(x, y):
     xo = abs(face_pt(z0, side_th(z0, min(max(y, lo + 1e-4), top - 1e-4)))[0]) or 1e-6
     across = max(0.0, 1 - (x / xo) ** 2) * (1 - smoothstep(0.8, 1.0, q))  # zero all round the outline, its peak included
     # convex forward both ways: rounded across from above, and bulging in side profile between the nose and the lip
-    return across * (F["convex"] + F.get("convex_side", 0.0) * math.sin(math.pi * q) - F["concave"] * math.sin(math.pi * q ** 0.8))
+    base = F["convex"] + F.get("convex_side", 0.0) * math.sin(math.pi * q) - F["concave"] * math.sin(math.pi * q ** 0.8)
+    WP = F.get("whisker_pads")
+    if WP:  # a lion's muzzle under the nose: two fleshy pads either side of the philtrum's groove, over the front teeth
+        (px, py), (rx, ry) = WP["centre_xy"], WP["radii"]
+        band = math.exp(-((y - py) / ry) ** 2)
+        base += WP["amount"] * math.exp(-((abs(x) - px) / rx) ** 2) * band - WP["philtrum_depth"] * math.exp(-(x / WP["philtrum_width"]) ** 2) * band
+    return across * base
 
 
 def corner_lift(z, x, wb):
@@ -392,7 +398,7 @@ def muzzle_shield():
         sv, dv = profile_sd(np.stack([np.full(K, z), F[:, 1]], 1))
         ed = dv.max()  # the eave's depth at this station
         rim = ed - d_row >= PLATES["layout"].get("min_rim", 0.025)
-        outer, inner, A, B = [], [], [], []
+        outer, inner, A, B, E = [], [], [], [], []
         for k in range(K):
             x, y = F[k]; nx, ny = Nn[k]; sk, dk = sv[k], dv[k]
             band = (not rim) or dk < d_row
@@ -414,12 +420,22 @@ def muzzle_shield():
             n3 = np.array([nx, ny, 0.0])
             q = horn_fillet(np.array([x + nx * (under + h), y + ny * (under + h), z]), n3, edge)
             outer.append(q); inner.append(np.array([x - nx * inset, y - ny * inset, z]))
-            A.append(min(gmin, de[k])); B.append(tint(tk))
+            A.append(min(gmin, de[k])); B.append(tint(tk)); E.append(edge)
         rings.append((outer, inner, A, B))
+        if len(rings) == 1:
+            E0 = np.array(E)
     # the front: carried on down over the snout's front face to its rounded bottom edge (front_skirt)
     o0, i0 = rings[0][0], rings[0][1]
-    so = front_skirt([tuple(p) for p in o0], under, T)
-    si = front_skirt([tuple(p) for p in i0], -inset, 0.0)
+    so = np.array(front_skirt([tuple(p) for p in o0], under, T))
+    si = np.array(front_skirt([tuple(p) for p in i0], -inset, 0.0))
+    # its thickness rounds off like the rest of the shield's edge: toward the side ends (where the top ring's edge
+    # has already rounded off) and toward its bottom edge
+    full = np.concatenate([np.array(o0)[None], so])
+    seg = np.linalg.norm(np.diff(full, axis=0), axis=2)
+    dist_b = np.cumsum(seg[::-1], axis=0)[::-1]  # along each column, to the bottom row
+    dist_b = np.concatenate([dist_b[1:], np.zeros((1, K))])
+    f = E0[None, :] * np.sqrt(np.clip(dist_b / SH["edge_round"], 0.0, 1.0))
+    so = si + (so - si) * f[..., None]
     front = [(list(map(np.array, a)), list(map(np.array, b)), [0.02] * K, [tint(0)] * K) for a, b in zip(so, si)]
     rings = front[::-1] + rings
     verts, faces, AA, BB = [], [], [], []

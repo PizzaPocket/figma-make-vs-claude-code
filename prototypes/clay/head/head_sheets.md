@@ -365,3 +365,7 @@ The tooth rows run the whole jaw. The upper row sits 0.01 outside the lower, nev
 - Behind the eye, the shield's lower edge runs at least 0.022 above the ear's top edge, measured from the ear mesh (`ear_clearance.ear_top`).
 - The neck's shell lies flush on the skin within 0.006 of either ear, rising to full height by 0.025 (body `anatomy.ear_clearance`).
 - Measured after: along the ear both shells are no closer than the skin the ear lies against (0.004–0.009), touching only at the root it grows from. Before, the neck shell came within 0.002 of the ear's rolled rim.
+
+### Shield skirt edge; whisker pads
+- The shield's front skirt now rounds off toward its side ends and its bottom edge, like the rest of the shield's edge. At full thickness out to its ends it stood out as square tabs at the bottom corners.
+- Lion's whisker pads (`upper_head.front.whisker_pads`) swell 0.008 either side of a philtrum groove on the orange front below the shield's rim, sculpted into the front face. They stay subtle, since the covers show only a narrow orange lip band there.
