@@ -880,6 +880,11 @@
       "shell_taper": 0.13,
       "rise_note": "behind the line the skin may stand out from the head's surface by rise * (distance behind)^2, joined with a smooth maximum of radius clip_k (a hard cut leaves a kink the mesh steps on)",
       "handover_note": "skin weights: the head's and jaw's from the line forward, the neck's from handover[0] behind it"
+    },
+    "ear_clearance": {
+      "flush_within": 0.006,
+      "full_from": 0.025,
+      "note": "Designed clearance (user: the part near the ears kept reaching out into them): within 0.006 of either ear's mesh the neck's shell lies flush on the skin, rising to its full height by 0.025, so its rim never enters the ear's path. Measured before: the shell came within 0.002 of the ear's rolled rim at z 1.36-1.45. The head's muzzle shield has its own clearance (head_design muzzle_shield.ear_clearance)."
     }
   },
   "shell": {

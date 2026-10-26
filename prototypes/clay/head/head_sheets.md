@@ -355,3 +355,13 @@ The jaw is no longer a traced table. It was traced from the side sheet, whose sn
 - **Half-widths** at each landmark.
 
 The tooth rows run the whole jaw. The upper row sits 0.01 outside the lower, never outside the lip. The tongue and its bones reach to z 1.93.
+
+### Muzzle shield (one solid piece) and the lion's nose
+**Shield** (`muzzle_shield`, `muzzle_shield()`): one surface from the snout's front back to the roof's end, wrapping down over the front of the snout, its edge rounded all round. The plating (layout from `roof_plates.layout`) is carved into it as grooves at the band joints, down the ridge and along the rim row, with a low dome per tile, like an ankylosaur's fused skull armour. It replaced the separate tiles (`roof_plates`), the front cap fitted to the front curve (`front_shell`) and the underlay, all removed.
+
+**Lion's nose** (`lion_nose`, `lion_nose()`): its bridge rises out of the shield's top at mid-muzzle (s 0.30, z 1.87) and runs forward and down the top. It broadens and gains height, flat-topped, its base flaring into the shield. It ends in a rounded cap whose front stops 0.03 back from the shield's front edge, with the shield's rim carrying on round the front ahead of it. It is the same material as the shield, with comma nostrils in the cap's front.
+
+**Ear clearance, by design:**
+- Behind the eye, the shield's lower edge runs at least 0.022 above the ear's top edge, measured from the ear mesh (`ear_clearance.ear_top`).
+- The neck's shell lies flush on the skin within 0.006 of either ear, rising to full height by 0.025 (body `anatomy.ear_clearance`).
+- Measured after: along the ear both shells are no closer than the skin the ear lies against (0.004–0.009), touching only at the root it grows from. Before, the neck shell came within 0.002 of the ear's rolled rim.

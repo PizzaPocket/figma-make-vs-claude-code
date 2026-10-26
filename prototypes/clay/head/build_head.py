@@ -30,7 +30,6 @@ EYE = D["eye"]
 PLATE_EDGE = np.array(D["dark_plate_edge"]["zy"])
 ROOF = D["roof"]
 PLATES = D["roof_plates"]
-CREST = D["nose_crest"]
 HORN = D["horn"]
 
 
@@ -291,81 +290,11 @@ def jaw_contour(z):
     return pts, top
 
 
-# ---------------------------------------------------------------- roof and nose crest
+# ---------------------------------------------------------------- roof thickness (the profile the shield and nose are laid out on)
 def roof_t(z):
     """Shell thickness: overlapping bands, each thickest at its back edge."""
     f = ((ROOF["front_z_band_origin"] - z) / ROOF["band"]) % 1.0
     return ROOF["thickness"][0] + (ROOF["thickness"][1] - ROOF["thickness"][0]) * f, f
-
-
-def eave_th(z):
-    """Face angle at which the roof's eave sits (0 = the roof reaches the lip)."""
-    top, low = interp(UPPER, z, 1), interp(UPPER, z, 2)
-    ye = float(np.interp(-z, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1]))
-    if ye <= low + 1e-4:
-        return 0.0
-    q = min(1.0, (ye - low) / (top - low))
-    return min(math.asin(q ** (SQ / 2)), math.pi / 2 - 0.08)
-
-
-def roof_ring(z, K=27):  # odd, so one sample sits on the ridge
-    the = eave_th(z)
-    t, f = roof_t(z)
-    outer, inner = [], []
-    for i in range(K):
-        th = the + (math.pi - 2 * the) * i / (K - 1)
-        x, y = face_pt(z, th)
-        nx, ny = face_normal(z, th)
-        outer.append((x + nx * t, y + ny * t, z))
-        inner.append((x - nx * ROOF["inset"], y - ny * ROOF["inset"], z))
-    return outer, inner, f
-
-
-def crest_height(z, th):
-    """A pad sculpted into the nose plate along the top front of the muzzle (none at present: the nose is its
-    own piece, nose_part). Returns (height above the plate, nostril weight)."""
-    st = np.array(CREST.get("stations", []))
-    if not len(st) or not (st[-1, 0] <= z <= st[0, 0]):
-        return 0.0, 0.0
-    half, h = (float(np.interp(-z, -st[:, 0], st[:, c])) for c in (1, 2))
-    u = (th - math.pi / 2) / max(half, 1e-6)
-    return (h * (1 - u * u) ** 0.8 if abs(u) < 1 else 0.0), 0.0
-
-
-def shield(W, H, drop, r, n=16, bulge=0.0):
-    """The nose's section, like the border of the Superman shield: a flat top with square corners, short
-    sides falling straight down, then two lower edges converging to a point at the bottom. Corners rounded
-    with radius r; each straight edge swells outward by bulge (a fraction of its length), so the faces are softly
-    convex. Returns (x, v) points counter-clockwise from the bottom point, and each point's side:
-    0 top, 1 upright side, 2 lower edge (the undersides, where the nostrils open)."""
-    P = [(0.0, -H), (W / 2, -drop), (W / 2, 0.0), (-W / 2, 0.0), (-W / 2, -drop)]
-    out, tag = [], []
-    for i, c in enumerate(P):
-        p, q = np.array(P[i - 1]), np.array(P[(i + 1) % len(P)])
-        c = np.array(c); a1, a2 = norm(p - c), norm(q - c)
-        half = math.acos(max(-1.0, min(1.0, a1 @ a2))) / 2
-        # never round further than 45% along either edge (a short side would otherwise fold into a spike)
-        dcut = min(r / math.tan(half), 0.45 * min(np.linalg.norm(p - c), np.linalg.norm(q - c)))
-        r_c = dcut * math.tan(half)
-        s0, s1 = c + a1 * dcut, c + a2 * dcut
-        ctr = c + norm(a1 + a2) * r_c / math.sin(half)
-        u0, u1 = math.atan2(*(s0 - ctr)[::-1]), math.atan2(*(s1 - ctr)[::-1])
-        du = (u1 - u0 + math.pi) % (2 * math.pi) - math.pi
-        for k in range(n + 1):
-            u = u0 + du * k / n
-            out.append(tuple(ctr + r_c * np.array([math.cos(u), math.sin(u)])))
-            tag.append({0: 2, 1: 2, 2: 1, 3: 0, 4: 1}[i] if k < n // 2 else {0: 2, 1: 1, 2: 0, 3: 1, 4: 2}[i])
-        # the straight edge to the next corner, divided so the faces can be sculpted (the nostrils)
-        out.append(None); tag.append({0: 2, 1: 1, 2: 0, 3: 1, 4: 2}[i])
-    pts = []
-    for j, p in enumerate(out):
-        if p is not None:
-            pts.append((p, tag[j])); continue
-        a, b = np.array(out[j - 1]), np.array(out[(j + 1) % len(out)])
-        m = max(2, int(np.linalg.norm(b - a) / 0.004))
-        nrm = np.array([b[1] - a[1], -(b[0] - a[0])]) / (np.linalg.norm(b - a) + 1e-9)  # outward (the outline runs counter-clockwise)
-        pts += [(tuple(a + (b - a) * q / m + nrm * bulge * np.linalg.norm(b - a) * math.sin(math.pi * q / m)), tag[j]) for q in range(1, m)]
-    return [p for p, _ in pts], [g for _, g in pts]
 
 
 def tooth(vs, fs, base, d, tang, length, ra, rs, sink=0.004, recurve=0.18, NA=10, NL=8):
@@ -395,113 +324,190 @@ def tooth(vs, fs, base, d, tang, length, ra, rs, sink=0.004, recurve=0.18, NA=10
     return len(vs) - b0
 
 
-def nose_part():
-    """The nose, after a great cat's: the nose leather (rhinarium) at the end of the nasal bones, a soft pad
-    coming out of the roof's front, pitched down with the roof. Its section is a rounded shield (broad top,
-    sides converging to a soft point at the philtrum); it swells as it emerges and its front is a low dome, not a
-    flat face with a rim. Comma-shaped nostrils open at its lower outer corners, starting on the dome's front
-    and curling up and back along the sides under the alar fold; a philtrum groove runs down the middle of
-    its underside to the lip. _ZONE: nostril."""
-    NS = D["nose"]
-    sec, tag = shield(NS["width"], NS["height"], NS["side_drop"], NS["corner_radius"], bulge=NS.get("bulge", 0.0))
-    p = math.radians(NS["pitch_deg"])
-    ax = np.array([0.0, math.sin(p), math.cos(p)])      # forward and down, along the roof
-    up = np.array([0.0, math.cos(p), -math.sin(p)])     # the section's v direction
-    front = np.array([0.0, NS["front_top_zy"][1], NS["front_top_zy"][0]])  # middle of the front's top edge
-    t_end = lambda v: -(up[2] * v) / ax[2]  # the front's base is upright (constant z)
-    S = np.array(sec)
-    cv = np.array([0.0, float(np.mean(S[:, 1]))])  # the section's middle
-    back = np.concatenate([np.linspace(NS["length"], 0.07, 12), np.linspace(0.068, 0.0, 40)])
-    rings = []
-    for db in back:
-        sink = NS.get("sink", 0.0) * smoothstep(NS.get("emerge", 0.0), NS["length"], db)
-        sw = NS["swell"][0] + (1 - NS["swell"][0]) * (1 - smoothstep(0.0, NS["swell"][1], db))  # swells as it emerges
-        ring = []
-        for x, v in sec:
-            xs, vs_ = cv + (np.array([x, v]) - cv) * sw
-            ring.append(front + ax * (t_end(vs_) - db) + up * (vs_ - sink) + np.array([xs, 0, 0]))
-        rings.append(ring)
-    # the front: a low dome over the whole front (radius `dome`), its rim rounding over smoothly
-    last = [np.array(q) for q in rings[-1]]
-    c3 = front + ax * t_end(cv[1]) + up * cv[1]
-    R = NS["dome"]
-    for a in np.radians(np.linspace(10, 80, 8)):
-        k = 1 - math.cos(a)
-        rings.append([q + (c3 - q) * k + np.array([0, 0, 1.0]) * R * math.sin(a) for q in last])
-    V = np.array([q for r in rings for q in r]); M = len(rings[0])
-    # local coordinates from the front's top-middle: x across, y up, z forward
-    loc = V - front
-    NW = np.zeros(len(V))
-    N = NS["nostril"]
-    C = np.array(N["path"])  # comma centreline (x, y, z) local, from its front-inner end curling out, up and back
-    half = loc[loc[:, 0] >= 0]
-    C = np.array([half[np.argmin(np.linalg.norm(half - c, axis=1))] for c in C])  # laid onto the surface
-    core = c3 - np.array([0.0, 0.0, 0.03])
-    for i, (x, y, z) in enumerate(loc):
-        q = np.array([abs(x), y, z])
-        best, tb = 1e9, 0.0
-        for k in range(len(C) - 1):
-            a0, b0 = C[k], C[k + 1]; ab = b0 - a0
-            t = min(1.0, max(0.0, (q - a0) @ ab / (ab @ ab)))
-            d = np.linalg.norm(q - (a0 + ab * t))
-            if d < best:
-                best, tb = d, (k + t) / (len(C) - 1)
-        w = N["half_width"][0] + (N["half_width"][1] - N["half_width"][0]) * tb  # wide at the front, a fine slit at the back
-        g = smoothstep(0.0, 1.0, max(0.0, 1 - best / w)) * smoothstep(-0.05, 0.15, tb) * (1 - smoothstep(0.85, 1.05, tb))
-        if g > 0:
-            V[i] += norm(core - V[i]) * N["depth"] * g
-            NW[i] = smoothstep(0.3, 0.75, g)
-        # the philtrum: a shallow groove down the middle of the underside and front's lower part
-        PH = NS["philtrum"]
-        gp = math.exp(-(x / PH["half_width"]) ** 2) * smoothstep(PH["from_y"], PH["from_y"] - 0.012, y)
-        if gp > 1e-3:
-            V[i] += norm(core - V[i]) * PH["depth"] * gp
-    verts = [tuple(q) for q in V]; faces = []
-    for i in range(len(rings) - 1):
-        for j in range(M):
-            k = (j + 1) % M
-            faces.append([i * M + j, i * M + k, (i + 1) * M + k, (i + 1) * M + j])
-    cidx = len(verts); verts.append(tuple(np.mean(rings[0], 0))); NW = list(NW) + [0.0]
-    for j in range(M):
-        faces.append([(j + 1) % M, j, cidx])
-    tip = len(verts); verts.append(tuple(c3 + np.array([0, 0, R]))); NW.append(0.0)
-    base = (len(rings) - 1) * M
-    for j in range(M):
-        faces.append([base + j, base + (j + 1) % M, tip])
-    return verts, faces, [0.02] * len(verts), [0.45] * len(verts), NW
+# ---------------------------------------------------------------- muzzle shield and lion's nose
+def smax(a, b, k):
+    """Smooth maximum (radius k)."""
+    return 0.5 * (a + b + math.sqrt((a - b) ** 2 + k * k))
 
 
-def shell_loft(rings, attrs_per_ring):
-    """rings: list of (outer, inner) point lists; builds a closed shell (outer, rim, inner) with caps."""
-    verts, faces, A, B, Z = [], [], [], [], []
-    idx = []
-    for (outer, inner), (a, bvals) in zip(rings, attrs_per_ring):
-        K = len(outer)
-        ring = []
-        for i, p in enumerate(outer):
-            ring.append(len(verts)); verts.append(p); A.append(a); B.append(bvals[i]); Z.append(i / (K - 1))
-        for i, p in enumerate(reversed(inner)):
-            ring.append(len(verts)); verts.append(p); A.append(a); B.append(0.0); Z.append(-1.0)
-        idx.append(ring)
-    M = len(idx[0])
-    for k in range(len(idx) - 1):
-        r0, r1 = idx[k], idx[k + 1]
+def shield_eave_y(z):
+    """The shield's lower edge at station z: the traced dark-plate edge, lifted where the ear passes so the
+    shield stays clear of the ear's whole path by design (muzzle_shield.ear_clearance: the ear's top edge
+    measured from its mesh, plus a margin)."""
+    EC = D["muzzle_shield"]["ear_clearance"]
+    base = float(np.interp(-z, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1]))
+    et = np.array(sorted(EC["ear_top"]))
+    if not (et[0, 0] <= z <= et[-1, 0]):
+        return base
+    return smax(base, float(np.interp(z, et[:, 0], et[:, 1])) + EC["margin"], 0.004)
+
+
+def shield_eave_th(z):
+    top, low = interp(UPPER, z, 1), interp(UPPER, z, 2)
+    ye = shield_eave_y(z)
+    if ye <= low + 1e-4:
+        return 0.0
+    q = min(1.0, (ye - low) / (top - low))
+    return min(math.asin(q ** (SQ / 2)), math.pi / 2 - 0.03)
+
+
+def profile_sd(Q):
+    """Side-view points Q (n x 2, as (z, y)) to profile coordinates (s along the top profile from the front
+    edge, d depth below it)."""
+    pr = profile(); P, S, N = pr["P"], pr["s"], pr["N"]
+    T = np.stack([-N[:, 1], N[:, 0]], 1)
+    T *= np.sign(np.sum(T * np.gradient(P, axis=0), 1))[:, None]
+    s_out, d_out = np.zeros(len(Q)), np.zeros(len(Q))
+    for a in range(0, len(Q), 4000):
+        q = Q[a:a + 4000]
+        R = q[:, None, :] - P[None, :, :]
+        t = np.einsum("mpk,pk->mp", R, T)
+        i = np.argmin(np.abs(t) + 1e3 * (np.einsum("mpk,pk->mp", R, N) < -0.01), axis=1)
+        s_out[a:a + 4000] = S[i] + t[np.arange(len(q)), i]
+        d_out[a:a + 4000] = np.einsum("mk,mk->m", R[np.arange(len(q)), i], N[i])
+    return s_out, d_out
+
+
+def muzzle_shield():
+    """The muzzle shield: one solid piece over the top of the head from the snout's front back to the roof's
+    end, its edge rounded all round, wrapping down over the front of the snout (front_skirt). Its plating is
+    carved into it, like an ankylosaur's fused skull armour: grooves at the band joints, down the ridge and
+    along the rim row, and a low dome in each tile (muzzle_shield). Returns verts, faces, _A (distance to the
+    nearest groove or edge, where the shader darkens), _B (tile tint)."""
+    SH = D["muzzle_shield"]; L = PLATES["layout"]["rows"]
+    je, d_row, jr = L[0]["joint_every"], L[0]["d"][1], L[1]["joint_every"]
+    T, under, inset, K = SH["thickness"], SH["under"], SH["inset"], SH["K"]
+    G = SH["groove"]
+    z0 = UPPER[0, 0]
+    zs = np.arange(z0, ROOF["back_z"] - 1e-9, -SH["dz"])
+    tint = lambda k: (math.sin(k * 12.9898) * 43758.5453) % 1.0
+    rings = []  # (outer K, inner K, A K, B K)
+    for z in zs:
+        the = shield_eave_th(z)
+        ths = the + (math.pi - 2 * the) * np.arange(K) / (K - 1)
+        F = np.array([face_pt(z, th) for th in ths]); Nn = np.array([face_normal(z, th) for th in ths])
+        acc = np.concatenate([[0], np.cumsum(np.linalg.norm(np.diff(F, axis=0), axis=1))])
+        de = np.minimum(acc, acc[-1] - acc)
+        de = np.minimum(de, (z - ROOF["back_z"]) * 1.0)
+        sv, dv = profile_sd(np.stack([np.full(K, z), F[:, 1]], 1))
+        ed = dv.max()  # the eave's depth at this station
+        rim = ed - d_row >= PLATES["layout"].get("min_rim", 0.025)
+        outer, inner, A, B = [], [], [], []
+        for k in range(K):
+            x, y = F[k]; nx, ny = Nn[k]; sk, dk = sv[k], dv[k]
+            band = (not rim) or dk < d_row
+            if band:  # the top bands: joints across every je (none at the front edge), the ridge down the middle
+                gd = [abs(sk - je * max(1, round(sk / je)))] + ([abs(x)] if sk > je else [])
+                fs, fd = (sk / je) % 1.0, min(1.0, dk / (d_row if rim else max(ed, 1e-6)))
+                tk = int(sk // je) * 2 + (x > 0)
+            else:  # the rim row: square marginal scutes, joints every jr
+                gd = [abs(sk - jr * round(sk / jr))]
+                fs, fd = (sk / jr) % 1.0, (dk - d_row) / max(ed - d_row, 1e-6)
+                tk = 100 + int(sk // jr) * 2 + (x > 0)
+            if rim:
+                gd.append(abs(dk - d_row))
+            gmin = min(gd)
+            dome = SH["dome"] * math.sin(math.pi * fs) ** 0.6 * math.sin(math.pi * min(max(fd, 0.0), 1.0)) ** 0.6
+            g = 1 - smoothstep(0.0, G["width"], gmin)
+            edge = math.sqrt(min(1.0, max(0.0, de[k] / SH["edge_round"])))
+            h = (T + dome - G["depth"] * g) * edge
+            n3 = np.array([nx, ny, 0.0])
+            q = horn_fillet(np.array([x + nx * (under + h), y + ny * (under + h), z]), n3, edge)
+            outer.append(q); inner.append(np.array([x - nx * inset, y - ny * inset, z]))
+            A.append(min(gmin, de[k])); B.append(tint(tk))
+        rings.append((outer, inner, A, B))
+    # the front: carried on down over the snout's front face to its rounded bottom edge (front_skirt)
+    o0, i0 = rings[0][0], rings[0][1]
+    so = front_skirt([tuple(p) for p in o0], under, T)
+    si = front_skirt([tuple(p) for p in i0], -inset, 0.0)
+    front = [(list(map(np.array, a)), list(map(np.array, b)), [0.02] * K, [tint(0)] * K) for a, b in zip(so, si)]
+    rings = front[::-1] + rings
+    verts, faces, AA, BB = [], [], [], []
+    for outer, inner, A, B in rings:
+        verts += [tuple(p) for p in outer] + [tuple(p) for p in inner[::-1]]
+        AA += list(A) + [0.0] * K; BB += list(B) + list(B[::-1])
+    M = 2 * K
+    for r in range(len(rings) - 1):
         for i in range(M):
             j = (i + 1) % M
-            faces.append([r0[i], r0[j], r1[j], r1[i]])
-    K = len(rings[0][0])  # the front end: no face across it, just the thin rim joining the outer and inner layers
-    r = idx[0]
-    for i in range(K - 1):
-        faces.append([r[i + 1], r[i], r[2 * K - 1 - i], r[2 * K - 2 - i]])
-    for k in (len(idx) - 1,):  # capped at the back
-        r = idx[k]
-        n = len(r)
-        c = len(verts)
-        verts.append(tuple(np.mean([verts[i] for i in r], 0))); A.append(A[r[0]]); B.append(0.0); Z.append(0.5)
-        for i in range(n):
-            j = (i + 1) % n
-            faces.append([r[j], r[i], c] if k == 0 else [r[i], r[j], c])
-    return verts, faces, A, B, Z
+            faces.append([r * M + i, r * M + j, (r + 1) * M + j, (r + 1) * M + i])
+    for r in (0, len(rings) - 1):  # close both ends: the rim from the outer layer to the inner
+        for i in range(K - 1):
+            f = [r * M + i, r * M + i + 1, r * M + M - 2 - i, r * M + M - 1 - i]
+            faces.append(f if r else f[::-1])
+    return verts, faces, AA, BB
+
+
+def lion_nose():
+    """The nose, a male lion's on the muzzle shield (lion_nose): its bridge rises out of the shield's top about
+    the middle of the muzzle, runs forward and down along the top, broadening and gaining height, flat-topped,
+    and ends in a rounded leather cap set back from the shield's front edge, the shield's rim carrying on round
+    the front ahead of and below it. Comma nostrils open in the cap's front. Same material as the shield.
+    _ZONE: nostril."""
+    from scipy.interpolate import PchipInterpolator
+    NS = D["lion_nose"]; SH = D["muzzle_shield"]
+    st = np.array(NS["stations"])  # s, half-width, height above the shield
+    wf = PchipInterpolator(st[:, 0], st[:, 1]); hf = PchipInterpolator(st[:, 0], st[:, 2])
+    s_front, s_root, cr = NS["s_front"], st[-1, 0], NS["cap_round"]
+    pr = profile()
+    nsup, sink, NA = NS["squareness"], NS["sink"], 40
+    ss = np.concatenate([np.linspace(s_root, s_front + cr, 40), s_front + cr * (1 - np.sin(np.linspace(0, math.pi / 2, 14)[1:]))])
+    rings, loc = [], []
+    for sv_ in ss:
+        zc, yc = sv_point(sv_, 0.0)
+        n = np.array([np.interp(sv_, pr["s"], pr["N"][:, k]) for k in (0, 1)]); n = n / np.linalg.norm(n)
+        out = -n  # outward from the head, in side view (z, y)
+        base = np.array([0.0, yc, zc]) + np.array([0.0, out[1], out[0]]) * (SH["under"] + SH["thickness"] - roof_t(zc)[0])
+        up3 = np.array([0.0, out[1], out[0]])
+        w, h = float(wf(sv_)), float(hf(sv_))
+        u = (s_front + cr - sv_) / cr
+        if u > 0:  # the cap's rounded front
+            r = math.sqrt(max(0.0, 1 - min(u, 1.0) ** 2)); w *= max(r, 1e-3); h = h * max(r, 1e-3)
+        ring, lr = [], []
+        for i in range(NA + 1):  # the top arc, flat-topped
+            th = math.pi * i / NA
+            c, sn = math.cos(th), math.sin(th)
+            x = w * math.copysign(abs(c) ** (2 / nsup), c); v = -sink + (h + sink) * abs(sn) ** (2 / nsup)
+            x += math.copysign(NS["fillet"] * (1 - abs(sn) ** (2 / nsup)) ** 2, x)  # the base flares out into the shield: it grows out of it
+            ring.append(base + np.array([x, 0, 0]) + up3 * v); lr.append((x, v, sv_))
+        for i in range(1, 8):  # the buried underside, closing the section
+            x = -w + 2 * w * i / 8
+            ring.append(base + np.array([x, 0, 0]) - up3 * sink); lr.append((x, -sink, sv_))
+        rings.append(ring); loc.append(lr)
+    V = np.array([p for r in rings for p in r]); Lc = np.array([p for r in loc for p in r])
+    M = len(rings[0])
+    NW = np.zeros(len(V))
+    N_ = NS["nostril"]; C = np.array(N_["path"])  # (x, height fraction, s) along the comma
+    for i, (x, v, sv_) in enumerate(Lc):
+        hh = max(float(hf(sv_)), 1e-6)
+        q = np.array([abs(x), v / hh, sv_])
+        sc = np.array([1.0, hh, 1.0])
+        best, tb = 1e9, 0.0
+        for k in range(len(C) - 1):
+            a0, b0 = C[k] * sc, C[k + 1] * sc; ab = b0 - a0; qq = q * sc
+            t = min(1.0, max(0.0, (qq - a0) @ ab / (ab @ ab)))
+            dd = np.linalg.norm(qq - (a0 + ab * t))
+            if dd < best:
+                best, tb = dd, (k + t) / (len(C) - 1)
+        wN = N_["half_width"][0] + (N_["half_width"][1] - N_["half_width"][0]) * tb
+        g = smoothstep(0.0, 1.0, max(0.0, 1 - best / wN))
+        if g > 0:
+            ring_i = i // M
+            core = np.mean(rings[ring_i][:NA + 1], 0)
+            V[i] += norm(core - V[i]) * N_["depth"] * g
+            NW[i] = smoothstep(0.3, 0.75, g)
+    faces = []
+    for r in range(len(rings) - 1):
+        for i in range(M):
+            j = (i + 1) % M
+            faces.append([r * M + i, (r + 1) * M + i, (r + 1) * M + j, r * M + j])
+    for r in (0, len(rings) - 1):
+        c = len(V); V = np.vstack([V, np.mean(rings[r], 0)]); NW = np.append(NW, 0.0)
+        for i in range(M):
+            f = [r * M + i, r * M + (i + 1) % M, c]
+            faces.append(f if r else f[::-1])
+    tint = (math.sin(0 * 12.9898) * 43758.5453) % 1.0
+    return [tuple(p) for p in V], faces, [0.02] * len(V), [tint] * len(V), list(NW)
 
 
 _HORN_AXES = {}
@@ -590,114 +596,6 @@ def side_th(z, y):
     return (lo + hi) / 2
 
 
-def eave_depth(s):
-    """Depth of the roof's eave below the profile at s (found to within 1e-5, so neighbouring plate rows
-    end smoothly instead of in 0.002 steps, which ridge a finely divided plate)."""
-    def below(d):
-        z, y = sv_point(s, d)
-        return y <= float(np.interp(-z, -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])) or y <= interp(UPPER, z, 2) + 0.012  # short of the lip's edge
-    d = 0.0
-    while d < 0.4 and not below(d):
-        d += 0.002
-    lo, hi = max(0.0, d - 0.002), d
-    for _ in range(8):
-        mid = (lo + hi) / 2
-        lo, hi = (lo, mid) if below(mid) else (mid, hi)
-    return hi
-
-
-def chamfer(dist):
-    """A tile's edge profile: a short wall, then a narrow 45-degree chamfer up to its full thickness."""
-    c = PLATES["chamfer"]
-    return 0.0 if dist < 1e-9 else min(1.0, 0.5 + 0.5 * dist / c)
-
-
-def edge_samples(n, frac):
-    """0..1 in n steps, plus a sample just inside each end (frac), so a tile's edge is a crisp wall."""
-    return sorted(set([0.0, frac, 1 - frac, 1.0] + [k / n for k in range(1, n)]))
-
-
-def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.004, open_front=False):
-    """One roof plate: a solid tile of even thickness with crisp chamfered edges, laid on the underlay over
-    profile positions s0..s1 and depths d0..d1 (d1 may be a function of s). With wrap=+1 or -1 it is one
-    side of the gable, from the ridge down to depth d1 (the roof's plates meet at the ridge in mirrored
-    pairs). _A: distance to its nearest edge, _B: tint, _ZONE: 0."""
-    T, gap = thick or PLATES["thickness"], PLATES["gap"]
-    s0g, s1g = s0 + gap / 2, s1 - gap / 2
-    Ls = s1g - s0g
-    us = edge_samples(max(4, int(Ls / step)), PLATES["chamfer"] * 0.3 / Ls)
-    tint = (math.sin(seed * 12.9898) * 43758.5453) % 1.0
-    D1 = d1 if callable(d1) else (lambda s, v=d1: v)
-    rows = []
-    for u in us:
-        sc = s0g + Ls * u
-        dh = D1(sc) - gap / 2
-        row = []
-        if wrap:
-            za, ya = sv_point(sc, dh); tha = side_th(za, ya)
-            zt = sv_point(sc, 0.0)[0]
-            for w in edge_samples(nv, 0.012):
-                v = wrap * w ** 1.3 if wrap is not True else -1 + 2 * w
-                z = zt + (za - zt) * abs(v)  # the joint runs straight from the ridge to the plate's lower end
-                th = math.pi / 2 - v * (math.pi / 2 - tha)
-                if open_front and u == 0.0:
-                    # an open front edge follows the front face's convex curve, where the front ridge carries on from it
-                    xf, yf = face_pt(zt, th)
-                    z = zt + front_setback(xf, yf)
-                row.append((z, th, w))
-        else:
-            dl = d0 + gap / 2
-            for w in edge_samples(nv, 0.03):
-                z, y = sv_point(sc, dl + (dh - dl) * w)
-                row.append((z, side_th(z, y), w))
-        rows.append(row)
-    under = roof_t(sv_point(s0, 0)[0])[0]
-    verts, A, B, NW = [], [], [], []
-    for u, row in zip(us, rows):
-        pts = [np.array(face_pt(z, th)) for z, th, _ in row]
-        acc = np.concatenate([[0], np.cumsum([np.linalg.norm(pts[k + 1] - pts[k]) for k in range(len(pts) - 1)])])
-        Lv = acc[-1] + 1e-6
-        for j, (z, th, w) in enumerate(row):
-            x, y = pts[j]; nx, ny = face_normal(z, th)
-            # open_front: no edge at the front (it carries on down the front face); and near the front its lower ends
-            # keep their full thickness, so the front piece's rounded bottom edge wraps round the corner into them
-            low = Lv - acc[j] + (0.03 * (1 - smoothstep(0.0, 0.5, u)) if open_front else 0.0)
-            dist = min(1.0 if open_front else u * Ls, (1 - u) * Ls, acc[j], low)
-            edge = chamfer(dist)
-            rim = flare * smoothstep(0.55, 1.0, w) if not wrap else 0.0  # a rim scute's lower edge rolls outward, like a turtle shell's margin
-            # each plate a low dome (an ankylosaur's osteoderm): thickest in its middle, easing to its edges
-            dome = PLATES.get("dome", 0.0) * math.sin(math.pi * u) ** 0.6 * (math.sin(math.pi * min(1.0, w if not wrap else 0.5 + 0.5 * w)) ** 0.6)
-            h = (T + rim + dome) * edge
-            for sgn in ((1, -1) if not wrap else (1,)):
-                xs = x if wrap else sgn * x
-                ns = nx if wrap else sgn * nx
-                q = np.array([xs + ns * (under + h), y + ny * (under + h), z])
-                q = horn_fillet(q, np.array([ns, ny, 0.0]), edge)
-                verts.append(tuple(q)); A.append(dist); B.append(tint); NW.append(0.0)
-    n_side = 1 if wrap else 2
-    nvv = len(rows[0]) - 1
-    skirt = front_skirt(verts[:nvv + 1], under, T) if open_front else []
-    faces = []
-    W = (nvv + 1) * n_side
-    for i in range(len(rows) - 1):
-        for j in range(nvv):
-            for k in range(n_side):
-                q0 = i * W + j * n_side + k
-                q1 = q0 + n_side
-                f = [q0, q1, q1 + W, q0 + W]
-                faces.append(f if (k == 0) else f[::-1])
-    if skirt:  # the same plate carries on down over the front face: more rows, stitched to its front row
-        prev = list(range(nvv + 1))
-        for srow in skirt:
-            cur = []
-            for p in srow:
-                cur.append(len(verts)); verts.append(tuple(p)); A.append(0.02); B.append(tint); NW.append(0.0)
-            for j in range(nvv):
-                faces.append([cur[j], cur[j + 1], prev[j + 1], prev[j]])
-            prev = cur
-    return verts, faces, A, B, NW
-
-
 def front_skirt(front_row, under, T):
     """The roof's front: the front band carried on down over the snout's front face as one smooth piece, lying
     on the slightly convex front at the plate's thickness, down to a level bottom edge at the overhang's lowest
@@ -722,103 +620,6 @@ def front_skirt(front_row, under, T):
         rows.append(row)
     rows.append([(x, y - 0.002, z - step) for x, y, z in rows[-1]])  # the bottom edge rolls in to the face
     return rows
-
-
-def front_shell(V, F):
-    """The roof's front, raised from the face itself, like the body's shell: the front of the snout down to
-    the roof's lower edge, and the front band's strip of the top and sides back to its joint, lifted by
-    the plate's thickness over the underlay, with a rounded edge along the joint and along the bottom
-    (the lower edge runs level at the front, so it meets the orange muzzle in one smooth line right round
-    the corners). Being one surface, it has no seams or corners to fold. Returns verts, faces, _A (distance
-    to its edge) and tint."""
-    L = PLATES["layout"]["rows"][0]
-    s1 = L["joint_every"] - PLATES["gap"] / 2
-    a = np.array(sv_point(s1, 0.0)); b = np.array(sv_point(s1, eave_depth(s1)))
-    tdir = norm(b - a); nfw = np.array([-tdir[1], tdir[0]])
-    if nfw[0] < 0:
-        nfw = -nfw  # pointing forward
-    V = np.asarray(V, float); F = np.asarray(F)
-    # only the face's triangles near the front, split three times (each into four) so the piece's edges are smooth
-    near = (V[:, 2] > a[0] - 0.05).astype(bool)
-    F = F[near[F].any(axis=1)]
-    for _ in range(3):
-        mid, newV, newF = {}, list(V), []
-        def m(i, j):
-            k = (min(i, j), max(i, j))
-            if k not in mid:
-                mid[k] = len(newV); newV.append((V[i] + V[j]) / 2)
-            return mid[k]
-        for i, j, k in F:
-            ij, jk, ki = m(i, j), m(j, k), m(k, i)
-            newF += [[i, ij, ki], [ij, j, jk], [ki, jk, k], [ij, jk, ki]]
-        V, F = np.array(newV), np.array(newF)
-    zy = V[:, [2, 1]]
-    dj = (zy - a) @ nfw  # in front of the band's back joint
-    eave = np.interp(-V[:, 2], -PLATE_EDGE[:, 0], PLATE_EDGE[:, 1])
-    de = V[:, 1] - eave - 0.004  # above the roof's lower edge, clear of where the face curls under the lip
-    d = np.minimum(dj, de)
-    inside = d > 0
-    keep = inside[F].any(axis=1)
-    used = np.unique(F[keep]); remap = -np.ones(len(V), int); remap[used] = np.arange(len(used))
-    # snap each outside vertex onto the edge line (d = 0) along its edges to inside neighbours, so the edge is smooth, not a sawtooth
-    Ek = np.vstack([F[keep][:, [0, 1]], F[keep][:, [1, 2]], F[keep][:, [2, 0]]]); Ek = np.vstack([Ek, Ek[:, ::-1]])
-    Ek = Ek[~inside[Ek[:, 0]] & inside[Ek[:, 1]]]
-    o, i = Ek[:, 0], Ek[:, 1]
-    t = (-d[o] / (d[i] - d[o]))[:, None]
-    P = V[o] + (V[i] - V[o]) * t
-    acc = np.zeros_like(V); cnt = np.zeros(len(V))
-    np.add.at(acc, o, P); np.add.at(cnt, o, 1)
-    V = V.copy(); V[cnt > 0] = acc[cnt > 0] / cnt[cnt > 0][:, None]; d = np.where(cnt > 0, 0.0, d)
-    N = np.zeros_like(V)  # smooth outward normals
-    fn = np.cross(V[F[:, 1]] - V[F[:, 0]], V[F[:, 2]] - V[F[:, 0]])
-    for k in range(3):
-        np.add.at(N, F[:, k], fn)
-    E = np.vstack([F[:, [0, 1]], F[:, [1, 2]], F[:, [2, 0]]]); E = np.vstack([E, E[:, ::-1]])
-    for _ in range(3):
-        acc = np.zeros_like(N)
-        for k in range(3):
-            acc[:, k] = np.bincount(E[:, 0], weights=N[E[:, 1], k], minlength=len(V))
-        N = 0.5 * N + 0.5 * acc / np.maximum(np.linalg.norm(acc, axis=1), 1e-12)[:, None] * np.linalg.norm(N, axis=1)[:, None]
-    N /= np.maximum(np.linalg.norm(N, axis=1), 1e-12)[:, None]
-    if np.mean(N[used] @ np.array([0.0, 1.0, 0.0])) < 0:
-        N = -N
-    du = np.clip(d[used], 0.0, None)
-    # it rounds down onto the underlay (not the face), so the underlay's edge never shows through it
-    h = roof_t(UPPER[0, 0])[0] + 0.0005 + PLATES["thickness"] * np.sqrt(np.clip(du / PLATES["layout"].get("front_edge_round", 0.008), 0.0, 1.0))
-    S = V[used] + N[used] * h[:, None]
-    tint = (math.sin(10 * 12.9898) * 43758.5453) % 1.0
-    return S.tolist(), remap[F[keep]].tolist(), list(du), [tint] * len(used)
-
-
-def roof_plates():
-    """The roof, in few pieces of one kind: bands of tiles from the roof's front edge back, each a mirrored
-    pair meeting at the ridge and running down each side to the rim; the rim of square marginal scutes
-    down to the eave. There is no plate on the front face."""
-    L = PLATES["layout"]
-    pr = profile(); smax = pr["s"][-1]
-    out, seed = [], 0  # no plate on the front face: the references draw none there
-    for row in L["rows"]:
-        sc = 0.0  # the bands start at the roof's front edge
-        while sc < smax - 0.01:
-            s1 = min(smax, sc + row["joint_every"])
-            dlo = row["d"][0]
-            dhi = (lambda s, cap=row["d"][1]: min(cap, eave_depth(s) - 0.002)) if row["d"][1] is not None else (lambda s: eave_depth(s) - 0.002)
-            if row.get("wrap") and sc == 0.0:
-                pass  # the front band and the snout's front are one piece raised from the face (front_shell)
-            elif row.get("wrap"):
-                # where the rim below would be too thin to be a plate (at the front, the eave comes up close), the
-                # band runs on down to the eave instead
-                cap = row["d"][1]
-                if min(eave_depth(sc), eave_depth(s1)) - 0.002 - cap < L.get("min_rim", 0.025):
-                    dh2 = lambda s: eave_depth(s) - 0.002
-                else:
-                    dh2 = dhi
-                for side in (1, -1):
-                    out.append(plate(sc, s1, 0.0, dh2, 10, 10 + seed, wrap=side))
-            elif sc > 0.0 and min(eave_depth(sc), eave_depth(s1)) - 0.002 - dlo >= L.get("min_rim", 0.025):
-                out.append(plate(sc, s1, dlo, dhi, 6, 10 + seed, thick=row.get("thickness"), flare=row.get("rim_flare", 0.0)))
-            sc = s1; seed += 1
-    return out
 
 
 def eye_seat(sgn):
@@ -993,18 +794,6 @@ def caruncle(c, er, sgn, skin):
             fc = [q, q + 1, q + nv + 2, q + nv + 1]
             faces.append(fc if sgn < 0 else fc[::-1])
     return verts, faces
-
-
-def band_zs(z_front, z_back, base_n):
-    """Stations for the roof: even spacing plus a tight pair at every band step so the steps stay crisp."""
-    zs = list(np.linspace(z_front, z_back, base_n))
-    zb = ROOF["front_z_band_origin"]
-    while zb > z_back:
-        for e in (0.0012, -0.0012):
-            if z_back < zb + e < z_front:
-                zs.append(zb + e)
-        zb -= ROOF["band"]
-    return sorted(set(round(z, 5) for z in zs), reverse=True)
 
 
 # ---------------------------------------------------------------- general pieces
@@ -1253,9 +1042,6 @@ def head_parts():
     V = press_under_lids(carve_socket(np.array(v)))
     face = add_part("Face", V.tolist(), f, {"_PART": part, "_A": [u[0] for u in uv], "_B": hf, "_ZONE": under}, rigid(len(v)))
     objs.append(face)
-    tris = np.array([[p[0], p[k], p[k + 1]] for p in f for k in range(1, len(p) - 1)])  # quads and fans as triangles
-    sv, sf, sa, sb = front_shell(V, tris)
-    objs.append(add_part("RoofFront", sv, sf, {"_PART": [13] * len(sv), "_A": sa, "_B": sb, "_ZONE": [0] * len(sv)}, rigid(len(sv))))
     # expression shapes: one per facial muscle action, exported as morph targets (blend shapes)
     face.shape_key_add(name="Basis", from_mix=False)
     for name, act in D["expressions"]["muscle_actions"].items():
@@ -1264,18 +1050,11 @@ def head_parts():
         key = face.shape_key_add(name=name, from_mix=False)
         key.data.foreach_set("co", to_blender(V + expression_offsets(V, act["terms"])).astype(np.float32).ravel())
 
-    # roof: banded shell over the face; its eave stands proud of the orange
-    rz = band_zs(z0 + roof_t(z0)[0], ROOF["back_z"], 60)  # its front cap covers the face's flat front, dark in the gaps round the front tile
-    rings, at = [], []
-    for z in rz:
-        outer, inner, fb = roof_ring(z)
-        rings.append((outer, inner)); at.append((fb, [fb] * len(outer)))
-    v, f, A, B, Z = shell_loft(rings, at)
-    objs.append(add_part("Roof", v, f, {"_PART": [10] * len(v), "_A": A, "_B": B, "_ZONE": Z}, rigid(len(v))))
-    v, f, A, B, NW = nose_part()
+    # the muzzle shield: one solid piece with its plating carved in, and the lion's nose rising out of it
+    v, f, A, B = muzzle_shield()
+    objs.append(add_part("Shield", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
+    v, f, A, B, NW = lion_nose()
     objs.append(add_part("Nose", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
-    for k, (v, f, A, B, NW) in enumerate(roof_plates()):
-        objs.append(add_part(f"RoofPlate{k}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
 
     # lower jaw skin
     zj = JAW[:, 0]  # the generated stations: dense, with the landmarks (the throat notch stays crisp)

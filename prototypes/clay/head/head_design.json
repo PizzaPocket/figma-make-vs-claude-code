@@ -283,13 +283,6 @@
     "front_z_band_origin": 2.06,
     "inset": 0.003
   },
-  "nose_crest": {
-    "note": "Superseded by 'nose': the nose is its own piece. Only the front pad remains, off (height 0).",
-    "front_pad": {
-      "height": 0.0,
-      "band": 0.03
-    }
-  },
   "anatomy": {
     "note": "Sculpt from the inside out: bone landmarks first, muscle masses over them, then skin creases where muscles meet or skin folds over something that moves. Every entry says what it is and what it does to the surface. Positions are side-view (z, y); offsets act on the side of the face.",
     "bone": [
@@ -690,7 +683,7 @@
     "speech_note": "Visemes for speech are mixes of the jaw, the tongue's three bones and the lip actions: AA (jaw open, lower lip down), EE (lips stretched back, lower lip down), OO (lips funnelled forward), TH/L (tongue tip lifted to the front teeth)."
   },
   "roof_plates": {
-    "note": "The roof in pieces of one kind: bands of tiles from the roof's flat front edge back, each band a mirrored pair meeting at the ridge, a rim of square marginal scutes along the eave, and one tile over the flat front face (the nose comes out of it). Every tile is a solid of even thickness with a short wall and a narrow chamfer at its edges; the gaps between them are the drawn lines. Laid out in profile coordinates: s along the top profile from the front edge back, d the depth below it; joints are lines of constant s.",
+    "note": "The plating's layout, now carved into the one-piece muzzle_shield (grooves at these joints, a dome per tile): bands from the front edge back, each a mirrored pair meeting at the ridge, and a rim row of square marginal scutes along the eave. Laid out in profile coordinates: s along the top profile from the front edge back, d the depth below it; joints are lines of constant s.",
     "thickness": 0.009,
     "bevel": 0.006,
     "overlap": 0.0,
@@ -747,7 +740,8 @@
       "from_y": -0.028,
       "depth": 0.003,
       "note": "the cat's philtrum: a shallow groove down the middle of the nose leather's lower part, toward the lip"
-    }
+    },
+    "superseded": "Not built: the nose is lion_nose, on the muzzle shield."
   },
   "teeth": {
     "lip_note": "The upper lip hangs down over the upper teeth: in most images only the lower teeth show, rising plainly from the lower jaw, and the upper teeth show mainly with the mouth open. So the upper teeth grow from the roof of the mouth, inward (inset 0.03) and up (tuck_up 0.02) behind the lip, the front row set back too (the user's reading).",
@@ -821,5 +815,49 @@
       "note": "A muscular tongue (user: convincing for speech): rounded across, a shallow median groove (0.004) down its middle, thick at the root (0.03) thinning to 0.012, its tip broad and rounded over the last 0.14 of its length, lifting a little off the floor, lying in the floor's trough. On three bones (tongue1-3) so it can curl up for speech sounds."
     },
     "corner_thickness": 0.008
+  },
+  "muzzle_shield": {
+    "note": "The muzzle shield (user): one solid piece over the top of the head, from the snout's front back to the roof's end, wrapping down over the front of the snout, its edge rounded all round. Its plating is carved into it, like an ankylosaur's fused skull armour: grooves at the band joints, down the ridge and along the rim row (layout from roof_plates.layout), and a low dome in each tile. It replaced separate tiles plus a front cap fitted to the front curve, which read as a workaround. The lion's nose rises out of it (lion_nose).",
+    "thickness": 0.009,
+    "under": 0.003,
+    "inset": 0.003,
+    "K": 181,
+    "dz": 0.0015,
+    "edge_round": 0.008,
+    "groove": {
+      "width": 0.006,
+      "depth": 0.004,
+      "note": "a V-ish groove at each joint: depth 0.005 of the 0.009 shell, fading out over 0.0035"
+    },
+    "dome": 0.004,
+    "ear_clearance": {
+      "margin": 0.022,
+      "ear_top": [[1.39, 1.879], [1.41, 1.868], [1.43, 1.855], [1.45, 1.834], [1.47, 1.815], [1.49, 1.79], [1.51, 1.77]],
+      "note": "Designed in (user: the part near the ears kept reaching out and clipping them): the ear's top edge per station, measured from the built ear mesh (FrillL, max y per 0.02 of z), plus a margin. Behind the eye the shield's lower edge runs above it (a smooth max with the traced edge), so the shield never meets the ear's path. Re-measure if the ear moves."
+    }
+  },
+  "lion_nose": {
+    "note": "A male lion's nose on the muzzle shield (user, and the Dragonet Prophecy cover and top-view painting): its bridge rises out of the shield's top about the middle of the muzzle (s_root), runs forward and down along the top, broadening and gaining height, flat-topped, and ends in a rounded leather cap whose front stops s_front back from the shield's front edge; the shield's rim carries on round the front ahead of and below it. Same material and colour as the shield: it reads by form. s is distance along the top profile from the shield's front edge (0 at z 2.017; 0.30 at z 1.87; before the snout warp).",
+    "stations": [
+      [0.03, 0.062, 0.03],
+      [0.07, 0.066, 0.032],
+      [0.11, 0.055, 0.022],
+      [0.17, 0.042, 0.014],
+      [0.24, 0.03, 0.006],
+      [0.3, 0.022, 0.0]
+    ],
+    "stations_note": "s, half-width, height above the shield's surface: the cap (s 0.03-0.11) broad and full, a slight waist where it meets the bridge, the bridge narrowing and settling into the shield toward its root.",
+    "s_front": 0.03,
+    "cap_round": 0.035,
+    "squareness": 3.0,
+    "sink": 0.006,
+    "nostril": {
+      "path": [[0.022, 0.3, 0.036], [0.04, 0.4, 0.042], [0.052, 0.6, 0.055], [0.055, 0.8, 0.068]],
+      "half_width": [0.009, 0.003],
+      "depth": 0.009,
+      "note": "Comma nostrils in the cap's front (cover: dark slits at the cap's lower outer corners): path points are (x, fraction of the cap's height, s), from the wide front-inner end curling out, up and back."
+    },
+    "fillet": 0.014,
+    "fillet_note": "The bridge's sides flare out at its base by up to 0.014, so it grows out of the shield instead of sitting on it as a rod."
   }
 }

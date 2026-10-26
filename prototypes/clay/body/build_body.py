@@ -326,9 +326,10 @@ def band(x):
     return np.interp(x, sg, bcum)
 
 
-def skin_parts(ranges):
+def skin_parts(ranges, ear_pts=None):
     """One skin over the trunk, bones and muscles (skin.py), skinned to the spine and limb bones, and
-    the dark shell raised from it with a continuous rim round its edge."""
+    the dark shell raised from it with a continuous rim round its edge. ear_pts: the ears' vertices (model
+    coordinates), which the shell keeps clear of by design (anatomy.ear_clearance)."""
     trunk, parts = _SKIN["trunk"], _SKIN["parts"]
     V, F = SK.mesh(trunk, parts, B["anatomy"]["resolution"])
     # the spine position for the spine bones' weights, smoothed over the skin: on the inside of the neck's bend the
@@ -351,6 +352,14 @@ def skin_parts(ranges):
     S, SF, src, ink, tint = SK.shell(V, F, Z, sh, SK.smooth_normals(V, F), trunk.s[idx], np.array(Bf), band)
     if "cheek_dz" in _SKIN:  # the shell and its rim run out into the cheek line, where the head's surface takes over
         t = 1 - smoothstep_v(-B["anatomy"]["head_weld"]["shell_taper"], 0.0, _SKIN["cheek_dz"](S))
+        S = V[src] + (S - V[src]) * t[:, None]
+    if ear_pts is not None and len(ear_pts):
+        # clear of the ears by design: within the margin of an ear's mesh the shell lies flush on the skin, so its
+        # rim never reaches into the ear's path (it reached to within 0.002 of the ear's rolled rim)
+        from scipy.spatial import cKDTree
+        EC = B["anatomy"]["ear_clearance"]
+        d, _ = cKDTree(ear_pts).query(S)
+        t = smoothstep_v(EC["flush_within"], EC["full_from"], d)
         S = V[src] + (S - V[src]) * t[:, None]
     shell = H.add_part("Shell", S.tolist(), SF.tolist(), {"_PART": [13] * len(S), "_A": list(ink), "_B": list(tint), "_ZONE": [0] * len(S)},
                        [W[i] for i in src])
@@ -767,7 +776,11 @@ def main():
     objs, head_bones = H.head_parts()
     skin_setup()
     trim_head(objs)
-    objs += skin_parts(ranges)
+    ear = [o for o in objs if o.name.startswith("Frill")]
+    ear_pts = np.concatenate([np.array([v.co[:] for v in o.data.vertices]) for o in ear]) if ear else None
+    if ear_pts is not None:
+        ear_pts = np.stack([ear_pts[:, 0], ear_pts[:, 2], -ear_pts[:, 1]], 1)  # Blender's frame back to the model's
+    objs += skin_parts(ranges, ear_pts)
     objs += spike_parts(ranges, band)
     neck_end = TR["bones"]["chain_forward"][-1][0]
     bones = tb + [(n, h, t, p or neck_end) for n, h, t, p in head_bones]
