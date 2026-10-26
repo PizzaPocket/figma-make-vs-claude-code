@@ -290,3 +290,12 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 - a thin slit at the mouth's back corner;
 - the neck's scales are cells, where the art draws large overlapping shingles;
 - the ear's shape itself (cup, rolled rim) is unchanged from the head pass.
+
+## Neck and flank scales: shingles
+
+**Side sheet:** the orange of the neck and flank is covered in large overlapping scales, like roof shingles, about 0.065 long and 0.06 across. Their free edges are arcs facing back toward the body, and the scale nearer the head lies on top. Before, the model had irregular polygon cells of about the right size and the wrong shape.
+
+**Built (viewer shader, part 20):**
+- **Layout:** the scales are discs in offset rows, along the spine (s) and round the trunk. The distance round the trunk (angle from the top of the spine times the section's mean radius) is carried in `_PART`'s fraction (20 + around / 4), since the other vertex attributes are full.
+- **Overlap:** at each point the scale nearest the head among those covering it is on top. Its free edge is drawn as the line, and each scale is lit a little toward its middle.
+- **Seams:** the pattern's seams fall at the top of the spine and under the belly, inside the dark and cream zones.

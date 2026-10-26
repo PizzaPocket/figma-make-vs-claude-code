@@ -327,8 +327,12 @@ def skin_parts(ranges):
     W = head_weld_weights(V, W, parts)
     Z = list(SK.smooth_on_mesh(V, F, Z))  # no pinholes in the shell, smooth edges to its colour regions
     Tr = list(SK.smooth_on_mesh(V, F, Tr))
-    skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": [20] * len(V), "_A": A, "_B": Tr, "_ZONE": Z}, W)
-    idx = trunk.local(V)[0]
+    # the distance round the trunk from the top of the spine (angle times the section's mean radius), for laying the
+    # scales out in rows; carried in _PART's fraction (20 + around / 4, under 20.4, still part 20), as the other
+    # attributes are full
+    idx, v, w = trunk.local(V)[:3]
+    around = np.arctan2(np.abs(w), v) * trunk.R[idx].mean(axis=1)
+    skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": list(20 + np.clip(around, 0, 1.56) / 4), "_A": A, "_B": Tr, "_ZONE": Z}, W)
     sh = B["shell"]
     S, SF, src, ink, tint = SK.shell(V, F, Z, sh, SK.smooth_normals(V, F), trunk.s[idx], np.array(Bf), band)
     shell = H.add_part("Shell", S.tolist(), SF.tolist(), {"_PART": [13] * len(S), "_A": list(ink), "_B": list(tint), "_ZONE": [0] * len(S)},

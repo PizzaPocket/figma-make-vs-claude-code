@@ -12,6 +12,17 @@
         vec3 b = vec3(float(i), float(j), float(k)); vec3 r = b + hash3(p + b) * 0.8 - f; float d = dot(r, r);
         if (d < d1) { d2 = d1; d1 = d; } else if (d < d2) d2 = d; }
       return sqrt(d2) - sqrt(d1); }
+    // overlapping shingle scales in rows (p in scale spacings: x along the body toward the tail, y round it), each a
+    // disc a little wider than the spacing, the one nearer the head lying on top (the side sheet's neck): returns the
+    // distance in from the free edge of the scale showing at p (x) and that scale's id (y)
+    vec2 shingle(vec2 p) { float best = 1e9; vec2 r = vec2(1.0, 0.0);
+      for (int j = -1; j <= 1; j++) for (int i = -1; i <= 1; i++) {
+        float row = floor(p.y) + float(j), off = mod(row, 2.0) * 0.5;
+        vec2 c = vec2(floor(p.x - off) + float(i) + off + 0.5, row + 0.5);
+        vec3 h = hash3(vec3(c, 7.0)); c += (h.xy - 0.5) * 0.12;
+        float d = length(p - c);
+        if (d < 0.74 && c.x < best) { best = c.x; r = vec2(0.74 - d, h.z); } }
+      return r; }
     float lineAt(float f, float w) { float e = min(f, 1.0 - f); return 1.0 - smoothstep(w, w + fwidth(f) * 1.5 + 0.01, e); }
   `;
   function material(THREE, clay) {
@@ -51,9 +62,12 @@
           }
           if (isP(20.0) > 0.5) { // trunk: dark back, orange side, cream underside (vAB: s along the spine, the trunk's share, zone)
             float zv = vAB.z;
-            float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 14.0));
+            // the sides: shingle scales ~0.065 along x 0.06 round (side sheet's neck), free edges facing back; vPart carries
+            // the distance round the trunk (20 + around / 4)
+            vec2 sc = shingle(vec2(vAB.x / 0.065, (vPart - 20.0) * 4.0 / 0.06));
+            float pe = 1.0 - smoothstep(0.03, 0.08, sc.x);
             vec3 back = mix(dark, line, lineAt(fract(vAB.x / 0.10), 0.04) * 0.6); // back plates ~0.08-0.12 apart (measured)
-            vec3 side = mix(orange, line, pe * 0.25);
+            vec3 side = mix(orange * (0.93 + 0.1 * sc.y) * (0.9 + 0.1 * smoothstep(0.0, 0.4, sc.x)), line, pe * 0.45); // each scale lit toward its middle
             vec3 belly = mix(cream, line, lineAt(fract(vAB.x / 0.095), 0.035) * 0.45 * smoothstep(0.5, 0.8, vAB.y)); // ventral bands ~0.09-0.10 apart (measured), on the trunk only (vAB.y: its share)
             float mer = (1.0 - smoothstep(0.004, 0.008, abs(vObj.x))) * smoothstep(0.1, 0.25, vAB.x) * (1.0 - smoothstep(1.35, 1.55, vAB.x)) * smoothstep(0.5, 0.8, vAB.y);
             belly = mix(belly, line, mer * 0.55); // the meridian: a seam down the middle of the plates, throat to mid-thorax (How to Draw, box set)
