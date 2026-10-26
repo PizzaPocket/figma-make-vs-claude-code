@@ -60,6 +60,8 @@ The user reviews every step by eye. Their notes are the most valuable input, and
 - **Don't dismiss a reference's shape as its quirk until you have looked for it in the others.** Clay's overhanging upper lip was dropped as a side-sheet oddity, but *How to Draw* and the flight render show it too.
 - **A drawn line's weight is the edge's strength.** A heavy stroke means a crisp, deep edge; a tapering stroke means the form fades out. Sculpt the edge on the side the line is drawn.
 - **The references decide.** When the model and the art disagree, the model is wrong.
+- **Know each reference's view angle before measuring from it.** Clay's "side" sheet shows the snout at about three-quarters. Its front-of-snout diagonal is the front face seen obliquely, and its short chin is the front of the chin seen at an angle. Tracing them as a true profile produced a short, set-back lower jaw, a concave muzzle front and a 45° front lip ramp, each fixed only after rounds of user corrections. For a foreshortened region, take the art's intent (what form it depicts) and build that form from anatomy; don't trace its outline.
+- **When a part is "modelled after" an animal, study how that animal's part sits on its head, then find the same arrangement in the art.** The user said Clay's nose is a lion's. It was first read as the end of the muzzle shield (wrong), then as the shield itself (wrong). The references (Dragonet Prophecy cover, the top-view painting) show a lion's arrangement: the nose bridge rises out of the middle of the muzzle shield, runs forward and down along its top, and ends in a rounded leather cap set back from the shield's tip, the shield's rim carrying on round the front ahead of and below it. Same material and colour as the shield: it reads by form, not colour.
 - Left and right are mirrored: model the left side and mirror it.
 - Organic, not mechanical. Plates and scales vary in size and follow the form; never use a regular grid or brick pattern.
 - **When the user names a part, ask what it is before building.** "Front ridge" was built three wrong ways (a bar, part of the nose, a separate shelf) before the user explained it: an extension of the roof's front. Restate your reading in one line and build the simplest version of that.
@@ -76,10 +78,8 @@ The user reviews every step by eye. Their notes are the most valuable input, and
 
   Separate pieces planted on top, flared collars and separate root lofts all failed: they read as stuck on.
 - **Lines are geometry, never ink.** Every line in the art becomes an edge, ridge, crease, plate gap or rim. Don't draw lines on the skin in the shader: they read as scratches on a sculpted model. Ink is acceptable only in a groove that already exists in the geometry, such as a horn ring.
-- **Armour is separate plates, not a scored sheet.**
-  - Build each plate as its own solid tile, in the rows the art draws.
-  - Give it rounded edges, thicker toward its back edge, overlapping the next one back like a shingle.
-  - The gaps make the drawn lines, consistently.
+- **A shield is one solid piece; its plating is carved into it.** Clay's muzzle shield was first built as separate tiles plus a front cap fitted to the front curve; the seams and the fitted cap read as a workaround (user: why can't this be one solid piece?). Build the shield as one surface with a rounded edge all round, and carve the plating into it (grooves at the joints, a low dome per tile, like an ankylosaur's fused osteoderms). Separate tiles still suit loose overlapping scales elsewhere.
+- **Design clearances in, don't patch collisions.** Where a moving or nearby part (the ear) shares space with a shell, set the shell's edge by design on a line clear of that part's whole path, measured from its mesh with a margin, and check the gap numerically.
 - **Lay plates out in the art's own directions.** Joints run perpendicular to the form's flow line, and strips run along it. Use coordinates that follow the profile: s along it, d the depth perpendicular to it. On a sloping muzzle the joints are therefore not vertical cuts.
 - **Colour and pattern edges are measured lines.** Trace a zone edge as a side-view polyline from the art. Don't use a fraction of the body's depth: a fraction runs parallel to the spine, while the art's edges sweep (Clay's dark neck edge drops straight down into the shoulder).
 - **Measure pattern rhythm.** Scan across the ink lines on the sheet to get each pattern's spacing (bands, plates, scales). Lay patterns out in model units, not normalised parameters, so sizes stay true on thick and thin parts. Put the pattern's wrap-around seam on a hidden side.
@@ -97,6 +97,8 @@ No surface form is free-floating: something under it pushes it out, holds it up 
 3. **Skin (creases, openings, scales).** A crease forms where two muscles meet, or where skin folds over something that moves (lids, mouth corner, joints). Trace each drawn line back to the boundary that causes it, and sculpt that boundary.
 
 **Judge the forms in a plain clay render.** Paint hides missing anatomy.
+
+**Encode the anatomy as structure, not as notes.** Name the bones, muscles and parts in the design data and generate the shape from them: landmarks (a chin's symphysis, a jaw's angular corner, a hinge) that a profile is built through, layers of named brushes, named sub-parts (shield, nose bridge, cap, nostrils). A hand-made table of numbers with the anatomy only in its note loses it: the next session can't edit "the dentary" or keep the rows true to it.
 
 ### The face is how a creature communicates
 
@@ -188,10 +190,10 @@ Check: <what to compare; known differences>
 ## Lessons (Clay)
 
 **Muzzle**
-- A box, not a wedge or prow: it hardly narrows to the front, with a flat top, near-vertical sides, and a flat, near-vertical front face with slightly rounded corners.
-- A front plate covers that face above an orange lip band.
-- The nose pad runs along the top front edge, with the nostrils as angled, forward-facing slits at its front corners.
-- The upper lip overhangs a set-back jaw: a strong overbite.
+- Bone and muscle, not a box: the premaxilla rounds the front into a U in top view, and the front is convex everywhere (an earlier box read square, then caved-in concave when its front was traced from the three-quarter sheet).
+- The muzzle shield: one solid piece over the top and down round the front corner, plating carved into it.
+- The nose: a lion's (see the evidence rule): its bridge rises out of the middle of the shield, runs down its top, and ends in a rounded cap before the shield's tip; comma nostrils in the cap's front, a philtrum below.
+- Under the shield's front, orange whisker pads drape over the front teeth into the lips; the cheeks are flesh draped over the teeth and jaw, not a puffed shelf.
 
 **Roof rim and lip**
 - The roof's lower edge is a rim of square marginal scutes, like a turtle shell's edge.
@@ -199,7 +201,7 @@ Check: <what to compare; known differences>
 - The upper lip line is straight and level, then sweeps up concave into the mouth corner.
 
 **Roof (the brown crest)**
-- Distinct plates, laid out along the profile:
+- Plating laid out along the profile (now carved into one solid shield; see Construction principles):
   - a nose plate;
   - top bands that wrap down to a first line (d ≈ 0.054);
   - a narrow strip of long plates down to d ≈ 0.075;
@@ -214,16 +216,20 @@ Check: <what to compare; known differences>
 - The root is sculpted into the roof plates.
 
 **Eye**
-- Round and wide open.
-- The inner corner points down and forward to the tear duct; the outer corner closes the round outline.
+- An almond: the outer corner comes to a soft point and the upper lid rests over the top of the iris (the covers); the side sheet's round stare read as too wide.
+- The inner corner points down and forward to the tear duct (pink caruncle).
+- A thin liner on the lid margins, which stays on them through the blink.
 - The cheekbone is the hooked rim under and behind it.
 
 **Jaw**
+- A dragon's lower jaw from its bones, not traced from the three-quarter sheet: the dentary carries the teeth forward to a rounded U-shaped chin (the symphysis) just behind the snout's tip, under a slight overbite. It deepens steadily backward under the jaw muscles (surangular, angular), and the retroarticular process curves up behind the hinge.
+- The hinge sits under the back of the eye; the jaw drops down and back, and the cheek skin stretches across the corner of the gape (a web), not a rigid slot.
 - The cream lower jaw continues up behind the mouth corner as a jowl under the ear.
-- The mouth line is low in front, then curves in and up to end under the ear opening.
+- Teeth are recurved cones, oval in section; the tongue is a muscular, grooved body on bones; the lips have fleshy margins moved by FACS lip actions.
 
 **Ear**
-- The frill sits high at the back of the cheek, under the horn, and its rolled top edge curves back to the horn's underside.
+- A flap of skin on a thin stalk out of the face's flesh, flaring and curling like a tulip petal: orange outside, cream inside. Built as a separate hovering leaf or a solid wedge, it failed.
+- It sits high at the back of the cheek, under the horn, its tip curving back toward the horn's underside. Shells near it are set clear of its path by design.
 - The ear opening is a small hole below it.
 
 **Head-neck weld**
