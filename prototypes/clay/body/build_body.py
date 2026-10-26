@@ -219,15 +219,94 @@ def section_vw(s, du, dv, th):
 _SKIN = {}
 
 
-def skin_setup():
-    """The trunk as a field (its measured sections along the spine) and the bones and muscles."""
+def head_weld():
+    """The face and jaw behind the mouth corner as pieces of the skin's field (anatomy.head_weld), from their
+    own cross-sections (build_head's contours, closed across the mouth)."""
+    HW = B["anatomy"]["head_weld"]
+    CL = np.array(HW["cheek_line"]["zy"]); b0, b1 = HW["cheek_line"]["blend"]
+
+    def cheek_dz(X):
+        """How far in front of the cheek line (model z) each point lies, in side view."""
+        return X[:, 2] - np.interp(X[:, 1], CL[:, 1], CL[:, 0])
+
+    def inset_at(X):
+        """Set in under the face and jaw in front of the cheek line, their surface behind it."""
+        t = np.clip((cheek_dz(X) - b0) / (b1 - b0), 0.0, 1.0)
+        return HW["inset"] * t * t * (3 - 2 * t)
+
+    _SKIN["cheek_dz"] = cheek_dz
+
+    def clip(X, d, D, parts):
+        """The skin keeps to the face and jaw (set in by inset) in front of the cheek line, and is let out from them
+        gradually behind it (by rise * distance squared), so the neck's fillet swells out of the head's surface
+        smoothly instead of through it; a smooth maximum, so the cut leaves no kink for the mesh to step on."""
+        k = [i for i, p in enumerate(parts) if p.kind == "section"]
+        if not k:  # a surface without the head (the wing arm)
+            return d
+        dh = D[k[0]]
+        for i in k[1:]:
+            dh = SK.smin(dh, D[i], parts[i].k)  # the face and jaw joined as the union joins them, filling between them
+        behind = np.maximum(-cheek_dz(X), 0.0)
+        lim = dh - HW["rise"] * behind ** 2
+        return np.where(dh < parts[k[0]].margin, -SK.smin(-d, -lim, HW["clip_k"]), d)
+
+    SK.CLIP = clip
+    out = []
+    for sp in HW["parts"]:
+        rows, contour = (H.UPPER, H.upper_contour) if sp["mesh"] == "Face" else (H.JAW, H.jaw_contour)
+        zs = np.linspace(rows[-1, 0], HW["zcut"] + 0.03, 40)
+        secs = [(z, contour(z)[0]) for z in zs]
+        out.append(SK.SectionPiece(sp["mesh"], secs, sp["rig"], sp["zone"], HW["k"], HW["inset"], HW["zcut"], inset_at=inset_at))
+    return out
+
+
+def trim_head(objs):
+    """Remove the face and jaw behind the cheek line: there the body's skin is the head's surface (head_weld)."""
+    import bmesh
+    for ob in objs:
+        if ob.name not in [p["mesh"] for p in B["anatomy"]["head_weld"]["parts"]]:
+            continue
+        bm = bmesh.new(); bm.from_mesh(ob.data)
+        co = np.array([v.co[:] for v in bm.verts]); M = np.stack([co[:, 0], co[:, 2], -co[:, 1]], 1)
+        behind = _SKIN["cheek_dz"](M) < 0
+        bm.verts.ensure_lookup_table()
+        bmesh.ops.delete(bm, geom=[f for f in bm.faces if any(behind[v.index] for v in f.verts)], context="FACES")
+        bmesh.ops.delete(bm, geom=[v for v in bm.verts if not v.link_faces], context="VERTS")
+        bm.to_mesh(ob.data); bm.free(); ob.data.update()
+
+
+def head_weld_weights(V, W, parts):
+    """At the cheek line and in front of it the skin is the head's own surface, so it moves exactly with the head
+    and jaw (whichever is nearer), handing over to the neck's weights over head_weld.handover behind the line.
+    Otherwise the trimmed face's edge and the skin under it part as the head turns or the mouth opens."""
+    sec = {p.name: p for p in parts if p.kind == "section"}
+    if not sec:
+        return W
+    h0, h1 = B["anatomy"]["head_weld"]["handover"]
+    df, dj = sec["Face"].sdf(V), sec["Jaw"].sdf(V)
+    wj = 1 / (1 + np.exp(np.clip((dj - df) / 0.008, -50, 50)))  # the jaw's share: where the jaw is the nearer
+    t = np.clip((_SKIN["cheek_dz"](V) - h0) / (h1 - h0), 0, 1); t = t * t * (3 - 2 * t)
+    t *= np.minimum(df, dj) < 0.03
+    out = []
+    for n, wl in enumerate(W):
+        if t[n] <= 0:
+            out.append(wl); continue
+        acc = {bn: w * (1 - t[n]) for bn, w in wl}
+        acc["head"] = acc.get("head", 0) + t[n] * (1 - wj[n]); acc["jaw"] = acc.get("jaw", 0) + t[n] * wj[n]
+        top = sorted(acc.items(), key=lambda kv: -kv[1])[:4]; tot = sum(w for _, w in top)
+        out.append([(bn, w / tot) for bn, w in top if w > 0])
+    return out
+
+
+def skin_setup(weld=True):
+    """The trunk as a field (its measured sections along the spine), the bones and muscles, and the back of the head."""
     s_all, P, DU, DV, N, Bv = trunk_frames()
     trunk = SK.Trunk(s_all, P, N, Bv, lambda i, th: section_vw(max(s_all[i], 0.0), DU[i], DV[i], th))
     toes = []
     for L, prefix in ((B["front_leg"], "ftoe"), (B["hind_leg"], "htoe")):
         sb, sm = toe_pieces(L, prefix)
         toes += [SK.Piece(s, sgn, "bone") for sgn in (1, -1) for s in sb] + [SK.Piece(s, sgn, "muscle") for sgn in (1, -1) for s in sm]
-    _SKIN["trunk"], _SKIN["parts"] = trunk, SK.pieces(B["anatomy"]) + toes
+    _SKIN["trunk"], _SKIN["parts"] = trunk, SK.pieces(B["anatomy"]) + toes + (head_weld() if weld else [])
 
 
 def band(x):
@@ -245,6 +324,7 @@ def skin_parts(ranges):
     V, F = SK.mesh(trunk, parts, B["anatomy"]["resolution"])
     W, Z, A, Bf, Tr = SK.vertex_data(V, trunk, parts, lambda s: trunk_weights(s, ranges), zone_value, dark_value,
                                  TR["zones"]["lines_until_s"] + 0.15, N=SK.normals(V, F))
+    W = head_weld_weights(V, W, parts)
     Z = list(SK.smooth_on_mesh(V, F, Z))  # no pinholes in the shell, smooth edges to its colour regions
     Tr = list(SK.smooth_on_mesh(V, F, Tr))
     skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": [20] * len(V), "_A": A, "_B": Tr, "_ZONE": Z}, W)
@@ -665,6 +745,7 @@ def main():
     tb, ranges = trunk_bones()
     objs, head_bones = H.head_parts()
     skin_setup()
+    trim_head(objs)
     objs += skin_parts(ranges)
     objs += spike_parts(ranges, band)
     neck_end = TR["bones"]["chain_forward"][-1][0]

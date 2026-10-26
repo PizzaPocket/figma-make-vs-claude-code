@@ -226,6 +226,11 @@ Check: <what to compare; known differences>
 - The frill sits high at the back of the cheek, under the horn, and its rolled top edge curves back to the horn's underside.
 - The ear opening is a small hole below it.
 
+**Head-neck weld**
+- A separately built part never reads as one piece with the body's skin, however closely it is fitted. Put the part's own shape into the skin's field (from its measured cross-sections, which give an exact inside test, unlike nearest-face normals). Trim the part's mesh on a drawn line, and let the skin be its surface beyond it.
+- Where two surfaces must meet, keep one strictly under the other up to the line and let it out gradually beyond. Surfaces that cross at a shallow angle sawtooth, and a hard cut leaves a kink the marching cubes steps on.
+- The skin at a seam must carry the same bone weights as the part it meets, or the seam opens when the creature moves.
+
 **Body**
 - Build limbs as bones with muscles laid from origin to insertion, under one skin (a smooth union of fields), never as tubes stuck onto the body. A limb with no shoulder or haunch muscles reads as chopped off.
 - Trace the body's outline under the mane, spikes and frills, at their bases. Clay's first trace ran over the spike tips and made his neck and back too big. Where a limb hides the body (the chest under the upper arm), the body's line is anatomy (a cat's breastbone at elbow height), not the limb's outline.

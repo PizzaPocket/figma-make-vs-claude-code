@@ -2219,5 +2219,378 @@
    },
    "clay": true
   }
+ ],
+ "weld": [
+  {
+   "label": "weld, side",
+   "cam": [
+    2.0,
+    1.65,
+    1.3
+   ],
+   "target": [
+    0.1,
+    1.62,
+    1.3
+   ],
+   "fov": 26,
+   "pose": "neutral"
+  },
+  {
+   "label": "weld, side, plain clay",
+   "cam": [
+    2.0,
+    1.65,
+    1.3
+   ],
+   "target": [
+    0.1,
+    1.62,
+    1.3
+   ],
+   "fov": 26,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "weld, three-quarter front",
+   "cam": [
+    1.6,
+    1.8,
+    2.4
+   ],
+   "target": [
+    0.1,
+    1.62,
+    1.3
+   ],
+   "fov": 26,
+   "pose": "neutral"
+  },
+  {
+   "label": "weld, three-quarter front, plain clay",
+   "cam": [
+    1.6,
+    1.8,
+    2.4
+   ],
+   "target": [
+    0.1,
+    1.62,
+    1.3
+   ],
+   "fov": 26,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "weld, three-quarter back, plain clay",
+   "cam": [
+    1.7,
+    1.9,
+    0.2
+   ],
+   "target": [
+    0.1,
+    1.62,
+    1.3
+   ],
+   "fov": 26,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "weld, from below, plain clay",
+   "cam": [
+    1.2,
+    0.8,
+    1.9
+   ],
+   "target": [
+    0.1,
+    1.62,
+    1.3
+   ],
+   "fov": 26,
+   "pose": "neutral",
+   "clay": true
+  }
+ ],
+ "ear": [
+  {
+   "label": "ear, side",
+   "cam": [
+    1.4,
+    1.85,
+    1.4
+   ],
+   "target": [
+    0.2,
+    1.78,
+    1.4
+   ],
+   "fov": 30,
+   "pose": "neutral"
+  },
+  {
+   "label": "ear, side, plain clay",
+   "cam": [
+    1.4,
+    1.85,
+    1.4
+   ],
+   "target": [
+    0.2,
+    1.78,
+    1.4
+   ],
+   "fov": 30,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "ear, three-quarter front",
+   "cam": [
+    1.1,
+    1.95,
+    2.1
+   ],
+   "target": [
+    0.2,
+    1.78,
+    1.4
+   ],
+   "fov": 30,
+   "pose": "neutral"
+  },
+  {
+   "label": "ear, three-quarter front, plain clay",
+   "cam": [
+    1.1,
+    1.95,
+    2.1
+   ],
+   "target": [
+    0.2,
+    1.78,
+    1.4
+   ],
+   "fov": 30,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "ear, three-quarter back, plain clay",
+   "cam": [
+    1.2,
+    2.1,
+    0.7
+   ],
+   "target": [
+    0.2,
+    1.78,
+    1.4
+   ],
+   "fov": 30,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "ear, from above, plain clay",
+   "cam": [
+    0.8,
+    2.6,
+    1.5
+   ],
+   "target": [
+    0.2,
+    1.78,
+    1.4
+   ],
+   "fov": 30,
+   "pose": "neutral",
+   "clay": true
+  }
+ ],
+ "seam": [
+  {
+   "label": "seam, side, plain clay",
+   "cam": [
+    1.4,
+    1.66,
+    1.48
+   ],
+   "target": [
+    0.24,
+    1.66,
+    1.45
+   ],
+   "fov": 14,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "seam, side",
+   "cam": [
+    1.4,
+    1.66,
+    1.48
+   ],
+   "target": [
+    0.24,
+    1.66,
+    1.45
+   ],
+   "fov": 14,
+   "pose": "neutral"
+  },
+  {
+   "label": "seam, from behind, plain clay",
+   "cam": [
+    1.2,
+    1.8,
+    0.6
+   ],
+   "target": [
+    0.24,
+    1.66,
+    1.45
+   ],
+   "fov": 16,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "seam, from in front, plain clay",
+   "cam": [
+    1.0,
+    1.6,
+    2.4
+   ],
+   "target": [
+    0.24,
+    1.66,
+    1.45
+   ],
+   "fov": 16,
+   "pose": "neutral",
+   "clay": true
+  }
+ ],
+ "throat_notch": [
+  {
+   "label": "jaw corner, from behind, plain clay",
+   "cam": [
+    1.2,
+    1.7,
+    0.7
+   ],
+   "target": [
+    0.18,
+    1.45,
+    1.55
+   ],
+   "fov": 16,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "jaw corner, from behind",
+   "cam": [
+    1.2,
+    1.7,
+    0.7
+   ],
+   "target": [
+    0.18,
+    1.45,
+    1.55
+   ],
+   "fov": 16,
+   "pose": "neutral"
+  },
+  {
+   "label": "throat notch, side, plain clay",
+   "cam": [
+    1.4,
+    1.35,
+    1.6
+   ],
+   "target": [
+    0.15,
+    1.38,
+    1.6
+   ],
+   "fov": 14,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "jaw open, side, plain clay",
+   "cam": [
+    2.0,
+    1.65,
+    1.3
+   ],
+   "target": [
+    0.1,
+    1.62,
+    1.3
+   ],
+   "fov": 26,
+   "pose": {
+    "jaw": 0.45
+   },
+   "clay": true
+  }
+ ],
+ "cover3q": [
+  {
+   "label": "three-quarter front, head raised (cover pose)",
+   "cam": [
+    -1.9,
+    1.5,
+    2.2
+   ],
+   "target": [
+    0,
+    1.6,
+    1.15
+   ],
+   "fov": 34,
+   "pose": {
+    "head": [
+     -0.55,
+     0.2
+    ],
+    "jaw": 0.3
+   }
+  },
+  {
+   "label": "same, plain clay",
+   "cam": [
+    -1.9,
+    1.5,
+    2.2
+   ],
+   "target": [
+    0,
+    1.6,
+    1.15
+   ],
+   "fov": 34,
+   "pose": {
+    "head": [
+     -0.55,
+     0.2
+    ],
+    "jaw": 0.3
+   },
+   "clay": true
+  },
+  {
+   "label": "Dragonet Prophecy cover, head and neck (official)",
+   "ref": "{refs}/study/tdple_head.jpg"
+  }
  ]
 }

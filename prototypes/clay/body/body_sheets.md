@@ -253,3 +253,40 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
   - the ear frill's fleshy base, under the horn;
   - the occiput under the roof's last band.
 - **Articulation:** the viewer's pose takes `head: [pitch, yaw]`, spread evenly down the four neck bones and the head. Up, down, left and right all keep the junction closed.
+
+## Head and neck weld: one skin from the cheek back
+
+**User's note:** the head and neck still read as two pieces, in shape and in surface. Also: sculpt the ear and around it; should the lower jaw join the throat's skin; check the three-quarter view against the side sheet.
+
+**Correction to the round above:** the jaw muscle, ear base and occiput pieces made a hood. The neck's skin wrapped over the cheek's back edge and stood proud of it, and the occiput was a dark dome that buried the ear. All three are removed.
+
+**What the references show:**
+- **Side sheet:** the face's fine pebbles end at the heavy S line behind the cheek, which runs from under the ear down to the ear opening and on along the jaw's back edge. The neck's big scales start there. The cream jaw runs straight on into the cream throat strip.
+- **Dragonet Prophecy cover (three-quarter):** the same. The cheek flows into the neck with no step, and the jaw's cream flows into the throat.
+
+**Yes, the jaw joins the throat.** The jaw is a defined form (the drawn line round its back edge), but the throat's skin is continuous with its underside, and opening the mouth stretches it.
+
+**Build (`anatomy.head_weld`):**
+- **Head in the skin's field:** the face and jaw join the body's field as pieces built from their own cross-sections (`skin.SectionPiece`, the head's contours closed across the mouth). They match the head's meshes to within 0.003.
+- **Cheek line (`cheek_line`, traced):** behind it the face and jaw meshes are trimmed away (every face touching the region behind), and the body's skin is the head's surface there, with the neck's fillet swelling out of it.
+- **In front of the line:** the skin is kept inside the face and jaw (`skin.CLIP`), hidden under their meshes.
+- **Behind it:** the skin is let out gradually (`rise`, with a smooth maximum), so nothing kinks.
+- **Weights:** skin at and in front of the line moves with the head and jaw, and hands over to the neck behind it. The trimmed edges never part from the skin, through head turns and jaw opening.
+- **Ear opening:** painted on the skin too, since it sits on the line.
+
+**Failed on the way, for the record:**
+- **A distance field from the meshes:** nearest-face normals gave the wrong inside/outside, which made floating blobs and a flat sheet. The cross-sections give an exact inside test.
+- **Skin standing out over the face behind the line:** the surfaces crossed at a shallow angle, a sawtooth.
+- **A hard clip:** a kink the marching cubes stepped on.
+- **Snapping the trimmed edge onto the line:** sliver faces with bad normals, a rib in the light.
+- **A crease along the line:** you could see into the open jaw through it.
+
+**Ear:**
+- **Tip:** re-measured on a gridded crop (px 258, py 190). It was 0.05 too far back and 0.04 too high, standing up behind the horn like a spike.
+- **Seating:** the neck shell's rim stands at x 0.26–0.27 under the ear's base, which buried it. It now sits outside the rim (base x 0.285), a pale leaf at the back corner of the head, as on the cover.
+
+**Still to do:**
+- a faint shading line along the cheek line in plain clay;
+- a thin slit at the mouth's back corner;
+- the neck's scales are cells, where the art draws large overlapping shingles;
+- the ear's shape itself (cup, rolled rim) is unchanged from the head pass.

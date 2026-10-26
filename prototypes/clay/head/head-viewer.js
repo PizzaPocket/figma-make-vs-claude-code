@@ -58,6 +58,9 @@
             float mer = (1.0 - smoothstep(0.004, 0.008, abs(vObj.x))) * smoothstep(0.1, 0.25, vAB.x) * (1.0 - smoothstep(1.35, 1.55, vAB.x)) * smoothstep(0.5, 0.8, vAB.y);
             belly = mix(belly, line, mer * 0.55); // the meridian: a seam down the middle of the plates, throat to mid-thorax (How to Draw, box set)
             col = zv < 0.5 ? mix(back, side, zv * 2.0) : mix(side, belly, zv * 2.0 - 1.0);
+            // the ear opening sits on the cheek line, so half of it is on this skin (the head's, behind the line)
+            float earHole = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.410, vObj.y - 1.652)));
+            col = mix(col, line * 0.5, earHole * step(0.08, abs(vObj.x)));
             groove = pe * 0.3 * (1.0 - abs(zv - 0.5) * 2.0) + mer * 0.5 * smoothstep(0.5, 1.0, zv);
           }
           if (isP(21.0) > 0.5) { // limb skin: plates in columns along the limb, ~0.10 long x 0.075 across (measured), organically warped

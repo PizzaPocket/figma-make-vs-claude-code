@@ -221,6 +221,8 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 
 **Ear opening:** a dark hole at (1.420, 1.638), just above where the mouth line ends.
 
+**Re-measured, with the head-neck weld (see body_sheets.md):** the tip is at (px 258, py 190), so (0.255, 1.866, 1.289). It had stood 0.05 too far back and 0.04 too high, like a spike behind the horn. The base sits outside the neck shell's rim (x 0.285), so the ear shows as a leaf at the back corner of the head, as on the Dragonet Prophecy cover. Behind the cheek line the face mesh is trimmed away and the body's skin is the head's surface.
+
 ## Known differences after this pass
 
 - **Frills:** seen from above they stick out flat like blades. They should stand up and cup forward.

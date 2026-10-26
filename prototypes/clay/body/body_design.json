@@ -831,47 +831,53 @@
           "foot": 1
         },
         "zone": 0.5
-      },
-      {
-        "name": "jaw muscle (masseter and temporalis)",
-        "why": "the jaw-closing muscle behind the cheek: from under the ear frill down to the jaw's corner, the orange mass the side sheet draws from the ear to the jawline. Part of the body's skin and carried by the head, so the neck flows up into it and round under the skull, covering the jaw's back corner, and stays closed as the head turns.",
-        "from": [0.18, 1.75, 1.37],
-        "to": [0.18, 1.53, 1.47],
-        "radii": [0.075, 0.085],
-        "hint": [1, 0, 0],
-        "k": 0.08,
-        "rig": {
-          "head": 1.0
-        },
-        "zone": 0.5
-      },
-      {
-        "name": "ear base",
-        "why": "the fleshy root of the ear frill, below the horn, so the frill grows out of the head",
-        "from": [0.2, 1.79, 1.36],
-        "to": [0.22, 1.77, 1.45],
-        "radii": [0.05, 0.05],
-        "hint": [1, 0, 0],
-        "k": 0.05,
-        "rig": {
-          "head": 1.0
-        },
-        "zone": 0.5
-      },
-      {
-        "name": "occiput",
-        "why": "the back of the skull under the roof's last band: the neck's top sweeps up into it and disappears under the skull",
-        "from": [0.0, 1.82, 1.3],
-        "to": [0.0, 1.82, 1.44],
-        "radii": [0.19, 0.08],
-        "hint": [1, 0, 0],
-        "k": 0.08,
-        "rig": {
-          "head": 1.0
-        },
-        "zone": null
       }
-    ]
+    ],
+    "head_weld": {
+      "why": "The back of the head is part of the body's skin, so the neck, cheek, jowl and the back of the skull are one surface and the cream jaw runs straight on into the cream throat (side sheet, Dragonet Prophecy cover). The face and jaw join the skin's field as pieces built from their own cross-sections (SectionPiece). In front of the cheek line the skin is kept inside them (set in by inset), hidden under their own meshes; behind the line those meshes are trimmed away and the skin is the head's surface, let out gradually (rise) so the neck's fillet swells out of it smoothly. Skin at and in front of the line moves with the head and jaw (handover), so the trimmed edges never part from it, and opening the mouth stretches the throat skin with the jaw.",
+      "parts": [
+        {
+          "mesh": "Face",
+          "rig": {
+            "head": 1.0
+          },
+          "zone": 0.5
+        },
+        {
+          "mesh": "Jaw",
+          "rig": {
+            "jaw": 1.0
+          },
+          "zone": 1.0
+        }
+      ],
+      "k": 0.05,
+      "inset": 0.004,
+      "zcut": 1.56,
+      "cheek_line": {
+        "why": "The cheek's back edge, traced on the side sheet (ref px -> model): the jaw's back edge from just under the throat notch back and up (z 1.60, y 1.38 -> 1.44, 1.46), up into the ear opening (1.414, 1.656), then the heavy S line behind the cheek (px 215,262 -> 195,248 -> 190,232 -> 200,222) up to the ear's base and on under the horn. The face's pebbles end and the neck's scales begin on it; the form runs on across it.",
+        "zy": [
+          [1.62, 1.2],
+          [1.6, 1.38],
+          [1.55, 1.41],
+          [1.49, 1.43],
+          [1.44, 1.46],
+          [1.414, 1.656],
+          [1.472, 1.7],
+          [1.487, 1.744],
+          [1.458, 1.773],
+          [1.44, 1.85],
+          [1.44, 2.0]
+        ],
+        "blend": [0.0, 0.006],
+        "blend_note": "the inset ramps in over blend (in front of the line)"
+      },
+      "rise": 60.0,
+      "clip_k": 0.008,
+      "handover": [-0.08, -0.01],
+      "rise_note": "behind the line the skin may stand out from the head's surface by rise * (distance behind)^2, joined with a smooth maximum of radius clip_k (a hard cut leaves a kink the mesh steps on)",
+      "handover_note": "skin weights: the head's and jaw's from the line forward, the neck's from handover[0] behind it"
+    }
   },
   "shell": {
     "note": "The dark back is one smooth shell over the whole dark region of the skin (the back, both shoulder caps, both hip caps and the top of the tail), standing a little proud of it, with a rolled rim running continuously round its whole edge, like a turtle shell's margin. Built from the skin itself, so it follows every form under it.",

@@ -66,6 +66,58 @@ class Piece:
         return None if self.zone is None else np.full(len(X), float(self.zone))
 
 
+def poly_sdist(Q, P):
+    """Signed distance from 2D points Q to the closed polygon P (negative inside)."""
+    A, Bp = P, np.roll(P, -1, axis=0)
+    e = Bp - A
+    w = Q[:, None, :] - A[None]
+    t = np.clip(np.einsum("nkj,kj->nk", w, e) / np.einsum("kj,kj->k", e, e), 0, 1)
+    d = np.linalg.norm(w - t[..., None] * e[None], axis=2).min(axis=1)
+    # even-odd crossings of a ray toward +x
+    ya, yb = A[None, :, 1], Bp[None, :, 1]
+    cross = ((ya > Q[:, None, 1]) != (yb > Q[:, None, 1]))
+    xi = A[None, :, 0] + (Q[:, None, 1] - ya) / np.where(yb - ya == 0, 1e-12, yb - ya) * e[None, :, 0]
+    inside = (cross & (Q[:, None, 0] < xi)).sum(axis=1) % 2 == 1
+    return np.where(inside, -d, d)
+
+
+class SectionPiece:
+    """A head part as a piece of the skin's field, from its own measured cross-sections (sections: [(z, polygon
+    of (x, y))], back to front): the back of the head (face and jaw), so the neck's skin joins them with a
+    fillet instead of meeting a separate mesh at a cliff. Set in by `inset` (or inset_at(X)), so the skin can run
+    just under the part's own surface; cut off in front of zcut."""
+
+    def __init__(self, name, sections, rig, zone, k, inset, zcut, margin=0.1, inset_at=None):
+        self.z = np.array([z for z, _ in sections]); self.P = [np.asarray(p, float) for _, p in sections]
+        self.name, self.kind, self.k, self.rig, self.zone, self.limb = name, "section", k, rig, zone, False
+        self.inset, self.zcut, self.margin, self.inset_at = inset, zcut, margin, inset_at
+        allp = np.vstack(self.P)
+        self.a = np.array([allp[:, 0].min(), allp[:, 1].min(), self.z[0]])
+        self.b = np.array([allp[:, 0].max(), allp[:, 1].max(), min(self.z[-1], zcut)])
+        self.radii = np.zeros(3)
+
+    def sdf(self, X):
+        q = np.linalg.norm(np.maximum(np.maximum(self.a - X, X - self.b), 0.0), axis=1)
+        d = np.maximum(q, self.margin)  # far away: past any fillet
+        near = np.nonzero(q < self.margin)[0]
+        if len(near):
+            Xn = X[near]
+            zc = np.clip(Xn[:, 2], self.z[0], self.z[-1])
+            i0 = np.clip(np.searchsorted(self.z, zc) - 1, 0, len(self.z) - 2)
+            u = (zc - self.z[i0]) / (self.z[i0 + 1] - self.z[i0])
+            d2 = np.zeros(len(near))
+            for k in np.unique(i0):
+                m = i0 == k
+                d2[m] = poly_sdist(Xn[m, :2], self.P[k]) * (1 - u[m]) + poly_sdist(Xn[m, :2], self.P[k + 1]) * u[m]
+            back = self.z[0] - Xn[:, 2]
+            dd = np.where((back > 0) & (d2 > 0), np.hypot(back, d2), np.maximum(d2, back))
+            d[near] = dd + (self.inset_at(Xn) if self.inset_at else self.inset)
+        return np.maximum(d, X[:, 2] - self.zcut)
+
+    def zone_at(self, X):
+        return None if self.zone is None else np.full(len(X), float(self.zone))
+
+
 LIMB_BONES = {"upperarm", "forearm", "hand", "thigh", "shin", "foot", "wing_humerus", "wing_forearm"} | {f"{p}{k}" for p in ("ftoe", "htoe") for k in range(1, 5)} | {"fthumb"}
 
 
@@ -130,6 +182,9 @@ def pieces(anat):
     return out
 
 
+CLIP = None  # optional (X, d, D, parts) -> d: a last cut of the union (the head's own surface in front of the cheek line)
+
+
 def field(X, trunk, parts, all_parts=False):
     """The body's field at points X: the trunk joined smoothly with every bone and muscle (or, with no
     trunk, the pieces alone: the wing arm)."""
@@ -138,6 +193,8 @@ def field(X, trunk, parts, all_parts=False):
     d = dt.copy()
     for p, dp in zip(parts, D):
         d = smin(d, dp, p.k)
+    if CLIP is not None:
+        d = CLIP(X, d, D, parts)
     return (d, dt, np.array(D)) if all_parts else d
 
 
