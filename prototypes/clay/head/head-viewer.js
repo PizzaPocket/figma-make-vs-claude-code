@@ -127,21 +127,17 @@
           if (isP(12.0) > 0.5) { col = mix(line * 0.6, srgb(vec3(226.0, 140.0, 150.0)), smoothstep(0.2, 0.45, vAB.x)); rough = 0.3; } // caruncle and tear tail, the tail rimmed dark
           if (isP(7.0) > 0.5) { float pl = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0)); col = mix(line * 0.6, mix(orange, line, pl * 0.22), max(smoothstep(0.2, 0.28, vAB.x), vAB.y)); } // lid: a heavy dark ring round the opening (only between the eye's corners)
           if (isP(8.0) > 0.5) { col = mix(dark * 1.15, dark * 0.8, smoothstep(0.6, 1.0, vAB.x)); col = mix(col, line, smoothstep(0.25, 0.7, vAB.y) * 0.85); rough = 0.35; } // smooth horn, incised ring lines inked
-          if (isP(9.0) > 0.5) { // ear: pale peach hollow, the upper front edge rolled over in an orange rim with a dark fold
-            // line where it turns in, a thin orange lower edge, dark outline; dark behind (vAB: along, across 0 lower -> 1 upper, back)
-            // the hollow's front edge sweeps from the upper rim at a third of the way along down to the lower edge at half way (side sheet)
-            float front = vAB.x - (0.5 - 0.2 * (vAB.y - 0.1) / 0.62);
-            float rimU = smoothstep(0.70, 0.76, vAB.y), rimL = 1.0 - smoothstep(0.06, 0.12, vAB.y), rimF = 1.0 - smoothstep(-0.02, 0.03, front);
-            col = mix(srgb(vec3(250.0, 200.0, 150.0)), srgb(vec3(246.0, 166.0, 107.0)), vAB.x * 0.5);
-            col = mix(col, orange, max(max(rimU, rimL), rimF));
-            col = mix(col, dark, vAB.z); // the back of the ear is the head's dark skin round its root
-            float fold = max((1.0 - smoothstep(0.012, 0.03, abs(vAB.y - 0.73))) * step(0.0, front), (1.0 - smoothstep(0.008, 0.025, abs(front))) * step(vAB.y, 0.73));
-            float edge = max(1.0 - smoothstep(0.0, 0.025, vAB.y), smoothstep(0.975, 1.0, vAB.y));
-            col = mix(col, line, max(fold * (1.0 - vAB.z), edge) * 0.85);
-            // the root (vAB.x < 0) is the face's own skin rising into the ear: its pebbled orange, giving way along the fillet
-            float face = 1.0 - smoothstep(-0.25, 0.0, vAB.x);
+          if (isP(9.0) > 0.5) { // ear: a curled flap, cream inside and orange outside, a thin dark line round its edge
+            // (vAB: along 0 root -> 1 tip, across 0 lower edge -> 1 upper edge, 0 inside / 1 outside)
             float pe = 1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0));
-            col = mix(col, mix(orange, line, pe * 0.22), face); groove = pe * 0.5 * face; }
+            vec3 inside = mix(srgb(vec3(250.0, 214.0, 170.0)), srgb(vec3(244.0, 186.0, 140.0)), vAB.x * 0.6);
+            vec3 outside = mix(orange, line, pe * 0.22);
+            col = mix(inside, outside, vAB.z);
+            float edge = max(1.0 - smoothstep(0.0, 0.03, vAB.y), smoothstep(0.97, 1.0, vAB.y));
+            col = mix(col, line, edge * 0.8 * step(0.0, vAB.x));
+            // the stalk's root (vAB.x < 0) is the face's own pebbled orange, giving way along the fillet
+            float face = 1.0 - smoothstep(-0.25, 0.0, vAB.x);
+            col = mix(col, outside, face); groove = pe * 0.5 * max(face, vAB.z); }
           #ifdef CLAY
           col = srgb(vec3(190.0, 180.0, 170.0)); groove = 0.0; rough = 0.7;
           #endif

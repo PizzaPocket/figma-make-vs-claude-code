@@ -1321,12 +1321,11 @@ def head_parts():
         path = [[sgn * p[0], p[1], p[2]] for p in hp]
         v, f, A, B = tube(path, hr, around=24, step=0.001, grooves=HORN["grooves"])
         objs.append(add_part("Horn" + sd, v, f, {"_PART": [8] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
-        # ear: laid back along the side of the head under the horn, pointing back and up, like a horse's ear laid
-        # flat, and grown out of the face itself. Its section is one closed loop: the hollow (pale, an arc curling up
-        # at the lower edge and over at the upper front edge into a rolled rim), then back round its solid back. The
-        # loft starts from a footprint lying on the face's own surface at the top-back corner of the cheek, where the
-        # S line behind the cheek begins, and rises out of it tangentially (a fillet) into that section, so the face's
-        # skin runs on into the ear with no seam (the root keeps the face's pebbled orange: _A < 0)
+        # ear: a flap of skin on a thin stalk growing out of the face's flesh at the top-back corner of the cheek (where
+        # the S line behind the cheek begins), flaring into a leaf that lies back along the head under the horn and
+        # curls round its length like a tulip petal, the upper front edge rolling over furthest: cream inside, orange
+        # outside (user). Its section is one closed loop, inside then outside; the loft rises tangentially out of a
+        # small footprint on the face's own surface (a fillet), so the face's skin runs on into the stalk (_A < 0)
         face_x = lambda y, z: abs(face_pt(z, side_th(z, y))[0])
         b_yz = np.array(FRILL["base"][1:])
         base = np.array([sgn * (face_x(*b_yz) + FRILL["stand_off"]), *b_yz])
@@ -1339,13 +1338,15 @@ def head_parts():
         dk, th = FRILL["depth"], FRILL["thickness"]
 
         def ear_pt(a, c, out):
-            half = FRILL["width"] / 2 * math.sin(math.pi * (0.12 + 0.88 * a)) ** 0.75 * (1 - 0.35 * a)
+            # a narrow stalk at the root, flaring into the flap (widest about halfway), narrowing to the tip
+            half = FRILL["width"] / 2 * (FRILL["stalk"] + (1 - FRILL["stalk"]) * math.sin(math.pi * min(1.0, a / FRILL["widest_at"]) / 2) ** 1.5) \
+                * (1 if a <= FRILL["widest_at"] else math.cos(math.pi / 2 * (a - FRILL["widest_at"]) / (1 - FRILL["widest_at"])) ** 0.8)
             t = c * (up if c > 0 else lo)  # angle round the arc from the bottom of the hollow
             o = base + L * a * length + nrm * half * dk
             p = o + W * half * math.sin(t) - nrm * half * dk * math.cos(t)
-            if out:  # the back: a solid body behind the hollow, thick toward the root, thin at the tip
+            if out:  # the outside of the flap: the skin's thickness further from the curl's centre (thicker at the stalk)
                 q = p - o; q = q / (np.linalg.norm(q) + 1e-9)
-                p = p + norm(0.4 * q - nrm) * (th * (1 - 0.6 * a) + FRILL["body"] * (1 - a) ** 1.5)
+                p = p + q * (th * (1 - 0.5 * a) + FRILL["body"] * (1 - a) ** 3)
             return p
 
         M = 2 * (H + 1)

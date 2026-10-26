@@ -1,13 +1,7 @@
 {
   "about": "Clay's head as fitted architectural pieces (see head_sheets.md): an orange face mass, a dark roof shell fitted over it whose back corners continue as the horns, a nose crest on the front of the roof, a hinged jaw, eyes with lids hinged on the canthal axis, and ear frills tucked under the horns. Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side reference; x = Clay's left.",
   "upper_head": {
-    "columns": [
-      "z",
-      "top",
-      "lower_edge",
-      "half_width_top",
-      "half_width_low"
-    ],
+    "columns": ["z", "top", "lower_edge", "half_width_top", "half_width_low"],
     "top_note": "Between the brow (z 1.706) and where the nose begins (z 1.953) the top line is one smooth bend fitted to the traced points (each moved 0.022 at most): the trace stepped steep, flat, steep there, partly from the side sheet's head being turned a little toward the viewer.",
     "note": "The orange face mass under the roof. Upper lip line, traced on the side sheet (orange face over cream jaw) and the same in How to Draw and the flight render: from the bottom of the nose it slopes down and back, an overhanging lip that is lowest about a third of the way back (z 1.85); from there it rises in a long, slightly concave line to below the eye, then turns sharply up at the mouth corner (z 1.59) and runs back, gently rising, to the ear opening (z 1.41, y 1.656), where it curls up into the cheek's back edge (anatomy: back edge of the cheek). Traced on the centre of the drawn line. The muzzle hardly narrows toward the front and has near-vertical sides, but it has no flat front wall: its top comes down to meet the front of the upper jaw (the lip), so the roof runs all the way down to the front of the upper jaw, and the nose comes out of the roof's front.",
     "rows": [
@@ -34,12 +28,15 @@
       [1.36, 1.872, 1.79, 0.208, 0.224]
     ],
     "squareness": 5.0,
-    "muzzle_taper": {"from_z": 1.72, "tip_width": 0.86, "power": 2.2, "corner_radius": 0.03, "corner_min": 0.88, "note": "Bone and muscle, not a box (user: square corners are not believable). The flat top is the nasal bones, the steep sides the upper jaw's bones, and the front the premaxilla: a rounded U in top view (ClayTopShot, the covers). So the muzzle narrows from the eye forward in one long convex curve to 0.86 of its width at the tip, and a small radius (0.03) rounds the front corners. An earlier try narrowed only the last 0.08 to 0.62: a pinched, concave beak under the wider roof plates."},
-    "ridge": [
-      [2.017, 0.045],
-      [1.6, 0.045],
-      [1.42, 0.03]
-    ],
+    "muzzle_taper": {
+      "from_z": 1.72,
+      "tip_width": 0.86,
+      "power": 2.2,
+      "corner_radius": 0.03,
+      "corner_min": 0.88,
+      "note": "Bone and muscle, not a box (user: square corners are not believable). The flat top is the nasal bones, the steep sides the upper jaw's bones, and the front the premaxilla: a rounded U in top view (ClayTopShot, the covers). So the muzzle narrows from the eye forward in one long convex curve to 0.86 of its width at the tip, and a small radius (0.03) rounds the front corners. An earlier try narrowed only the last 0.08 to 0.62: a pinched, concave beak under the wider roof plates."
+    },
+    "ridge": [[2.017, 0.045], [1.6, 0.045], [1.42, 0.03]],
     "ridge_note": "The roof is a gable: two mirrored slopes falling from a crisp ridge down its whole length; the ridge is on the measured top profile and the shoulders drop below it (rows: z, drop at the shoulders). The plates are mirrored pairs meeting at the ridge.",
     "front": {
       "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face is convex (the side sheet's notch at z 1.98 is the nose's underside, not a hollow in the face), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose. From above the front face is rounded across (convex: its middle 0.025 forward of its sides; the roof's front band follows the same curve, so the front ridge runs on from it flush) and bulges forward in side profile (0.01, side sheet front outline), and the front ridge's front edge follows that curve. Its bottom edge, the front lip edge, arcs down in the middle (0.03 lower than at the corners). Simplified: slightly convex, rounding forward (convex_side 0.016); its bottom corners lift only a little (0.012), so they meet the roof's level lower edge.",
@@ -57,12 +54,7 @@
     }
   },
   "lower_jaw": {
-    "columns": [
-      "z",
-      "top",
-      "bottom",
-      "half_width"
-    ],
+    "columns": ["z", "top", "bottom", "half_width"],
     "note": "A separate piece from the neck, on its own hinge; traced on the side sheet. Set back under the overhanging upper lip (strong overbite): its chin is a short point at z 1.86, right under the lowest point of the lip. Its underside drops back to its lowest at z 1.77, then rises to the throat notch (z 1.60), where the neck begins. From there its back edge is the heavy line that runs back and up along the neck (z 1.55, y 1.41; z 1.44, y 1.46) and turns up into the ear opening (z 1.39). Its top edge runs just inside the upper lip line at the front and just above it (hidden inside the cheek) behind the mouth corner. At the back it is as wide as the cheek (the jowl), so it stands proud of the neck and its back edge reads as a step, not a seam. Skin: cream with faint pebble scales, like the face's but larger and softer; the neck's transverse bands start below its back edge. Its front is as wide as the upper jaw's mouth at the bite point, so the two fronts meet across the bite when the mouth is closed.",
     "rows": [
       [1.862, 1.278, 1.262, 0.125],
@@ -193,17 +185,19 @@
     "note": "Measured on the side sheet (frill crop, px 205-262, py 188-224): an almond leaf about 0.18 long and 0.06 wide, from its base at the back of the cheek (front-lower end) back and up to its tip under the horn. It lies close along the side of the head, its face turned outward (the side sheet shows its whole face), cupped like a horse's ear laid back: pale peach hollow inside, an orange rim, the top edge rolled out and over. Its top edge runs back under the horn. Tip re-measured on the gridded crop (px 258, py 190): it had been placed 0.05 too far back and 0.04 too high, so it stood up behind the horn like a spike. Seated outside the neck's shell (whose rim stands at x 0.26-0.27 under the ear's base, probed on the built model), so it shows as a leaf at the back corner of the head, angled a little out toward its tip, as on the Dragonet Prophecy cover.",
     "base": [0.0, 1.785, 1.47],
     "tip": [0.24, 1.866, 1.289],
-    "width": 0.075,
+    "width": 0.08,
     "face_up": 0.1,
     "face_forward": 0.12,
-    "roll_deg": [95, 150],
-    "depth": 0.45,
-    "thickness": 0.007,
-    "body": 0.035,
-    "stand_off": 0.012,
-    "fillet_a": 0.2,
-    "foot": [0.06, 0.034],
-    "construction_note": "Grown out of the face (user: the ear hovered off the head; build it from the face's own surface). The loft starts from a footprint on the face's surface at the top-back corner of the cheek (base y 1.785, z 1.47: where the side sheet's S line behind the cheek begins at the ear's base), an oval 0.06 along the ear by 0.034 across, and rises tangentially out of it (fillet over the first fifth) into the ear's section: the hollow and rolled rim, then round the solid back. The root keeps the face's pebbled orange."
+    "roll_deg": [110, 165],
+    "depth": 0.85,
+    "thickness": 0.008,
+    "body": 0.006,
+    "stand_off": 0.008,
+    "fillet_a": 0.12,
+    "foot": [0.03, 0.022],
+    "construction_note": "A flap of skin on a thin stalk out of the face's flesh (user: not a solid wedge; a flap that extends from a thin stalk base from the flesh of the face and curls round like a tulip, orange flesh outside and cream inside). Stalk 0.18 of the widest half-width at the root, widest at 0.55 of the length, narrowing to the tip; the section an arc curling 110 degrees at the lower edge and 165 at the upper front edge (the rolled rim the side sheet draws); a thin sheet (0.008) closed round its edges; footprint on the face 0.03 x 0.022, the stalk rising out of it over the first eighth.",
+    "stalk": 0.18,
+    "widest_at": 0.55
   },
   "roof": {
     "note": "A thin dark underlay fitted over the face; the visible roof is the plates laid on it (roof_plates). Its eave line is dark_plate_edge.",
@@ -313,10 +307,7 @@
         "kind": "crease",
         "name": "masseter fold over the jowl",
         "why": "The cheek muscle's lower edge folding over the jowl, parallel to and above the rising mouth line.",
-        "zy": [
-          [1.58, 1.493],
-          [1.493, 1.589]
-        ],
+        "zy": [[1.58, 1.493], [1.493, 1.589]],
         "depth": 0.006,
         "width": 0.007
       },
@@ -374,19 +365,13 @@
           },
           {
             "kind": "crease",
-            "zy": [
-              [1.618, 1.703],
-              [1.588, 1.722]
-            ],
+            "zy": [[1.618, 1.703], [1.588, 1.722]],
             "depth": 0.003,
             "width": 0.004
           },
           {
             "kind": "crease",
-            "zy": [
-              [1.618, 1.692],
-              [1.586, 1.688]
-            ],
+            "zy": [[1.618, 1.692], [1.586, 1.688]],
             "depth": 0.003,
             "width": 0.004
           }
@@ -410,28 +395,19 @@
           },
           {
             "kind": "crease",
-            "zy": [
-              [1.8, 1.42],
-              [1.745, 1.5]
-            ],
+            "zy": [[1.8, 1.42], [1.745, 1.5]],
             "depth": 0.005,
             "width": 0.005
           },
           {
             "kind": "crease",
-            "zy": [
-              [1.86, 1.42],
-              [1.84, 1.47]
-            ],
+            "zy": [[1.86, 1.42], [1.84, 1.47]],
             "depth": 0.004,
             "width": 0.004
           },
           {
             "kind": "crease",
-            "zy": [
-              [1.835, 1.415],
-              [1.815, 1.46]
-            ],
+            "zy": [[1.835, 1.415], [1.815, 1.46]],
             "depth": 0.004,
             "width": 0.004
           }
@@ -461,10 +437,7 @@
           },
           {
             "kind": "crease",
-            "zy": [
-              [1.745, 1.7],
-              [1.735, 1.735]
-            ],
+            "zy": [[1.745, 1.7], [1.735, 1.735]],
             "depth": 0.004,
             "width": 0.004
           }
@@ -551,10 +524,7 @@
         },
         {
           "name": "edge row",
-          "d": [
-            0.075,
-            null
-          ],
+          "d": [0.075, null],
           "joint_every": 0.068,
           "thickness": 0.012,
           "rim_flare": 0.006,
