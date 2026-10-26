@@ -144,6 +144,15 @@ def poly_sdist(z, y, poly):
 _ZONES = {}
 
 
+def neck_top_band(s, f):
+    """1 on the band of shell over the top of the neck just behind the head (zones.neck_top_band: its width round
+    the body, by s), 0 off it. The neck's top there is lower than the ear's top edge (the ear lies high on the side of
+    the neck), so a side-view line can't run above the ear; by its place round the body the shell runs on from the
+    head's shield over the top of the neck, above the ear, and hands over to the traced side line further back."""
+    fb = table(TR["zones"]["neck_top_band"], s, 1)
+    return 1 - smoothstep(fb - 0.015, fb + 0.015, f) if fb > 0 else 0.0
+
+
 def zone_value(s, f, z=None, y=None, x=None):
     """0 dark back, 0.5 orange side, 1 cream underside. On the neck and torso the edges are the measured
     side-view lines (zones.dark_edge_px, zones.cream_edge_px); on the tail, a side fraction f."""
@@ -158,6 +167,7 @@ def zone_value(s, f, z=None, y=None, x=None):
     w = 0.012
     lim = B["shell"]["dark_below_f"]  # the dark region is on the body's upper side only
     dark = (1 - smoothstep(-w, w, poly_sdist(z, y, _ZONES["dark"]))) * (1 - smoothstep(lim - 0.04, lim + 0.04, f))
+    dark = max(dark, neck_top_band(s, f))
     cream = 1 - smoothstep(-w, w, poly_sdist(z, y, _ZONES["cream"]))
     # the cream underside: the sheet's cream region, or the underside of the body by its place round it
     # (zones.rows), so the throat band wraps under the neck wherever the side view can't show it
@@ -181,6 +191,7 @@ def dark_value(s, f, z, y):
     by_fraction = 1 - smoothstep(fd - 0.015, fd + 0.015, f)
     lim = B["shell"]["dark_below_f"]
     by_lines = (1 - smoothstep(-0.012, 0.012, poly_sdist(z, y, _ZONES["dark"]))) * (1 - smoothstep(lim - 0.04, lim + 0.04, f))
+    by_lines = max(by_lines, neck_top_band(s, f))
     t = smoothstep(Zd["lines_until_s"] - 0.15, Zd["lines_until_s"] + 0.15, s)
     return by_lines * (1 - t) + by_fraction * t
 
