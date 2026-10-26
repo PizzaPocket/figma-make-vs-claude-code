@@ -245,3 +245,5 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 - **Fixed by the way:** the neck shell's rim was traced along the middle of the scalloped band; it now follows its lower edge, 5–8 px lower near the head (`zones.dark_edge_px`). So the rim runs under the ear, as drawn, not across its base.
 
 **Still to do:** a small round knob where the shell's rim ends at the cheek line under the ear's base.
+- **Knob under the ear, fixed:** it was the neck shell's rim stopping dead behind the cheek line, 0.03 proud of the face beside it. The shell and its rim now taper to nothing over the last 0.06 before the line (`anatomy.head_weld.shell_taper`), so the rim band runs out into the S line as drawn.
+- **Face contour resolution:** doubled (`N_AROUND` 192), so the trimmed face edge follows the cheek line in steps of about 0.01 instead of 0.02.

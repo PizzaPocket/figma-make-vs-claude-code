@@ -54,7 +54,7 @@ def horn_path():
     R = np.interp(np.linspace(0, 1, n + 1), np.linspace(0, 1, len(HORN["radius"])), HORN["radius"])
     return [[x, y, z] for x, (z, y) in zip(xs, pts)], list(R)
 FRILL = D["ear_frill"]
-N_AROUND = 96  # points around the face contour (fine enough to carry the lid creases)
+N_AROUND = 192  # points around the face contour (fine enough to carry the lid creases, and for the trimmed edge at the cheek line to follow it closely)
 
 
 def interp(table, z, col):

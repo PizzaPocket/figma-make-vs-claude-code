@@ -41,6 +41,11 @@ def smoothstep(e0, e1, x):
     return t * t * (3 - 2 * t)
 
 
+def smoothstep_v(e0, e1, x):
+    t = np.clip((x - e0) / (e1 - e0), 0.0, 1.0)
+    return t * t * (3 - 2 * t)
+
+
 # ---------------------------------------------------------------- trunk
 def tail_vertebrae():
     """The s at each joint between caudal vertebrae: each a fixed fraction shorter than the one before,
@@ -344,6 +349,9 @@ def skin_parts(ranges):
     skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": list(20 + np.clip(around, 0, 1.56) / 4), "_A": A, "_B": Tr, "_ZONE": Z}, W)
     sh = B["shell"]
     S, SF, src, ink, tint = SK.shell(V, F, Z, sh, SK.smooth_normals(V, F), trunk.s[idx], np.array(Bf), band)
+    if "cheek_dz" in _SKIN:  # the shell and its rim run out into the cheek line, where the head's surface takes over
+        t = 1 - smoothstep_v(-B["anatomy"]["head_weld"]["shell_taper"], 0.0, _SKIN["cheek_dz"](S))
+        S = V[src] + (S - V[src]) * t[:, None]
     shell = H.add_part("Shell", S.tolist(), SF.tolist(), {"_PART": [13] * len(S), "_A": list(ink), "_B": list(tint), "_ZONE": [0] * len(S)},
                        [W[i] for i in src])
     return [skin, shell]
