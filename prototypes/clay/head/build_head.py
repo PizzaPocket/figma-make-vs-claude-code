@@ -896,7 +896,7 @@ def band_zs(z_front, z_back, base_n):
 
 
 # ---------------------------------------------------------------- general pieces
-def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None, inner_dip=None):
+def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None, inner_dip=None, n_inner=6):
     """Rings of the contour along z, closed across the open side (palate / mouth floor)
     and capped at both ends. Returns verts, quads, and per-vertex (along, around) coords. inner_dip(z), if given,
     bows the closing surface: up into an arched palate (positive) or down into a trough for the tongue (negative)."""
@@ -909,8 +909,8 @@ def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None, inner_d
             ring.append(len(verts)); verts.append((x, y, z)); uv.append((z, i / N_AROUND))
         # inner (mouth-side) surface between the two lip edges
         inner = []
-        for j in range(1, 6):
-            t = j / 6
+        for j in range(1, n_inner):
+            t = j / n_inner
             x = pts[-1][0] + (pts[0][0] - pts[-1][0]) * t
             y = (edge_y(x) if callable(edge_y) else edge_y) + (inner_dip(z) * math.sin(math.pi * t) if inner_dip else 0.0)
             inner.append(len(verts)); verts.append((x, y, z)); uv.append((z, -1.0))
@@ -1127,8 +1127,10 @@ def head_parts():
     z0, z1 = UPPER[0, 0], UPPER[-1, 0]
     zs = np.concatenate([np.linspace(z0, 1.86, 20), np.linspace(1.85, z1, 120)])
     MO = D["mouth"]
-    inside = lambda z: smoothstep(MO["inside_from"][1], MO["inside_from"][0], z) * smoothstep(MO["hinge_z"], MO["hinge_z"] + 0.06, z)
-    v, f, uv = loft(upper_contour, zs, front_dent=front_setback, inner_dip=lambda z: MO["palate_arch"] * inside(z))
+    # 1 inside the mouth (behind inside_from), 0 in front of it, where the closing surface is the overhanging lip's underside
+    inside = lambda z: smoothstep(MO["inside_from"][0], MO["inside_from"][1], z) * smoothstep(MO["hinge_z"], MO["hinge_z"] + 0.06, z)
+    # the closing surface finely sampled across: in front of the mouth it is the lip's visible underside
+    v, f, uv = loft(upper_contour, zs, front_dent=front_setback, inner_dip=lambda z: MO["palate_arch"] * inside(z), n_inner=24)
     hf = []
     for (x, y, z), (_, w) in zip(v, uv):
         low, top = interp(UPPER, z, 2), interp(UPPER, z, 1)
