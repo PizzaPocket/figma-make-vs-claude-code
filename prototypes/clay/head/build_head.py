@@ -455,76 +455,76 @@ def muzzle_shield():
 
 
 def lion_nose():
-    """The nose, a male lion's on the muzzle shield (lion_nose): its bridge rises out of the shield's top about
-    the middle of the muzzle, runs forward and down along the top, broadening and gaining height, flat-topped,
-    and ends in a rounded leather cap set back from the shield's front edge, the shield's rim carrying on round
-    the front ahead of and below it. Comma nostrils open in the cap's front. Same material as the shield.
-    _ZONE: nostril."""
+    """The nose, a male lion's, on the front of the muzzle shield (lion_nose): a short bridge rising out of the
+    shield's top just behind its front, flat-topped with crisp corners to its upright sides, running down to the
+    leather cap, whose front is its own flat face (the nose leather) with a small bevel round its edge, set just
+    behind the shield's front edge so the shield's rim carries on round the front ahead of and below it. The face is
+    upright, facing forward, as a lion's nose leather does: the nose runs on past it and is cut back to the plane.
+    The comma nostrils open in that face. Same material as the shield. _ZONE: nostril."""
     from scipy.interpolate import PchipInterpolator
     NS = D["lion_nose"]; SH = D["muzzle_shield"]
     st = np.array(NS["stations"])  # s, half-width, height above the shield
     wf = PchipInterpolator(st[:, 0], st[:, 1]); hf = PchipInterpolator(st[:, 0], st[:, 2])
-    s_front, s_root, cr = NS["s_front"], st[-1, 0], NS["cap_round"]
+    s_front, s_root = NS["s_front"], st[-1, 0]
+    bev = NS["cap_bevel"]
     pr = profile()
-    nsup, sink, NA = NS["squareness"], NS["sink"], 40
-    ss = np.concatenate([np.linspace(s_root, s_front + cr, 40), s_front + cr * (1 - np.sin(np.linspace(0, math.pi / 2, 14)[1:]))])
-    rings, loc = [], []
-    for sv_ in ss:
+    nsup, sink, NA = NS["squareness"], NS["sink"], 72
+    rings = []
+    for sv_ in np.linspace(s_root, 0.0, 130):  # on past the face, to be cut back to it
         zc, yc = sv_point(sv_, 0.0)
         n = np.array([np.interp(sv_, pr["s"], pr["N"][:, k]) for k in (0, 1)]); n = n / np.linalg.norm(n)
         out = -n  # outward from the head, in side view (z, y)
         base = np.array([0.0, yc, zc]) + np.array([0.0, out[1], out[0]]) * (SH["under"] + SH["thickness"] - roof_t(zc)[0])
         up3 = np.array([0.0, out[1], out[0]])
         w, h = float(wf(sv_)), float(hf(sv_))
-        u = (s_front + cr - sv_) / cr
-        if u > 0:  # the cap's rounded front
-            r = math.sqrt(max(0.0, 1 - min(u, 1.0) ** 2)); w *= max(r, 1e-3); h = h * max(r, 1e-3)
-        ring, lr = [], []
-        for i in range(NA + 1):  # the top arc, flat-topped
+        ring = []
+        for i in range(NA + 1):  # the top and the upright sides: a box with crisp, small-radius corners
             th = math.pi * i / NA
             c, sn = math.cos(th), math.sin(th)
             x = w * math.copysign(abs(c) ** (2 / nsup), c); v = -sink + (h + sink) * abs(sn) ** (2 / nsup)
-            x += math.copysign(NS["fillet"] * (1 - abs(sn) ** (2 / nsup)) ** 2, x)  # the base flares out into the shield: it grows out of it
-            ring.append(base + np.array([x, 0, 0]) + up3 * v); lr.append((x, v, sv_))
-        for i in range(1, 8):  # the buried underside, closing the section
-            x = -w + 2 * w * i / 8
-            ring.append(base + np.array([x, 0, 0]) - up3 * sink); lr.append((x, -sink, sv_))
-        rings.append(ring); loc.append(lr)
-    V = np.array([p for r in rings for p in r]); Lc = np.array([p for r in loc for p in r])
+            x += math.copysign(NS["fillet"] * (1 - abs(sn) ** (2 / nsup)) ** 2, x)  # its foot flares a little into the shield
+            ring.append(base + np.array([x, 0, 0]) + up3 * v)
+        ring += [base + np.array([-w + 2 * w * i / 8, 0, 0]) - up3 * sink for i in range(1, 8)]  # the buried underside
+        rings.append(ring)
+    V = np.array([p for r in rings for p in r])
     M = len(rings[0])
+    # the leather cap's face: an upright plane (facing forward, as a lion's nose leather does) through the cap's top
+    # front corner at s_front, its edge rounded over bev (a smooth minimum), so the face reads as its own plane
+    zt, yt = sv_point(s_front, 0.0)
+    z_face = zt + (SH["under"] + SH["thickness"]) * 0.5
+    dz = V[:, 2] - z_face
+    hh = np.clip(0.5 + 0.5 * dz / bev, 0.0, 1.0)
+    V[:, 2] = V[:, 2] * (1 - hh) + z_face * hh - bev * hh * (1 - hh)  # polynomial smooth min of z and z_face
+    on_face = V[:, 2] > z_face - 0.002
     NW = np.zeros(len(V))
-    N_ = NS["nostril"]; C = np.array(N_["path"])  # (x, height fraction, s) along the comma
-    for i, (x, v, sv_) in enumerate(Lc):
-        hh = max(float(hf(sv_)), 1e-6)
-        q = np.array([abs(x), v / hh, sv_])
-        sc = np.array([1.0, hh, 1.0])
+    yf = V[on_face, 1]; y0, y1 = yf.min(), yf.max()
+    N_ = NS["nostril"]; C = np.array(N_["path"])  # (x, fraction up the face) on the cap's face
+    for i in np.where(V[:, 2] > z_face - bev)[0]:
+        q = np.array([abs(V[i, 0]), (V[i, 1] - y0) / max(y1 - y0, 1e-6)])
         best, tb = 1e9, 0.0
         for k in range(len(C) - 1):
-            a0, b0 = C[k] * sc, C[k + 1] * sc; ab = b0 - a0; qq = q * sc
-            t = min(1.0, max(0.0, (qq - a0) @ ab / (ab @ ab)))
-            dd = np.linalg.norm(qq - (a0 + ab * t))
+            a0, b0 = C[k], C[k + 1]; ab = (b0 - a0) * np.array([1.0, y1 - y0]); qq = (q - a0) * np.array([1.0, y1 - y0])
+            t = min(1.0, max(0.0, qq @ ab / (ab @ ab)))
+            dd = np.linalg.norm(qq - ab * t)
             if dd < best:
                 best, tb = dd, (k + t) / (len(C) - 1)
         wN = N_["half_width"][0] + (N_["half_width"][1] - N_["half_width"][0]) * tb
         g = smoothstep(0.0, 1.0, max(0.0, 1 - best / wN))
-        if g > 0:
-            ring_i = i // M
-            core = np.mean(rings[ring_i][:NA + 1], 0)
-            V[i] += norm(core - V[i]) * N_["depth"] * g
+        if g > 0:  # cut back into the nose
+            V[i, 2] -= N_["depth"] * g
             NW[i] = smoothstep(0.3, 0.75, g)
     faces = []
-    for r in range(len(rings) - 1):
+    for k in range(len(rings) - 1):
         for i in range(M):
             j = (i + 1) % M
-            faces.append([r * M + i, (r + 1) * M + i, (r + 1) * M + j, r * M + j])
-    for r in (0, len(rings) - 1):
-        c = len(V); V = np.vstack([V, np.mean(rings[r], 0)]); NW = np.append(NW, 0.0)
+            faces.append([k * M + i, (k + 1) * M + i, (k + 1) * M + j, k * M + j])
+    for k in (0, len(rings) - 1):
+        c = len(V); V = np.vstack([V, V[k * M:(k + 1) * M].mean(0)]); NW = np.append(NW, 0.0)
         for i in range(M):
-            f = [r * M + i, r * M + (i + 1) % M, c]
-            faces.append(f if r else f[::-1])
+            f = [k * M + i, k * M + (i + 1) % M, c]
+            faces.append(f if k else f[::-1])
     tint = (math.sin(0 * 12.9898) * 43758.5453) % 1.0
     return [tuple(p) for p in V], faces, [0.02] * len(V), [tint] * len(V), list(NW)
-
 
 _HORN_AXES = {}
 

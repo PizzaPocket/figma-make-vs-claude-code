@@ -379,3 +379,10 @@ Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout co
 - **Stair step (user):** the visible jaw's underside ended at y 1.285 at the throat notch, where its hidden back followed the weld's cheek line from 1.385, a jump of 0.1. It is now one smooth line: symphysis 1.212, chin 1.188 at z 1.89, the throat junction at 1.345 (z 1.58), rising on inside the throat to the ear (`lower_jaw.bones.throat_junction`, `retroarticular`).
 - **Weld:** the cheek line's lower leg now runs diagonally along the jaw's underside instead of dropping vertically at z 1.60–1.62, and the jaw's own sections join the skin's field forward to z 1.72 (body `head_weld.parts[].zcut`). The throat skin wraps the jaw's underside with the jaw's own shape, with no cut.
 - **Front face:** the orange front below the shield bulges 0.03 forward at mid-height (`front.convex_side`).
+
+### Lion's nose, reshaped (walkthrough)
+- **Bridge:** short, about 0.1 along the profile from its root to the cap, instead of rising from mid-muzzle.
+- **Section:** a crisper box (squareness 7): flat top, upright sides, small rounded corners.
+- **Cap face:** the leather cap ends in its own flat face, an upright plane facing forward through the cap's top front corner, rounded at its edge (0.01). The nose runs on past it and is cut back to the plane. Cut perpendicular to the steep front slope instead, the face pointed down and showed from the front only as a thin band.
+- **Nostrils:** commas carved into the face at its lower outer corners.
+- **Position:** the face sits 0.025 behind the shield's front edge, so the shield's rim carries on round the front ahead of and below it.

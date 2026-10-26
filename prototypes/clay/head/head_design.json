@@ -843,27 +843,28 @@
     "skirt_note": "The front skirt's thickness rounds off toward its side ends and its bottom edge (edge_round), like the rest of the shield's edge; at full thickness to its ends it stood out as square tabs at the bottom corners."
   },
   "lion_nose": {
-    "note": "A male lion's nose on the muzzle shield (user, and the Dragonet Prophecy cover and top-view painting): its bridge rises out of the shield's top about the middle of the muzzle (s_root), runs forward and down along the top, broadening and gaining height, flat-topped, and ends in a rounded leather cap whose front stops s_front back from the shield's front edge; the shield's rim carries on round the front ahead of and below it. Same material and colour as the shield: it reads by form. s is distance along the top profile from the shield's front edge (0 at z 2.017; 0.30 at z 1.87; before the snout warp).",
+    "note": "A male lion's nose on the front of the muzzle shield (user, walkthrough): a short bridge (s 0.13 to the cap, about 0.06 long) rising out of the shield's top just behind its front, flat-topped with crisp corners to upright sides (squareness 7), ending in the leather cap, whose front is its own flat face (the nose leather, 0.72 of the cap's section) with a small bevel (0.008) round its edge, set just behind the shield's front edge (s_front 0.012) so the shield's rim carries on round the front ahead of it. Before: the bridge ran from mid-muzzle (s 0.30), too long, too high on the shield, its section soft and its front a dome. Same material as the shield. s is distance along the top profile from the shield's front edge (before the snout warp).",
     "stations": [
-      [0.03, 0.062, 0.03],
-      [0.07, 0.066, 0.032],
-      [0.11, 0.055, 0.022],
-      [0.17, 0.042, 0.014],
-      [0.24, 0.03, 0.006],
-      [0.3, 0.022, 0.0]
+      [0.012, 0.06, 0.03],
+      [0.04, 0.064, 0.032],
+      [0.065, 0.056, 0.026],
+      [0.085, 0.044, 0.016],
+      [0.11, 0.034, 0.007],
+      [0.13, 0.028, 0.0]
     ],
     "stations_note": "s, half-width, height above the shield's surface: the cap (s 0.03-0.11) broad and full, a slight waist where it meets the bridge, the bridge narrowing and settling into the shield toward its root.",
-    "s_front": 0.03,
-    "cap_round": 0.035,
-    "squareness": 3.0,
+    "s_front": 0.025,
+    "squareness": 7.0,
     "sink": 0.006,
     "nostril": {
-      "path": [[0.022, 0.3, 0.036], [0.04, 0.4, 0.042], [0.052, 0.6, 0.055], [0.055, 0.8, 0.068]],
-      "half_width": [0.009, 0.003],
-      "depth": 0.009,
-      "note": "Comma nostrils in the cap's front (cover: dark slits at the cap's lower outer corners): path points are (x, fraction of the cap's height, s), from the wide front-inner end curling out, up and back."
+      "path": [[0.02, 0.24], [0.031, 0.27], [0.042, 0.4], [0.047, 0.56]],
+      "half_width": [0.0055, 0.0022],
+      "depth": 0.008,
+      "note": "Comma nostrils on the cap's flat face: path points are (x across, fraction of the cap's height), from the wide inner end low on the face curling out and up; cut back into the nose along its axis."
     },
-    "fillet": 0.014,
-    "fillet_note": "The bridge's sides flare out at its base by up to 0.014, so it grows out of the shield instead of sitting on it as a rod."
+    "fillet": 0.005,
+    "fillet_note": "The bridge's sides flare out at its base by up to 0.014, so it grows out of the shield instead of sitting on it as a rod.",
+    "cap_bevel": 0.01,
+    "face_note": "The cap's face is an upright plane facing forward through the cap's top front corner (s_front 0.025), its edge rounded over 0.01: cut perpendicular to the steep front slope instead, it faced down and showed from the front only as a thin band with the nostrils crowded into it."
   }
 }
