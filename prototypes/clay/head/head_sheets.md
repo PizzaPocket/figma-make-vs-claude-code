@@ -276,3 +276,9 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 - **Lining:** darker red.
 
 **Still differs from the cover:** the lower jaw looks shallower under the teeth than on the cover. Its depth is measured on the closed side sheet (about 0.11, a third of the upper jaw's), while the cover's three-quarter view from below shows it deeper.
+
+**Jaw joint and teeth (next round):**
+- **Joint:** it now sits at the back end of the mouth line, level with it (0, 1.60, 1.45), where reptiles have it (quadrate to articular). It was 0.08 lower, and the low pivot swung the chin forward as the jaw opened. Now the jaw drops down and back, its tip well behind the upper jaw's, as in the flying painting (ClayTopShot).
+- **Teeth:** cones, as both open-mouth paintings show. The upper teeth are 1.4× longer (hidden behind the lip when shut), the lower 1.15× (they show along the closed lip).
+- **Cheek web:** its outward bow leaves both edges tangentially (sin²), so it swells out of the lip and the jaw without a lip of its own.
+- **Muzzle rounding:** tried and backed out. Narrowing only the last 0.08 of the snout made a pinched, concave beak under the wider roof plates. To redo it: a long, gentle convex taper over the whole front muzzle, and small corner radii.

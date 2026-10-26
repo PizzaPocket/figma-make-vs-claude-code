@@ -1177,7 +1177,7 @@ def head_parts():
                     ps.append((1.0 if w < MO["web_orange_to"] else 2.0) if layer == 0 else 3.0); As.append(u); Bs.append(w)
                     # the jaw's opening fills the cheek out: a corrective shape (jawOpen, driven by the jaw's angle) bowing
                     # the stretched skin outward, most in the middle of the span and toward the corner
-                    bulge.append((sgn * MO["cheek_bulge"] * math.sin(math.pi * w) * smoothstep(0.0, 0.5, u), 0.0, 0.0))
+                    bulge.append((sgn * MO["cheek_bulge"] * math.sin(math.pi * w) ** 2 * smoothstep(0.0, 0.5, u), 0.0, 0.0))  # leaving both edges tangentially
             for i in range(NU):
                 for j in range(NV):
                     q = [b0 + i * (NV + 1) + j, b0 + (i + 1) * (NV + 1) + j, b0 + (i + 1) * (NV + 1) + j + 1, b0 + i * (NV + 1) + j + 1]

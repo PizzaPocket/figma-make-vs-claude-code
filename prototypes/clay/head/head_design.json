@@ -84,7 +84,8 @@
       [1.398, 1.66, 1.53, 0.232],
       [1.392, 1.64, 1.58, 0.222]
     ],
-    "hinge": [0.0, 1.52, 1.47],
+    "hinge": [0.0, 1.6, 1.45],
+    "hinge_note": "The jaw joint (quadrate to articular) sits where reptiles have it: at the back end of the mouth line, at the back of the cheek under the back of the eye, level with the mouth line there (which runs back to the ear opening at z 1.41, y 1.656). It was 0.08 lower (y 1.52), and the low pivot swung the chin forward as the jaw opened; level with the mouth line, the jaw drops down and back, its tip well behind the upper jaw's (ClayTopShot, the flying painting).",
     "squareness": 2.4,
     "squareness_note": "a rounded U in section, as the cover shows from below with the mouth open; at 3.6 it was a box, and read as a flat plank when the jaw dropped"
   },
@@ -588,25 +589,25 @@
     "note": "Flight render and limited edition: small, flat, triangular blades. The tooth rows start at the bite point (z 1.86), where the upper and lower fronts of the mouth meet when it is closed: a short row across the front of the mouth there, then rows back along each side lip, each tooth perpendicular to its lip edge, tips raked a little back. In front of the bite point is the front muzzle's underside: skin, no teeth. A little larger mid-row; no single big fang.",
     "rake_deg": 12,
     "base_frac": 0.45,
-    "thickness": 0.006,
+    "thickness": 0.012,
     "upper": {
       "z": [1.835, 1.62],
       "count": 8,
-      "length": [0.026, 0.04],
+      "length": [0.0364, 0.056],
       "inset": 0.03,
       "tuck_up": 0.02
     },
     "lower": {
       "z": [1.83, 1.63],
       "count": 7,
-      "length": [0.022, 0.034],
+      "length": [0.0253, 0.0391],
       "inset": 0.016
     },
     "front": {
       "z": 1.855,
       "count": 4,
       "half_span": 0.065,
-      "length": 0.024,
+      "length": 0.0336,
       "tuck_up": 0.02,
       "tuck_back": 0.02
     },
@@ -614,17 +615,18 @@
       "z": 1.848,
       "count": 4,
       "half_span": 0.07,
-      "length": 0.022
-    }
+      "length": 0.0253
+    },
+    "shape_note": "Re-read on the two open-mouth paintings (Dragonet Prophecy cover, ClayTopShot): cones, not flat blades, about 1.4x the earlier length for the upper teeth (hidden behind the lip when shut), 1.15x for the lower (which show along the closed lip); round-based (thickness about the base's width), still tips raked back, still no single big fang."
   },
   "mouth": {
     "why": "The mouth opens by stretching skin, not as two rigid pieces parting (user; Dragonet Prophecy cover). The cover's open mouth is a deep cavity, its floor a trough for the tongue under an arched palate, and the gape ends in a rounded corner of cheek skin under the eye. The lips stay joined from the corner back to the hinge, where the jaw's bone runs on inside the cheek.",
     "corner_z": 1.59,
     "corner_note": "the mouth corner on the side sheet: where the upper lip line turns sharply up (upper_head note)",
     "corner_round": 0.035,
-    "web_back_z": 1.47,
+    "web_back_z": 1.45,
     "web_thickness": 0.004,
-    "hinge_z": 1.47,
+    "hinge_z": 1.45,
     "inside_from": [1.84, 1.8],
     "palate_arch": 0.035,
     "floor_trough": 0.03,
