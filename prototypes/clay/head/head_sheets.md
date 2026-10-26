@@ -297,3 +297,9 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 - **Paint:** the root keeps the face's pebbled orange, giving way to the ear's colours along the fillet.
 - **Shell:** the neck shell now tapers to nothing over 0.13 behind the cheek line (`head_weld.shell_taper`), so its lumpy rim no longer piles up round the ear's root.
 - **Still to improve:** close up the ear is thin, and the face of its root is a flat facet.
+
+## Eye: liner and resting lid (user: liner too thick, pulled off the lids when blinking; shape not the references')
+
+- **Liner:** now a thin line, 0.095 of the eyeball's radius on the upper lid and 0.065 on the lower (it was 0.17 on both). It closes into one thin line as the eye blinks; before, the lower lid's broad band stayed behind as a dark crescent.
+- **Resting lid:** the upper lid now comes down across the top of the iris (`upper_rest_closed` 0.17), as the painted covers show, and the blink runs on from there.
+- **Still to do:** the outer corner is round. The references draw an almond with a pointed outer corner, back and slightly up. That needs the opening described by its radius round the eye's centre, not along one axis from the tear duct, which fixes the outer corner on that axis.

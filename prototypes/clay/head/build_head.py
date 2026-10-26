@@ -838,7 +838,7 @@ def eye_lid(c, er, sgn, skin, upper, closed=0.0, nps=36, nf=14, nr=5):
         # rows: the dark ring is its own rows at the margin, a fixed width (narrowing as the lid closes, so
         # the closed eye is a line, not a dark band); the rest of the lid stretches out to its buried edge
         span = np.linalg.norm(edge - m); dirn = (edge - m) / max(span, 1e-9)
-        ring = min(O["ring"] * er * (1 - 0.6 * closed), 0.6 * span)
+        ring = min(O["ring_upper" if upper else "ring_lower"] * er * (1 - 0.6 * closed), 0.6 * span)
         for j in range(nf + 1):
             dm = ring * (j / nr) ** 1.3 if j <= nr else ring + (span - ring) * ((j - nr) / (nf - nr)) ** 1.3
             f = dm / max(span, 1e-9)
@@ -1291,7 +1291,8 @@ def head_parts():
         skin = eye_skin(c, er, sgn)
         NB = EYE["opening"]["blink_steps"]
         for upper in (True, False):
-            v, f, A, Ts = eye_lid(c, er, sgn, skin, upper)
+            rest = EYE["opening"]["upper_rest_closed"] if upper else 0.0  # the upper lid rests across the top of the iris
+            v, f, A, Ts = eye_lid(c, er, sgn, skin, upper, closed=rest)
             # the lid moves most mid-eye and not at all at the tip and the back, where it is fixed to the face:
             # the rest of each vertex's weight stays on the head
             ws = []
@@ -1307,7 +1308,7 @@ def head_parts():
             # (blink1..blinkN, each the lid at k/N closed) so it stays on the eyeball's surface on the way
             ob.shape_key_add(name="Basis", from_mix=False)
             for kb in range(1, NB + 1):
-                vb = eye_lid(c, er, sgn, skin, upper, closed=kb / NB if upper else 0.0)[0]
+                vb = eye_lid(c, er, sgn, skin, upper, closed=rest + (1 - rest) * kb / NB if upper else 0.0)[0]
                 ob.shape_key_add(name=f"blink{kb}", from_mix=False).data.foreach_set("co", to_blender(np.array(vb)).astype(np.float32).ravel())
             objs.append(ob)
         for bn, axis in (("lidUpperIn", hinge), ("lidUpperOut", hinge), ("lidLower", -hinge)):
