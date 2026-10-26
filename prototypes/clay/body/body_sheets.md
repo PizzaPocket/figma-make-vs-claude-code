@@ -240,3 +240,16 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 - **Membrane line:** sampled every 12 px along the carapace's lower edge (`zones.dark_edge_px`) between the wing's root and the hip armor. Each sample sits on the body's surface just under the rim, so the membrane follows the arch exactly.
 - **Chest cream:** the throat band broadens over the chest to the front of the foreleg shoulders (about 0.33–0.37 either side of the midline) and merges with the belly.
 - **Finger bones:** three per finger (metacarpal, two phalanges), meeting at the knuckles. The skin, claw and membrane follow the bone under each segment. The fold turns each finger's bones together, so the knuckles stay coherent from spread to folded.
+
+## Head and neck junction
+
+**On the side sheet:** the neck's dark top runs up under the back of the skull, and the orange side of the neck wraps up under the ear and round behind the jaw.
+- **Before:** the head read as a separate piece plugged onto the neck. The head's back ends at half-width 0.21–0.23 and its jaw corners stood out of a neck only 0.195 wide.
+
+**The fix:**
+- **Width:** the neck at the head is as wide as the skull's back (width factor 1.02 at s 0, easing back by s 0.5).
+- **New body pieces, carried by the head bone,** so the neck blends into them and stays closed as the head moves:
+  - the jaw muscle (masseter and temporalis), from under the ear frill to the jaw's corner;
+  - the ear frill's fleshy base, under the horn;
+  - the occiput under the roof's last band.
+- **Articulation:** the viewer's pose takes `head: [pitch, yaw]`, spread evenly down the four neck bones and the head. Up, down, left and right all keep the junction closed.

@@ -141,7 +141,7 @@
     function resize() { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
     resize();
     const Q = new THREE.Quaternion(), X = new THREE.Vector3(1, 0, 0);
-    function setPose(jawOpen, tongue, lids, morphs, wings) {
+    function setPose(jawOpen, tongue, lids, morphs, wings, headTurn) {
       // rotations about the model's x axis, converted into each bone's frame
       for (const n in bones) bones[n].quaternion.copy(bind[n]);
       const w = wings === undefined ? 1 : Math.max(0, Math.min(1, wings));
@@ -152,6 +152,18 @@
         b.quaternion.premultiply(Q.setFromAxisAngle(axis, ang));
       };
       gltf.scene.updateMatrixWorld(true);
+      // head turn: [pitch, yaw] in radians (pitch about the model's x, yaw about its y), spread evenly down the
+      // neck and the head as a neck bends
+      if (headTurn) {
+        const chain = ["neck1", "neck2", "neck3", "neck4", "head"].filter(n => bones[n]);
+        const Y = new THREE.Vector3(0, 1, 0);
+        for (const n of chain) {
+          const b = bones[n]; const wq = new THREE.Quaternion(); b.parent.getWorldQuaternion(wq); const inv = wq.clone().invert();
+          b.quaternion.premultiply(Q.setFromAxisAngle(X.clone().applyQuaternion(inv).normalize(), (headTurn[0] || 0) / chain.length));
+          b.quaternion.premultiply(Q.setFromAxisAngle(Y.clone().applyQuaternion(inv).normalize(), (headTurn[1] || 0) / chain.length));
+          gltf.scene.updateMatrixWorld(true);
+        }
+      }
       apply("jaw", jawOpen);
       gltf.scene.updateMatrixWorld(true);
       apply("tongue1", -tongue * 0.3); gltf.scene.updateMatrixWorld(true);
@@ -176,11 +188,12 @@
       for (const name in dict) sk.morphTargetInfluences[dict[name]] = m[name] || 0;
     }
     return {
-      // pose: {jaw, tongue, lids: [upperIn, upperOut, lower], morphs: {action: weight}, wings: 0 spread .. 1 folded (the default)}
+      // pose: {jaw, tongue, lids: [upperIn, upperOut, lower], morphs: {action: weight}, wings: 0 spread .. 1 folded (the default),
+      // head: [pitch, yaw] turned down the neck}
       // (see head_design.json "expressions")
       shot(cam, target, pose, fov) {
         pose = pose || {};
-        setPose(pose.jaw || 0, pose.tongue || 0, pose.lids, pose.morphs, pose.wings);
+        setPose(pose.jaw || 0, pose.tongue || 0, pose.lids, pose.morphs, pose.wings, pose.head);
         camera.fov = fov || 30; camera.updateProjectionMatrix();
         camera.position.set(...cam); camera.lookAt(...target);
         renderer.render(scene, camera);
