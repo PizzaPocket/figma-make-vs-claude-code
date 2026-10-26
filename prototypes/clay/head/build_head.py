@@ -71,12 +71,12 @@ def jaw_from_bones(LJ):
       from the chin back to the mouth corner; behind the corner the coronoid line carries the jaw's top edge up
       inside the cheek to the hinge;
     - the underside is one smooth curve through the symphysis (the chin's front), the chin's lowest point and the
-      throat notch; behind it the jaw's deep back lies inside the throat, so its visible edge is the cheek line;
+      throat junction, rising on behind it inside the throat to the ear;
     - the half-width runs smoothly through the width of each landmark;
     - the chin rounds off over its last round_len, in side view and from above (a U)."""
     from scipy.interpolate import PchipInterpolator
     B = LJ["bones"]
-    sy, ch, tn, cor = B["symphysis"], B["chin"], B["throat_notch"], B["coronoid_line"]
+    sy, ch, tn, cor = B["symphysis"], B["chin"], B["throat_junction"], B["coronoid_line"]
     ra = B["retroarticular"]
     zt = sy["z"]
     bot_pts = [(zt, sy["bottom"]), (ch["z"], ch["bottom"]), (tn["z"], tn["bottom"])] + [tuple(p) for p in ra["bottom"]]

@@ -858,7 +858,8 @@
           "rig": {
             "jaw": 1.0
           },
-          "zone": null
+          "zone": null,
+          "zcut": 1.72
         }
       ],
       "k": 0.05,
@@ -867,10 +868,11 @@
       "cheek_line": {
         "why": "The cheek's back edge, traced on the side sheet (ref px -> model): the jaw's back edge from just under the throat notch back and up (z 1.60, y 1.38 -> 1.44, 1.46), up into the ear opening (1.414, 1.656), then the heavy S line behind the cheek (px 215,262 -> 195,248 -> 190,232 -> 200,222) up to the ear's base and on under the horn. The face's pebbles end and the neck's scales begin on it; the form runs on across it.",
         "zy": [
-          [1.62, 1.2],
-          [1.6, 1.38],
-          [1.55, 1.41],
-          [1.49, 1.43],
+          [1.7, 1.2],
+          [1.62, 1.29],
+          [1.58, 1.335],
+          [1.54, 1.375],
+          [1.49, 1.415],
           [1.44, 1.46],
           [1.414, 1.656],
           [1.472, 1.7],
@@ -880,14 +882,16 @@
           [1.44, 2.0]
         ],
         "blend": [0.0, 0.006],
-        "blend_note": "the inset ramps in over blend (in front of the line)"
+        "blend_note": "the inset ramps in over blend (in front of the line)",
+        "lower_leg_note": "The line's lower leg runs diagonally along the jaw's underside (just inside it) from under the chin's back to the ear opening, instead of dropping vertically at the throat notch (z 1.60-1.62): trimmed on a vertical, the jaw ended in a cut with the throat skin a step higher behind it (user: a drastic stair step). The throat skin now wraps the jaw's underside from the line back, carrying the jaw's own shape."
       },
       "rise": 60.0,
       "clip_k": 0.008,
       "handover": [-0.08, -0.01],
       "shell_taper": 0.13,
       "rise_note": "behind the line the skin may stand out from the head's surface by rise * (distance behind)^2, joined with a smooth maximum of radius clip_k (a hard cut leaves a kink the mesh steps on)",
-      "handover_note": "skin weights: the head's and jaw's from the line forward, the neck's from handover[0] behind it"
+      "handover_note": "skin weights: the head's and jaw's from the line forward, the neck's from handover[0] behind it",
+      "zcut_note": "The face's and jaw's own sections join the skin's field from the back of the head forward to zcut: the face to 1.56, the jaw to 1.72, ahead of the cheek line's lowest point (1.70), so the throat skin behind the line has the jaw's shape all along its underside. Taken to 1.72 the face's end left a seam across the cheek."
     },
     "ear_clearance": {
       "flush_within": 0.006,

@@ -2966,5 +2966,72 @@
    "pose": "neutral",
    "clay": true
   }
+ ],
+ "jawprofile": [
+  {
+   "label": "head and throat, true side, plain clay",
+   "cam": [
+    12,
+    1.45,
+    1.6
+   ],
+   "target": [
+    0,
+    1.45,
+    1.6
+   ],
+   "fov": 3.6,
+   "pose": "neutral",
+   "clay": true
+  },
+  {
+   "label": "head and throat, true side",
+   "cam": [
+    12,
+    1.45,
+    1.6
+   ],
+   "target": [
+    0,
+    1.45,
+    1.6
+   ],
+   "fov": 3.6,
+   "pose": "neutral"
+  },
+  {
+   "label": "mouth open, true side, plain clay",
+   "cam": [
+    12,
+    1.45,
+    1.6
+   ],
+   "target": [
+    0,
+    1.45,
+    1.6
+   ],
+   "fov": 3.6,
+   "pose": {
+    "jaw": 0.45
+   },
+   "clay": true
+  },
+  {
+   "label": "head, front, plain clay",
+   "cam": [
+    0,
+    1.4,
+    6
+   ],
+   "target": [
+    0,
+    1.4,
+    1.7
+   ],
+   "fov": 6,
+   "pose": "neutral",
+   "clay": true
+  }
  ]
 }

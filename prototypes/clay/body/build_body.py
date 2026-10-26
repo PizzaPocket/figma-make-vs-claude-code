@@ -273,9 +273,10 @@ def head_weld():
     out = []
     for sp in HW["parts"]:
         rows, contour = (H.UPPER, H.upper_contour) if sp["mesh"] == "Face" else (H.JAW, H.jaw_contour)
-        zs = np.linspace(rows[-1, 0], HW["zcut"] + 0.03, 40)
+        zc = sp.get("zcut", HW["zcut"])  # the jaw reaches further forward (its underside meets the throat there)
+        zs = np.linspace(rows[-1, 0], zc + 0.03, 40)
         secs = [(z, contour(z)[0]) for z in zs]
-        out.append(SK.SectionPiece(sp["mesh"], secs, sp["rig"], sp["zone"], HW["k"], HW["inset"], HW["zcut"], inset_at=inset_at))
+        out.append(SK.SectionPiece(sp["mesh"], secs, sp["rig"], sp["zone"], HW["k"], HW["inset"], zc, inset_at=inset_at))
     return out
 
 

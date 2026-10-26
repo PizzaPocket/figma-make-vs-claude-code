@@ -373,3 +373,9 @@ The tooth rows run the whole jaw. The upper row sits 0.01 outside the lower, nev
 ### Teeth: fewer and stouter
 Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout cones show per side of each jaw, with gaps between them. The model had nine or ten small spikes per side, a saw blade. Now upper 7 per side (0.042–0.064 long) and lower 6 (0.03–0.046).
 - **Lower jaw, heavier:** the covers draw the cream jaw's depth at the front at about 0.45 of the upper jaw's height, with a squared chin. The chin's lowest point goes from 1.213 to 1.188 and the symphysis from 1.262 to 1.232 (`lower_jaw.bones`).
+
+### Walkthrough fixes: lip line and jaw profile
+- **Bowl and Nike-check front (user):** the upper lip's edge rose 0.045 over the snout's last 0.1, and the jaw followed it up. The lip line is now nearly straight: level at the front (1.268–1.277), rising gently back to the mouth corner. That also brings the front of the muzzle further down the face.
+- **Stair step (user):** the visible jaw's underside ended at y 1.285 at the throat notch, where its hidden back followed the weld's cheek line from 1.385, a jump of 0.1. It is now one smooth line: symphysis 1.212, chin 1.188 at z 1.89, the throat junction at 1.345 (z 1.58), rising on inside the throat to the ear (`lower_jaw.bones.throat_junction`, `retroarticular`).
+- **Weld:** the cheek line's lower leg now runs diagonally along the jaw's underside instead of dropping vertically at z 1.60–1.62, and the jaw's own sections join the skin's field forward to z 1.72 (body `head_weld.parts[].zcut`). The throat skin wraps the jaw's underside with the jaw's own shape, with no cut.
+- **Front face:** the orange front below the shield bulges 0.03 forward at mid-height (`front.convex_side`).
