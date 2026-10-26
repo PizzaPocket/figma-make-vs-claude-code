@@ -882,9 +882,10 @@ def band_zs(z_front, z_back, base_n):
 
 
 # ---------------------------------------------------------------- general pieces
-def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None):
+def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None, inner_dip=None):
     """Rings of the contour along z, closed across the open side (palate / mouth floor)
-    and capped at both ends. Returns verts, quads, and per-vertex (along, around) coords."""
+    and capped at both ends. Returns verts, quads, and per-vertex (along, around) coords. inner_dip(z), if given,
+    bows the closing surface: up into an arched palate (positive) or down into a trough for the tongue (negative)."""
     verts, faces, uv = [], [], []
     rings = []
     for k, z in enumerate(zs):
@@ -897,7 +898,8 @@ def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None):
         for j in range(1, 6):
             t = j / 6
             x = pts[-1][0] + (pts[0][0] - pts[-1][0]) * t
-            inner.append(len(verts)); verts.append((x, edge_y(x) if callable(edge_y) else edge_y, z)); uv.append((z, -1.0))
+            y = (edge_y(x) if callable(edge_y) else edge_y) + (inner_dip(z) * math.sin(math.pi * t) if inner_dip else 0.0)
+            inner.append(len(verts)); verts.append((x, y, z)); uv.append((z, -1.0))
         rings.append(ring + inner)
     M = len(rings[0])
     for k in range(len(rings) - 1):
@@ -1110,7 +1112,9 @@ def head_parts():
     # face: the orange mass, dense rings near the nose where the shape changes fastest
     z0, z1 = UPPER[0, 0], UPPER[-1, 0]
     zs = np.concatenate([np.linspace(z0, 1.86, 20), np.linspace(1.85, z1, 120)])
-    v, f, uv = loft(upper_contour, zs, front_dent=front_setback)
+    MO = D["mouth"]
+    inside = lambda z: smoothstep(MO["inside_from"][1], MO["inside_from"][0], z) * smoothstep(MO["hinge_z"], MO["hinge_z"] + 0.06, z)
+    v, f, uv = loft(upper_contour, zs, front_dent=front_setback, inner_dip=lambda z: MO["palate_arch"] * inside(z))
     hf = []
     for (x, y, z), (_, w) in zip(v, uv):
         low, top = interp(UPPER, z, 2), interp(UPPER, z, 1)
@@ -1145,10 +1149,44 @@ def head_parts():
 
     # lower jaw skin
     zj = np.concatenate([np.linspace(JAW[0, 0], 1.80, 10), np.linspace(1.79, JAW[-1, 0], 24)])
-    v, f, uv = loft(jaw_contour, zj)
+    v, f, uv = loft(jaw_contour, zj, inner_dip=lambda z: -MO["floor_trough"] * inside(z))
     part = [2.0 if u[1] >= 0 else 3.0 for u in uv]
     objs.append(add_part("Jaw", v, f, {"_PART": part, "_A": [u[0] for u in uv], "_B": [u[1] for u in uv], "_ZONE": [0] * len(v)},
                          [[("jaw", 1.0)]] * len(v)))
+
+    # cheek skin at each corner of the mouth: a web from the upper lip's edge to the lower jaw's edge, from near the
+    # hinge forward to the mouth corner, its front edge bowed forward into a rounded corner. Its upper edge rides the
+    # head and its lower edge the jaw, so it lies folded inside the cheek when the mouth is shut and stretches into the
+    # back of the gape as the jaw drops, instead of the gape opening as a slot all the way back to the hinge. Two
+    # layers: cheek skin outside (orange above, cream below like the jaw), the mouth's lining inside
+    NU, NV = 22, 12
+    for sgn in (1, -1):
+        vs, fs, ws, ps, As, Bs, bulge = [], [], [], [], [], [], []
+        for layer in (0, 1):
+            b0 = len(vs)
+            for i in range(NU + 1):
+                for j in range(NV + 1):
+                    u, w = i / NU, j / NV
+                    z = MO["web_back_z"] + (MO["corner_z"] + MO["corner_round"] * math.sin(math.pi * w) - MO["web_back_z"]) * u
+                    up = upper_contour(z)[0]; lo = jaw_contour(z)[0]
+                    U = np.array([*(up[0] if sgn > 0 else up[-1]), z]); Lp = np.array([*(lo[0] if sgn > 0 else lo[-1]), z])
+                    P = U + (Lp - U) * w
+                    P[0] -= sgn * (0.0 if layer == 0 else MO["web_thickness"])  # the lining a little inside the skin
+                    vs.append(tuple(P)); ws.append([("head", 1 - w), ("jaw", w)])
+                    # outside: orange along the upper lip, cream jowl below it (the cover); inside: the mouth's lining
+                    ps.append((1.0 if w < MO["web_orange_to"] else 2.0) if layer == 0 else 3.0); As.append(u); Bs.append(w)
+                    # the jaw's opening fills the cheek out: a corrective shape (jawOpen, driven by the jaw's angle) bowing
+                    # the stretched skin outward, most in the middle of the span and toward the corner
+                    bulge.append((sgn * MO["cheek_bulge"] * math.sin(math.pi * w) * smoothstep(0.0, 0.5, u), 0.0, 0.0))
+            for i in range(NU):
+                for j in range(NV):
+                    q = [b0 + i * (NV + 1) + j, b0 + (i + 1) * (NV + 1) + j, b0 + (i + 1) * (NV + 1) + j + 1, b0 + i * (NV + 1) + j + 1]
+                    fs.append(q if (sgn > 0) == (layer == 0) else q[::-1])
+        web = add_part("CheekWeb" + ("L" if sgn > 0 else "R"), vs, fs, {"_PART": ps, "_A": As, "_B": Bs, "_ZONE": [0] * len(vs)}, ws)
+        web.shape_key_add(name="Basis", from_mix=False)
+        web.shape_key_add(name="jawOpen", from_mix=False).data.foreach_set(
+            "co", to_blender(np.array(vs) + np.array(bulge)).astype(np.float32).ravel())
+        objs.append(web)
 
     # teeth: small flat triangular blades, evenly spaced along each lip edge, each pointing perpendicular to the
     # lip line with its tip raked a little back toward the throat (flight render, limited edition). The lower

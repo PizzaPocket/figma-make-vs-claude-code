@@ -112,7 +112,7 @@
             float pe = 1.0 - smoothstep(0.02, 0.06, cellEdge(vObj * 20.0));
             col = mix(cream, line, pe * 0.14); groove = pe * 0.35;
           }
-          if (isP(3.0) > 0.5) { col = srgb(vec3(120.0, 40.0, 45.0)); rough = 0.4; }
+          if (isP(3.0) > 0.5) { col = srgb(vec3(92.0, 26.0, 32.0)); rough = 0.4; } // the mouth's lining: dark red, a cavity (Dragonet Prophecy cover)
           if (isP(4.0) > 0.5) { col = srgb(vec3(245.0, 238.0, 220.0)); rough = 0.25; }
           if (isP(5.0) > 0.5) { col = srgb(vec3(170.0, 70.0, 75.0)); rough = 0.35; }
           if (isP(6.0) > 0.5) { // eyeball: _a is the angle from the gaze direction (0..1 over 180 degrees)
@@ -212,7 +212,7 @@
       }
       // face: muscle actions as morph targets
       const dict = sk.morphTargetDictionary || {};
-      const m = Object.assign({ wingfold: w }, morphs || {});
+      const m = Object.assign({ wingfold: w, jawOpen: Math.max(0, Math.min(1, jawOpen / 0.6)) }, morphs || {}); // the cheek skin fills out as the jaw drops
       // blink: in-between shapes blink1..blinkN along the lids' arc; a weight w blends the two steps either side of it
       const nb = Object.keys(dict).filter(k => /^blink\d+$/.test(k)).length;
       if (nb && m.blink !== undefined) {

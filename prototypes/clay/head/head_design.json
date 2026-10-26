@@ -85,7 +85,8 @@
       [1.392, 1.64, 1.58, 0.222]
     ],
     "hinge": [0.0, 1.52, 1.47],
-    "squareness": 3.6
+    "squareness": 2.4,
+    "squareness_note": "a rounded U in section, as the cover shows from below with the mouth open; at 3.6 it was a box, and read as a flat plank when the jaw dropped"
   },
   "dark_plate_edge": {
     "note": "The roof's lower edge, traced on the side sheet's colour boundary (dark roof over orange face) and checked against How to Draw and the flight render, which agree on its shape: the roof covers the whole nose, down to the lip at the front; from the nose the edge rises only gently for the front third of the muzzle, then turns sharply up in a near-vertical step at about mid-muzzle, climbs steeply and diagonally to the front of the eye, runs over the top of the eye (the eye tucked right under it), steps up again behind the eye and runs back toward the ear. The rim plates (edge row) follow this line.",
@@ -615,5 +616,20 @@
       "half_span": 0.07,
       "length": 0.022
     }
+  },
+  "mouth": {
+    "why": "The mouth opens by stretching skin, not as two rigid pieces parting (user; Dragonet Prophecy cover). The cover's open mouth is a deep cavity, its floor a trough for the tongue under an arched palate, and the gape ends in a rounded corner of cheek skin under the eye. The lips stay joined from the corner back to the hinge, where the jaw's bone runs on inside the cheek.",
+    "corner_z": 1.59,
+    "corner_note": "the mouth corner on the side sheet: where the upper lip line turns sharply up (upper_head note)",
+    "corner_round": 0.035,
+    "web_back_z": 1.47,
+    "web_thickness": 0.004,
+    "hinge_z": 1.47,
+    "inside_from": [1.84, 1.8],
+    "palate_arch": 0.035,
+    "floor_trough": 0.03,
+    "web_orange_to": 0.2,
+    "cheek_bulge": 0.035,
+    "cheek_bulge_note": "the outward bow of the cheek skin at the jaw's full opening (jaw 0.6 rad), as a corrective shape the jaw drives (jawOpen = jaw / 0.6)"
   }
 }

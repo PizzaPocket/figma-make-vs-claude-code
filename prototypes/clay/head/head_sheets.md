@@ -257,3 +257,22 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 - **Body:** behind the hollow the ear is a solid body (`body` 0.06 at the root, thinning to the tip) that runs back into the head, so there is no gap behind it from any side.
 - **Paint:** the back is the head's dark skin round its root.
 - **Tip:** it lies closer along the neck (x 0.24).
+
+## Open mouth: stretching skin, not two rigid pieces (user)
+
+**Faults:**
+- **Rigid gape:** when the jaw dropped, face and jaw parted as rigid pieces, so the gape ran back as a slot toward the hinge.
+- **Narrow strut:** behind the last teeth the jaw's top edge climbs steeply (it hides in the cheek when shut), leaving a thin strut there.
+- **Flat inside:** the mouth's floor and palate were flat closing faces, and the jaw's box section (squareness 3.6) read as a plank.
+
+**Dragonet Prophecy cover:** the open mouth is a deep, dark cavity, and the gape ends in a rounded corner of cream cheek skin under the eye.
+
+**Built (`mouth` in head_design.json):**
+- **Cheek web:** at each corner, a web of skin from the upper lip's edge to the lower jaw's edge, from the hinge (z 1.47) to the mouth corner (z 1.59), its front edge bowed forward into a rounded corner. Its upper edge rides the head and its lower edge the jaw, so it lies folded in the cheek when shut and stretches across the back of the gape when open.
+  - **Two layers:** cheek skin outside (orange along the lip, cream below) and the mouth's lining inside.
+  - **Corrective shape:** the jaw's angle drives `jawOpen` (jaw / 0.6), which bows the stretched skin outward (0.035 at full opening), so the cheek fills out instead of stretching flat. The viewer sets it from the jaw.
+- **Palate and floor:** the palate arches up 0.035 and the floor dips 0.03 into a trough for the tongue (`inner_dip` on the lofts).
+- **Jaw section:** a rounder U (squareness 2.4).
+- **Lining:** darker red.
+
+**Still differs from the cover:** the lower jaw looks shallower under the teeth than on the cover. Its depth is measured on the closed side sheet (about 0.11, a third of the upper jaw's), while the cover's three-quarter view from below shows it deeper.

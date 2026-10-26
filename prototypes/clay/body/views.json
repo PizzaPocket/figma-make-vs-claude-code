@@ -2714,100 +2714,208 @@
  ],
  "mouth": [
   {
-   "label": "mouth open, side",
+   "label": "cover pose, mouth open",
    "cam": [
-    1.6,
-    1.55,
-    1.65
+    -1.9,
+    1.5,
+    2.2
    ],
    "target": [
-    0.0,
-    1.5,
-    1.6
-   ],
-   "fov": 24,
-   "pose": {
-    "jaw": 0.35
-   }
-  },
-  {
-   "label": "mouth open, side, plain clay",
-   "cam": [
+    0,
     1.6,
-    1.55,
-    1.65
+    1.15
    ],
-   "target": [
-    0.0,
-    1.5,
-    1.6
-   ],
-   "fov": 24,
+   "fov": 30,
    "pose": {
-    "jaw": 0.35
-   },
-   "clay": true
-  },
-  {
-   "label": "mouth open, three-quarter front",
-   "cam": [
-    -1.0,
-    1.6,
-    2.9
-   ],
-   "target": [
-    0.0,
-    1.5,
-    1.6
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 0.35,
     "head": [
-     -0.4,
+     -0.55,
      0.2
-    ]
+    ],
+    "jaw": 0.3
    }
   },
   {
-   "label": "mouth open, front, plain clay",
+   "label": "cover pose, mouth open, plain clay",
    "cam": [
-    0.0,
-    1.55,
-    3.0
+    -1.9,
+    1.5,
+    2.2
    ],
    "target": [
-    0.0,
-    1.5,
-    1.6
+    0,
+    1.6,
+    1.15
    ],
-   "fov": 24,
+   "fov": 30,
    "pose": {
-    "jaw": 0.35
-   },
-   "clay": true
-  },
-  {
-   "label": "mouth open, from below, plain clay",
-   "cam": [
-    0.9,
-    0.6,
-    2.4
-   ],
-   "target": [
-    0.0,
-    1.5,
-    1.6
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 0.35
+    "head": [
+     -0.55,
+     0.2
+    ],
+    "jaw": 0.3
    },
    "clay": true
   },
   {
    "label": "Dragonet Prophecy cover (official)",
    "ref": "{refs}/study/tdple_head.jpg"
+  },
+  {
+   "label": "mouth open, side",
+   "cam": [
+    2.4,
+    1.6,
+    1.6
+   ],
+   "target": [
+    0,
+    1.5,
+    1.6
+   ],
+   "fov": 22,
+   "pose": {
+    "jaw": 0.3
+   }
+  },
+  {
+   "label": "mouth open, side, plain clay",
+   "cam": [
+    2.4,
+    1.6,
+    1.6
+   ],
+   "target": [
+    0,
+    1.5,
+    1.6
+   ],
+   "fov": 22,
+   "pose": {
+    "jaw": 0.3
+   },
+   "clay": true
+  },
+  {
+   "label": "mouth open, front three-quarter low, plain clay",
+   "cam": [
+    1.2,
+    1.2,
+    2.8
+   ],
+   "target": [
+    0,
+    1.45,
+    1.6
+   ],
+   "fov": 24,
+   "pose": {
+    "jaw": 0.3
+   },
+   "clay": true
+  }
+ ],
+ "mouthzoom": [
+  {
+   "label": "cover pose, mouth, close",
+   "cam": [
+    -1.3,
+    1.45,
+    2.6
+   ],
+   "target": [
+    -0.05,
+    1.62,
+    1.62
+   ],
+   "fov": 16,
+   "pose": {
+    "head": [
+     -0.55,
+     0.2
+    ],
+    "jaw": 0.3
+   }
+  },
+  {
+   "label": "same, plain clay",
+   "cam": [
+    -1.3,
+    1.45,
+    2.6
+   ],
+   "target": [
+    -0.05,
+    1.62,
+    1.62
+   ],
+   "fov": 16,
+   "pose": {
+    "head": [
+     -0.55,
+     0.2
+    ],
+    "jaw": 0.3
+   },
+   "clay": true
+  },
+  {
+   "label": "cover (official), mouth",
+   "ref": "{refs}/study/le_head.jpg"
+  }
+ ],
+ "corner": [
+  {
+   "label": "mouth corner, open, side",
+   "cam": [
+    -1.3,
+    1.45,
+    1.6
+   ],
+   "target": [
+    -0.2,
+    1.45,
+    1.6
+   ],
+   "fov": 14,
+   "pose": {
+    "jaw": 0.3
+   }
+  },
+  {
+   "label": "mouth corner, open, side, plain clay",
+   "cam": [
+    -1.3,
+    1.45,
+    1.6
+   ],
+   "target": [
+    -0.2,
+    1.45,
+    1.6
+   ],
+   "fov": 14,
+   "pose": {
+    "jaw": 0.3
+   },
+   "clay": true
+  },
+  {
+   "label": "mouth corner, open, from front-below, plain clay",
+   "cam": [
+    -0.9,
+    1.0,
+    2.4
+   ],
+   "target": [
+    -0.15,
+    1.45,
+    1.6
+   ],
+   "fov": 16,
+   "pose": {
+    "jaw": 0.3
+   },
+   "clay": true
   }
  ]
 }
