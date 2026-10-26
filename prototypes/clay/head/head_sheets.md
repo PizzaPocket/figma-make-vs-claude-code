@@ -309,3 +309,14 @@ The ear is no longer a solid wedge. It is a thin flap of skin (0.008) growing fr
 
 ### Upper mouth: cheek flesh draped over the teeth (lip_tuck)
 The user saw the upper mouth as puffed out. Measured on the build, the upper lip's edge stood 0.04–0.055 outside the lower jaw on each side along the whole mouth, a shelf overhanging the bite. In the references the cheek lies over the teeth: the upper teeth sit just outside the lower ones, with the lip skin over them. So the lip edge now comes in to 0.012 outside the lower jaw. The cheek curves in to it near the lip only (power 2.5), and the tuck fades out at the mouth corner (z 1.58–1.63) and in front of the bite (z 1.84–1.88). The upper teeth follow the tucked edge (inset 0.012), and they now also follow the muzzle taper, which they previously ignored.
+
+### Nose after a great cat; roof plates as ankylosaur osteoderms
+**Nose.** The old nose read as a hollow frame: an extruded shield with a flat front, a thin rim and deep triangular nostril cuts. It is now a cat's nose leather (rhinarium) at the end of the nasal bones:
+- a rounded-shield section, 0.135 wide and 0.068 tall, that swells from 0.72 to full size as it comes out of the roof;
+- a low domed front (0.014);
+- comma nostrils, laid onto the surface from a measured centreline, opening at the lower outer corners and curling up and back along the sides;
+- a shallow philtrum groove down the middle of its lower part.
+
+It sits 0.01 further forward (front top at z 2.016, so the dome's front is at 2.03, matching the side sheet's tip at 2.02–2.03). That keeps its lower half proud of the snout's dark front plate; buried, the nostrils hid.
+
+**Roof plates.** Each roof plate is now a low dome (0.004 higher in its middle), like an ankylosaur's skull osteoderms, so the ridge reads as bony scutes, not flat tiles.

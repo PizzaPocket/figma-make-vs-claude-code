@@ -542,31 +542,38 @@
     "front_plate": {
       "note": "A plate over the flat front face of the box muzzle, from the top edge down to the eave, above the orange lip band that wraps round the front."
     },
-    "chamfer": 0.003
+    "chamfer": 0.003,
+    "dome": 0.004,
+    "dome_note": "After an ankylosaur's skull armour (user: the snout's upper ridge): each plate is an osteoderm, a low dome 0.004 higher in its middle than at its chamfered edges, so the roof reads as bony scutes, not flat tiles."
   },
   "nose": {
-    "note": "The nose is one extruded mass, its section like the border of the Superman shield: a flat top with square corners, short sides falling straight down, then two lower edges converging to a point. It comes out of the front of the roof, which slopes down to the front of the upper jaw, its axis level so its front face aims straight forward; organically softened: rounded corners, softly convex faces and a rounded rim round the front face; its back is buried in the snout. Side sheet: its top front corner is the nose tip, about (2.02-2.03, 1.443). The nostrils are slits in its two lower faces (the undersides), near the front.",
-    "front_top_zy": [2.006, 1.468],
+    "note": "After a great cat's nose (user): the nose leather at the end of the nasal bones, a soft pad coming out of the roof's front and pitched down with it. Section a rounded shield (broad top, sides converging to a soft point at the philtrum), swelling from 0.72 of its size where it emerges to full size 0.04 from the front; the front a low dome (0.018), not a flat face with a rim (the earlier block read as a hollow frame). Comma nostrils at the lower outer corners and a philtrum groove. Side sheet: its top front corner is the nose tip, about (2.02-2.03, 1.443).",
+    "front_top_zy": [2.016, 1.464],
     "width": 0.135,
-    "height": 0.052,
-    "side_drop": 0.016,
-    "corner_radius": 0.012,
+    "height": 0.068,
+    "side_drop": 0.02,
+    "corner_radius": 0.016,
     "pitch_deg": -43,
     "length": 0.07,
     "nostril": {
-      "note": "t: distance along the nose's axis from the front face (negative = back); across: position across each lower face (0 = keel, 1 = outer edge); half_width in those units",
-      "t_front": -0.004,
-      "t_back": -0.03,
-      "across": 0.62,
-      "half_width": [0.16, 0.05],
-      "depth": 0.009
+      "note": "Comma-shaped, as on a great cat's nose leather (cover, limited edition: dark slits at the nose's lower outer corners): path is the slit's centreline in coordinates from the front's top-middle (x across, y up, z forward), laid onto the surface; it starts wide on the dome's lower front and curls out, up and back along the side, narrowing to a fine slit.",
+      "path": [[0.03, -0.038, 0.01], [0.045, -0.031, 0.005], [0.056, -0.02, -0.004], [0.061, -0.009, -0.016]],
+      "half_width": [0.006, 0.0022],
+      "depth": 0.008
     },
     "pitch_note": "its axis follows the roof's top at the front, falling 43 degrees toward the tip (side sheet: from (1.95, 1.517) to the tip (2.012, 1.459)), so its top surface is the roof's top surface carried on: it emerges from it smoothly (its back dips under the roof) and juts out at the tip.",
-    "bulge": 0.06,
-    "front_round": 0.01,
+    "bulge": 0.08,
     "emerge": 0.01,
     "sink": 0.04,
-    "size_note": "side sheet front outline: the tip juts furthest at y 1.44 (z 2.019); just under it a notch at y 1.414 (z 1.98) where the nose's underside meets the front of the upper jaw, which carries on down to the lip at z 2.0-2.01"
+    "size_note": "side sheet front outline: the tip juts furthest at y 1.44 (z 2.019); just under it a notch at y 1.414 (z 1.98) where the nose's underside meets the front of the upper jaw, which carries on down to the lip at z 2.0-2.01",
+    "dome": 0.014,
+    "swell": [0.72, 0.04],
+    "philtrum": {
+      "half_width": 0.006,
+      "from_y": -0.028,
+      "depth": 0.003,
+      "note": "the cat's philtrum: a shallow groove down the middle of the nose leather's lower part, toward the lip"
+    }
   },
   "teeth": {
     "lip_note": "The upper lip hangs down over the upper teeth: in most images only the lower teeth show, rising plainly from the lower jaw, and the upper teeth show mainly with the mouth open. So the upper teeth grow from the roof of the mouth, inward (inset 0.03) and up (tuck_up 0.02) behind the lip, the front row set back too (the user's reading).",

@@ -315,66 +315,79 @@ def shield(W, H, drop, r, n=16, bulge=0.0):
 
 
 def nose_part():
-    """The nose: one extruded mass emerging out of the roof, pitched upward, its section like the border of the
-    Superman shield (flat top, short upright sides, lower edges converging to a point). It juts forward out of
-    the snout's front above the front lip, with a flat upright front face; its back sinks into the roof. The nostrils
-    are slits cut into its two lower faces, near the front. _ZONE: nostril."""
+    """The nose, after a great cat's: the nose leather (rhinarium) at the end of the nasal bones, a soft pad
+    coming out of the roof's front, pitched down with the roof. Its section is a rounded shield (broad top,
+    sides converging to a soft point at the philtrum); it swells as it emerges and its front is a low dome, not a
+    flat face with a rim. Comma-shaped nostrils open at its lower outer corners, starting on the dome's front
+    and curling up and back along the sides under the alar fold; a philtrum groove runs down the middle of
+    its underside to the lip. _ZONE: nostril."""
     NS = D["nose"]
     sec, tag = shield(NS["width"], NS["height"], NS["side_drop"], NS["corner_radius"], bulge=NS.get("bulge", 0.0))
     p = math.radians(NS["pitch_deg"])
-    ax = np.array([0.0, math.sin(p), math.cos(p)])      # forward and up
+    ax = np.array([0.0, math.sin(p), math.cos(p)])      # forward and down, along the roof
     up = np.array([0.0, math.cos(p), -math.sin(p)])     # the section's v direction
-    front = np.array([0.0, NS["front_top_zy"][1], NS["front_top_zy"][0]])  # middle of the front face's top edge
-    N = NS["nostril"]
-    # the front face is upright (a plane of constant z through the top edge), so the whole shield shows from the
-    # front, its point below jutting as far forward as its top; each section point runs back from there
-    t_end = lambda v: -(up[2] * v) / ax[2]
-    back = np.concatenate([np.linspace(NS["length"], 0.07, 12), np.linspace(0.068, 0.0, 40)])  # distance back from the front face
-    rings, A, NW = [], [], []
+    front = np.array([0.0, NS["front_top_zy"][1], NS["front_top_zy"][0]])  # middle of the front's top edge
+    t_end = lambda v: -(up[2] * v) / ax[2]  # the front's base is upright (constant z)
+    S = np.array(sec)
+    cv = np.array([0.0, float(np.mean(S[:, 1]))])  # the section's middle
+    back = np.concatenate([np.linspace(NS["length"], 0.07, 12), np.linspace(0.068, 0.0, 40)])
+    rings = []
     for db in back:
-        ring, a_r, n_r = [], [], []
-        for (x, v), tg in zip(sec, tag):
-            t = -db
-            sink = NS.get("sink", 0.0) * smoothstep(NS.get("emerge", 0.0), NS["length"], db)  # the back dips under the roof's surface
-            pt = front + ax * (t_end(v) + t) + up * (v - sink) + np.array([x, 0, 0])
-            nw = 0.0
-            if tg == 2:  # a nostril on each lower face: a slit along the axis, wide at the front end
-                s = (t - N["t_front"]) / (N["t_back"] - N["t_front"])
-                across = (abs(x) / (NS["width"] / 2)) - N["across"]
-                if -0.2 < s < 1.2:
-                    w = N["half_width"][0] + (N["half_width"][1] - N["half_width"][0]) * min(1.0, max(0.0, s))
-                    ends = smoothstep(-0.15, 0.05, s) * (1 - smoothstep(0.9, 1.1, s))
-                    g = smoothstep(0.0, 1.0, max(0.0, 1 - abs(across) / w)) * ends
-                    if g > 0:  # cut in toward the middle of the nose's section
-                        core = front + ax * (t_end(v) + t) - up * (NS["height"] * 0.45 + sink)
-                        pt = pt + norm(core - pt) * N["depth"] * g
-                        nw = smoothstep(0.35, 0.8, g)
-            ring.append(tuple(pt)); a_r.append(0.02); n_r.append(nw)
-        rings.append(ring); A.append(a_r); NW.append(n_r)
-    # the front face: its rim rounds over (a quarter round of radius front_round), then it is flat
-    last = np.array(rings[-1])
-    fwd = np.array([0.0, 0.0, 1.0])
-    S = np.array(sec); M2 = len(S)
-    n2 = np.array([norm(np.array([S[(i + 1) % M2][1] - S[i - 1][1], -(S[(i + 1) % M2][0] - S[i - 1][0])])) for i in range(M2)])  # outward, in the section
-    rf = NS.get("front_round", 0.004)
-    for a in np.radians([20, 40, 60, 75, 90]):
-        ring = [tuple(q - (np.array([n2[i][0], 0, 0]) + up * n2[i][1]) * rf * (1 - math.cos(a)) + fwd * rf * math.sin(a)) for i, q in enumerate(last)]
-        rings.append(ring); A.append([0.0] * len(last)); NW.append([0.0] * len(last))
-    verts, faces, AA, NN = [], [], [], []
-    M = len(rings[0])
-    for r, a_r, n_r in zip(rings, A, NW):
-        verts += r; AA += a_r; NN += n_r
+        sink = NS.get("sink", 0.0) * smoothstep(NS.get("emerge", 0.0), NS["length"], db)
+        sw = NS["swell"][0] + (1 - NS["swell"][0]) * (1 - smoothstep(0.0, NS["swell"][1], db))  # swells as it emerges
+        ring = []
+        for x, v in sec:
+            xs, vs_ = cv + (np.array([x, v]) - cv) * sw
+            ring.append(front + ax * (t_end(vs_) - db) + up * (vs_ - sink) + np.array([xs, 0, 0]))
+        rings.append(ring)
+    # the front: a low dome over the whole front (radius `dome`), its rim rounding over smoothly
+    last = [np.array(q) for q in rings[-1]]
+    c3 = front + ax * t_end(cv[1]) + up * cv[1]
+    R = NS["dome"]
+    for a in np.radians(np.linspace(10, 80, 8)):
+        k = 1 - math.cos(a)
+        rings.append([q + (c3 - q) * k + np.array([0, 0, 1.0]) * R * math.sin(a) for q in last])
+    V = np.array([q for r in rings for q in r]); M = len(rings[0])
+    # local coordinates from the front's top-middle: x across, y up, z forward
+    loc = V - front
+    NW = np.zeros(len(V))
+    N = NS["nostril"]
+    C = np.array(N["path"])  # comma centreline (x, y, z) local, from its front-inner end curling out, up and back
+    half = loc[loc[:, 0] >= 0]
+    C = np.array([half[np.argmin(np.linalg.norm(half - c, axis=1))] for c in C])  # laid onto the surface
+    core = c3 - np.array([0.0, 0.0, 0.03])
+    for i, (x, y, z) in enumerate(loc):
+        q = np.array([abs(x), y, z])
+        best, tb = 1e9, 0.0
+        for k in range(len(C) - 1):
+            a0, b0 = C[k], C[k + 1]; ab = b0 - a0
+            t = min(1.0, max(0.0, (q - a0) @ ab / (ab @ ab)))
+            d = np.linalg.norm(q - (a0 + ab * t))
+            if d < best:
+                best, tb = d, (k + t) / (len(C) - 1)
+        w = N["half_width"][0] + (N["half_width"][1] - N["half_width"][0]) * tb  # wide at the front, a fine slit at the back
+        g = smoothstep(0.0, 1.0, max(0.0, 1 - best / w)) * smoothstep(-0.05, 0.15, tb) * (1 - smoothstep(0.85, 1.05, tb))
+        if g > 0:
+            V[i] += norm(core - V[i]) * N["depth"] * g
+            NW[i] = smoothstep(0.3, 0.75, g)
+        # the philtrum: a shallow groove down the middle of the underside and front's lower part
+        PH = NS["philtrum"]
+        gp = math.exp(-(x / PH["half_width"]) ** 2) * smoothstep(PH["from_y"], PH["from_y"] - 0.012, y)
+        if gp > 1e-3:
+            V[i] += norm(core - V[i]) * PH["depth"] * gp
+    verts = [tuple(q) for q in V]; faces = []
     for i in range(len(rings) - 1):
         for j in range(M):
             k = (j + 1) % M
-            p0 = i * M + j; q0 = p0 + M
-            faces.append([p0, i * M + k, (i + 1) * M + k, q0])
-    for i in (0, len(rings) - 1):
-        cidx = len(verts); verts.append(tuple(np.mean(rings[i], 0))); AA.append(0.0); NN.append(0.0)
-        for j in range(M):
-            k = (j + 1) % M
-            faces.append([i * M + k, i * M + j, cidx] if i == 0 else [i * M + j, i * M + k, cidx])
-    return verts, faces, [0.02] * len(verts), [0.45] * len(verts), NN
+            faces.append([i * M + j, i * M + k, (i + 1) * M + k, (i + 1) * M + j])
+    cidx = len(verts); verts.append(tuple(np.mean(rings[0], 0))); NW = list(NW) + [0.0]
+    for j in range(M):
+        faces.append([(j + 1) % M, j, cidx])
+    tip = len(verts); verts.append(tuple(c3 + np.array([0, 0, R]))); NW.append(0.0)
+    base = (len(rings) - 1) * M
+    for j in range(M):
+        faces.append([base + j, base + (j + 1) % M, tip])
+    return verts, faces, [0.02] * len(verts), [0.45] * len(verts), NW
 
 
 def shell_loft(rings, attrs_per_ring):
@@ -571,7 +584,9 @@ def plate(s0, s1, d0, d1, nv, seed, wrap=False, thick=None, flare=0.0, step=0.00
             dist = min(1.0 if open_front else u * Ls, (1 - u) * Ls, acc[j], low)
             edge = chamfer(dist)
             rim = flare * smoothstep(0.55, 1.0, w) if not wrap else 0.0  # a rim scute's lower edge rolls outward, like a turtle shell's margin
-            h = (T + rim) * edge
+            # each plate a low dome (an ankylosaur's osteoderm): thickest in its middle, easing to its edges
+            dome = PLATES.get("dome", 0.0) * math.sin(math.pi * u) ** 0.6 * (math.sin(math.pi * min(1.0, w if not wrap else 0.5 + 0.5 * w)) ** 0.6)
+            h = (T + rim + dome) * edge
             for sgn in ((1, -1) if not wrap else (1,)):
                 xs = x if wrap else sgn * x
                 ns = nx if wrap else sgn * nx
