@@ -101,7 +101,7 @@
       "note": "The lower jaw as bones (jaw_from_bones generates the profile table from these; edit the bones, not a table). z along the head (forward +), y up; model units, before the snout warp.",
       "symphysis": {
         "z": 1.985,
-        "bottom": 1.262,
+        "bottom": 1.232,
         "half_width": 0.12,
         "round_len": 0.03,
         "tip_frac": 0.5,
@@ -109,7 +109,7 @@
       },
       "chin": {
         "z": 1.89,
-        "bottom": 1.213,
+        "bottom": 1.188,
         "note": "The chin's lowest point under the front teeth: the dentary's deepest front part."
       },
       "alveolar": {
@@ -160,7 +160,8 @@
         "z": 1.615,
         "bottom": 1.285,
         "note": "Where the jaw's underside meets the throat (the cheek line's foot, body_design head_weld.cheek_line): the visible jaw's underside runs one long, gently convex line from under the chin back to here."
-      }
+      },
+      "depth_note": "Deepened from the covers (Dragonet Prophecy, limited edition): the cream lower jaw is heavy, about 0.45 of the upper jaw's height at the front, with a squared chin. Chin bottom 1.213 -> 1.188, symphysis 1.262 -> 1.232."
     },
     "rows_note": "'rows' is no longer read: the table is generated from 'bones' (kept only as the last traced version for reference)."
   },

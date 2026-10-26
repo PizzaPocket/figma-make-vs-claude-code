@@ -372,3 +372,4 @@ The tooth rows run the whole jaw. The upper row sits 0.01 outside the lower, nev
 
 ### Teeth: fewer and stouter
 Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout cones show per side of each jaw, with gaps between them. The model had nine or ten small spikes per side, a saw blade. Now upper 7 per side (0.042–0.064 long) and lower 6 (0.03–0.046).
+- **Lower jaw, heavier:** the covers draw the cream jaw's depth at the front at about 0.45 of the upper jaw's height, with a squared chin. The chin's lowest point goes from 1.213 to 1.188 and the symphysis from 1.262 to 1.232 (`lower_jaw.bones`).
