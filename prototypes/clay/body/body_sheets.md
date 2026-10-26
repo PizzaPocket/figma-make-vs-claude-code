@@ -223,3 +223,13 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 **Spikes:** one continuous run. Mane blades go to the withers, then thorns lie back over the back, hips and tail. All have body (about 0.03 thick), and the tail's thorns are 0.065 tall at its root.
 
 **Legs:** coloured by which way the skin faces. They are orange on the outside and front, cream on the inside, back and underside (the side sheet's forelegs).
+
+## Review round: clipping, shoulders, wing armor
+
+- **Folded wing, clear of the body:** the fan stands outside the haunch (wrist x 0.72, tips 0.80–0.86; the thigh reaches 0.57–0.6). The elbow finger lies inside the fingers (x 0.5), back along the side. Every finger, the forearm, the elbow finger and the membrane between them clear the body by at least 0.088 (`clipcheck`).
+- **Rolled fold:** the fold also rolls the arm and the fingers about their own axes. The arm's armor faces outward and its orange flesh inward (all the references). The membrane billows outward, not into the leg.
+- **Flank membrane, folded:** it spans straight from the folded arm to the body, in soft outward folds. The `wingfold` shape puts each point exactly where the fold's bones carry it there. Its body edge holds only a strip next to the body; the rest rides the arm. Before, it stood up as a flap over the back.
+- **Shoulders:** the foreleg's shoulder joint is 0.06 higher, as read at the sheet's own angle. The shoulder armor reaches less far down, and its hind point rises.
+- **Wing root:** at the shoulder armor's hind point, lower and nearer the foreleg's shoulder, so the wing branches off the same shoulder.
+- **Carapace edge:** one arc from the shoulder armor to the hip armor, with cream right below. The membrane meets the body along it, and the hip armor's front starts where it ends.
+- **Wing arm armor:** a distinct shell built by the back's carapace builder (`wing.armor`), with banded plates and a rolled rim over the arm's top. The arm under it is orange skin. The fingers are plain orange.

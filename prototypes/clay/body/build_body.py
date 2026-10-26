@@ -433,24 +433,12 @@ def hind_leg(sgn):
     return parts, bones
 
 
-def facing_up(V, pts):
-    """How much each point of a tube round the polyline pts faces up (0 down .. 1 up), from its offset
-    from the nearest point of the line. Measured with the wing spread (its rest pose), where up is the
-    wing's top, so the plates sit on top of both wings alike."""
-    V = np.asarray(V, float); P = np.asarray(pts, float); best = np.full(len(V), np.inf); off = np.zeros_like(V)
-    for k in range(len(P) - 1):
-        d = P[k + 1] - P[k]; h = np.clip((V - P[k]) @ d / (d @ d), 0, 1)
-        r = V - (P[k] + h[:, None] * d); dist = np.linalg.norm(r, axis=1)
-        m = dist < best; best[m] = dist[m]; off[m] = r[m]
-    return list((off[:, 1] / np.maximum(np.linalg.norm(off, axis=1), 1e-9) + 1) / 2)
-
-
 def spar(name, pts, radii, bn, around=12):
-    """A finger: a tube of orange skin with dark plates over its top. _A: length along it, _B: how much it
-    faces up (facing_up). bn: one bone name, or a function of the fraction along it giving the bone."""
+    """A finger: a tube of plain orange skin (the plates are the arm's alone). _A: length along it, _B: 0
+    (no plates). bn: one bone name, or a function of the fraction along it giving the bone."""
     v, f, A, _ = H.tube(pts, radii, around=around, step=0.004)
     total = sum(float(np.linalg.norm(np.subtract(pts[k + 1], pts[k]))) for k in range(len(pts) - 1))
-    Bq = facing_up(v, pts)
+    Bq = [0.0] * len(v)
     w = [[(bn(a) if callable(bn) else bn, 1.0)] for a in A]
     return H.add_part(name, v, f, {"_PART": [24] * len(v), "_A": [a * total for a in A], "_B": Bq, "_ZONE": [0] * len(v)}, w)
 
@@ -488,10 +476,16 @@ def wing_pose(sgn):
         if bone == "wing_forearm":
             return R["elbow"] + Rf @ (p - J["elbow"])
         return p
-    fold = {"wing_humerus": (Rh.T, J["shoulder"]), "wing_forearm": (Rf.T, J["elbow"]), "wing_thumb": (Rf.T, J["wrist"]),
-            "wing_elbowfinger": (align(R["elbow_tip"] - R["elbow"], J["elbow_tip"] - J["elbow"]), J["elbow"])}
-    for k, (t, rt) in enumerate(zip(tips, rtips)):
-        fold[f"wing_finger{k + 1}"] = (align(rt - R["wrist"], t - J["wrist"]), J["wrist"])
+    def rolled(R0, d):  # also turn about the folded bone so the armored top (up when spread) faces outward
+        d = H.norm(d); u = R0 @ np.array([0, 1.0, 0]); u = H.norm(u - d * (u @ d))
+        o = np.array([1.0, 0, 0]); o = H.norm(o - d * (o @ d))
+        ang = math.atan2(np.cross(u, o) @ d, u @ o)
+        return np.array([H.rot(c, d, ang) for c in R0.T]).T
+    Rhf, Rff = rolled(Rh.T, J["elbow"] - J["shoulder"]), rolled(Rf.T, J["wrist"] - J["elbow"])
+    fold = {"wing_humerus": (Rhf, J["shoulder"]), "wing_forearm": (Rff, J["elbow"]), "wing_thumb": (Rff, J["wrist"]),
+            "wing_elbowfinger": (rolled(align(R["elbow_tip"] - R["elbow"], J["elbow_tip"] - J["elbow"]), J["elbow_tip"] - J["elbow"]), J["elbow"])}
+    for k, (t, rt) in enumerate(zip(tips, rtips)):  # rolled too, so the membrane billows outward when folded, not into the leg
+        fold[f"wing_finger{k + 1}"] = (rolled(align(rt - R["wrist"], t - J["wrist"]), t - J["wrist"]), J["wrist"])
         fold[f"wing_finger{k + 1}b"] = (fold[f"wing_finger{k + 1}"][0], None)  # its head rides the metacarpal
     Mx = np.diag([sgn, 1.0, 1.0]); m = lambda p: mirror(p, sgn)
     fold = {n: (Mx @ Rm @ Mx, None if hd is None else m(hd)) for n, (Rm, hd) in fold.items()}
@@ -521,8 +515,15 @@ def wing_arm(sgn, sd):
             if best is None or dist < best[0]:
                 best = (dist, seg[:k].sum() + h * seg[k])
         A.append(best[1])
-    Bq = list((SK.normals(V, F)[:, 1] + 1) / 2)  # facing up, spread: the plates' side, alike on both wings
-    return H.add_part(f"WingArm{sd}", V.tolist(), F.tolist(), {"_PART": [24] * len(V), "_A": A, "_B": Bq, "_ZONE": [0] * len(V)}, W)
+    Bq = list((SK.normals(V, F)[:, 1] + 1) / 2)  # facing up, spread: the armored side, alike on both wings
+    arm = H.add_part(f"WingArm{sd}", V.tolist(), F.tolist(), {"_PART": [24] * len(V), "_A": A, "_B": [0.0] * len(V), "_ZONE": [0] * len(V)}, W)
+    # its armor: a distinct shell over the top, like the back's (skin.shell): banded plates with a rolled rim
+    ar = B["wing"]["armor"]
+    Z = SK.smooth_on_mesh(V, F, [0.0 if b > ar["top_from"] else 1.0 for b in Bq], iters=4)
+    S, SF, src, ink, tint = SK.shell(V, F, Z, ar, SK.smooth_normals(V, F), np.array(A), np.zeros(len(V)), lambda x: np.asarray(x) / ar["band"])
+    shell = H.add_part(f"WingArmor{sd}", S.tolist(), SF.tolist(), {"_PART": [13] * len(S), "_A": list(ink), "_B": list(tint), "_ZONE": [0] * len(S)},
+                       [W[i] for i in src])
+    return [arm, shell]
 
 
 def wing(sgn):
@@ -535,7 +536,7 @@ def wing(sgn):
     Wg = B["wing"]; sd = "L" if sgn > 0 else "R"
     J, tips, _, Rf, fold = wing_pose(sgn)
     out = np.array([0, 1.0, 0])  # spread, the membrane billows up with the air under it
-    parts = [wing_arm(sgn, sd)]
+    parts = wing_arm(sgn, sd)
     bones = [(f"wing_humerus.{sd}", tuple(J["shoulder"]), tuple(J["elbow"]), "chest"),
              (f"wing_forearm.{sd}", tuple(J["elbow"]), tuple(J["wrist"]), f"wing_humerus.{sd}")]
     claw_part = lambda name, v, f, bn: H.add_part(name, v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)},
@@ -598,15 +599,32 @@ def wing(sgn):
     nu, nv = 28, 18
     for k, ((PA, ba), (PB, bb), pleat) in enumerate(pairs):
         verts, faces, A, Bq, wts, folds = [], [], [], [], [], []
+        if pleat:  # the panel's edges when folded: the folded arm line, and the body line (it doesn't move)
+            Rh_, hh = fold["wing_humerus"]; Re_, he = fold["wing_elbowfinger"]
+            PAf = np.array([J["shoulder"], he, he + Re_ @ (J["elbow_tip"] - J["elbow"])])
         for i in range(nu + 1):
             for j in range(nv + 1):
                 u, vv = i / nu, j / nv
                 ue = u * (1 - M["sag"] * math.sin(math.pi * vv))
-                p = at(PA, ue) * (1 - vv) + at(PB, ue) * vv + out * M["billow"] * math.sin(math.pi * vv) * math.sin(math.pi * ue)
+                # the flank panel (the one with folds) is held taut against the body: only a slight billow, or
+                # its body-weighted middle, which doesn't turn with the fold, would stand up above the back
+                bil = M["billow"] * (0.2 if pleat else 1.0)
+                p = at(PA, ue) * (1 - vv) + at(PB, ue) * vv + out * bil * math.sin(math.pi * vv) * math.sin(math.pi * ue)
                 verts.append(tuple(p)); A.append(ue); Bq.append(u)
-                # folded, the flank membrane gathers in folds running out from the elbow, across the panel
-                folds.append(tuple(p + out * pleat * math.sin(2 * math.pi * M["pleats"]["count"] * vv) * math.sin(math.pi * u) * (1 - u) ** 0.5))
-                wts.append([(ba(ue), 1 - vv), (bb(ue), vv)] if 0 < vv < 1 else [((ba if vv == 0 else bb)(ue), 1.0)])
+                if pleat:
+                    # folded, the flank membrane spans straight from the folded arm to the body, gathered in soft
+                    # folds bulging outward; the wingfold shape puts each point where the fold's bones carry it there
+                    target = at(PAf, ue) * (1 - vv) + at(PB, ue) * vv + np.array([sgn * 1.0, 0, 0]) * pleat * abs(
+                        math.sin(2 * math.pi * M["pleats"]["count"] * vv)) * math.sin(math.pi * u) * (1 - u) ** 0.5
+                    wv = vv ** 4 if 0 < vv < 1 else float(vv == 1)
+                    Ra, ha = (Rh_, hh) if ba(ue) == f"wing_humerus.{sd}" else (Re_, he)
+                    ra = J["shoulder"] if ba(ue) == f"wing_humerus.{sd}" else J["elbow"]
+                    Am = (1 - wv) * Ra + wv * np.eye(3); c = (1 - wv) * (ha - Ra @ ra)
+                    folds.append(tuple(np.linalg.solve(Am, target - c)))
+                # the flank panel's body edge holds only a strip next to the body; the rest rides the arm, so it
+                # folds in with it rather than staying out where the spread wing was
+                wv = vv ** 4 if pleat else vv
+                wts.append([(ba(ue), 1 - wv), (bb(ue), wv)] if 0 < vv < 1 else [((ba if vv == 0 else bb)(ue), 1.0)])
         for i in range(nu):
             for j in range(nv):
                 a = i * (nv + 1) + j
