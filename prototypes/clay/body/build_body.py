@@ -106,9 +106,16 @@ def trunk_frames(step=0.01):
     T = np.gradient(P, axis=0); T /= np.linalg.norm(T, axis=1)[:, None]
     N = []
     n = np.array([0, 1.0, 0]); n = H.norm(n - T[0] * (n @ T[0]))
+    up_from, up_to = tl["top_up_s"]
     for i in range(len(P)):
         if i:
             n = H.norm(n - T[i] * (n @ T[i]))
+            # where the tail lies on the ground its top faces up: carried along the turning path alone, the top rolled
+            # over to face outward, so the tail lay on its side with its spikes toward the viewer
+            w = smoothstep(up_from, up_to, s_all[i])
+            if w > 0:
+                u = np.array([0, 1.0, 0]); u = H.norm(u - T[i] * (u @ T[i]))
+                n = H.norm(n * (1 - w) + u * w)
         N.append(n)
     N = np.array(N); Bv = np.cross(T, N)
     if Bv[0, 0] < 0:

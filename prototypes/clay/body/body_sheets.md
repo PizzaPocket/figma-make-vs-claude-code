@@ -331,3 +331,9 @@ The broad fan is the two wings overlapping. Evaluated at the fold animation's en
 
 ## Tail tip
 Tapering to a point, the tail's last 0.16 was thinner than the skin's mesh spacing (0.012), so it broke into floating specks beyond the tip. It now ends in a small rounded tip of radius 0.012 (`trunk.tail.tip_radius`). As a safety net, the skin mesher drops stray islands smaller than a twentieth of the largest piece.
+
+## Tail's ground run: top up, cream side to the viewer
+- **The roll:** the tail's section frame was carried along its path with no roll per step. Through the turn onto the ground that let its top roll over to face outward (+x), so the ground run lay on its side with its dark top and spikes toward the viewer. Measured: the section's top was (0.96, 0.26, -0.08) at s 4.6.
+- **The fix:** where the tail lies on the ground, its top now turns to face up (`trunk.tail.top_up_s`, s 3.5 to 4.1).
+- **The colour:** the dark top narrows there from half the girth to 0.3 of it (`zones.rows`).
+- **Result:** as on the side sheet, the ground run shows its cream, banded side to the viewer, with the dark top and spikes along its upper edge.
