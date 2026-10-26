@@ -320,3 +320,23 @@ The user saw the upper mouth as puffed out. Measured on the build, the upper lip
 It sits 0.01 further forward (front top at z 2.016, so the dome's front is at 2.03, matching the side sheet's tip at 2.02–2.03). That keeps its lower half proud of the snout's dark front plate; buried, the nostrils hid.
 
 **Roof plates.** Each roof plate is now a low dome (0.004 higher in its middle), like an ankylosaur's skull osteoderms, so the ridge reads as bony scutes, not flat tiles.
+
+### Teeth, tongue and lips for expression and speech
+- **Teeth** (`tooth()`) are now a reptile's, not flat four-sided shards:
+  - Each is a cone rooted 0.004 into the gum.
+  - Its section is an oval flattened side to side: across the base 0.6 of its length along the jaw, 0.018 thick.
+  - It tapers to a sharp tip that curves back toward the throat by 0.18 of its length. The front row is flattened front to back and curves half as much.
+- **Tongue:**
+  - A muscular body in the floor's trough, rounded across, with a median groove (0.004).
+  - Thick at the root (0.03) and thinning to a broad rounded tip (0.012) that lifts a little off the floor.
+  - It sits on the three tongue bones. Positive `tongue` curls the tip up toward the palate; negative pushes it through the floor, so it is never used.
+- **Lips** (`mouth.lip_roll`): a fleshy rounded margin, 0.004 proud and centred 0.006 from the edge, on both the upper lip (face) and the lower (jaw).
+- **Muscle actions** (FACS):
+  - On the face: lipCornerPull (AU12, smile), lipStretch (AU20, "ee") and lipFunnel (AU22+18, "oo").
+  - On the jaw's skin (`"mesh": "jaw"`): lowerLipDepress (AU16) and lipCornerDepressJaw (AU15).
+- **Speech visemes** are new poses:
+  - say_ah: jaw open, lower lip down.
+  - say_ee: stretched lips, lower lip down, a little smile.
+  - say_oo: funnelled lips.
+  - say_th: tongue tip lifted to the front teeth.
+- happy, worried and snarl now also use the new lip actions. The `speech` view set renders them all at the mouth.

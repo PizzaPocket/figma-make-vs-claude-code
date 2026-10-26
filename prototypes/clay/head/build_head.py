@@ -193,6 +193,14 @@ def lip_tuck(z):
     return 1 - w * max(0.0, 1 - target / interp(UPPER, z, 4))
 
 
+def lip_roll(dd):
+    """Outward swell of a lip's fleshy margin at height dd above (upper lip) or below (lower lip) its edge
+    (mouth.lip_roll): a rounded rim of lip along the mouth, as on a reptile's labial scales, so the lip has a
+    soft edge that can move, not a cut edge."""
+    LR = D["mouth"]["lip_roll"]
+    return LR["amount"] * math.exp(-((dd - LR["at"]) / LR["width"]) ** 2)
+
+
 def face_pt(z, th):
     """Point on the face at station z, angle th (0 = left lip edge, pi/2 = top, pi = right lip edge).
     Boxy cross-section (flat top, steep sides, cheeks wider than the top), then the brushes."""
@@ -203,6 +211,7 @@ def face_pt(z, th):
     a = (wb + (wt - wb) * (yy / b) ** 1.6) * muzzle_taper(z)
     x = a * math.copysign(abs(c) ** (2 / SQ), c)
     x *= 1 - (1 - lip_tuck(z)) * (1 - yy / b) ** D["upper_head"]["lip_tuck"]["power"]  # the cheek drapes in to the lip
+    x += math.copysign(lip_roll(yy), x)  # the lip's fleshy margin
     # gable: straight slopes down from a crisp ridge; the ridge stays on the measured profile, the shoulders drop
     y = low + yy - snout_ridge(z) * min(1.0, abs(x) / (wt * 0.98)) * (yy / b) ** 4
     y += corner_lift(z, x, wb) * (1 - yy / b) ** 2  # the front's bottom corners pull up
@@ -233,7 +242,8 @@ def jaw_contour(z):
         c, s = math.cos(th), math.sin(th)
         n = D["lower_jaw"].get("squareness", 2.6)
         x = w * math.copysign(abs(c) ** (2 / n), c)
-        pts.append((x, top - b * abs(s) ** (2 / n)))
+        y = top - b * abs(s) ** (2 / n)
+        pts.append((x + math.copysign(lip_roll(top - y), x), y))
     return pts, top
 
 
@@ -312,6 +322,33 @@ def shield(W, H, drop, r, n=16, bulge=0.0):
         nrm = np.array([b[1] - a[1], -(b[0] - a[0])]) / (np.linalg.norm(b - a) + 1e-9)  # outward (the outline runs counter-clockwise)
         pts += [(tuple(a + (b - a) * q / m + nrm * bulge * np.linalg.norm(b - a) * math.sin(math.pi * q / m)), tag[j]) for q in range(1, m)]
     return [p for p, _ in pts], [g for _, g in pts]
+
+
+def tooth(vs, fs, base, d, tang, length, ra, rs, sink=0.004, recurve=0.18, NA=10, NL=8):
+    """One tooth, a reptile's: a cone rooted in the gum (its base sunk `sink` into it), its section an oval
+    flattened side to side (ra along the jaw, rs across), tapering to a sharp tip that curves back toward the
+    throat (recurve, a fraction of its length). d points from the root to the tip; tang along the jaw, forward.
+    Appends to vs/fs; returns the vertex count added."""
+    side = norm(np.cross(d, tang))
+    b0 = len(vs)
+    for i in range(NL + 1):
+        t = i / NL
+        c = base - d * sink + d * (length + sink) * t - tang * recurve * length * t * t
+        r = (1 - t) ** 0.85
+        for j in range(NA):
+            a = 2 * math.pi * j / NA
+            vs.append(tuple(c + tang * ra * r * math.cos(a) + side * rs * r * math.sin(a)))
+    for i in range(NL):
+        for j in range(NA):
+            k = (j + 1) % NA
+            q = [b0 + i * NA + j, b0 + i * NA + k, b0 + (i + 1) * NA + k, b0 + (i + 1) * NA + j]
+            fs.append(q)  # outward: (tang, side, d) is right-handed
+    tip = len(vs); vs.append(tuple(base + d * length - tang * recurve * length))
+    top = b0 + NL * NA  # the last ring is a point already; close it with a fan to the tip
+    for j in range(NA):
+        f = [top + j, top + (j + 1) % NA, tip]
+        fs.append(f)
+    return len(vs) - b0
 
 
 def nose_part():
@@ -1173,6 +1210,8 @@ def head_parts():
     # expression shapes: one per facial muscle action, exported as morph targets (blend shapes)
     face.shape_key_add(name="Basis", from_mix=False)
     for name, act in D["expressions"]["muscle_actions"].items():
+        if act.get("mesh") == "jaw":
+            continue
         key = face.shape_key_add(name=name, from_mix=False)
         key.data.foreach_set("co", to_blender(V + expression_offsets(V, act["terms"])).astype(np.float32).ravel())
 
@@ -1193,8 +1232,17 @@ def head_parts():
     zj = np.concatenate([np.linspace(JAW[0, 0], 1.80, 10), np.linspace(1.79, JAW[-1, 0], 24)])
     v, f, uv = loft(jaw_contour, zj, inner_dip=lambda z: -MO["floor_trough"] * inside(z))
     part = [2.0 if u[1] >= 0 else 3.0 for u in uv]
-    objs.append(add_part("Jaw", v, f, {"_PART": part, "_A": [u[0] for u in uv], "_B": [u[1] for u in uv], "_ZONE": [0] * len(v)},
-                         [[("jaw", 1.0)]] * len(v)))
+    jaw = add_part("Jaw", v, f, {"_PART": part, "_A": [u[0] for u in uv], "_B": [u[1] for u in uv], "_ZONE": [0] * len(v)},
+                   [[("jaw", 1.0)]] * len(v))
+    objs.append(jaw)
+    # the lower lip's muscle actions (mesh "jaw"), on the jaw's skin; the face's are on the face
+    jaw_acts = {k: a for k, a in D["expressions"]["muscle_actions"].items() if a.get("mesh") == "jaw"}
+    if jaw_acts:
+        Vj = np.array(v)
+        jaw.shape_key_add(name="Basis", from_mix=False)
+        for name, act in jaw_acts.items():
+            jaw.shape_key_add(name=name, from_mix=False).data.foreach_set(
+                "co", to_blender(Vj + expression_offsets(Vj, act["terms"])).astype(np.float32).ravel())
 
     # cheek skin at each corner of the mouth: a web from the upper lip's edge to the lower jaw's edge, from near the
     # hinge forward to the mouth corner, its front edge bowed forward into a rounded corner. Its upper edge rides the
@@ -1254,14 +1302,11 @@ def head_parts():
                 base = np.array([x, edge_y(z0) + FT.get("tuck_up", 0.0), z0])
                 sy = 1.0 if jaw_side else -1.0
                 d = norm(np.array([0.0, sy * math.cos(math.radians(TT["rake_deg"])), -math.sin(math.radians(TT["rake_deg"]))]))
-                tang = np.array([1.0, 0.0, 0.0]); length = FT["length"]; bl = length * TT["base_frac"]
-                b0 = len(vs)
-                for p in (tang * bl, np.array([0, 0, TT["thickness"]]), -tang * bl, np.array([0, 0, -TT["thickness"]])):
-                    vs.append(tuple(base + p - d * 0.004))
-                vs.append(tuple(base + d * length))
-                for j in range(4):
-                    fs.append([b0 + (j + 1) % 4, b0 + j, b0 + 4] if not jaw_side else [b0 + j, b0 + (j + 1) % 4, b0 + 4])
-                ws += [[(bone, 1.0)]] * 5
+                tang = np.array([1.0, 0.0, 0.0]); length = FT["length"]
+                fwd = np.array([0.0, 0.0, 1.0]); fwd = norm(fwd - (fwd @ d) * d)  # forward, square to the tooth
+                # across the front the jaw runs sideways, so these are flattened front to back
+                n = tooth(vs, fs, base, d, fwd, length, TT["thickness"] * 0.5, length * TT["base_frac"] * 0.5, recurve=TT["recurve"] * 0.5)
+                ws += [[(bone, 1.0)]] * n
         for sgn in (1, -1):
             for k, z in enumerate(zs):
                 f = k / (len(zs) - 1)
@@ -1274,32 +1319,34 @@ def head_parts():
                 rake = math.radians(TT["rake_deg"])
                 d = norm(into * math.cos(rake) - tang * math.sin(rake))  # tip raked back toward the throat
                 base = np.array([sgn * half_w(z), edge_y(z) + TS.get("tuck_up", 0.0), z])  # upper: up behind the lip
-                bl, bt = length * TT["base_frac"], TT["thickness"]
-                b0 = len(vs)
-                # a flat blade: base a thin diamond along the lip, apex at the tip
-                for p in (tang * bl, np.array([sgn * bt, 0, 0]), -tang * bl, np.array([-sgn * bt, 0, 0])):
-                    vs.append(tuple(base + p - d * 0.004))
-                vs.append(tuple(base + d * length))
-                for j in range(4):
-                    fs.append([b0 + j, b0 + (j + 1) % 4, b0 + 4] if sgn > 0 else [b0 + (j + 1) % 4, b0 + j, b0 + 4])
-                ws += [[(bone, 1.0)]] * 5
+                n = tooth(vs, fs, base, d, tang, length, length * TT["base_frac"] * 0.5, TT["thickness"] * 0.5,
+                          recurve=TT["recurve"])
+                ws += [[(bone, 1.0)]] * n
         objs.append(add_part("Teeth" + ("Lower" if jaw_side else "Upper"), vs, fs, {"_PART": [4] * len(vs), "_A": [0] * len(vs), "_B": [0] * len(vs), "_ZONE": [0] * len(vs)}, ws))
 
-    # tongue: a flattened loft lying on the floor of the mouth, on three bones
+    # tongue: a muscular body lying in the trough of the mouth's floor, on three bones: rounded across with a
+    # shallow groove down its middle (the median sulcus), thick at the root and thinning to a broad, rounded,
+    # free tip that can lift off the floor (mouth.tongue)
+    TG = MO["tongue"]
     def tongue_contour(z):
-        t = (1.84 - z) / (1.84 - 1.56)
-        w = 0.055 * min(1, 0.4 + t * 1.5)
-        y0 = interp(JAW, z, 1) - 0.004
+        u = (TG["tip_z"] - z) / (TG["tip_z"] - TG["root_z"])  # 0 at the tip, 1 at the root
+        w = TG["width"] * (1 - 0.15 * u) * math.sqrt(max(0.0, 1 - (1 - min(1.0, u / TG["tip_round"])) ** 2))
+        w = max(w, 0.002)
+        h = TG["thickness"][0] + (TG["thickness"][1] - TG["thickness"][0]) * u ** 0.7
+        h *= max(0.15, math.sqrt(max(0.0, 1 - (1 - min(1.0, u / TG["tip_round"])) ** 2)))
+        y0 = interp(JAW, z, 1) - MO["floor_trough"] * smoothstep(MO["hinge_z"], MO["hinge_z"] + 0.06, z) + TG["lift"] * (1 - u) ** 2 - 0.002
         pts = []
         for i in range(N_AROUND + 1):
             th = math.pi * i / N_AROUND
-            pts.append((w * math.cos(th), y0 + 0.022 * math.sin(th) ** 0.7))
+            x = w * math.cos(th)
+            groove = TG["groove"] * math.exp(-(x / (0.22 * w)) ** 2) * min(1.0, u * 4)
+            pts.append((x, y0 + (h * math.sin(th) ** 0.55) - groove * math.sin(th) ** 4))
         return pts, y0
-    zt = np.linspace(1.84, 1.56, 16)
+    zt = np.concatenate([np.linspace(TG["tip_z"], TG["tip_z"] - 0.03, 8)[:-1], np.linspace(TG["tip_z"] - 0.03, TG["root_z"], 18)])
     v, f, uv = loft(tongue_contour, zt)
     tw = []
     for (x, y, z) in v:
-        t = (1.84 - z) / 0.28
+        t = (TG["tip_z"] - z) / (TG["tip_z"] - TG["root_z"])
         tw.append([("tongue3", max(0, 1 - t * 3)), ("tongue2", max(0, 1 - abs(t - 0.5) * 3)), ("tongue1", max(0, t * 3 - 2) + 1e-3)])
     objs.append(add_part("Tongue", v, f, {"_PART": [5] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)}, tw))
 

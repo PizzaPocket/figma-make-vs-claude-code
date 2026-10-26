@@ -461,6 +461,74 @@
             "move": [0.002, 0.006, 0.0]
           }
         ]
+      },
+      "lipCornerPull": {
+        "au": "AU12",
+        "muscles": "zygomaticus major: pulls the mouth corner up and back (smile)",
+        "terms": [
+          {
+            "kind": "push",
+            "centre": [1.62, 1.45],
+            "radii": [0.05, 0.05],
+            "move": [0.005, 0.02, -0.018]
+          }
+        ]
+      },
+      "lipStretch": {
+        "au": "AU20",
+        "muscles": "risorius and platysma: stretches the lips back along the jaw ('ee')",
+        "terms": [
+          {
+            "kind": "push",
+            "centre": [1.64, 1.42],
+            "radii": [0.06, 0.05],
+            "move": [0.004, 0.0, -0.016]
+          }
+        ]
+      },
+      "lipFunnel": {
+        "au": "AU22 + AU18",
+        "muscles": "orbicularis oris: draws the mouth corners forward and pushes the lips out ('oo')",
+        "terms": [
+          {
+            "kind": "push",
+            "centre": [1.66, 1.4],
+            "radii": [0.08, 0.05],
+            "move": [0.006, -0.004, 0.014]
+          },
+          {
+            "kind": "push",
+            "centre": [1.8, 1.32],
+            "radii": [0.06, 0.03],
+            "move": [0.005, 0.0, 0.004]
+          }
+        ]
+      },
+      "lowerLipDepress": {
+        "au": "AU16",
+        "mesh": "jaw",
+        "muscles": "depressor labii inferioris: pulls the lower lip down off the lower teeth",
+        "terms": [
+          {
+            "kind": "push",
+            "centre": [1.76, 1.33],
+            "radii": [0.09, 0.035],
+            "move": [0.004, -0.02, 0.0]
+          }
+        ]
+      },
+      "lipCornerDepressJaw": {
+        "au": "AU15",
+        "mesh": "jaw",
+        "muscles": "depressor anguli oris on the lower lip: the corner's lower side pulled down with lipCornerDown",
+        "terms": [
+          {
+            "kind": "push",
+            "centre": [1.66, 1.37],
+            "radii": [0.05, 0.03],
+            "move": [0.0, -0.008, 0.002]
+          }
+        ]
       }
     },
     "poses": {
@@ -481,7 +549,8 @@
       "happy": {
         "au": "AU6+12",
         "morphs": {
-          "cheekRaise": 1
+          "cheekRaise": 1,
+          "lipCornerPull": 1
         },
         "lids": [0.15, 0.25, 0.4]
       },
@@ -490,7 +559,8 @@
         "morphs": {
           "innerBrowRaise": 1,
           "lipCornerDown": 1,
-          "browLower": 0.3
+          "browLower": 0.3,
+          "lipCornerDepressJaw": 1
         },
         "lids": [-0.12, 0.38, 0.1]
       },
@@ -506,14 +576,49 @@
         "morphs": {
           "lipRaise": 1,
           "browLower": 0.8,
-          "cheekRaise": 0.5
+          "cheekRaise": 0.5,
+          "lowerLipDepress": 0.6
         },
         "lids": [0.35, 0.15, 0.35],
         "jaw": 0.15
+      },
+      "say_ah": {
+        "au": "viseme AA",
+        "jaw": 0.3,
+        "tongue": 0.0,
+        "morphs": {
+          "lowerLipDepress": 0.3
+        }
+      },
+      "say_ee": {
+        "au": "viseme EE",
+        "jaw": 0.08,
+        "morphs": {
+          "lipStretch": 1,
+          "lowerLipDepress": 0.5,
+          "lipCornerPull": 0.3
+        }
+      },
+      "say_oo": {
+        "au": "viseme OO",
+        "jaw": 0.1,
+        "morphs": {
+          "lipFunnel": 1
+        }
+      },
+      "say_th": {
+        "au": "viseme TH / L",
+        "jaw": 0.12,
+        "tongue": 0.3,
+        "morphs": {
+          "lowerLipDepress": 0.3
+        },
+        "tongue_note": "positive lifts the tongue's tip toward the palate and front teeth (its three bones turn 0.3, 0.4, 0.5 of it, so 0.3 curls it about 0.36 rad); negative pushes it down through the floor"
       }
     },
     "pose_columns": "lids: turns in radians of [upper lid inner half, upper lid outer half, lower lid]; positive closes",
-    "muscle_actions_note": "blink (orbicularis oculi, palpebral part: AU45) is a shape of the lids themselves, built with them"
+    "muscle_actions_note": "blink (orbicularis oculi, palpebral part: AU45) is a shape of the lids themselves, built with them",
+    "speech_note": "Visemes for speech are mixes of the jaw, the tongue's three bones and the lip actions: AA (jaw open, lower lip down), EE (lips stretched back, lower lip down), OO (lips funnelled forward), TH/L (tongue tip lifted to the front teeth)."
   },
   "roof_plates": {
     "note": "The roof in pieces of one kind: bands of tiles from the roof's flat front edge back, each band a mirrored pair meeting at the ridge, a rim of square marginal scutes along the eave, and one tile over the flat front face (the nose comes out of it). Every tile is a solid of even thickness with a short wall and a narrow chamfer at its edges; the gaps between them are the drawn lines. Laid out in profile coordinates: s along the top profile from the front edge back, d the depth below it; joints are lines of constant s.",
@@ -579,8 +684,8 @@
     "lip_note": "The upper lip hangs down over the upper teeth: in most images only the lower teeth show, rising plainly from the lower jaw, and the upper teeth show mainly with the mouth open. So the upper teeth grow from the roof of the mouth, inward (inset 0.03) and up (tuck_up 0.02) behind the lip, the front row set back too (the user's reading).",
     "note": "Flight render and limited edition: small, flat, triangular blades. The tooth rows start at the bite point (z 1.86), where the upper and lower fronts of the mouth meet when it is closed: a short row across the front of the mouth there, then rows back along each side lip, each tooth perpendicular to its lip edge, tips raked a little back. In front of the bite point is the front muzzle's underside: skin, no teeth. A little larger mid-row; no single big fang.",
     "rake_deg": 12,
-    "base_frac": 0.45,
-    "thickness": 0.012,
+    "base_frac": 0.6,
+    "thickness": 0.018,
     "upper": {
       "z": [1.835, 1.62],
       "count": 8,
@@ -609,7 +714,9 @@
       "half_span": 0.07,
       "length": 0.0253
     },
-    "shape_note": "Re-read on the two open-mouth paintings (Dragonet Prophecy cover, ClayTopShot): cones, not flat blades, about 1.4x the earlier length for the upper teeth (hidden behind the lip when shut), 1.15x for the lower (which show along the closed lip); round-based (thickness about the base's width), still tips raked back, still no single big fang."
+    "shape_note": "Re-read on the two open-mouth paintings (Dragonet Prophecy cover, ClayTopShot): cones, not flat blades, about 1.4x the earlier length for the upper teeth (hidden behind the lip when shut), 1.15x for the lower (which show along the closed lip); round-based (thickness about the base's width), still tips raked back, still no single big fang. Sculpted as a reptile's teeth (user: not flat triangle shards): each a cone rooted 0.004 into the gum, its section an oval flattened side to side (along the jaw 0.45 of its length across the base, 0.012 thick), tapering to a sharp tip that curves back toward the throat by 0.18 of its length (front row 0.09, flattened front to back).",
+    "recurve": 0.18,
+    "size_note": "Stout cones as the covers paint them: across the base 0.6 of the tooth's length along the jaw, 0.018 thick."
   },
   "mouth": {
     "why": "The mouth opens by stretching skin, not as two rigid pieces parting (user; Dragonet Prophecy cover). The cover's open mouth is a deep cavity, its floor a trough for the tongue under an arched palate, and the gape ends in a rounded corner of cheek skin under the eye. The lips stay joined from the corner back to the hinge, where the jaw's bone runs on inside the cheek.",
@@ -624,6 +731,22 @@
     "floor_trough": 0.03,
     "web_orange_to": 0.2,
     "cheek_bulge": 0.035,
-    "cheek_bulge_note": "the outward bow of the cheek skin at the jaw's full opening (jaw 0.6 rad), as a corrective shape the jaw drives (jawOpen = jaw / 0.6)"
+    "cheek_bulge_note": "the outward bow of the cheek skin at the jaw's full opening (jaw 0.6 rad), as a corrective shape the jaw drives (jawOpen = jaw / 0.6)",
+    "lip_roll": {
+      "amount": 0.004,
+      "at": 0.006,
+      "width": 0.008,
+      "note": "The lips' fleshy margins (user: lips convincing for expression and speech): a rounded rim 0.004 proud along each lip, centred 0.006 from its edge, on the upper lip (face) and the lower (jaw), so the mouth has soft lips that the muscle actions move, not cut edges."
+    },
+    "tongue": {
+      "tip_z": 1.835,
+      "root_z": 1.56,
+      "width": 0.05,
+      "thickness": [0.012, 0.03],
+      "tip_round": 0.14,
+      "groove": 0.004,
+      "lift": 0.004,
+      "note": "A muscular tongue (user: convincing for speech): rounded across, a shallow median groove (0.004) down its middle, thick at the root (0.03) thinning to 0.012, its tip broad and rounded over the last 0.14 of its length, lifting a little off the floor, lying in the floor's trough. On three bones (tongue1-3) so it can curl up for speech sounds."
+    }
   }
 }

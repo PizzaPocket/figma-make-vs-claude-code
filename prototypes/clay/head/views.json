@@ -243,6 +243,66 @@
    ],
    "fov": 20,
    "pose": "snarl"
+  },
+  {
+   "label": "say ah",
+   "cam": [
+    1.3,
+    1.82,
+    2.6
+   ],
+   "target": [
+    0.1,
+    1.6,
+    1.68
+   ],
+   "fov": 20,
+   "pose": "say_ah"
+  },
+  {
+   "label": "say ee",
+   "cam": [
+    1.3,
+    1.82,
+    2.6
+   ],
+   "target": [
+    0.1,
+    1.6,
+    1.68
+   ],
+   "fov": 20,
+   "pose": "say_ee"
+  },
+  {
+   "label": "say oo",
+   "cam": [
+    1.3,
+    1.82,
+    2.6
+   ],
+   "target": [
+    0.1,
+    1.6,
+    1.68
+   ],
+   "fov": 20,
+   "pose": "say_oo"
+  },
+  {
+   "label": "say th",
+   "cam": [
+    1.3,
+    1.82,
+    2.6
+   ],
+   "target": [
+    0.1,
+    1.6,
+    1.68
+   ],
+   "fov": 20,
+   "pose": "say_th"
   }
  ],
  "back": [
@@ -770,6 +830,128 @@
    "fov": 14,
    "pose": "neutral",
    "clay": true
+  }
+ ],
+ "speech": [
+  {
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "label": "neutral, mouth",
+   "pose": "neutral"
+  },
+  {
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "label": "happy, mouth",
+   "pose": "happy"
+  },
+  {
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "label": "say ah, mouth",
+   "pose": "say_ah"
+  },
+  {
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "label": "say ee, mouth",
+   "pose": "say_ee"
+  },
+  {
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "label": "say oo, mouth",
+   "pose": "say_oo"
+  },
+  {
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "label": "say th, mouth",
+   "pose": "say_th"
+  },
+  {
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "label": "snarl, mouth",
+   "pose": "snarl"
+  },
+  {
+   "cam": [
+    1.6,
+    1.25,
+    3.2
+   ],
+   "target": [
+    0.05,
+    1.33,
+    1.75
+   ],
+   "fov": 12,
+   "label": "worried, mouth",
+   "pose": "worried"
   }
  ]
 }
