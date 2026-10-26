@@ -32,8 +32,8 @@
       "from_z": 1.72,
       "tip_width": 0.86,
       "power": 2.2,
-      "corner_radius": 0.03,
-      "corner_min": 0.88,
+      "corner_radius": 0.05,
+      "corner_min": 0.8,
       "note": "Bone and muscle, not a box (user: square corners are not believable). The flat top is the nasal bones, the steep sides the upper jaw's bones, and the front the premaxilla: a rounded U in top view (ClayTopShot, the covers). So the muzzle narrows from the eye forward in one long convex curve to 0.86 of its width at the tip, and a small radius (0.03) rounds the front corners. An earlier try narrowed only the last 0.08 to 0.62: a pinched, concave beak under the wider roof plates."
     },
     "ridge": [[2.017, 0.045], [1.6, 0.045], [1.42, 0.03]],
@@ -50,16 +50,19 @@
       },
       "convex": 0.025,
       "lip_arc_power": 2,
-      "convex_side": 0.03,
+      "convex_side": 0.035,
       "whisker_pads": {
-        "centre_xy": [0.045, 1.35],
-        "radii": [0.03, 0.02],
-        "amount": 0.008,
+        "centre_xy": [0.035, 1.33],
+        "radii": [0.055, 0.03],
+        "amount": 0.005,
         "philtrum_width": 0.007,
-        "philtrum_depth": 0.004,
-        "note": "A male lion's muzzle under the nose (user: a lion's nose on a dinosaur's mouth): two fleshy whisker pads swelling forward 0.008 either side of the philtrum's groove, on the orange front below the shield's rim, over the front teeth. Sculpted into the front face (front_setback), so the shield's front skirt above follows them."
+        "philtrum_depth": 0.002,
+        "note": "A male lion's muzzle under the nose (user: a lion's nose on a dinosaur's mouth): two fleshy whisker pads swelling forward 0.008 either side of the philtrum's groove, on the orange front below the shield's rim, over the front teeth. Sculpted into the front face (front_setback), so the shield's front skirt above follows them.",
+        "width_note": "Broad (0.055 across) so each pad merges into the front's rounding: narrower (0.03), they left a valley at x 0.08 between pad and corner, measured concave across at every height."
       },
-      "convex_side_note": "The orange front below the shield bulges forward 0.03 at mid-height (was 0.016): with the shield's skirt standing proud above it and the lip rolling out below, a flatter front read as a concave channel (user)."
+      "convex_side_note": "The orange front below the shield bulges forward 0.03 at mid-height (was 0.016): with the shield's skirt standing proud above it and the lip rolling out below, a flatter front read as a concave channel (user).",
+      "convex_note": "Walkthrough (user: the front is still concave): measured on the centre line the front was convex in profile, but across it the whisker pads and the philtrum's groove and the shield's skirt standing 0.012 proud above it read as a hollow band. It now bulges 0.045 at mid-height (flush with the skirt's edge), rounds 0.035 across, and the philtrum is a faint groove (0.002).",
+      "across_power": 2.5
     },
     "lip_tuck": {
       "from_z": [1.58, 1.63],

@@ -386,3 +386,8 @@ Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout co
 - **Cap face:** the leather cap ends in its own flat face, an upright plane facing forward through the cap's top front corner, rounded at its edge (0.01). The nose runs on past it and is cut back to the plane. Cut perpendicular to the steep front slope instead, the face pointed down and showed from the front only as a thin band.
 - **Nostrils:** commas carved into the face at its lower outer corners.
 - **Position:** the face sits 0.025 behind the shield's front edge, so the shield's rim carries on round the front ahead of and below it.
+
+### Front of the muzzle: convex and taller (walkthrough)
+- **Taller:** with the lip line straightened, the orange front below the shield runs from the skirt (y 1.37) down to the lip at 1.268–1.277, more than twice its old height.
+- **Fuller:** it bulges 0.035 at mid-height and rounds across broadly (`front.across_power` 2.5), with the muzzle's corners rounding more (`muzzle_taper` corner radius 0.05, down to 0.8 of the width). The whisker pads are broad (0.055) and the philtrum is a faint groove.
+- **Measured:** narrow pads had left a valley at x ±0.08 at every height, and a parabolic bulge ended in a ledge where the front met the corner. Ray-cast across the front, the remaining slope change at the corners is about 0.005.

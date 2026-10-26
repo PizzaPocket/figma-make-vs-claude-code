@@ -200,7 +200,9 @@ def front_setback(x, y):
     lo, top = interp(UPPER, z0, 2), interp(UPPER, z0, 1)
     q = min(1.0, max(0.0, (y - lo) / (top - lo)))
     xo = abs(face_pt(z0, side_th(z0, min(max(y, lo + 1e-4), top - 1e-4)))[0]) or 1e-6
-    across = max(0.0, 1 - (x / xo) ** 2) * (1 - smoothstep(0.8, 1.0, q))  # zero all round the outline, its peak included
+    # zero all round the outline, its peak included; broad across (across_power), so the front stays full out to its
+    # corners and rounds into them, rather than a dome peaked in the middle with a ledge where it runs out
+    across = max(0.0, 1 - abs(x / xo) ** F.get("across_power", 2)) * (1 - smoothstep(0.8, 1.0, q))
     # convex forward both ways: rounded across from above, and bulging in side profile between the nose and the lip
     base = F["convex"] + F.get("convex_side", 0.0) * math.sin(math.pi * q) - F["concave"] * math.sin(math.pi * q ** 0.8)
     WP = F.get("whisker_pads")
