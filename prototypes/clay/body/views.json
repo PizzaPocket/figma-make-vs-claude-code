@@ -2320,96 +2320,84 @@
   {
    "label": "ear, side",
    "cam": [
-    1.4,
+    1.5,
     1.85,
-    1.4
+    1.38
    ],
    "target": [
-    0.2,
-    1.78,
-    1.4
+    0.26,
+    1.82,
+    1.36
    ],
-   "fov": 30,
+   "fov": 13,
    "pose": "neutral"
   },
   {
    "label": "ear, side, plain clay",
    "cam": [
-    1.4,
+    1.5,
     1.85,
-    1.4
+    1.38
    ],
    "target": [
-    0.2,
-    1.78,
-    1.4
+    0.26,
+    1.82,
+    1.36
    ],
-   "fov": 30,
+   "fov": 13,
    "pose": "neutral",
    "clay": true
   },
   {
    "label": "ear, three-quarter front",
    "cam": [
-    1.1,
+    1.2,
     1.95,
-    2.1
+    2.2
    ],
    "target": [
-    0.2,
-    1.78,
-    1.4
+    0.26,
+    1.82,
+    1.36
    ],
-   "fov": 30,
+   "fov": 13,
    "pose": "neutral"
   },
   {
    "label": "ear, three-quarter front, plain clay",
    "cam": [
-    1.1,
-    1.95,
-    2.1
-   ],
-   "target": [
-    0.2,
-    1.78,
-    1.4
-   ],
-   "fov": 30,
-   "pose": "neutral",
-   "clay": true
-  },
-  {
-   "label": "ear, three-quarter back, plain clay",
-   "cam": [
     1.2,
-    2.1,
-    0.7
+    1.95,
+    2.2
    ],
    "target": [
-    0.2,
-    1.78,
-    1.4
+    0.26,
+    1.82,
+    1.36
    ],
-   "fov": 30,
+   "fov": 13,
    "pose": "neutral",
    "clay": true
   },
   {
-   "label": "ear, from above, plain clay",
+   "label": "ear, from above behind, plain clay",
    "cam": [
-    0.8,
+    1.0,
     2.6,
-    1.5
+    0.6
    ],
    "target": [
-    0.2,
-    1.78,
-    1.4
+    0.26,
+    1.82,
+    1.36
    ],
-   "fov": 30,
+   "fov": 13,
    "pose": "neutral",
    "clay": true
+  },
+  {
+   "label": "side sheet, ear (gridded crop)",
+   "ref": "{refs}/study/ear_crop.png"
   }
  ],
  "seam": [

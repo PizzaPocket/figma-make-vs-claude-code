@@ -1266,31 +1266,50 @@ def head_parts():
         path = [[sgn * p[0], p[1], p[2]] for p in hp]
         v, f, A, B = tube(path, hr, around=24, step=0.001, grooves=HORN["grooves"])
         objs.append(add_part("Horn" + sd, v, f, {"_PART": [8] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
-        # ear frill: an almond leaf lying close along the side of the head under the horn, pointing back and
-        # up; cupped (pale hollow inside) with an orange rolled rim along its top edge, like a horse's ear laid back
+        # ear: laid back along the side of the head under the horn, pointing back and up, like a horse's ear laid
+        # flat. Each cross-section is an arc round the ear's axis: shallow at the bottom of the hollow, curling up
+        # the lower edge and further over the upper front edge into a rolled rim. Pale inside, orange behind, with
+        # thickness, closed round its edges
         base = np.array([sgn * FRILL["base"][0], FRILL["base"][1], FRILL["base"][2]])
         tipp = np.array([sgn * FRILL["tip"][0], FRILL["tip"][1], FRILL["tip"][2]])
         L = tipp - base; length = np.linalg.norm(L); L /= length
         nrm = norm([sgn * 1.0, FRILL["face_up"], FRILL["face_forward"]]); nrm = norm(nrm - L * (nrm @ L))
-        W = np.cross(nrm, L); W = W if W[1] > 0 else -W  # across the leaf, toward its top edge
-        G, H = 16, 12
-        vs, fs, us, bs = [], [], [], []
-        for layer, off in ((0, 0.0), (1, -FRILL["thickness"])):
-            b0 = len(vs)
-            for i in range(G + 1):          # base -> tip
-                for j in range(H + 1):      # bottom edge -> top edge
-                    a = i / G; c = -1 + 2 * j / H
-                    half = FRILL["width"] / 2 * math.sin(math.pi * (0.12 + 0.88 * a)) ** 0.75 * (1 - 0.35 * a)
-                    p = base + L * a * length + W * c * half
-                    cup = -FRILL["cup"] * (1 - c * c) * math.sin(math.pi * min(1.0, a * 1.05))  # hollow facing out
-                    roll = FRILL["rolled_front_edge"] * smoothstep(0.55, 1.0, c) ** 2 * math.sin(math.pi * min(1.0, a * 1.1))
-                    p = p + nrm * (cup + roll + off) - W * roll * 0.6  # the top edge curls out and over
-                    vs.append(tuple(p)); us.append(a); bs.append((c + 1) / 2)
-            for i in range(G):
-                for j in range(H):
-                    q = b0 + i * (H + 1) + j
-                    fs.append([q, q + H + 1, q + H + 2, q + 1] if layer == 0 else [q, q + 1, q + H + 2, q + H + 1])
-        objs.append(add_part("Frill" + ("L" if sgn > 0 else "R"), vs, fs, {"_PART": [9] * len(vs), "_A": us, "_B": bs, "_ZONE": [0] * len(vs)},
+        W = np.cross(nrm, L); W = W if W[1] > 0 else -W  # across the ear, toward its upper front edge
+        G, H = 24, 20
+        lo, up = (math.radians(a) for a in FRILL["roll_deg"])
+        dk, th = FRILL["depth"], FRILL["thickness"]
+
+        def ear_pt(a, c, out):
+            half = FRILL["width"] / 2 * math.sin(math.pi * (0.12 + 0.88 * a)) ** 0.75 * (1 - 0.35 * a)
+            t = c * (up if c > 0 else lo)  # angle round the arc from the bottom of the hollow
+            o = base + L * a * length + nrm * half * dk
+            p = o + W * half * math.sin(t) - nrm * half * dk * math.cos(t)
+            if out:  # the back surface, the thickness further from the arc's centre
+                q = p - o; p = p + q / (np.linalg.norm(q) + 1e-9) * th * (1 - 0.6 * a)
+            return p - nrm * FRILL["root_sink"] * max(0.0, 1 - a / FRILL["root_len"]) ** 2  # the root dives into the head
+
+        vs, fs, us, bs, zs = [], [], [], [], []
+        grid = {}
+        for layer in (0, 1):
+            for i in range(G + 1):
+                for j in range(H + 1):
+                    a, c = i / G, -1 + 2 * j / H
+                    grid[layer, i, j] = len(vs)
+                    vs.append(tuple(ear_pt(a, c, layer))); us.append(a); bs.append(j / H); zs.append(float(layer))
+        for i in range(G):
+            for j in range(H):
+                q = [grid[0, i, j], grid[0, i + 1, j], grid[0, i + 1, j + 1], grid[0, i, j + 1]]
+                fs.append(q if sgn > 0 else q[::-1])
+                q = [grid[1, i, j], grid[1, i, j + 1], grid[1, i + 1, j + 1], grid[1, i + 1, j]]
+                fs.append(q if sgn > 0 else q[::-1])
+        for i in range(G):  # the edges, closing the two layers
+            for j, flip in ((0, False), (H, True)):
+                q = [grid[0, i, j], grid[1, i, j], grid[1, i + 1, j], grid[0, i + 1, j]]
+                fs.append(q[::-1] if (flip != (sgn < 0)) else q)
+        for j in range(H):  # the base, buried in the head
+            q = [grid[0, 0, j], grid[0, 0, j + 1], grid[1, 0, j + 1], grid[1, 0, j]]
+            fs.append(q if sgn > 0 else q[::-1])
+        objs.append(add_part("Frill" + ("L" if sgn > 0 else "R"), vs, fs, {"_PART": [9] * len(vs), "_A": us, "_B": bs, "_ZONE": zs},
                              rigid(len(vs))))
 
     bones = [("head", (0, 1.57, 1.36), (0, 1.44, 2.017), None),

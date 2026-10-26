@@ -230,3 +230,18 @@ The underside of the overhanging lip in front of the jaw is skin, not palate.
 - **Anatomy forms:** the cheekbone, lid pad and masseter now shape the surface but still read soft in the plain clay render. They need more contrast, and the shelf needs a firmer, more continuous top edge.
 - **Back of the head:** the roof's back edge is a flat cap. The neck plates and mane will cover it, but the joint still has to be built.
 - **Horn roots:** a small shading seam shows at the top of each root, where the morph starts. In the art the root also sits a little further back on the corner.
+
+## Ear, sculpted (rolled cup)
+
+**On the side sheet (gridded crop, px 200–260, py 188–225):** the ear is a horse's ear laid back, not a flat leaf.
+- **Rim:** the upper front edge is a thick, rolled orange rim along a nearly straight line from base to tip.
+- **Hollow:** below the rim, a pale peach hollow faces out. Its front boundary is a dark fold line, from the upper rim about a third of the way along down to the lower edge about halfway.
+- **Base:** the front third is orange, and it grows out of the top of the cheek line.
+
+**Built (`ear_frill`):**
+- **Cross-section:** each section is an arc round the ear's axis, shallow at the hollow's bottom (`depth` 0.45 of the half-width). The lower edge curls up 95° and the upper front edge 150°, over into the rim (`roll_deg`).
+- **Solid:** it has real thickness (0.007, thinning toward the tip), with closed edges. The root dives into the head (`root_sink`, `root_len`).
+- **Paint:** pale inside, orange behind and on the rims, with the fold line where the art draws it.
+- **Fixed by the way:** the neck shell's rim was traced along the middle of the scalloped band; it now follows its lower edge, 5–8 px lower near the head (`zones.dark_edge_px`). So the rim runs under the ear, as drawn, not across its base.
+
+**Still to do:** a small round knob where the shell's rim ends at the cheek line under the ear's base.
