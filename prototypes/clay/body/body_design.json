@@ -221,7 +221,8 @@
         ["neck3", 0.32, 0.16],
         ["neck4", 0.16, 0.0]
       ],
-      "tail_from": 2.3
+      "tail_from": 2.3,
+      "neck_blend": 0.08
     },
     "keel": {
       "note": "How much the section narrows from its widest level toward the underside (0 none, 0.5 to half width at the breastbone): the deep keel of the chest, a gentler one under the belly, none on the tail. Gentle at the chest (0.3): from the front a lion's chest is a rounded U between the forelegs, not a V; a stronger keel left a ridge down its middle. Over the forelegs (s 0.8-1.3) only 0.12-0.15: from the front (the limited edition, the side sheet turned toward us) the chest is broad and round at the bottom, the cream plates its most forward part; a deeper keel left a groove down the chest between the shoulder masses.",
@@ -509,6 +510,7 @@
   },
   "anatomy": {
     "note": "Clay's body is built from the inside out: a skeleton of bones, muscles laid over it from origin to insertion, and one skin over everything (skin.py), so the shoulders grow out of the chest and back, and the haunches out of the hips and the tail. Quadruped anatomy as in a great cat (lion, tiger) for the legs; a reptile's tail root (caudofemoralis, as in lizards and dinosaurs); bird- and dinosaur-like feet. Left side; the right is mirrored. Each piece: from and to (model units), radii [out, across] where 'out' is measured along the hint direction (default: out from the body, +x), the blend radius k with its neighbours, the rig bones that move it, and its colour zone (0 dark, 0.5 orange, 1 cream; null takes the trunk's zone there). Bones show orange where they lie near the skin (the shin, the elbow, the wrist). Leg muscles are about 0.65-0.75 as wide side to side as they are deep, as in a cat; the shoulder cap and gluteals are flat layers over the blade and hip, so each shoulder and haunch reads as one mass. Neighbouring muscles blend over 0.07-0.12, so the shoulder and the haunch each read as one smooth mass, not separate balls; the shoulder's colour comes from the sheet's dark patch (the trunk's zones). The dark shell (zones.dark_region_px, on the body's upper side) covers whatever lies under it, muscle or trunk: the shoulder and the haunch each get a brown cap where the dark edge dips over them.",
+    "rig_smooth_iters": 60,
     "resolution": 0.012,
     "bones": [
       {

@@ -190,15 +190,19 @@ def trunk_bones():
 
 
 def trunk_weights(s, ranges, blend=0.05):
-    """Weights of the spine bones at s: the bone whose range holds s, blended with its neighbour near the joint."""
+    """Weights of the spine bones at s: the bone whose range holds s, blended with its neighbour near the joint.
+    Joints touching the neck blend over half a neck bone (neck_blend), so the neck bends in one smooth curve as the
+    head turns instead of kinking at each joint."""
     ranges = sorted(ranges, key=lambda r: r[1])
+    bl = lambda n0, n1: TR["bones"]["neck_blend"] if "neck" in n0 + n1 else blend
     for i, (name, a, b) in enumerate(ranges):
         if a <= s <= b or (i == 0 and s < a) or (i == len(ranges) - 1 and s > b):
             w = [(name, 1.0)]
-            if i + 1 < len(ranges) and s > b - blend:
-                t = 0.5 * smoothstep(b - blend, b + blend, s); w = [(name, 1 - t), (ranges[i + 1][0], t)]
-            elif i > 0 and s < a + blend:
-                t = 0.5 * (1 - smoothstep(a - blend, a + blend, s)); w = [(name, 1 - t), (ranges[i - 1][0], t)]
+            if i + 1 < len(ranges) and s > b - bl(name, ranges[i + 1][0]):
+                # half and half at the joint itself, whichever side it is read from
+                k = bl(name, ranges[i + 1][0]); t = smoothstep(b - k, b + k, s); w = [(name, 1 - t), (ranges[i + 1][0], t)]
+            elif i > 0 and s < a + bl(name, ranges[i - 1][0]):
+                k = bl(name, ranges[i - 1][0]); t = 1 - smoothstep(a - k, a + k, s); w = [(name, 1 - t), (ranges[i - 1][0], t)]
             return w
     return [(ranges[-1][0], 1.0)]
 
@@ -322,8 +326,13 @@ def skin_parts(ranges):
     the dark shell raised from it with a continuous rim round its edge."""
     trunk, parts = _SKIN["trunk"], _SKIN["parts"]
     V, F = SK.mesh(trunk, parts, B["anatomy"]["resolution"])
+    # the spine position for the spine bones' weights, smoothed over the skin: on the inside of the neck's bend the
+    # nearest spine station flips between stations far apart from one vertex to the next, which made the weights
+    # jump and the neck crease in bands as it bent
+    i0, _, _, t_al = trunk.local(V)[:4]
+    S_rig = SK.smooth_on_mesh(V, F, trunk.s[i0] + t_al, iters=B["anatomy"]["rig_smooth_iters"])
     W, Z, A, Bf, Tr = SK.vertex_data(V, trunk, parts, lambda s: trunk_weights(s, ranges), zone_value, dark_value,
-                                 TR["zones"]["lines_until_s"] + 0.15, N=SK.normals(V, F))
+                                 TR["zones"]["lines_until_s"] + 0.15, N=SK.normals(V, F), S_rig=S_rig)
     W = head_weld_weights(V, W, parts)
     Z = list(SK.smooth_on_mesh(V, F, Z))  # no pinholes in the shell, smooth edges to its colour regions
     Tr = list(SK.smooth_on_mesh(V, F, Tr))

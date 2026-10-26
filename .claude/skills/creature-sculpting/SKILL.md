@@ -230,6 +230,7 @@ Check: <what to compare; known differences>
 - A separately built part never reads as one piece with the body's skin, however closely it is fitted. Put the part's own shape into the skin's field (from its measured cross-sections, which give an exact inside test, unlike nearest-face normals). Trim the part's mesh on a drawn line, and let the skin be its surface beyond it.
 - Where two surfaces must meet, keep one strictly under the other up to the line and let it out gradually beyond. Surfaces that cross at a shallow angle sawtooth, and a hard cut leaves a kink the marching cubes steps on.
 - The skin at a seam must carry the same bone weights as the part it meets, or the seam opens when the creature moves.
+- Check bone weights numerically: list the largest weight difference across any mesh edge. A rest pose hides weight jumps, and a bend shows them as crisp bands. Clay's spine had one at every joint for many rounds.
 
 **Body**
 - Build limbs as bones with muscles laid from origin to insertion, under one skin (a smooth union of fields), never as tubes stuck onto the body. A limb with no shoulder or haunch muscles reads as chopped off.

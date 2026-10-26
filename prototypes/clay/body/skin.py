@@ -344,11 +344,12 @@ def limb_zone(x, n):
     return 0.5 + 0.5 * c * c * (3 - 2 * c)
 
 
-def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trust_s, blend=0.025, N=None):
+def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trust_s, blend=0.025, N=None, S_rig=None):
     """Per vertex: rig weights, colour zone, the pattern coordinate A (s along the spine) and f (round the body),
     and T, the trunk's share of the surface there (the belly bands are drawn only where it is the trunk).
     Each part's say is how close it lies to the skin there (within ~blend of the nearest). The dark
-    shell (dark_zone: 1 inside it) covers whatever lies under it, trunk or muscle."""
+    shell (dark_zone: 1 inside it) covers whatever lies under it, trunk or muscle. S_rig, if given, is the spine
+    position the spine bones' weights are read at (smoothed over the mesh by the caller)."""
     _, dt, D = field(V, trunk, parts, all_parts=True)
     idx, v, w, t_along, _, _ = trunk.local(V)
     s = trunk.s[idx]
@@ -363,7 +364,7 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trus
         sc = max(float(s[n]), 0.0)
         zt = trunk_zone(sc, float(f[n]), V[n, 2], V[n, 1], V[n, 0])
         acc = {}
-        for bn, wt in trunk_weights(sc):
+        for bn, wt in trunk_weights(max(float(S_rig[n]), 0.0) if S_rig is not None else sc):
             acc[bn] = acc.get(bn, 0.0) + infl[0, n] * wt
         z = infl[0, n] * zt
         for k, p in enumerate(parts):

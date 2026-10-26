@@ -300,3 +300,14 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 - **Overlap:** at each point the scale nearest the head among those covering it is on top. Its free edge is drawn as the line, and each scale is lit a little toward its middle.
 - **Seams:** the pattern's seams fall at the top of the spine and under the belly, inside the dark and cream zones.
 - **Behind the cheek line:** the skin there takes the neck's own colours (orange shingles, the cream throat strip running up to the jaw), not the face's and jaw's. Before, it showed a pale band without scales. The pattern's along-the-spine coordinate is continuous now (nearest station plus the offset along the spine), and runs on past the neck's first station, so the shingles reach the ear opening instead of stopping short of the head.
+
+## Neck bending: bands as the head turned
+
+**Symptom:** light bands with stair-stepped edges across the neck whenever the head turned.
+
+**Causes:** the weights jumped across single edges of the mesh.
+1. **Spine weights at the joints:** the bones on either side of a joint each gave themselves 0.75 there, so the weights flipped from 0.75/0.25 to 0.25/0.75 across one edge, at every spine joint. Invisible at rest, they crease as soon as the spine bends. Each side now gives exactly half and half at the joint.
+2. **Spine position:** on the inside of the neck's bend, the nearest spine station flips between stations far apart from one vertex to the next. The spine position the weights are read at is now smoothed over the skin (`anatomy.rig_smooth_iters`).
+3. **Neck blends:** the neck's joints blended over ±0.05 of bones 0.16 long, so the neck bent in kinks. They now blend over half a bone (`trunk.bones.neck_blend`), so the neck bends in one curve.
+
+**Check:** the largest weight difference across any edge on the neck is now under 0.2. Head up, down, left and right render without bands.

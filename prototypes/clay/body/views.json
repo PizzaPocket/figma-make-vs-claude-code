@@ -2651,5 +2651,65 @@
    "label": "side sheet",
    "ref": "{refs}/clayref/ref1400.png"
   }
+ ],
+ "neckband": [
+  {
+   "label": "head turned left, top",
+   "cam": [
+    0.0,
+    3.6,
+    1.0
+   ],
+   "target": [
+    0,
+    1.4,
+    1.0
+   ],
+   "fov": 30,
+   "pose": {
+    "head": [
+     0,
+     0.7
+    ]
+   },
+   "clay": true
+  },
+  {
+   "label": "head turned left, side close",
+   "cam": [
+    1.6,
+    1.5,
+    1.0
+   ],
+   "target": [
+    0.1,
+    1.45,
+    1.0
+   ],
+   "fov": 24,
+   "pose": {
+    "head": [
+     0,
+     0.7
+    ]
+   },
+   "clay": true
+  },
+  {
+   "label": "neutral, side close",
+   "cam": [
+    1.6,
+    1.5,
+    1.0
+   ],
+   "target": [
+    0.1,
+    1.45,
+    1.0
+   ],
+   "fov": 24,
+   "pose": "neutral",
+   "clay": true
+  }
  ]
 }
