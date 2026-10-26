@@ -343,3 +343,15 @@ It sits 0.01 further forward (front top at z 2.016, so the dome's front is at 2.
 
 ### Eye: almond outline
 The opening's back half was a full circle, so the eye stared round. It now tapers from the round toward a soft cosine point at the outer corner (`opening.back_point` 0.85). The upper lid rests 0.26 of the way closed (was 0.17), over the top of the iris. That makes the covers' almond, while the side sheet's pink inner point stays. The liner and blink are unchanged: thin, and staying on the lid margins.
+
+### Lower jaw from its bones (`lower_jaw.bones`, `jaw_from_bones`)
+The jaw is no longer a traced table. It was traced from the side sheet, whose snout is at three-quarters, so the sheet's short chin at z 1.86 was the front of the chin seen at an angle. The profile is now generated from named bones:
+- **Symphysis:** the U-shaped chin at z 1.985, just behind the snout's tip under a slight overbite, rounding off over its last 0.03.
+- **Chin:** its lowest point at z 1.89.
+- **Alveolar margin:** the tooth row's top edge, 0.006 below the upper lip's edge, so the jaws close along their whole length.
+- **Coronoid line:** the top edge behind the mouth corner, rising inside the cheek.
+- **Throat notch.**
+- **Retroarticular:** the deep back of the jaw (angular, retroarticular) lies inside the throat's skin, so the visible back edge is the weld's cheek line. Deepened below that line, it hung out of the throat as trimmed blades.
+- **Half-widths** at each landmark.
+
+The tooth rows run the whole jaw. The upper row sits 0.01 outside the lower, never outside the lip. The tongue and its bones reach to z 1.93.

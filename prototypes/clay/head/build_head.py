@@ -25,7 +25,6 @@ OUT = ARGS.get("--out", "head.glb")
 D = json.load(open(ARGS.get("--design", os.path.join(os.path.dirname(os.path.abspath(__file__)), "head_design.json"))))
 UPPER = np.array(D["upper_head"]["rows"])
 SQ = D["upper_head"].get("squareness", 3.6)  # higher = crisper edge between top and side planes
-JAW = np.array(D["lower_jaw"]["rows"])
 HINGE = tuple(D["lower_jaw"]["hinge"])
 EYE = D["eye"]
 PLATE_EDGE = np.array(D["dark_plate_edge"]["zy"])
@@ -66,6 +65,48 @@ def norm(v):
     return v / np.linalg.norm(v)
 
 
+def jaw_from_bones(LJ):
+    """The lower jaw's profile table (z, top, bottom, half-width), generated from its named bones
+    (lower_jaw.bones) rather than traced:
+    - the alveolar margin (the tooth row's top edge) runs just inside the upper lip's edge, bite_gap below it,
+      from the chin back to the mouth corner; behind the corner the coronoid line carries the jaw's top edge up
+      inside the cheek to the hinge;
+    - the underside is one smooth curve through the symphysis (the chin's front), the chin's lowest point and the
+      throat notch; behind it the jaw's deep back lies inside the throat, so its visible edge is the cheek line;
+    - the half-width runs smoothly through the width of each landmark;
+    - the chin rounds off over its last round_len, in side view and from above (a U)."""
+    from scipy.interpolate import PchipInterpolator
+    B = LJ["bones"]
+    sy, ch, tn, cor = B["symphysis"], B["chin"], B["throat_notch"], B["coronoid_line"]
+    ra = B["retroarticular"]
+    zt = sy["z"]
+    bot_pts = [(zt, sy["bottom"]), (ch["z"], ch["bottom"]), (tn["z"], tn["bottom"])] + [tuple(p) for p in ra["bottom"]]
+    bz, by = zip(*sorted(bot_pts))
+    bottom = PchipInterpolator(bz, by)
+    wz, ww = zip(*sorted([(zt, sy["half_width"])] + [tuple(p) for p in B["half_width"]]))
+    width = PchipInterpolator(wz, ww)
+    cz, cy = zip(*sorted(tuple(p) for p in cor["zy"]))
+    z_corner = max(cz)
+    rows = []
+    zs = sorted(set(np.round(np.concatenate([np.arange(zt, min(cz) - 1e-9, -0.01), [zt - 0.003, zt - 0.008, zt - 0.015], cz]), 4)), reverse=True)
+    for z in zs:
+        if z >= z_corner + B["alveolar"]["blend"]:
+            top = interp(UPPER, z, 2) - B["alveolar"]["bite_gap"]
+        elif z <= z_corner:
+            top = float(np.interp(z, cz, cy))
+        else:  # from the coronoid line's front point into the alveolar margin
+            f = smoothstep(z_corner, z_corner + B["alveolar"]["blend"], z)
+            top = float(np.interp(z, cz, cy)) * (1 - f) + (interp(UPPER, z, 2) - B["alveolar"]["bite_gap"]) * f
+        b, w = float(bottom(z)), float(width(z))
+        u = (z - (zt - sy["round_len"])) / sy["round_len"]
+        if u > 0:  # the chin's round, in side view and from above
+            r = math.sqrt(max(0.0, 1 - min(u, 1.0) ** 2))
+            w *= max(r, sy["tip_frac"])
+            b += (top - b) * 0.5 * (1 - r)
+        rows.append([float(z), top, b, w])
+    return np.array(rows)
+
+
 BRUSHES = [b for layer in ("bone", "muscle", "skin") for b in D["anatomy"][layer] if b["kind"] != "note"]
 
 
@@ -103,6 +144,9 @@ def rim_radius(pts, ref, z, y):
 def smoothstep(e0, e1, x):
     t = min(1.0, max(0.0, (x - e0) / (e1 - e0)))
     return t * t * (3 - 2 * t)
+
+
+JAW = jaw_from_bones(D["lower_jaw"]) if "bones" in D["lower_jaw"] else np.array(D["lower_jaw"]["rows"])
 
 
 def brush_offset(z, y):
@@ -1234,7 +1278,7 @@ def head_parts():
         objs.append(add_part(f"RoofPlate{k}", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
 
     # lower jaw skin
-    zj = np.concatenate([np.linspace(JAW[0, 0], 1.80, 18), np.linspace(1.79, JAW[-1, 0], 24)])
+    zj = JAW[:, 0]  # the generated stations: dense, with the landmarks (the throat notch stays crisp)
     v, f, uv = loft(jaw_contour, zj, inner_dip=lambda z: -MO["floor_trough"] * inside(z))
     part = [2.0 if u[1] >= 0 else 3.0 for u in uv]
     jaw = add_part("Jaw", v, f, {"_PART": part, "_A": [u[0] for u in uv], "_B": [u[1] for u in uv], "_ZONE": [0] * len(v)},
@@ -1317,7 +1361,10 @@ def head_parts():
             half_w = lambda z: interp(JAW, z, 3) - TS["inset"]
         else:
             edge_y = lambda z: interp(UPPER, z, 2)
-            half_w = lambda z: interp(UPPER, z, 4) * muzzle_taper(z) * lip_tuck(z) - TS["inset"]
+            # the upper tooth row just outside the lower one (outside_lower), as in a closed reptile's bite, and never
+            # outside the lip (inset from the lip's edge)
+            half_w = lambda z: min(interp(UPPER, z, 4) * muzzle_taper(z) * lip_tuck(z) - TS["inset"],
+                                   interp(JAW, z, 3) - TT["lower"]["inset"] + TS["outside_lower"])
         zs = np.linspace(TS["z"][0], TS["z"][1], TS["count"])
         # the front teeth: a row across the front of the mouth at the bite point, where the upper and lower fronts
         # meet (in front of it is the front muzzle's underside: skin, no teeth)

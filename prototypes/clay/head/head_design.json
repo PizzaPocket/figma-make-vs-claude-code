@@ -88,7 +88,73 @@
     "hinge": [0.0, 1.6, 1.45],
     "hinge_note": "The jaw joint (quadrate to articular) sits where reptiles have it: at the back end of the mouth line, at the back of the cheek under the back of the eye, level with the mouth line there (which runs back to the ear opening at z 1.41, y 1.656). It was 0.08 lower (y 1.52), and the low pivot swung the chin forward as the jaw opened; level with the mouth line, the jaw drops down and back, its tip well behind the upper jaw's (ClayTopShot, the flying painting).",
     "squareness": 2.4,
-    "squareness_note": "a rounded U in section, as the cover shows from below with the mouth open; at 3.6 it was a box, and read as a flat plank when the jaw dropped"
+    "squareness_note": "a rounded U in section, as the cover shows from below with the mouth open; at 3.6 it was a box, and read as a flat plank when the jaw dropped",
+    "bones": {
+      "note": "The lower jaw as bones (jaw_from_bones generates the profile table from these; edit the bones, not a table). z along the head (forward +), y up; model units, before the snout warp.",
+      "symphysis": {
+        "z": 1.985,
+        "bottom": 1.262,
+        "half_width": 0.12,
+        "round_len": 0.03,
+        "tip_frac": 0.5,
+        "note": "The chin's front: where the two dentaries meet, a rounded U just behind the upper jaw's front under a slight overbite. Its last round_len rounds off in side view and from above (tip half-width tip_frac of its width)."
+      },
+      "chin": {
+        "z": 1.89,
+        "bottom": 1.213,
+        "note": "The chin's lowest point under the front teeth: the dentary's deepest front part."
+      },
+      "alveolar": {
+        "bite_gap": 0.006,
+        "blend": 0.03,
+        "note": "The alveolar margin (where the teeth root, the jaw's top edge): bite_gap below the upper lip's edge from the chin back to the mouth corner, so the jaws close together along their whole length."
+      },
+      "coronoid_line": {
+        "zy": [
+          [1.6, 1.466],
+          [1.58, 1.541],
+          [1.545, 1.584],
+          [1.487, 1.608],
+          [1.44, 1.633],
+          [1.41, 1.66],
+          [1.398, 1.66],
+          [1.392, 1.64]
+        ],
+        "note": "Behind the mouth corner the jaw's top edge rises inside the cheek (the coronoid process, where the temporalis inserts) back to the hinge region; hidden under the cheek and the jowl's skin."
+      },
+      "retroarticular": {
+        "bottom": [
+          [1.6, 1.385],
+          [1.55, 1.412],
+          [1.49, 1.432],
+          [1.44, 1.46],
+          [1.41, 1.48],
+          [1.398, 1.53],
+          [1.392, 1.58]
+        ],
+        "note": "Behind the throat notch the jaw's deep back (the angular corner under the masseter and pterygoid, and the retroarticular process curving up behind the hinge into the ear opening) lies inside the throat's skin, so the visible jaw's back edge is the cheek line (body head_weld.cheek_line): up the notch, back and up to the ear. Deepened below that line, the jaw hung out of the throat as trimmed blades."
+      },
+      "half_width": [
+        [1.96, 0.112],
+        [1.9, 0.118],
+        [1.862, 0.125],
+        [1.79, 0.14],
+        [1.703, 0.15],
+        [1.627, 0.172],
+        [1.58, 0.188],
+        [1.487, 0.215],
+        [1.44, 0.228],
+        [1.41, 0.236],
+        [1.398, 0.232],
+        [1.392, 0.222]
+      ],
+      "throat_notch": {
+        "z": 1.615,
+        "bottom": 1.285,
+        "note": "Where the jaw's underside meets the throat (the cheek line's foot, body_design head_weld.cheek_line): the visible jaw's underside runs one long, gently convex line from under the chin back to here."
+      }
+    },
+    "rows_note": "'rows' is no longer read: the table is generated from 'bones' (kept only as the last traced version for reference)."
   },
   "dark_plate_edge": {
     "note": "The roof's lower edge, traced on the side sheet's colour boundary (dark roof over orange face) and checked against How to Draw and the flight render, which agree on its shape: the roof covers the whole nose, down to the lip at the front; from the nose the edge rises only gently for the front third of the muzzle, then turns sharply up in a near-vertical step at about mid-muzzle, climbs steeply and diagonally to the front of the eye, runs over the top of the eye (the eye tucked right under it), steps up again behind the eye and runs back toward the ear. The rim plates (edge row) follow this line.",
@@ -695,7 +761,9 @@
       "length": [0.0364, 0.056],
       "inset": 0.012,
       "tuck_up": 0.02,
-      "inset_note": "From the tucked lip edge: the upper teeth stand just outside the lower ones (lower inset 0.016 from the jaw edge)."
+      "inset_note": "From the tucked lip edge: the upper teeth stand just outside the lower ones (lower inset 0.016 from the jaw edge).",
+      "outside_lower": 0.01,
+      "outside_note": "The upper tooth row sits 0.01 outside the lower one (whose row is 0.016 inside the jaw's edge), never outside the lip. Placed from the lip alone, the back upper tooth stood outside the lower jaw at the mouth corner and hung down past it as a blade."
     },
     "lower": {
       "z": [1.945, 1.63],
