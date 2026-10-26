@@ -841,14 +841,14 @@
           "rig": {
             "head": 1.0
           },
-          "zone": 0.5
+          "zone": null
         },
         {
           "mesh": "Jaw",
           "rig": {
             "jaw": 1.0
           },
-          "zone": 1.0
+          "zone": null
         }
       ],
       "k": 0.05,

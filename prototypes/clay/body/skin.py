@@ -350,8 +350,9 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trus
     Each part's say is how close it lies to the skin there (within ~blend of the nearest). The dark
     shell (dark_zone: 1 inside it) covers whatever lies under it, trunk or muscle."""
     _, dt, D = field(V, trunk, parts, all_parts=True)
-    idx, v, w, _, _, _ = trunk.local(V)
+    idx, v, w, t_along, _, _ = trunk.local(V)
     s = trunk.s[idx]
+    s_cont = s + t_along  # continuous along the spine and on past its ends (the pattern's coordinate)
     f = (1 - v / np.maximum(np.hypot(v, w), 1e-9)) / 2  # 0 along the top of the spine, 1 underneath
     allD = np.vstack([dt[None], D])
     infl = np.exp(-(allD - allD.min(axis=0)) / blend)
@@ -377,5 +378,5 @@ def vertex_data(V, trunk, parts, trunk_weights, trunk_zone, dark_zone, tail_trus
         # the tail's dark-top rule holds only on the tail itself: a limb lying near the tail (the forearm
         # beside its tip) is not part of it
         dk = dark_zone(sc, float(f[n]), V[n, 2], V[n, 1]) if (sc < tail_trust_s or dt[n] < 0.04) else 0.0
-        W.append([(bn, wt / tot) for bn, wt in top]); Z.append(z * (1 - dk)); A.append(sc); T.append(float(infl[0, n]))
+        W.append([(bn, wt / tot) for bn, wt in top]); Z.append(z * (1 - dk)); A.append(float(s_cont[n])); T.append(float(infl[0, n]))
     return W, Z, A, list(f), T
