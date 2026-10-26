@@ -23,6 +23,11 @@
         float d = length(p - c);
         if (d < 0.74 && c.x < best) { best = c.x; r = vec2(0.74 - d, h.z); } }
       return r; }
+    float lineAtW(float f, float w) { float e = min(f, 1.0 - f); return 1.0 - smoothstep(w, w + fwidth(f) * 1.5 + 0.01, e); }
+    // plates in brick rows (p: rows, columns), organically warped: returns the joint line (x) and a per-plate tint (y)
+    vec3 plates(vec2 p) { float r = p.x, c = p.y + 0.5 * floor(p.x);
+      r += 0.14 * sin(c * 1.7 + floor(c) * 2.3); c += 0.1 * sin(r * 1.3 + floor(r) * 1.7);
+      return vec3(max(lineAtW(fract(r), 0.05), lineAtW(fract(c), 0.045)), hash3(vec3(floor(r), floor(c), 5.0)).x, 0.0); }
     float lineAt(float f, float w) { float e = min(f, 1.0 - f); return 1.0 - smoothstep(w, w + fwidth(f) * 1.5 + 0.01, e); }
   `;
   function material(THREE, clay) {
@@ -66,6 +71,12 @@
             // the distance round the trunk (20 + around / 4)
             vec2 sc = shingle(vec2(vAB.x / 0.065, (vPart - 20.0) * 4.0 / 0.06));
             float pe = 1.0 - smoothstep(0.03, 0.08, sc.x);
+            // the legs (where the trunk's share is low): plates in brick rows across the limb, ~0.07 x 0.075, organically
+            // warped (How to Draw); rows by height up the leg, and along the ground (by z) on the feet and toes
+            float limb = 1.0 - smoothstep(0.3, 0.6, vAB.y), foot = 1.0 - smoothstep(0.1, 0.17, vObj.y);
+            vec3 legP = plates(vec2(vObj.y / 0.07, (vObj.x + vObj.z) / 0.075)), footP = plates(vec2(vObj.z / 0.07, vObj.x / 0.075));
+            float lp = mix(legP.x, footP.x, foot), lt = mix(legP.y, footP.y, foot); // the two patterns blended, not their coordinates
+            pe = mix(pe, lp, limb); sc.y = mix(sc.y, lt, limb); sc.x = mix(sc.x, 0.4, limb);
             vec3 back = mix(dark, line, lineAt(fract(vAB.x / 0.10), 0.04) * 0.6); // back plates ~0.08-0.12 apart (measured)
             vec3 side = mix(orange * (0.93 + 0.1 * sc.y) * (0.9 + 0.1 * smoothstep(0.0, 0.4, sc.x)), line, pe * 0.45); // each scale lit toward its middle
             vec3 belly = mix(cream, line, lineAt(fract(vAB.x / 0.095), 0.035) * 0.45 * smoothstep(0.5, 0.8, vAB.y)); // ventral bands ~0.09-0.10 apart (measured), on the trunk only (vAB.y: its share)

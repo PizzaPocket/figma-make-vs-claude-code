@@ -311,3 +311,13 @@ The four use a wider blend (0.18), so they melt into the belly rather than sitti
 3. **Neck blends:** the neck's joints blended over ±0.05 of bones 0.16 long, so the neck bent in kinks. They now blend over half a bone (`trunk.bones.neck_blend`), so the neck bends in one curve.
 
 **Check:** the largest weight difference across any edge on the neck is now under 0.2. Head up, down, left and right render without bands.
+
+## Leg plates
+
+**Problem:** the shingle layout (last round) uses the distance round the trunk, which has no meaning on a leg. It smeared into long vertical stripes on the legs and feet.
+
+**Built:** where the trunk's share of the skin is low (the limbs), the skin draws plates in brick-offset rows, about 0.07 by 0.075, organically warped. This matches How to Draw and the side sheet's legs.
+- **Legs:** the rows run across the leg (by height).
+- **Feet and toes:** they lie along the ground, so the rows run across the toes (by z).
+- **Between the two:** the finished patterns are blended, not their coordinates, which made moiré at the wrists and ankles.
+- **Soles:** the undersides of the feet stay cream (`limb_zone`).
