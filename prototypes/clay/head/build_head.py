@@ -837,7 +837,12 @@ def opening_frame(c, er):
     if eq[1] < 0:
         eq = -eq
     ta = math.tan(math.radians(O["tip_half_angle_deg"]))
-    h = lambda p: max(math.sqrt(max(0.0, r0 * r0 - (p - d) ** 2)), p * ta if 0 <= p <= d else 0.0)
+    bp = O.get("back_point", 0.0)
+    def h(p):
+        circ = math.sqrt(max(0.0, r0 * r0 - (p - d) ** 2))
+        if p > d:  # the outer corner: from the round toward a soft point (an almond's end), by back_point
+            circ = (1 - bp) * circ + bp * r0 * math.cos(math.pi / 2 * min(1.0, (p - d) / r0))
+        return max(circ, p * ta if 0 <= p <= d else 0.0)
     return tip, ep, eq, d + r0, h
 
 

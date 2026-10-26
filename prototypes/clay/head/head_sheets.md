@@ -340,3 +340,6 @@ It sits 0.01 further forward (front top at z 2.016, so the dome's front is at 2.
   - say_oo: funnelled lips.
   - say_th: tongue tip lifted to the front teeth.
 - happy, worried and snarl now also use the new lip actions. The `speech` view set renders them all at the mouth.
+
+### Eye: almond outline
+The opening's back half was a full circle, so the eye stared round. It now tapers from the round toward a soft cosine point at the outer corner (`opening.back_point` 0.85). The upper lid rests 0.26 of the way closed (was 0.17), over the top of the iris. That makes the covers' almond, while the side sheet's pink inner point stays. The liner and blink are unchanged: thin, and staying on the lid margins.

@@ -155,13 +155,15 @@
       "ring_upper": 0.095,
       "ring_lower": 0.065,
       "ring_note": "The liner: a thin line, a little heavier on the upper lid (the painted covers, the side sheet's line). At 0.17 on both lids it read as a broad band, and the lower lid's band stayed behind as a dark crescent when the upper lid closed over the eye (user).",
-      "upper_rest_closed": 0.17,
+      "upper_rest_closed": 0.26,
       "rest_note": "At rest the upper lid comes down across the top of the iris (ClayTopShot, Dragonet Prophecy cover: the iris fills most of the opening's height, little white above it), which turns the round stare into a calmer almond; the blink runs on from there.",
       "band": 0.55,
       "clear": 0.06,
       "press": 0.2,
       "caruncle_bump": 0.03,
-      "blink_steps": 6
+      "blink_steps": 6,
+      "back_point": 0.85,
+      "almond_note": "User: the eye doesn't match the references' nice shape. The covers draw an almond: the outer corner comes to a soft point and the upper lid rests over the top of the iris. So the opening's back half tapers from the round toward a cosine point (back_point 0.85), keeping the side sheet's pink inner point, and the upper lid rests 0.26 of the way closed (was 0.17)."
     }
   },
   "snout_turn": {
