@@ -848,20 +848,23 @@
   "lion_nose": {
     "note": "A short lion-like bridge seated on the actual shield surface, with a raised, angled leather cap. The shield is deformed first; the nose is then built in its orthonormal local frame, so the muzzle correction cannot shear the cap flat. The cap terminates the loft with one disk instead of collapsing overshooting rings into a flap. Same base material as the shield; nostrils remain carved geometry.",
     "stations": [
-      [-0.028, 0.0625, 0.048],
-      [0.012, 0.065, 0.046],
-      [0.042, 0.06125, 0.036],
-      [0.067, 0.055, 0.022],
-      [0.097, 0.04625, 0.009],
-      [0.122, 0.04, 0.0]
+      [0.0175, 0.0625, 0.048],
+      [0.0575, 0.065, 0.046],
+      [0.0875, 0.06125, 0.036],
+      [0.1125, 0.055, 0.022],
+      [0.1425, 0.04625, 0.009],
+      [0.1675, 0.04, 0.0]
     ],
-    "stations_note": "s, half-width, height above the shield: stations moved 0.032 back along the carrier and widened by 25 percent. The maximum half-width is 0.065, height 0.046. Height follows the finished shield unit normal.",
-    "s_front": 0.010,
+    "stations_note": "Carrier stations shifted together to preserve bridge length and elevation while setting back the cap to s 0.0555. Maximum half-width 0.065. Side walls taper inward toward the crown using side_taper, independently of the cap tilt.",
+    "s_front": 0.0555,
     "squareness": 3.5,
+    "side_taper": [[0.0, 1.0], [0.7, 0.7], [1.0, 0.45]],
     "sink": 0.006,
     "nostril": {
-      "path": [[0.6, 0.42], [0.8, 0.47], [0.94, 0.6], [1.0, 0.76]],
-      "half_width": [0.006, 0.0025],
+      "path": [[0.8, 0.22], [0.94, 0.28], [1.0, 0.42], [0.99, 0.55]],
+      "half_width": [0.0045, 0.0018],
+      "cut_forward": 0.5,
+      "cut_side": 1.0,
       "depth": 0.005,
       "note": "Comma nostrils on the side-front edges of the cap, where its face turns into its sides (user: not on the front face): path points are (fraction of the cap's half-width out, fraction of the face's height up), from the wide inner end low on the face curling out round the edge and up; cut back along the face's normal and in from the side."
     },
@@ -872,7 +875,7 @@
     "face_angle_to_shield": 45,
     "face_dome": 0.009,
     "squareness_note": "3.5: a rounded top running into its sides; at 7 the bridge's top fluted out into a boxy top at the cap.",
-    "s_front_note": "Cap centre at s 0.010, 0.032 farther back than -0.022. Its relation to the rim is checked on the actual shield surface.",
+    "s_front_note": "Setback calibrated on the actual shield: the flight crop cap tip (732,449), rim (744,442), cap span approximately 48 px suggest clearance around 0.25-0.30 cap widths. Model target 0.28 widths (0.0364); a measured position sweep gives s 0.0555. Previous s 0.010 had negative clearance (-0.0081).",
     "front_run": [[2.026, 1.426], [2.032, 1.419], [2.041, 1.414], [2.05, 1.41], [2.058, 1.404], [2.063, 1.397]],
     "front_run_note": "The shield top's centre line in side view (measured off the built shield, before the snout warp) ahead of the top profile's front edge (s 0): the hammer's front lip runs on nearly level for about 0.04 before turning down. The nose runs on along it (s < 0 is distance along this run)."
   }

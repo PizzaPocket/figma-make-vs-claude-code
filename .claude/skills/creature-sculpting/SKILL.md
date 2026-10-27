@@ -268,3 +268,9 @@ Check: <what to compare; known differences>
 **Hands and feet**
 - The front hands are compact, with big hooked claws and a high dewclaw.
 - The hind feet are long and digitigrade, with a heel spur and studs along the top.
+
+### Nose placement and nostril coordinates
+Measure visible shield clearance relative to cap width before choosing setback.
+An inward-tapered cap needs width-dependent nostril coordinates at each height;
+a constant half-width misplaces the openings. Use the cap's up axis and side
+normal, rather than world height and a front-only cut direction.

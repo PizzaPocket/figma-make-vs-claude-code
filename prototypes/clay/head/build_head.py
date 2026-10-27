@@ -471,7 +471,7 @@ def muzzle_shield(V, F):
     return out, remap[F].tolist(), A, B
 
 
-def lion_nose(shield=None):
+def lion_nose(shield=None, diagnostics=None):
     """A short bridge and raised leather cap built on the finished shield.
 
     The foot follows the shield mesh, height follows its final unit normal,
@@ -528,6 +528,7 @@ def lion_nose(shield=None):
             th = math.pi * i / NA
             c, sn = math.cos(th), math.sin(th)
             x = w * math.copysign(abs(c) ** (2 / nsup), c); v = -sink + (h + sink) * abs(sn) ** (2 / nsup)
+            x *= np.interp(max(0.0, v / max(h, 1e-6)), *np.array(NS["side_taper"]).T)
             x += math.copysign(NS["fillet"] * (1 - abs(sn) ** (2 / nsup)) ** 2, x)  # its foot flares a little into the shield
             ring.append(carrier(sv_, x) + up3 * v)
         ring += [carrier(sv_, -w + 2 * w * i / 8) - up3 * sink for i in range(1, 8)]
@@ -539,12 +540,13 @@ def lion_nose(shield=None):
     forward, up = frame(s_front)
     a_ = math.radians(NS["face_angle_to_shield"])
     nf = math.sin(a_) * forward + math.cos(a_) * up
+    cap_up = norm(up - nf * (up @ nf))
     p0 = carrier(s_front) + up * (0.5 * float(hf(s_front)))
     R = float(wf(s_front))
     def face_d(P):
         rel = P - p0; d = rel @ nf
         ip = rel - np.outer(d, nf)
-        r2 = (ip[:, 0] / R) ** 2 + (ip @ up / (0.7 * R)) ** 2
+        r2 = (ip[:, 0] / R) ** 2 + (ip @ cap_up / (0.7 * R)) ** 2
         return d - NS["face_dome"] * np.clip(1 - r2, 0.0, 1.0)
     # End each meridian at the leather face. Projecting all the overshooting
     # rings onto it folds repeated sheets into the visible square flap.
@@ -586,11 +588,16 @@ def lion_nose(shield=None):
     e = face_d(V)
     NW = np.zeros(len(V))
     on_face = e > -bev * 0.6
-    yf = V[on_face, 1]; y0, y1 = yf.min(), yf.max()
+    cap_points = V[(len(rings) - 1) * M:]
+    yf = cap_points @ cap_up; y0, y1 = yf.min(), yf.max()
+    heights = np.linspace(y0, y1, 25)
+    half_widths = np.array([max(abs(cap_points[abs(yf - y) < (y1 - y0) / 12, 0]), default=R * 0.05) for y in heights])
     N_ = NS["nostril"]; C = np.array(N_["path"])  # (fraction of the cap's half-width out, fraction up the face)
     for i in np.where(e > -2.5 * bev)[0]:  # on the face and round its side-front edge
-        q = np.array([abs(V[i, 0]) / R, (V[i, 1] - y0) / max(y1 - y0, 1e-6)])
-        sc = np.array([R, y1 - y0])
+        height = V[i] @ cap_up
+        local_width = max(R * 0.1, float(np.interp(height, heights, half_widths)))
+        q = np.array([abs(V[i, 0]) / local_width, (height - y0) / max(y1 - y0, 1e-6)])
+        sc = np.array([local_width, y1 - y0])
         best, tb = 1e9, 0.0
         for k in range(len(C) - 1):
             a0, b0 = C[k], C[k + 1]; ab = (b0 - a0) * sc; qq = (q - a0) * sc
@@ -601,7 +608,7 @@ def lion_nose(shield=None):
         wN = N_["half_width"][0] + (N_["half_width"][1] - N_["half_width"][0]) * tb
         g = smoothstep(0.0, 1.0, max(0.0, 1 - best / wN))
         if g > 0:  # cut back into the nose, along the face's normal and in from its side
-            cut = nf + np.array([math.copysign(0.5 * smoothstep(0.7, 1.0, q[0]), V[i, 0]), 0.0, 0.0]); cut /= np.linalg.norm(cut)
+            cut = nf * N_["cut_forward"] + np.array([math.copysign(N_["cut_side"], V[i, 0]), 0.0, 0.0]); cut /= np.linalg.norm(cut)
             V[i] -= cut * N_["depth"] * g
             NW[i] = smoothstep(0.3, 0.75, g)
     faces = []
@@ -622,6 +629,10 @@ def lion_nose(shield=None):
             f = [k * M + i, k * M + (i + 1) % M, c]
             faces.append(f)
     tint = (math.sin(0 * 12.9898) * 43758.5453) % 1.0
+    if diagnostics is not None and shield is not None:
+        sh = np.array(shield[0]); chosen = (abs(sh[:, 0]) < 0.02) & (sh[:, 1] > UPPER[0, 1] - 0.008) & (sh[:, 2] > UPPER[0, 0] - 0.015)
+        edge = sh[chosen].copy(); edge[:, 2] = snout_z(premaxilla_z(edge[:, 2], edge[:, 1]))
+        diagnostics.update(clearance=float(max(edge @ forward) - max(V @ forward)), width=float(2 * R), forward=forward.tolist())
     return [tuple(p) for p in V], faces, [0.02] * len(V), [tint] * len(V), list(NW)
 
 _HORN_AXES = {}

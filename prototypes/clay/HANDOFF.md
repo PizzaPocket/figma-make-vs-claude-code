@@ -2,6 +2,35 @@
 
 State at the end of the session on branch `wings-of-fire-game`. Read with `CHECKLIST.md` (open fixes), `head/head_sheets.md` and `body/body_sheets.md` (what each part is and why), and the skill `.claude/skills/creature-sculpting/SKILL.md` (how we work).
 
+## Latest user review: outstanding anatomy and surface issues
+
+The user is listing additional known problems, not asking for all of them to be
+changed in one pass. They are recorded as open items in `CHECKLIST.md`:
+
+- Ear bases remain separated from the face; the ears must grow out of the cheek.
+- A patchy dark-brown gap breaks the dorsal head–neck transition.
+- An unidentified internal artifact clips into the back of the throat when the
+  jaw opens. Diagnose it before naming its cause. The mouth needs a coherent
+  interior designed for speech and fire-breathing poses.
+- Teeth still read as jagged shards; the user suspects insufficient density.
+  Reassess solid tooth anatomy, count and spacing against the art. Upper teeth
+  must root inside the upper gums/jaw and normally sit behind the upper lip,
+  rather than appearing attached along its edge. The old completed teeth item
+  is reopened. Treat mouth lining, gums, dentition and jaw movement together.
+- The wing-arm shoulder appears disconnected from the rest of the arm.
+- Wing fingers should move toward the carapace's surface style rather than the
+  present orange treatment.
+
+The user has explicitly rejected the nose in `ccd16b4`: it is still too far
+forward on the shield, the front sides should angle inward, and the nostrils'
+placement and orientation still need correction. The detailed nose checklist
+supersedes the older placement and nostril directions. Measure these features
+from the reference images before changing parameters again. The user also
+caught a flattened leather cap in an intermediate render: retain its raised,
+angled form while correcting the other features. Numerical construction checks
+did not establish a visual match; do not describe the nose as resolved.
+The historical "done" descriptions below are not approval of the reopened items.
+
 ## How the user works with us
 
 - They review rendered sheets and name what's wrong. Fix exactly that, at its source, then show them the same views next to the reference.

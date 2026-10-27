@@ -459,3 +459,25 @@ Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout co
   - **Placement:** the cap sits almost on the shield's front edge. Ahead of the top profile the nose runs on along the shield's measured front shelf (`lion_nose.front_run`), and its face lands 0.022 along it.
   - **Cap face:** a plane pitched forward 30° from upright and sloping down toward the tip, so its foot is ahead of its top. It is domed out 0.009 so it reads slightly convex. Leaning the other way, it undercut into a hood.
   - **Nostrils:** commas on the side-front edges, where the face turns into the sides (path in fractions of the cap's half-width and of the face's height). They are cut along the face's normal and in from the side.
+
+## Reference-calibrated nose pass
+
+The flight crop at source width 782 gives cap front about (732,449), shield rim
+(744,442), and a cap span around 48 px. That supports a visible clearance of
+roughly 0.25–0.30 cap widths, rather than the cap reaching the rim. On the actual
+shield mesh s=0.010 measured -0.0081 clearance; s=0.040 gave 0.0196 and s=0.070
+gave 0.0523. Interpolating to a 0.28-width target selects s=0.0555. Stations move
+together so bridge length, width and elevation are retained. This projected
+reference ratio is a fitting constraint, not a reconstructed exact 3D distance.
+
+The front side walls now taper inward toward the crown (`side_taper`), as the
+reference's triangular leather cap shows. Nostril height is measured along the
+cap's own up axis, and lateral placement is normalized by the cap's actual
+width at that height. The slit curls around the side-front rim and is cut mostly
+inward from the side, not into a flat frontal plane. The first taper preview
+showed why using the old constant width moved the nostril grooves inward; the
+width-dependent coordinates correct that.
+
+Rendered with `muzzle_correction` beside the official crops. This is a new
+reference review pass; the nose remains open on the checklist pending further
+visual assessment, especially its nostril rim and the transition into the shield.
