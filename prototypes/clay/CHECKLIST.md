@@ -34,7 +34,7 @@ Work top to bottom: the head first, because the neck and body join onto it. Tick
 - [ ] **Mane.** Not built.
 - [ ] **Wings.** First pass built in the side sheet's folded pose (`wing` in body_design.json): the arm along the flank, the forearm down to a low wrist with a thumb claw, four plated fingers with claws, and the membrane scalloped between the tips. Still to do: posing (the official art raises them), membrane colour and thickness at the edges, and plates with depth.
 - [ ] **Wing-arm shoulder continuity.** The user reports that the upper shoulder section appears disconnected from the rest of the wing arm. Make the shoulder, upper arm and subsequent arm structure read as one continuous anatomical limb, and verify the transition in folded and spread poses.
-- [ ] **Wing-finger surface.** The user finds the orange fingers inappropriate and proposes the same texture/style as the carapace. Use that as the requested direction for their surface treatment, checking the reference pattern and its flow along the fingers and joints.
+- [x] **Wing-finger surface.** The user finds the orange fingers inappropriate and proposes the same texture/style as the carapace. Implemented dark carapace treatment along every digit; checked with the final shaded folded and spread renders.
 - [ ] **Widths.** Body widths are estimates; check them against the front and three-quarter art.
 
 ## Checks (before ticking anything)
@@ -43,3 +43,29 @@ Work top to bottom: the head first, because the neck and body join onto it. Tick
 - Blend a true side view, framed at the side sheet's scale, over the side sheet.
 - Render three-quarter views at the angles of the official art and compare them side by side.
 - One commit and push per fix, with the design notes, element sheet and skill updated in the same commit.
+
+
+## Latest implementation and validation (2026-10-27)
+
+- Nose: setback, inward cap taper and surface-oriented nostrils implemented; the
+  attachment tangent now ignores individual plate grooves. Reference likeness
+  remains open, rather than being accepted from clearance measurements alone.
+- Mouth: independent floor/tongue bed, recessed throat chamber, weighted lining,
+  solid rooted crowns and palate-seated upper gums implemented. Final closed and
+  open poses are in `oral_review`. Boundary material-ID interpolation was also
+  corrected so lining does not render as unrelated horn/armor stripes.
+- Fire guide: five rays across a 0.024-wide bundle travel 0.8 units unobstructed
+  at jaw angle 0.85. This checks the emission guide, not a fire effect or every
+  possible talking pose.
+- Teeth: both crown meshes have zero nonmanifold edges and zero degenerate
+  triangles. Upper crowns are hidden in the neutral rendered bite.
+- Ears: 42 root samples per ear are seated 0.004 inside final skin; corresponding
+  root loops and local cheek relaxation replace the earlier twisted footprint.
+  Root shape and the ear opening still need likeness/detail work.
+- Neck: fitted collar, matched weights and restored dorsal shell thickness are
+  implemented. The surface still needs aesthetic smoothing and plate-flow review.
+- Wings: each arm and armor shell is a single connected component; chest/humerus
+  attachment endpoints are separate. Folded, intermediate and spread renders
+  show continuous underlying skin. Armor transitions still warrant polish.
+- Final glTF: finite positions, nonnegative weights and maximum weight-sum error
+  1.8e-7. Python compilation, JavaScript syntax and whitespace checks pass.

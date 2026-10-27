@@ -297,3 +297,9 @@ Match root and leaf loop ordering before fitting to final body skin. A small
 root distance cannot detect a twisted fillet. Protect the face seam when relaxing
 a corrugated welded cheek. Restore dorsal armor thickness independently from the
 cheek-edge taper, and carry matching bone weights at the collar boundary.
+
+
+### Moving wing attachments
+A muscle bridging chest and wing needs per-endpoint attachment frames, not one
+dominant transform. Check the connected underlying mesh in folded, intermediate
+and spread poses before judging the decorative armor over it.

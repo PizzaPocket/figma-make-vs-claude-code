@@ -611,7 +611,7 @@ def spar(name, pts, radii, bn, around=12):
     (no plates). bn: one bone name, or a function of the fraction along it giving the bone."""
     v, f, A, _ = H.tube(pts, radii, around=around, step=0.004)
     total = sum(float(np.linalg.norm(np.subtract(pts[k + 1], pts[k]))) for k in range(len(pts) - 1))
-    Bq = [0.0] * len(v)
+    Bq = [1.0] * len(v)  # carapace treatment follows the complete digit
     w = [[(bn(a) if callable(bn) else bn, 1.0)] for a in A]
     return H.add_part(name, v, f, {"_PART": [24] * len(v), "_A": [a * total for a in A], "_B": Bq, "_ZONE": [0] * len(v)}, w)
 
@@ -674,7 +674,8 @@ def wing_arm(sgn, sd):
     J, _, carry, _, _ = wing_pose(sgn)
     def posed(spec):  # each piece rides the bone that carries most of it
         bone = max(spec["rig"].items(), key=lambda kv: kv[1])[0]
-        return dict(spec, **{"from": carry(spec["from"], bone).tolist(), "to": carry(spec["to"], bone).tolist()})
+        attachment = spec.get("endpoint_rig", {})
+        return dict(spec, **{"from": carry(spec["from"], attachment.get("from", bone)).tolist(), "to": carry(spec["to"], attachment.get("to", bone)).tolist()})
     parts = [SK.Piece(posed(b), sgn, "bone") for b in an["bones"]] + [SK.Piece(posed(m), sgn, "muscle") for m in an["muscles"]]
     V, F = SK.mesh(None, parts, an["resolution"])
     W = SK.piece_weights(V, parts)

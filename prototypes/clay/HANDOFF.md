@@ -59,9 +59,9 @@ Session-start hook to add to `.claude/settings.json` (not added automatically):
 
 - **Roof:** a gable (crisp ridge, mirrored plate pairs), its top on the side sheet's traced outline. The front band is one piece and carries on down the snout's front as the **front ridge** (`front_skirt` in `build_head.py`). Its bottom edge meets the orange front muzzle at y 1.37 and rises with the lip's lifted corners.
 - **Front muzzle:** no flat front wall. Its front is convex (from above and in profile), its lip edge arcs down, and its corners pull up. The lip starts at the **bite point** (z 1.86); the front muzzle's underside has no teeth.
-- **Nose:** an extruded shield-section mass coming out of the roof's front; the user said to leave it as it is.
+- **Nose (historical):** superseded by the reference-calibrated raised cap described below; the user rejected the previous placement.
 - **Jaw:** a separate piece outlined by the traced line, with a jowl and pebble skin.
-- **Teeth:** flat blades, a front row across the bite plus side rows, each perpendicular to its lip edge with the tip raked back.
+- **Teeth (historical):** superseded by solid recurved crowns seated inside gum beds.
 - **Eye:** round, with a dark-brown iris and a rich brown rim (opening and lids since rebuilt, below).
 
 ## Eye (done in the next session)
@@ -79,3 +79,35 @@ Rebuilt simply: the opening is one teardrop outline (round eye, inner corner dra
 5. Ear curl and jaw back edge (see `CHECKLIST.md`).
 
 Then the neck and body items in `CHECKLIST.md`.
+
+
+## Current anatomy build (2026-10-27)
+
+`out/body-anatomy-final.glb` is the full-body build with the oral chamber, lowered
+independent tongue/floor bed, post-warp dentition, corresponding ear-root loops,
+fitted dorsal collar, restored dorsal shell thickness, moving wing-muscle endpoints
+and dark carapace wing digits. `out/body-parts.blend` is its unjoined inspection
+cache; `body-final-parts.blend` is an older rejected intermediate and must not be
+used as the final source. Output and reference assets remain ignored.
+
+The successful build alone does not close the user's review issues. Check the
+`oral_review`, `join_review` and `muzzle_correction` sheets using this final GLB.
+The prior throat obstruction was identified as body skin at the tongue root,
+partly caused by using the ascending jaw crest as the oral floor. Upper teeth
+previously also warped with the snout; they now seat against the final palate.
+
+Keep nose likeness, wide-gape throat/fire-path clearance, ear integration and
+dorsal collar animation open until their final renders support acceptance. Fire
+breathing currently has an attachment guide only, not effects or a fire animation.
+
+
+Final verification: `out/oral_review-final.jpg`, `out/join_review-final.jpg` and
+`out/muzzle_correction-final.jpg` use the rebuilt full-body GLB and the actual
+three.js shaders. The final oral lining uses a negative zone mask within the
+body's existing material family; never restore ID 3/20 interpolation across
+triangles, which produced false teeth/horn/armor streaks. Five guide rays at a
+0.85-radian gape have no mesh hits over 0.8 units. This is a finite emission-path
+check, not completed fire effects or exhaustive speech validation. Exported
+weights are normalized even though the unjoined Blender cache retains some
+unnormalized influence totals. The open checklist distinguishes implemented
+geometry from reference likeness and remaining surface polish.

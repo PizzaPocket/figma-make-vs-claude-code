@@ -362,3 +362,10 @@ cheek taper. Inspect from behind and during head turns for overlap or a visible 
 The welded cheek below the ear is relaxed within a bounded patch, protecting the
 fitted face seam and preserving the ear leaf. This addresses field-sampling
 corrugation, distinct from the root's attachment distance.
+
+Wing shoulder: the muscle previously followed one dominant bone at both endpoints.
+`endpoint_rig` preserves its chest anchor while the insertion follows the humerus,
+so the muscle connects the torso to the wing arm during construction of each pose.
+Wing digits now use the carapace treatment along their complete length. Inspect
+folded, intermediate and spread poses; decorative armor gaps must not conceal a
+disconnected underlying limb. Final shader renders use `join_review`.
