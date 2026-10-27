@@ -481,3 +481,10 @@ width-dependent coordinates correct that.
 Rendered with `muzzle_correction` beside the official crops. This is a new
 reference review pass; the nose remains open on the checklist pending further
 visual assessment, especially its nostril rim and the transition into the shield.
+
+
+### Stable shield attachment frame
+Fit the anatomical tangent across a 0.05 span, rather than following individual
+plate grooves. Final measured cap clearance is 0.0333 at width 0.1300 (0.256
+widths), within the projected 0.25–0.30 reference constraint. Nose silhouette and
+nostril likeness remain subject to reference review.

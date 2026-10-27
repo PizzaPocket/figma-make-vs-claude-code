@@ -274,3 +274,9 @@ Measure visible shield clearance relative to cap width before choosing setback.
 An inward-tapered cap needs width-dependent nostril coordinates at each height;
 a constant half-width misplaces the openings. Use the cap's up axis and side
 normal, rather than world height and a front-only cut direction.
+
+
+### Attachment tangent stability
+Fit an attachment frame over the anatomical surface's local neighborhood, not
+across one decorative groove; otherwise moving a cap slightly can change its
+orientation sharply. Check placement and cap tilt independently.

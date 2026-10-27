@@ -516,7 +516,12 @@ def lion_nose(shield=None, diagnostics=None):
         base[2] = snout_z(premaxilla_z(np.array(base[2]), np.array(base[1])))
         return base
     def frame(sv_):
-        forward = carrier(sv_ - 0.004) - carrier(sv_ + 0.004)
+        # An attachment follows the anatomical shield plane, not each tiny
+        # plate groove. Fit a tangent over a short neighborhood to avoid
+        # abrupt cap-angle changes when its position crosses a groove.
+        offsets = np.linspace(-NS["frame_span"], NS["frame_span"], 9)
+        points = np.array([carrier(sv_ + offset) for offset in offsets])
+        forward = -(offsets @ points) / (offsets @ offsets)
         forward[0] = 0; forward /= np.linalg.norm(forward)
         up = np.array([0.0, forward[2], -forward[1]])
         return forward, up

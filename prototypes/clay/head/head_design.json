@@ -846,6 +846,7 @@
     "note": "User: the orange muzzle front must turn down nearly perpendicular to the shield plane, not just lose its bulge. Shared anterior-maxilla field extends the crown over the alveolar base while leaving the lip, tooth bed and lower-jaw closure fixed. Chosen from the measured shield/front plane relationship; checked against How to Draw and the flight cover, whose front turns down from the shield. Applies before snout_turn to all parts, shape keys and bone anchors."
   },
   "lion_nose": {
+    "frame_span": 0.025,
     "note": "A short lion-like bridge seated on the actual shield surface, with a raised, angled leather cap. The shield is deformed first; the nose is then built in its orthonormal local frame, so the muzzle correction cannot shear the cap flat. The cap terminates the loft with one disk instead of collapsing overshooting rings into a flap. Same base material as the shield; nostrils remain carved geometry.",
     "stations": [
       [0.0175, 0.0625, 0.048],
