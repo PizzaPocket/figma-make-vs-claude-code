@@ -46,9 +46,6 @@
           if (isP(1.0) > 0.5) { // orange face with pebble scales
             float pe = (1.0 - smoothstep(0.02, 0.05, cellEdge(vObj * 30.0))) * (1.0 - vAB.z); // the overhang's underside is smooth skin
             col = mix(orange, line, pe * 0.22);
-            float ear = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.410, vObj.y - 1.652)));
-            float pit = 1.0 - smoothstep(0.004, 0.008, length(vec2(vObj.z - 1.796, vObj.y - 1.505)));
-            col = mix(col, line * 0.5, max(ear, pit) * step(0.08, abs(vObj.x)));
             groove = pe * 0.5;
           }
           if (isP(10.0) > 0.5) { // roof: overlapping bands (geometry), outlined at each band's back edge and along the eave
@@ -84,9 +81,6 @@
             float mer = (1.0 - smoothstep(0.004, 0.008, abs(vObj.x))) * smoothstep(0.1, 0.25, vAB.x) * (1.0 - smoothstep(1.35, 1.55, vAB.x)) * smoothstep(0.5, 0.8, vAB.y);
             belly = mix(belly, line, mer * 0.55); // the meridian: a seam down the middle of the plates, throat to mid-thorax (How to Draw, box set)
             col = zv < 0.5 ? mix(back, side, zv * 2.0) : mix(side, belly, zv * 2.0 - 1.0);
-            // the ear opening sits on the cheek line, so half of it is on this skin (the head's, behind the line)
-            float earHole = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.410, vObj.y - 1.652)));
-            col = mix(col, line * 0.5, earHole * step(0.08, abs(vObj.x)));
             groove = pe * 0.3 * (1.0 - abs(zv - 0.5) * 2.0) + mer * 0.5 * smoothstep(0.5, 1.0, zv);
             col = mix(col, srgb(vec3(92.0, 26.0, 32.0)), lining);
             rough = mix(rough, 0.4, lining); groove *= 1.0 - lining;

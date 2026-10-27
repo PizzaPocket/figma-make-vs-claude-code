@@ -303,3 +303,9 @@ cheek-edge taper, and carry matching bone weights at the collar boundary.
 A muscle bridging chest and wing needs per-endpoint attachment frames, not one
 dominant transform. Check the connected underlying mesh in folded, intermediate
 and spread poses before judging the decorative armor over it.
+
+
+### Unexplained dark marks
+Trace conspicuous spots to shader masks as well as geometry. A circular paint
+mask can look like a hole even when the mesh is continuous; remove the mask
+when the user rejects the mark rather than adding geometry to conceal it.

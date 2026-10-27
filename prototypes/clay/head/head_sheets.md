@@ -516,3 +516,11 @@ The final render also exposed a categorical-shader boundary bug: interpolating
 lining ID 3 to skin ID 20 drew unrelated material bands across throat triangles.
 The body keeps ID 20 and carries a continuous lining mask in the zone channel,
 separate from the mask used to suppress internal armor.
+
+
+## User review: unexplained cheek and snout dots
+The two black circles were shader paint, not holes or mesh artifacts: `ear` and
+`earHole` painted a circle at (z 1.410, y 1.652) on both sides of the cheek weld,
+and `pit` painted the smaller snout dot at (z 1.796, y 1.505). Removed all three
+shader masks at the user's request. This leaves the underlying cheek and snout
+surfaces intact. Judge their actual anatomy in the new `surface_review` sheet.
