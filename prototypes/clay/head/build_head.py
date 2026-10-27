@@ -1153,6 +1153,7 @@ def warp_snout(objs, bones):
 
 
 def ear_part(sgn):
+    """A cupped ear with a footprint corresponding to its inner/outer section."""
     rigid = lambda n: [[("head", 1.0)]] * n
     objs = []
     # ear: a flap of skin on a thin stalk growing out of the face's flesh at the top-back corner of the cheek (where
@@ -1190,15 +1191,17 @@ def ear_part(sgn):
     # the footprint: an oval on the face round the root, the hollow's side forward-out, the back's side behind
     Ls = norm(np.array([0.0, L[1], L[2]])); Ws = norm(np.array([0.0, W[1], W[2]]))
     foot = []
-    for k in range(M):
-        ph = math.pi * (k / (M - 1)) * 2 - math.pi / 2
-        yz = b_yz + (Ws[1:] * FRILL["foot"][1] * math.sin(ph) + Ls[1:] * FRILL["foot"][0] * (1 + math.cos(ph)) * 0.5)
-        foot.append(np.array([sgn * (face_x(*yz) - 0.002), *yz]))
+    for layer, j in loop:
+        c = -1 + 2 * j / H
+        cross = c * FRILL["foot"][1]
+        depth = (2 * layer - 1) * FRILL["foot"][0] * math.sqrt(max(0.0, 1 - c * c))
+        yz = b_yz + Ws[1:] * cross + Ls[1:] * depth
+        foot.append(np.array([sgn * (face_x(*yz) - 0.004), *yz]))
     vs, fs, us, bs, zs = [], [], [], [], []
     for i in range(G + 1):
         for k, (layer, j) in enumerate(loop):
             if i <= NF:  # the fillet: from the footprint on the face, rising tangentially into the section
-                e = (i / NF) ** 2
+                e = smoothstep(0.0, 1.0, i / NF)
                 P = foot[k] + (sec1[k] - foot[k]) * e
                 us.append(-1.0 + i / NF)
             else:

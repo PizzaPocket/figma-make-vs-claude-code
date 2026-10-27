@@ -945,5 +945,26 @@
         "height": [[1.6, 0.045], [2.3, 0.05], [2.7, 0.065], [3.5, 0.06], [4.3, 0.045], [5.0, 0.025]]
       }
     ]
+  },
+  "surface_joins": {
+    "ear_skin_relax": {
+      "center_yz": [1.745, 1.415],
+      "radius_yz": [0.10, 0.095],
+      "iterations": 24,
+      "why": "Relax welded-section corrugation below the ear; protect the fitted cheek seam and the ear leaf."
+    },
+    "ear_embed": 0.004,
+    "collar_width": 0.06,
+    "collar_gap": 0.003,
+    "collar_max_distance": 0.08,
+    "why": "Fit ear root footprints to the actual body skin and blend the dorsal head shield onto the final neck shell with matching bone weights; do not use the standalone face as a proxy.",
+    "dorsal_restore_y": [
+      1.78,
+      1.84
+    ],
+    "dorsal_restore_x": [
+      0.12,
+      0.22
+    ]
   }
 }

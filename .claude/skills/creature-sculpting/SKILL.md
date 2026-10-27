@@ -290,3 +290,10 @@ material IDs constant within a surface family: interpolating lining ID 3 to skin
 ID 20 shades intermediate pixels as unrelated teeth, horn and armor materials.
 Use a continuous lining mask instead, and keep that shading mask separate from
 the shell-generation mask.
+
+
+### Fitted roots and collars
+Match root and leaf loop ordering before fitting to final body skin. A small
+root distance cannot detect a twisted fillet. Protect the face seam when relaxing
+a corrugated welded cheek. Restore dorsal armor thickness independently from the
+cheek-edge taper, and carry matching bone weights at the collar boundary.

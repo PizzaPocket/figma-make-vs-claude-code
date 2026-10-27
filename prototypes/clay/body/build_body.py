@@ -364,6 +364,14 @@ def skin_parts(ranges, ear_pts=None):
     coordinates), which the shell keeps clear of by design (anatomy.ear_clearance)."""
     trunk, parts = _SKIN["trunk"], _SKIN["parts"]
     V, F = SK.mesh(trunk, parts, B["anatomy"]["resolution"])
+    # Relax only the welded cheek behind the ear; keep the fitted face seam fixed.
+    patch = B["surface_joins"]["ear_skin_relax"]
+    center = np.array(patch["center_yz"]); radii = np.array(patch["radius_yz"])
+    dist = np.linalg.norm((V[:, 1:] - center) / radii, axis=1)
+    blend = (1 - smoothstep_v(0.3, 1.0, dist)) * smoothstep_v(0.008, 0.025, -_SKIN["cheek_dz"](V))
+    for _ in range(patch["iterations"]):
+        relaxed = np.stack([SK.smooth_on_mesh(V, F, V[:, k], iters=1) for k in range(3)], axis=1)
+        V += (relaxed - V) * blend[:, None]
     # the spine position for the spine bones' weights, smoothed over the skin: on the inside of the neck's bend the
     # nearest spine station flips between stations far apart from one vertex to the next, which made the weights
     # jump and the neck crease in bands as it bent
@@ -404,6 +412,9 @@ def skin_parts(ranges, ear_pts=None):
     S, SF, src, ink, tint = SK.shell(V, F, Z, sh, SK.smooth_normals(V, F), trunk.s[idx], np.array(Bf), band)
     if "cheek_dz" in _SKIN:  # the shell and its rim run out into the cheek line, where the head's surface takes over
         t = 1 - smoothstep_v(-B["anatomy"]["head_weld"]["shell_taper"], 0.0, _SKIN["cheek_dz"](S))
+        joins = B["surface_joins"]
+        dorsal = smoothstep_v(*joins["dorsal_restore_y"], S[:, 1]) * (1 - smoothstep_v(*joins["dorsal_restore_x"], abs(S[:, 0])))
+        t = np.maximum(t, dorsal)  # the dorsal armor continues across the join; only the cheek rim runs out
         S = V[src] + (S - V[src]) * t[:, None]
     if ear_pts is not None and len(ear_pts):
         # clear of the ears by design: within the margin of an ear's mesh the shell lies flush on the skin, so its
@@ -822,6 +833,66 @@ def wing(sgn):
     return parts, bones, {f"{n}.{sd}": v for n, v in fold.items()}
 
 
+def fit_surface_joins(objs, skin, shell):
+    """Seat ear roots and the dorsal head-shield boundary on final body surfaces."""
+    from mathutils.bvhtree import BVHTree
+    settings = B["surface_joins"]
+    def tree(obj):
+        return BVHTree.FromPolygons([tuple(v.co) for v in obj.data.vertices], [list(p.vertices) for p in obj.data.polygons])
+    skin_tree = tree(skin)
+    root_error = []
+    for ear in (o for o in objs if o.name.startswith("Frill")):
+        attributes = ear.data.attributes["_ABZ"]
+        along = np.array([a.vector.x for a in attributes.data])
+        count = int(np.count_nonzero(np.isclose(along, -1.0)))
+        if not count:
+            raise ValueError("ear has no root footprint")
+        offsets = []
+        for i in range(count):
+            point = ear.data.vertices[i].co.copy(); sign = 1 if point.x > 0 else -1
+            origin = point.copy(); origin.x = sign * 2
+            hit, normal, _, _ = skin_tree.ray_cast(origin, (-sign, 0, 0), 4)
+            if hit is None:
+                raise ValueError("ear root misses body skin")
+            target = hit - normal * settings["ear_embed"]
+            offsets.append(np.array(target - point))
+        for i, vertex in enumerate(ear.data.vertices):
+            if along[i] < 0:
+                w = 1 - smoothstep(-1.0, 0.0, float(along[i]))
+                vertex.co += __import__('mathutils').Vector(offsets[i % count] * w)
+        for vertex in ear.data.vertices[:count]:
+            _, _, _, distance = skin_tree.find_nearest(vertex.co)
+            root_error.append(distance)
+        ear.data.update()
+    shell_tree = tree(shell)
+    shield = next(o for o in objs if o.name == "Shield")
+    changed = 0
+    for vertex in shield.data.vertices:
+        z = -vertex.co.y
+        w = 1 - smoothstep(H.ROOF["back_z"], H.ROOF["back_z"] + settings["collar_width"], z)
+        if w <= 0:
+            continue
+        hit, normal, polygon, distance = shell_tree.find_nearest(vertex.co)
+        if distance > settings["collar_max_distance"]:
+            continue
+        vertex.co = vertex.co.lerp(hit + normal * settings["collar_gap"], w)
+        # Match the neck weights at the boundary, fading into the rigid head.
+        candidates = shell.data.polygons[polygon].vertices
+        nearest = min(candidates, key=lambda j: (shell.data.vertices[j].co - hit).length_squared)
+        weights = {"head": 1 - w}
+        for g in shell.data.vertices[nearest].groups:
+            name = shell.vertex_groups[g.group].name
+            weights[name] = weights.get(name, 0) + g.weight * w
+        for group in list(shield.vertex_groups):
+            group.remove([vertex.index])
+        for name, value in weights.items():
+            group = shield.vertex_groups.get(name) or shield.vertex_groups.new(name=name)
+            group.add([vertex.index], value, 'REPLACE')
+        changed += 1
+    shield.data.update()
+    print('Surface joins:', {'ear_root_max_distance': max(root_error, default=0), 'shield_vertices_blended': changed}, flush=True)
+
+
 def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     tb, ranges = trunk_bones()
@@ -833,6 +904,7 @@ def main():
     if ear_pts is not None:
         ear_pts = np.stack([ear_pts[:, 0], ear_pts[:, 2], -ear_pts[:, 1]], 1)  # Blender's frame back to the model's
     skin, shell = skin_parts(ranges, ear_pts)
+    fit_surface_joins(objs, skin, shell)
     objs += [skin, shell]
     objs += spike_parts(ranges, band)
     neck_end = TR["bones"]["chain_forward"][-1][0]

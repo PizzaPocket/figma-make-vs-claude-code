@@ -260,18 +260,32 @@
   },
   "ear_frill": {
     "note": "Measured on the side sheet (frill crop, px 205-262, py 188-224): an almond leaf about 0.18 long and 0.06 wide, from its base at the back of the cheek (front-lower end) back and up to its tip under the horn. It lies close along the side of the head, its face turned outward (the side sheet shows its whole face), cupped like a horse's ear laid back: pale peach hollow inside, an orange rim, the top edge rolled out and over. Its top edge runs back under the horn. Tip re-measured on the gridded crop (px 258, py 190): it had been placed 0.05 too far back and 0.04 too high, so it stood up behind the horn like a spike. Seated outside the neck's shell (whose rim stands at x 0.26-0.27 under the ear's base, probed on the built model), so it shows as a leaf at the back corner of the head, angled a little out toward its tip, as on the Dragonet Prophecy cover.",
-    "base": [0.0, 1.785, 1.47],
-    "tip": [0.24, 1.866, 1.289],
+    "base": [
+      0.0,
+      1.785,
+      1.47
+    ],
+    "tip": [
+      0.24,
+      1.866,
+      1.289
+    ],
     "width": 0.08,
     "face_up": 0.1,
     "face_forward": 0.12,
-    "roll_deg": [110, 165],
+    "roll_deg": [
+      110,
+      165
+    ],
     "depth": 0.85,
     "thickness": 0.008,
     "body": 0.006,
-    "stand_off": 0.008,
+    "stand_off": 0.002,
     "fillet_a": 0.12,
-    "foot": [0.03, 0.022],
+    "foot": [
+      0.015,
+      0.009
+    ],
     "construction_note": "A flap of skin on a thin stalk out of the face's flesh (user: not a solid wedge; a flap that extends from a thin stalk base from the flesh of the face and curls round like a tulip, orange flesh outside and cream inside). Stalk 0.18 of the widest half-width at the root, widest at 0.55 of the length, narrowing to the tip; the section an arc curling 110 degrees at the lower edge and 165 at the upper front edge (the rolled rim the side sheet draws); a thin sheet (0.008) closed round its edges; footprint on the face 0.03 x 0.022, the stalk rising out of it over the first eighth.",
     "stalk": 0.18,
     "widest_at": 0.55
@@ -764,7 +778,7 @@
       "tuck_up": 0.065,
       "inset_note": "From the tucked lip edge: the upper teeth stand just outside the lower ones (lower inset 0.016 from the jaw edge).",
       "outside_lower": 0.03,
-      "outside_note": "The upper tooth row sits 0.01 outside the lower one (whose row is 0.016 inside the jaw's edge), never outside the lip. Placed from the lip alone, the back upper tooth stood outside the lower jaw at the mouth corner and hung down past it as a blade."
+      "outside_note": "The upper row is limited to the smaller of the tucked upper-lip width and the lower tooth-row width plus outside_lower; it never crosses the upper lip. Placed from the lip alone, the back upper tooth stood outside the lower jaw at the mouth corner and hung down past it as a blade."
     },
     "lower": {
       "z": [

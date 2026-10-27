@@ -341,3 +341,24 @@ Tapering to a point, the tail's last 0.16 was thinner than the skin's mesh spaci
 
 ## Neck carapace meets the head's shield above the ear (walkthrough)
 The neck's dark shell started at a traced side-view edge at y 1.72–1.74 behind the head: below the ear, with its rolled rim hooking under it, discontinuous with the head's shield (user). Behind the head the neck's top line (y 1.84–1.86) is lower than the ear's top edge (1.88), because the ear lies high on the side of the neck, so no side-view line can run above the ear. The shell there is now a band over the top of the neck, defined by its place round the body: to 0.24 of the way round from s 0 to 0.3, fading out by s 0.5 (`zones.neck_top_band`). It runs on from the head's shield, above the ear, and hands over to the traced side line further back; the front of that line now descends behind the ear. Remaining: a small corner in the shell's edge where the band meets the line.
+
+
+## Ear, dorsal collar and wing continuity correction
+
+Ear root: the old oval footprint did not correspond to the inner/outer ear loop,
+twisting the fillet into angular blocks. The footprint now uses the same cross-
+section ordering as the leaf. Its 42 root samples are ray-seated 0.004 inside the
+finished body skin, with the displacement fading through the fillet. Tip/curl
+positions are retained. This corrects attachment geometry; ear opening/curl detail
+remains separate review work.
+
+Dorsal collar: fit the last 0.06 of the head shield to the finished neck shell,
+with 0.003 clearance and matching neck weights at the boundary. The previous
+cheek-shell taper also erased armor thickness across the crown. Restore thickness
+over the dorsal center using `surface_joins.dorsal_restore_y/x`, retaining the
+cheek taper. Inspect from behind and during head turns for overlap or a visible seam.
+
+
+The welded cheek below the ear is relaxed within a bounded patch, protecting the
+fitted face seam and preserving the ear leaf. This addresses field-sampling
+corrugation, distinct from the root's attachment distance.

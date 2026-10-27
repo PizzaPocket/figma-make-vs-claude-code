@@ -1159,5 +1159,286 @@
    },
    "clay": true
   }
+ ],
+ "oral_review": [
+  {
+   "cam": [
+    2.1,
+    1.95,
+    3.6
+   ],
+   "target": [
+    0,
+    1.5,
+    1.75
+   ],
+   "fov": 26,
+   "label": "Neutral: upper teeth concealed"
+  },
+  {
+   "cam": [
+    2.1,
+    1.95,
+    3.6
+   ],
+   "target": [
+    0,
+    1.5,
+    1.75
+   ],
+   "fov": 26,
+   "label": "Speech: partial gape",
+   "pose": {
+    "jaw": 0.25,
+    "tongue": 0.2
+   }
+  },
+  {
+   "cam": [
+    2.1,
+    1.95,
+    3.6
+   ],
+   "target": [
+    0,
+    1.5,
+    1.75
+   ],
+   "fov": 26,
+   "label": "Open: gums and solid crowns",
+   "pose": {
+    "jaw": 0.65
+   }
+  },
+  {
+   "label": "Flight reference: tooth rows and cavity",
+   "ref": "{refs}/study/muzzle_flight_review.png"
+  },
+  {
+   "label": "Front: recessed throat",
+   "cam": [
+    0,
+    1.3,
+    4
+   ],
+   "target": [
+    0,
+    1.42,
+    1.65
+   ],
+   "fov": 19,
+   "pose": {
+    "jaw": 0.65
+   }
+  },
+  {
+   "label": "Fire-breathing gape",
+   "cam": [
+    2.1,
+    1.5,
+    3.6
+   ],
+   "target": [
+    0,
+    1.35,
+    1.72
+   ],
+   "fov": 25,
+   "pose": {
+    "jaw": 0.85
+   }
+  },
+  {
+   "label": "Reference: mouth detail",
+   "ref": "{refs}/study/mouth_teeth_grid.jpg"
+  },
+  {
+   "cam": [
+    2.1,
+    1.95,
+    3.6
+   ],
+   "target": [
+    0,
+    1.5,
+    1.75
+   ],
+   "fov": 26,
+   "label": "Tongue lifted for speech",
+   "pose": {
+    "jaw": 0.45,
+    "tongue": 0.65
+   }
+  },
+  {
+   "cam": [
+    2.1,
+    1.95,
+    3.6
+   ],
+   "target": [
+    0,
+    1.5,
+    1.75
+   ],
+   "fov": 26,
+   "label": "Plain clay: open jaw",
+   "pose": {
+    "jaw": 0.65
+   },
+   "clay": true
+  }
+ ],
+ "join_review": [
+  {
+   "label": "Ear roots, neutral",
+   "cam": [
+    2,
+    2,
+    1.35
+   ],
+   "target": [
+    0,
+    1.78,
+    1.42
+   ],
+   "fov": 13
+  },
+  {
+   "label": "Ear roots, head turned",
+   "cam": [
+    2,
+    2,
+    1.35
+   ],
+   "target": [
+    0,
+    1.78,
+    1.42
+   ],
+   "fov": 18,
+   "pose": {
+    "head": [
+     0.1,
+     0.3
+    ]
+   }
+  },
+  {
+   "label": "Dorsal neck join",
+   "cam": [
+    2.6,
+    2.5,
+    0.1
+   ],
+   "target": [
+    0,
+    1.72,
+    1.32
+   ],
+   "fov": 24
+  },
+  {
+   "label": "Dorsal join, head turned",
+   "cam": [
+    2.6,
+    2.5,
+    0.1
+   ],
+   "target": [
+    0,
+    1.72,
+    1.32
+   ],
+   "fov": 24,
+   "pose": {
+    "head": [
+     0.1,
+     0.3
+    ]
+   }
+  },
+  {
+   "label": "Wing shoulder: folded",
+   "cam": [
+    2.5,
+    1.8,
+    1.1
+   ],
+   "target": [
+    0.5,
+    1,
+    0.2
+   ],
+   "fov": 28,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Wing shoulder: midway",
+   "cam": [
+    2.5,
+    1.8,
+    1.1
+   ],
+   "target": [
+    0.5,
+    1,
+    0.2
+   ],
+   "fov": 36,
+   "pose": {
+    "wings": 0.5
+   }
+  },
+  {
+   "label": "Wing shoulder: spread",
+   "cam": [
+    2.5,
+    1.8,
+    1.1
+   ],
+   "target": [
+    0.5,
+    1,
+    0.2
+   ],
+   "fov": 36,
+   "pose": {
+    "wings": 0
+   }
+  },
+  {
+   "label": "Carapace wing fingers",
+   "cam": [
+    5,
+    4.5,
+    6.5
+   ],
+   "target": [
+    0,
+    0.8,
+    0
+   ],
+   "fov": 46,
+   "pose": {
+    "wings": 0
+   }
+  },
+  {
+   "label": "Current full body",
+   "cam": [
+    6,
+    3.1,
+    8
+   ],
+   "target": [
+    0,
+    1.15,
+    0.1
+   ],
+   "fov": 24
+  }
  ]
 }
