@@ -51,7 +51,7 @@
       },
       "convex": 0.025,
       "lip_arc_power": 2,
-      "convex_side": 0.035,
+      "convex_side": 0.016,
       "whisker_pads": {
         "centre_xy": [0.035, 1.33],
         "radii": [0.055, 0.03],
@@ -61,8 +61,8 @@
         "note": "A male lion's muzzle under the nose (user: a lion's nose on a dinosaur's mouth): two fleshy whisker pads swelling forward 0.008 either side of the philtrum's groove, on the orange front below the shield's rim, over the front teeth. Sculpted into the front face (front_setback), so the shield's front skirt above follows them.",
         "width_note": "Broad (0.055 across) so each pad merges into the front's rounding: narrower (0.03), they left a valley at x 0.08 between pad and corner, measured concave across at every height."
       },
-      "convex_side_note": "The orange front below the shield bulges forward 0.03 at mid-height (was 0.016): with the shield's skirt standing proud above it and the lip rolling out below, a flatter front read as a concave channel (user).",
-      "convex_note": "Walkthrough (user: the front is still concave): measured on the centre line the front was convex in profile, but across it the whisker pads and the philtrum's groove and the shield's skirt standing 0.012 proud above it read as a hollow band. It now bulges 0.045 at mid-height (flush with the skirt's edge), rounds 0.035 across, and the philtrum is a faint groove (0.002).",
+      "convex_side_note": "Front curvature is secondary to the plane relationship: convex_side 0.016 keeps a soft convex face, while premaxilla.crown_extension sets the near-right-angle turn from the shield to the lip. The lip edge and alveolar base are held, rather than tilting the lower jaw.",
+      "convex_note": "The front still rounds across by 0.025, with subtle paired pads and a shallow philtrum. Do not restore the old 0.035 side bulge to correct the front angle: change the premaxilla frame and check both planes.",
       "across_power": 2.5
     },
     "lip_tuck": {
@@ -839,18 +839,24 @@
     "subdivide": 2,
     "edge_gap": 0.002
   },
+  "premaxilla": {
+    "from_z": 1.8,
+    "full_z": 2.017,
+    "crown_extension": 0.2,
+    "note": "User: the orange muzzle front must turn down nearly perpendicular to the shield plane, not just lose its bulge. Shared anterior-maxilla field extends the crown over the alveolar base while leaving the lip, tooth bed and lower-jaw closure fixed. Chosen from the measured shield/front plane relationship; checked against How to Draw and the flight cover, whose front turns down from the shield. Applies before snout_turn to all parts, shape keys and bone anchors."
+  },
   "lion_nose": {
-    "note": "A male lion's nose on the front of the muzzle shield (user, walkthrough): a short bridge (s 0.13 to the cap, about 0.06 long) rising out of the shield's top just behind its front, flat-topped with crisp corners to upright sides (squareness 7), ending in the leather cap, whose front is its own flat face (the nose leather, 0.72 of the cap's section) with a small bevel (0.008) round its edge, set just behind the shield's front edge (s_front 0.012) so the shield's rim carries on round the front ahead of it. Before: the bridge ran from mid-muzzle (s 0.30), too long, too high on the shield, its section soft and its front a dome. Same material as the shield. s is distance along the top profile from the shield's front edge (before the snout warp).",
+    "note": "A short lion-like bridge seated on the actual shield surface, with a raised, angled leather cap. The shield is deformed first; the nose is then built in its orthonormal local frame, so the muzzle correction cannot shear the cap flat. The cap terminates the loft with one disk instead of collapsing overshooting rings into a flap. Same base material as the shield; nostrils remain carved geometry.",
     "stations": [
-      [-0.06, 0.05, 0.048],
-      [-0.02, 0.052, 0.046],
-      [0.01, 0.049, 0.036],
-      [0.035, 0.044, 0.022],
-      [0.065, 0.037, 0.009],
-      [0.09, 0.032, 0.0]
+      [-0.028, 0.0625, 0.048],
+      [0.012, 0.065, 0.046],
+      [0.042, 0.06125, 0.036],
+      [0.067, 0.055, 0.022],
+      [0.097, 0.04625, 0.009],
+      [0.122, 0.04, 0.0]
     ],
-    "stations_note": "s, half-width, height above the shield's surface: the cap (s -0.06 to 0.01, out on the front run) only a little broader than the bridge (half-width 0.052, user: about 25% wider than the 0.042 tried) and standing 0.046 proud, so its face is a real face (on the near-level front lip at 0.034 tall it showed only as a thin band); the bridge narrowing and settling into the shield toward its root.",
-    "s_front": -0.022,
+    "stations_note": "s, half-width, height above the shield: stations moved 0.032 back along the carrier and widened by 25 percent. The maximum half-width is 0.065, height 0.046. Height follows the finished shield unit normal.",
+    "s_front": 0.010,
     "squareness": 3.5,
     "sink": 0.006,
     "nostril": {
@@ -860,13 +866,13 @@
       "note": "Comma nostrils on the side-front edges of the cap, where its face turns into its sides (user: not on the front face): path points are (fraction of the cap's half-width out, fraction of the face's height up), from the wide inner end low on the face curling out round the edge and up; cut back along the face's normal and in from the side."
     },
     "fillet": 0.005,
-    "fillet_note": "The bridge's sides flare out at its base by up to 0.014, so it grows out of the shield instead of sitting on it as a rod.",
+    "fillet_note": "The bridge foot follows the actual shield at each lateral sample and is sunk 0.006 into it. Its maximum lateral flare is 0.005.",
     "cap_bevel": 0.008,
-    "face_note": "The cap's face (the nose leather) is a plane pitched forward 30 degrees from upright, sloping down toward the muzzle's tip (its foot ahead of its top, facing forward and a little up), through the cap's mid height at s_front, domed out 0.009 so it is slightly convex (user, from the references), its edge rounded over cap_bevel. Leaning the other way (top ahead of the foot) it undercut into a hood with a dark slot beneath. An upright flat plane read as a box end; cut perpendicular to the steep front slope it faced down and showed only as a thin band.",
-    "face_pitch": 30,
+    "face_note": "The cap plane is 45 degrees to the final local shield tangent: a raised, angled face with dome 0.009 and bevel 0.008. This is a model fitting parameter, not a claimed 3D angle directly measured from projected art. The old world-space face_pitch parameter is removed.",
+    "face_angle_to_shield": 45,
     "face_dome": 0.009,
     "squareness_note": "3.5: a rounded top running into its sides; at 7 the bridge's top fluted out into a boxy top at the cap.",
-    "s_front_note": "The cap's face, at mid height of the cap, sits 0.022 along the front run, so its foot lands just behind where the shield turns down at the front edge (user: almost on the front edge); at s 0 it sat a whole plate row back.",
+    "s_front_note": "Cap centre at s 0.010, 0.032 farther back than -0.022. Its relation to the rim is checked on the actual shield surface.",
     "front_run": [[2.026, 1.426], [2.032, 1.419], [2.041, 1.414], [2.05, 1.41], [2.058, 1.404], [2.063, 1.397]],
     "front_run_note": "The shield top's centre line in side view (measured off the built shield, before the snout warp) ahead of the top profile's front edge (s 0): the hammer's front lip runs on nearly level for about 0.04 before turning down. The nose runs on along it (s < 0 is distance along this run)."
   }

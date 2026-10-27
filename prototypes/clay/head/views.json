@@ -1009,5 +1009,155 @@
    "label": "top shot (official)",
    "ref": "{refs}/clayref/ClayTopShot.png"
   }
+ ],
+ "muzzle_before": [
+  {
+   "cam": [
+    5,
+    1.5,
+    1.85
+   ],
+   "target": [
+    0,
+    1.5,
+    1.85
+   ],
+   "fov": 11,
+   "label": "Before: front muzzle angle"
+  },
+  {
+   "cam": [
+    2.1,
+    1.95,
+    3.6
+   ],
+   "target": [
+    0,
+    1.55,
+    1.75
+   ],
+   "fov": 26,
+   "label": "Before: muzzle and nose"
+  },
+  {
+   "cam": [
+    0,
+    1.5,
+    6
+   ],
+   "target": [
+    0,
+    1.5,
+    1.85
+   ],
+   "fov": 13,
+   "label": "Before: nose width"
+  },
+  {
+   "cam": [
+    0,
+    4,
+    4.8
+   ],
+   "target": [
+    0,
+    1.55,
+    1.9
+   ],
+   "fov": 17,
+   "label": "Before: nose cap and front rim"
+  }
+ ],
+ "muzzle_correction": [
+  {
+   "label": "Before: muzzle profile",
+   "ref": "{refs}/../out/muzzle-before-sheet0.png"
+  },
+  {
+   "cam": [
+    5,
+    1.5,
+    1.85
+   ],
+   "target": [
+    0,
+    1.5,
+    1.85
+   ],
+   "fov": 11,
+   "label": "After: front turns down from shield"
+  },
+  {
+   "label": "How to Draw: shield / front / lip",
+   "ref": "{refs}/study/muzzle_htd_review.png"
+  },
+  {
+   "label": "Before: muzzle and nose",
+   "ref": "{refs}/../out/muzzle-before-sheet1.png"
+  },
+  {
+   "cam": [
+    2.1,
+    1.95,
+    3.6
+   ],
+   "target": [
+    0,
+    1.55,
+    1.75
+   ],
+   "fov": 26,
+   "label": "After: muzzle and wider, set-back nose"
+  },
+  {
+   "label": "Flight art: front muzzle and full jaws",
+   "ref": "{refs}/study/muzzle_flight_review.png"
+  },
+  {
+   "cam": [
+    0,
+    1.5,
+    6
+   ],
+   "target": [
+    0,
+    1.5,
+    1.85
+   ],
+   "fov": 13,
+   "label": "Nose cap: no extra flap"
+  },
+  {
+   "cam": [
+    0,
+    4,
+    4.8
+   ],
+   "target": [
+    0,
+    1.55,
+    1.9
+   ],
+   "fov": 17,
+   "label": "Nose placement on shield"
+  },
+  {
+   "cam": [
+    2.1,
+    1.95,
+    3.6
+   ],
+   "target": [
+    0,
+    1.55,
+    1.75
+   ],
+   "fov": 26,
+   "label": "Jaw open: lip / teeth / hinge check",
+   "pose": {
+    "jaw": 0.6
+   },
+   "clay": true
+  }
  ]
 }

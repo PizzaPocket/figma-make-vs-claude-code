@@ -193,7 +193,7 @@ def snout_ridge(z):
 
 def front_setback(x, y):
     """How far the front muzzle's face sits forward (+) of the front station at (x, y): rounded across (convex
-    from above, the middle forward of the sides) and dipping in just under the nose (concave in profile). Both
+    from above, the middle forward of the sides) and gently convex in profile. Both
     vanish at the face's outline, where it joins the sides."""
     F = D["upper_head"]["front"]
     z0 = UPPER[0, 0]
@@ -471,13 +471,14 @@ def muzzle_shield(V, F):
     return out, remap[F].tolist(), A, B
 
 
-def lion_nose():
-    """The nose, a male lion's, on the front of the muzzle shield (lion_nose): a short bridge rising out of the
-    shield's top just behind its front, flat-topped with crisp corners to its upright sides, running down to the
-    leather cap, whose front is its own flat face (the nose leather) with a small bevel round its edge, set just
-    behind the shield's front edge so the shield's rim carries on round the front ahead of and below it. The face is
-    upright, facing forward, as a lion's nose leather does: the nose runs on past it and is cut back to the plane.
-    The comma nostrils open in that face. Same material as the shield. _ZONE: nostril."""
+def lion_nose(shield=None):
+    """A short bridge and raised leather cap built on the finished shield.
+
+    The foot follows the shield mesh, height follows its final unit normal,
+    and the cap angle is measured in that frame. The cap closes one trimmed
+    loft; no overshooting rings are flattened into extra sheets. _ZONE is
+    the carved nostril mask. Returned coordinates are already snout-warped.
+    """
     from scipy.interpolate import PchipInterpolator
     NS = D["lion_nose"]; SH = D["muzzle_shield"]
     st = np.array(NS["stations"])  # s, half-width, height above the shield
@@ -494,12 +495,33 @@ def lion_nose():
         if sv_ >= 0:
             return sv_point(sv_, 0.0)
         return sv_point(0.0, 0.0) + np.array([np.interp(-sv_, run_s, run[:, k]) for k in (0, 1)]) - run[0]
-    for sv_ in np.linspace(s_root, s_front - 0.03, 150):  # on past the face, to be cut back to it
+    # Bind to the actual shield first, then build in its final orthonormal
+    # frame. An affine snout warp would shear the raised cap flat again.
+    bvh = None
+    if shield is not None:
+        from mathutils.bvhtree import BVHTree
+        bvh = BVHTree.FromPolygons(shield[0], shield[1], all_triangles=True)
+    def carrier(sv_, x=0.0):
         zc, yc = centre(sv_)
         n = np.array([np.interp(sv_, pr["s"], pr["N"][:, k]) for k in (0, 1)]); n = n / np.linalg.norm(n)
-        out = -n  # outward from the head, in side view (z, y)
+        out = -n
         base = np.array([0.0, yc, zc]) + np.array([0.0, out[1], out[0]]) * (SH["under"] + SH["thickness"] - roof_t(zc)[0])
-        up3 = np.array([0.0, out[1], out[0]])
+        base[0] = x
+        if bvh is not None:
+            direction = np.array([0.0, out[1], out[0]])
+            hit, _, _, _ = bvh.ray_cast(tuple(base + direction * 0.15), tuple(-direction), 0.3)
+            if hit is None:
+                raise ValueError("nose attachment misses the shield")
+            base = np.array(hit)
+        base[2] = snout_z(premaxilla_z(np.array(base[2]), np.array(base[1])))
+        return base
+    def frame(sv_):
+        forward = carrier(sv_ - 0.004) - carrier(sv_ + 0.004)
+        forward[0] = 0; forward /= np.linalg.norm(forward)
+        up = np.array([0.0, forward[2], -forward[1]])
+        return forward, up
+    for sv_ in np.linspace(s_root, s_front - 0.03, 150):
+        _, up3 = frame(sv_)
         w, h = float(wf(sv_)), float(hf(sv_))
         ring = []
         for i in range(NA + 1):  # the top and the upright sides: a box with crisp, small-radius corners
@@ -507,31 +529,63 @@ def lion_nose():
             c, sn = math.cos(th), math.sin(th)
             x = w * math.copysign(abs(c) ** (2 / nsup), c); v = -sink + (h + sink) * abs(sn) ** (2 / nsup)
             x += math.copysign(NS["fillet"] * (1 - abs(sn) ** (2 / nsup)) ** 2, x)  # its foot flares a little into the shield
-            ring.append(base + np.array([x, 0, 0]) + up3 * v)
-        ring += [base + np.array([-w + 2 * w * i / 8, 0, 0]) - up3 * sink for i in range(1, 8)]  # the buried underside
+            ring.append(carrier(sv_, x) + up3 * v)
+        ring += [carrier(sv_, -w + 2 * w * i / 8) - up3 * sink for i in range(1, 8)]
         rings.append(ring)
     V = np.array([p for r in rings for p in r])
     M = len(rings[0])
-    # the leather cap's face: a plane pitched forward by face_pitch (sloping down toward the muzzle's tip, its foot ahead
-    # of its top, never undercut) through
-    # the cap's mid height at s_front, domed out a little (face_dome) so it is slightly convex, its edge rounded over
-    # bev (a smooth minimum), so the face reads as its own plane
-    zt, yt = centre(s_front)
-    a_ = math.radians(NS["face_pitch"])
-    nf = np.array([0.0, math.sin(a_), math.cos(a_)])  # facing forward and a little up: it pitches down to the tip
-    p0 = np.array([0.0, yt + (SH["under"] + SH["thickness"]) + 0.5 * float(hf(s_front)), zt + (SH["under"] + SH["thickness"]) * 0.5])
+    # Cap tilt is relative to the final shield, independent of the muzzle's
+    # deformation. A small dome and rounded boundary keep it organic.
+    forward, up = frame(s_front)
+    a_ = math.radians(NS["face_angle_to_shield"])
+    nf = math.sin(a_) * forward + math.cos(a_) * up
+    p0 = carrier(s_front) + up * (0.5 * float(hf(s_front)))
     R = float(wf(s_front))
     def face_d(P):
         rel = P - p0; d = rel @ nf
         ip = rel - np.outer(d, nf)
-        r2 = (ip[:, 0] / R) ** 2 + (ip[:, 1] / (0.7 * R)) ** 2
+        r2 = (ip[:, 0] / R) ** 2 + (ip @ up / (0.7 * R)) ** 2
         return d - NS["face_dome"] * np.clip(1 - r2, 0.0, 1.0)
+    # End each meridian at the leather face. Projecting all the overshooting
+    # rings onto it folds repeated sheets into the visible square flap.
+    raw = V.reshape(len(rings), M, 3)
+    distances = face_d(V).reshape(len(rings), M)
+    clipped = np.empty_like(raw)
+    for j in range(M):
+        crossing = np.flatnonzero(distances[:, j] >= 0)
+        end = int(crossing[0]) if len(crossing) else len(rings) - 1
+        if end == 0:
+            raise ValueError("nose root lies ahead of its leather face")
+        t = (-distances[end - 1, j] / (distances[end, j] - distances[end - 1, j])) if len(crossing) else 1.0
+        samples = np.linspace(0, end - 1 + t, len(rings))
+        for axis in range(3):
+            clipped[:, j, axis] = np.interp(samples, np.arange(len(rings)), raw[:, j, axis])
+        # The buried underside can stop short of the face plane. Carry just
+        # that last meridian smoothly to the boundary; never stack rings there.
+        end_distance = face_d(clipped[-1, j][None])[0]
+        blend = np.array([smoothstep(0.7, 1.0, u) for u in np.linspace(0, 1, len(rings))])
+        clipped[:, j] -= np.outer(blend * end_distance, nf)
+    V = clipped.reshape(-1, 3)
     e = face_d(V)
     hh = np.clip(0.5 + 0.5 * e / bev, 0.0, 1.0)
     V += np.outer(e * (1 - hh) - bev * hh * (1 - hh) - e, nf)  # polynomial smooth min of the distance and 0
+    # One rounded leather disk closes the trimmed boundary. Its radial rings
+    # supply real face area for the dome and nostrils, without overlapping lofts.
+    boundary = V[-M:].copy()
+    cap_centre = boundary.mean(0)
+    cap_rings = []
+    for radial in np.linspace(0.875, 0.125, 7):
+        ring = cap_centre + radial * (boundary - cap_centre)
+        ring -= np.outer(face_d(ring), nf) * smoothstep(0.0, 0.25, 1 - radial)
+        cap_rings.append(ring)
+    cap_start = len(V)
+    V = np.vstack([V] + cap_rings)
+    cap_centre -= face_d(cap_centre[None])[0] * nf
+    cap_centre_index = len(V)
+    V = np.vstack([V, cap_centre])
     e = face_d(V)
     NW = np.zeros(len(V))
-    on_face = e > -0.002
+    on_face = e > -bev * 0.6
     yf = V[on_face, 1]; y0, y1 = yf.min(), yf.max()
     N_ = NS["nostril"]; C = np.array(N_["path"])  # (fraction of the cap's half-width out, fraction up the face)
     for i in np.where(e > -2.5 * bev)[0]:  # on the face and round its side-front edge
@@ -555,11 +609,18 @@ def lion_nose():
         for i in range(M):
             j = (i + 1) % M
             faces.append([k * M + i, (k + 1) * M + i, (k + 1) * M + j, k * M + j])
-    for k in (0, len(rings) - 1):
+    cap_rows = [(len(rings) - 1) * M] + [cap_start + k * M for k in range(len(cap_rings))]
+    for row, following in zip(cap_rows, cap_rows[1:]):
+        for i in range(M):
+            j = (i + 1) % M
+            faces.append([row + i, following + i, following + j, row + j])
+    for i in range(M):
+        faces.append([cap_rows[-1] + i, cap_centre_index, cap_rows[-1] + (i + 1) % M])
+    for k in (0,):
         c = len(V); V = np.vstack([V, V[k * M:(k + 1) * M].mean(0)]); NW = np.append(NW, 0.0)
         for i in range(M):
             f = [k * M + i, k * M + (i + 1) % M, c]
-            faces.append(f if k else f[::-1])
+            faces.append(f)
     tint = (math.sin(0 * 12.9898) * 43758.5453) % 1.0
     return [tuple(p) for p in V], faces, [0.02] * len(V), [tint] * len(V), list(NW)
 
@@ -1033,15 +1094,36 @@ def snout_z(z):
     return np.where(z > T["from_z"], T["from_z"] + (z - T["from_z"]) * T["scale"], z)
 
 
+def premaxilla_z(z, y):
+    """A crown over an alveolar base, not a skin-only bulge.
+
+    The front shield extends over the lip, turning the front muzzle down in
+    the shield's own frame. Fade the extension into the maxilla behind it;
+    the lip, tooth bed and lower jaw remain on their shared closure line.
+    All parts, expressions and bone anchors pass through this same field.
+    """
+    P = D.get("premaxilla", {})
+    if not P:
+        return z
+    t = np.clip((z - P["from_z"]) / (P["full_z"] - P["from_z"]), 0.0, 1.0)
+    w = t * t * (3 - 2 * t)
+    lip = np.interp(z, UPPER[::-1, 0], UPPER[::-1, 2])
+    crown = np.interp(z, UPPER[::-1, 0], UPPER[::-1, 1])
+    height = np.clip((y - lip) / np.maximum(crown - lip, 1e-6), 0.0, 1.0)
+    return z + P["crown_extension"] * w * height
+
+
 def warp_snout(objs, bones):
     """Apply snout_z to every head part (its vertices and every shape key) and to the bones."""
     for ob in objs:
+        if ob.name == "Nose":  # already built against the final shield frame
+            continue
         keys = ob.data.shape_keys.key_blocks if ob.data.shape_keys else []
         for data in [ob.data.vertices] + [k.data for k in keys]:
             co = np.zeros(len(data) * 3, np.float32); data.foreach_get("co", co); co = co.reshape(-1, 3)
-            co[:, 1] = -snout_z(-co[:, 1])  # Blender's y is -z
+            co[:, 1] = -snout_z(premaxilla_z(-co[:, 1], co[:, 2]))  # Blender's y is -z
             data.foreach_set("co", co.ravel())
-    w = lambda p: (p[0], p[1], float(snout_z(np.array(p[2]))))
+    w = lambda p: (p[0], p[1], float(snout_z(premaxilla_z(np.array(p[2]), np.array(p[1])))))
     return [(n, w(h0), w(h1), par) for n, h0, h1, par in bones]
 
 
@@ -1080,7 +1162,7 @@ def head_parts():
     # the muzzle shield: one solid piece with its plating carved in, and the lion's nose rising out of it
     v, f, A, B = muzzle_shield(V, f)
     objs.append(add_part("Shield", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
-    v, f, A, B, NW = lion_nose()
+    v, f, A, B, NW = lion_nose((v, f))
     objs.append(add_part("Nose", v, f, {"_PART": [13] * len(v), "_A": A, "_B": B, "_ZONE": NW}, rigid(len(v))))
 
     # lower jaw skin

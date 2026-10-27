@@ -190,6 +190,18 @@ Check: <what to compare; known differences>
 
 ## Lessons (Clay)
 
+**Front muzzle and nose frame**
+- When the user describes the angle between the shield and front muzzle, check
+  those two planes. Reducing a convex bulge does not correct their angle.
+- Keep the alveolar base, lip and lower-jaw closure coherent when changing the
+  premaxilla's crown. Check the closed bite and the mouth open.
+- A surface attachment built before a muzzle deformation can be sheared flat.
+  Build the nose on the final shield in an orthonormal frame; measure its cap
+  angle relative to that shield, not only to a world axis.
+- Do not flatten overshooting loft rings into a cap: trim the meridians and
+  close one face. Topology checks must accompany reference silhouette checks;
+  a valid closed mesh can still depict the wrong shape.
+
 **Muzzle**
 - Bone and muscle, not a box: the premaxilla rounds the front into a U in top view, and the front is convex everywhere (an earlier box read square, then caved-in concave when its front was traced from the three-quarter sheet).
 - The muzzle shield: one solid piece over the top and down round the front corner, plating carved into it.

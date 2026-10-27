@@ -1,5 +1,59 @@
 # Clay's head: element sheets
 
+## Current correction: front muzzle plane and nose frame
+
+This section supersedes the older walkthrough settings below.
+
+**Evidence.** The user specified a near-right-angle turn from the shield plane to
+the orange front face, rather than merely less puffing. The How to Draw crop
+(`refs/study/muzzle_htd_grid.jpg`, source width 1641, box 550,230–920,600) shows
+the shield turning into a distinct front above the lip. The flight crop
+(`refs/study/muzzle_topshot_grid.jpg`, source width 782, box 580,385–760,585)
+shows the same change of plane and a nose raised above the shield. These are
+projected views, so their apparent angles are not direct 3D measurements.
+
+**Premaxilla / maxilla.** `premaxilla` extends the anterior crown relative to its
+alveolar base, fading smoothly from z 1.8 to 2.017. The crown extension is 0.20
+before the existing snout compression. Height is measured between the local lip
+and crown; the lip and everything below it receive zero extension. This changes
+the plane relationship, not just the skin's bulge. The front keeps a small
+0.016 convex profile and its rounded transverse contour. All head skin,
+expression keys and bone anchors use the same field. The nose is constructed
+after this field, as described below.
+
+**Jaw coherence.** The dentary, symphysis, coronoid / retroarticular profile and
+hinge retain their existing geometry. Sampled lip-line / alveolar positions
+and all generated lower-jaw top landmarks have zero longitudinal displacement.
+The geometric shield/front landmark angle is about 90 degrees after the snout
+compression. This verifies the requested construction; it is not proof of an
+exact character match. Review the full mouth open as well as closed.
+
+**Nose.** The bridge and cap are 25% wider (maximum half-width 0.065) and their
+stations sit 0.032 farther back along the carrier than the previous version;
+the cap centre is now s 0.010. The foot is ray-bound to the actual shield mesh
+at each lateral sample. Build that carrier in the finished muzzle coordinates,
+derive an orthonormal tangent/normal frame, then add the nose height (0.046).
+The cap plane is set at 45 degrees to that local shield plane. This remains a
+visual fitting parameter, rather than a claimed angle recovered from the art.
+
+**Flap.** The old loft ran past the cap and projected the excess rings onto its
+face. It had 80 near-zero-area triangles and overlapping face layers. Each
+meridian now terminates at the cap boundary and one radially sampled disk
+closes it, with the dome, bevel and carved nostrils on that disk. The nose is a
+closed, consistently wound surface without the collapsed triangles.
+
+**Lesson from the rejected first render.** Applying the muzzle's deformation
+to the already-built nose sheared the leather cap almost flat against the
+shield. A closed mesh and a correct muzzle angle did not make that visual
+result acceptable. The nose must be built in the final shield frame and
+checked in profile against the reference before reporting success.
+
+**Review.** `views.json` sets `muzzle_before` and `muzzle_correction` put the same
+profile and three-quarter cameras beside reference crops, plus the nose from
+front/top and the jaw open in plain clay. References and generated snapshots
+remain in ignored `refs/` and `out/`. Remaining unrelated head issues include
+the eye-ring width and ear/jaw-back-edge work in `CHECKLIST.md`.
+
 The working notes behind `head_design.json`. These follow the `creature-sculpting` skill (`.claude/skills/creature-sculpting/SKILL.md`).
 
 **Coordinates:** reference pixels are on the 1400-px-wide side reference (Spirit978's sheet). Model units use `z = (700 - px) / 343` and `y = (830 - py) / 343`. x is Clay's left.
