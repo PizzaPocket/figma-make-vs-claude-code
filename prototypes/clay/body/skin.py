@@ -183,9 +183,10 @@ def pieces(anat):
 
 
 CLIP = None  # optional (X, d, D, parts) -> d: a last cut of the union (the head's own surface in front of the cheek line)
+CAVITY = None  # optional oral void; applies to the body only, never to a wing/limb-only field
 
 
-def field(X, trunk, parts, all_parts=False):
+def field(X, trunk, parts, all_parts=False, with_cavity=True):
     """The body's field at points X: the trunk joined smoothly with every bone and muscle (or, with no
     trunk, the pieces alone: the wing arm)."""
     D = [p.sdf(X) for p in parts]
@@ -195,6 +196,8 @@ def field(X, trunk, parts, all_parts=False):
         d = smin(d, dp, p.k)
     if CLIP is not None:
         d = CLIP(X, d, D, parts)
+    if trunk is not None and CAVITY is not None and with_cavity:
+        d = np.maximum(d, -CAVITY(X))
     return (d, dt, np.array(D)) if all_parts else d
 
 

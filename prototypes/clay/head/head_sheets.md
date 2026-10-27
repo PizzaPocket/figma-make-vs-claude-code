@@ -483,8 +483,36 @@ reference review pass; the nose remains open on the checklist pending further
 visual assessment, especially its nostril rim and the transition into the shield.
 
 
-### Stable shield attachment frame
-Fit the anatomical tangent across a 0.05 span, rather than following individual
-plate grooves. Final measured cap clearance is 0.0333 at width 0.1300 (0.256
-widths), within the projected 0.25–0.30 reference constraint. Nose silhouette and
-nostril likeness remain subject to reference review.
+## Oral chamber and dentition correction
+
+Reference: official flight and How to Draw mouth crops (`study/mouth_teeth_grid.jpg`).
+Retained seven upper and six lower crowns per side plus four front crowns per jaw;
+visible reference silhouettes do not justify inventing extra teeth. Crowns now have
+20 radial samples, 12 longitudinal rings, an oval section, recurvature and closed
+roots. A single apex replaces the duplicate zero-radius tip ring. Upper roots are
+ray-seated inside the finished palate, with a continuous gum bed and lip-dependent
+concealment. Construct rigid crowns after the muzzle warp so the warp cannot shear
+them into shards.
+
+The dangling surface was traced to body skin at the tongue root. The jaw's ascending
+rear crest had also lifted the central mouth floor and tongue into the gape. The
+new independent floor profile follows the oral bed rather than the crest, leaving
+a minimum underside wall. An elliptical swept chamber removes solid tissue at the
+head/neck union; its exposed lining blends upper-head to lower-jaw weights. Only
+vertices formerly inside tissue receive this lining classification, avoiding the
+external jaw. The palate, gum beds, floor and tongue now define the mouth cavity.
+`fire_origin` is an emission attachment, not an implemented fire effect.
+
+Final nose frame: fit the local shield tangent across a 0.05 span so a plate groove
+cannot abruptly pitch the cap. Measured cap clearance is 0.0333 for width 0.1300
+(0.256 widths), within the projected reference constraint of 0.25–0.30. This remains
+a fitting aid; nostril contours and cap silhouette still require visual review.
+
+Checks: render `oral_review` on the final full-body GLB, closed, speaking and wide
+gape, beside the official mouth crops. Keep mouth/fire-path acceptance open until
+those poses are inspected; an emission attachment alone does not prove clearance.
+
+The final render also exposed a categorical-shader boundary bug: interpolating
+lining ID 3 to skin ID 20 drew unrelated material bands across throat triangles.
+The body keeps ID 20 and carries a continuous lining mask in the zone channel,
+separate from the mask used to suppress internal armor.

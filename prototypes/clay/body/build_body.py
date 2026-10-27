@@ -338,6 +338,16 @@ def skin_setup(weld=True):
         sb, sm = toe_pieces(L, prefix)
         toes += [SK.Piece(s, sgn, "bone") for sgn in (1, -1) for s in sb] + [SK.Piece(s, sgn, "muscle") for sgn in (1, -1) for s in sm]
     _SKIN["trunk"], _SKIN["parts"] = trunk, SK.pieces(B["anatomy"]) + toes + (head_weld() if weld else [])
+    SK.CAVITY = oral_void if weld else None
+
+
+def oral_void(X):
+    """A recessed oral chamber, cut out of the otherwise solid head/neck union."""
+    D = H.D["mouth"]["throat"]; rows = np.array(D["stations"])
+    z = X[:, 2]
+    cy, rx, ry = [np.interp(z, rows[:, 0], rows[:, i]) for i in (1, 2, 3)]
+    radial = (np.sqrt((X[:, 0] / rx) ** 2 + ((X[:, 1] - cy) / ry) ** 2) - 1) * np.minimum(rx, ry)
+    return np.maximum.reduce([radial, D["back_z"] - z, z - D["front_z"]])
 
 
 def band(x):
@@ -373,7 +383,23 @@ def skin_parts(ranges, ear_pts=None):
     # attributes are full
     idx, v, w = trunk.local(V)[:3]
     around = np.arctan2(np.abs(w), v) * trunk.R[idx].mean(axis=1)
-    skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": list(20 + np.clip(around, 0, 1.56) / 4), "_A": A, "_B": Tr, "_ZONE": Z}, W)
+    interior = (abs(oral_void(V)) < B["anatomy"]["resolution"] * 1.8) & (abs(V[:, 0]) < 0.14)
+    candidates = np.flatnonzero(interior)
+    # Proximity alone also catches the exterior jaw wall. A lining vertex
+    # must have been inside solid tissue before the oral space was removed.
+    interior[candidates] &= SK.field(V[candidates], trunk, parts, with_cavity=False) < -B["anatomy"]["resolution"] * 0.3
+    # Inner lining follows the upper head at the roof and the jaw at the floor.
+    rows = np.array(H.D["mouth"]["throat"]["stations"])
+    cy = np.interp(V[:, 2], rows[:, 0], rows[:, 1]); ry = np.interp(V[:, 2], rows[:, 0], rows[:, 3])
+    for i in np.flatnonzero(interior):
+        jaw = float(np.clip((cy[i] + ry[i] - V[i, 1]) / (2 * ry[i]), 0, 1))
+        W[i] = [("head", 1 - jaw), ("jaw", jaw)]
+        Z[i] = 1.0  # the oral lining must not acquire an internal carapace shell
+    # Keep categorical material IDs in one family across every triangle. Interpolating
+    # 3 (lining) to 20 (skin) incorrectly shades the boundary as teeth, horns and armor.
+    part = 20 + np.clip(around, 0, 1.56) / 4
+    skin_zone = np.where(interior, -1.0, Z)
+    skin = H.add_part("Skin", V.tolist(), F.tolist(), {"_PART": list(part), "_A": A, "_B": Tr, "_ZONE": list(skin_zone)}, W)
     sh = B["shell"]
     S, SF, src, ink, tint = SK.shell(V, F, Z, sh, SK.smooth_normals(V, F), trunk.s[idx], np.array(Bf), band)
     if "cheek_dz" in _SKIN:  # the shell and its rim run out into the cheek line, where the head's surface takes over
@@ -806,7 +832,8 @@ def main():
     ear_pts = np.concatenate([np.array([v.co[:] for v in o.data.vertices]) for o in ear]) if ear else None
     if ear_pts is not None:
         ear_pts = np.stack([ear_pts[:, 0], ear_pts[:, 2], -ear_pts[:, 1]], 1)  # Blender's frame back to the model's
-    objs += skin_parts(ranges, ear_pts)
+    skin, shell = skin_parts(ranges, ear_pts)
+    objs += [skin, shell]
     objs += spike_parts(ranges, band)
     neck_end = TR["bones"]["chain_forward"][-1][0]
     bones = tb + [(n, h, t, p or neck_end) for n, h, t, p in head_bones]

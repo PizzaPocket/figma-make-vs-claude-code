@@ -66,7 +66,8 @@
             rough = 0.5;
           }
           if (isP(20.0) > 0.5) { // trunk: dark back, orange side, cream underside (vAB: s along the spine, the trunk's share, zone)
-            float zv = vAB.z;
+            float lining = 1.0 - smoothstep(-0.75, -0.25, vAB.z);
+            float zv = clamp(vAB.z, 0.0, 1.0);
             // the sides: shingle scales ~0.065 along x 0.06 round (side sheet's neck), free edges facing back; vPart carries
             // the distance round the trunk (20 + around / 4)
             vec2 sc = shingle(vec2(vAB.x / 0.065, (vPart - 20.0) * 4.0 / 0.06));
@@ -87,6 +88,8 @@
             float earHole = 1.0 - smoothstep(0.010, 0.015, length(vec2(vObj.z - 1.410, vObj.y - 1.652)));
             col = mix(col, line * 0.5, earHole * step(0.08, abs(vObj.x)));
             groove = pe * 0.3 * (1.0 - abs(zv - 0.5) * 2.0) + mer * 0.5 * smoothstep(0.5, 1.0, zv);
+            col = mix(col, srgb(vec3(92.0, 26.0, 32.0)), lining);
+            rough = mix(rough, 0.4, lining); groove *= 1.0 - lining;
           }
           if (isP(21.0) > 0.5) { // limb skin: plates in columns along the limb, ~0.10 long x 0.075 across (measured), organically warped
             float r = vAB.x / 0.10, c = vAB.y / 0.075;
@@ -114,6 +117,7 @@
           }
           if (isP(3.0) > 0.5) { col = srgb(vec3(92.0, 26.0, 32.0)); rough = 0.4; } // the mouth's lining: dark red, a cavity (Dragonet Prophecy cover)
           if (isP(4.0) > 0.5) { col = srgb(vec3(245.0, 238.0, 220.0)); rough = 0.25; }
+          if (isP(14.0) > 0.5) { col = srgb(vec3(130.0, 56.0, 49.0)); rough = 0.7; } // gum tissue around the roots
           if (isP(5.0) > 0.5) { col = srgb(vec3(170.0, 70.0, 75.0)); rough = 0.35; }
           if (isP(6.0) > 0.5) { // eyeball: _a is the angle from the gaze direction (0..1 over 180 degrees)
             float a = vAB.x;

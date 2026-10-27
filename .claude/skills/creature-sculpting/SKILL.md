@@ -280,3 +280,13 @@ normal, rather than world height and a front-only cut direction.
 Fit an attachment frame over the anatomical surface's local neighborhood, not
 across one decorative groove; otherwise moving a cap slightly can change its
 orientation sharply. Check placement and cap tilt independently.
+
+
+### Mouth beds and rigid teeth
+The ascending jaw crest is not the tongue's bed. Give the mouth floor an explicit
+profile, check its wall thickness, and remove solid head/neck tissue behind the
+gape. Build rigid crowns against the final deformed palate. Keep categorical
+material IDs constant within a surface family: interpolating lining ID 3 to skin
+ID 20 shades intermediate pixels as unrelated teeth, horn and armor materials.
+Use a continuous lining mask instead, and keep that shading mask separate from
+the shell-generation mask.

@@ -745,33 +745,45 @@
     "superseded": "Not built: the nose is lion_nose, on the muzzle shield."
   },
   "teeth": {
-    "lip_note": "The upper lip hangs down over the upper teeth: in most images only the lower teeth show, rising plainly from the lower jaw, and the upper teeth show mainly with the mouth open. So the upper teeth grow from the roof of the mouth, inward (inset 0.03) and up (tuck_up 0.02) behind the lip, the front row set back too (the user's reading).",
-    "note": "Flight render and limited edition: small, flat, triangular blades. The tooth rows start at the bite point (z 1.86), where the upper and lower fronts of the mouth meet when it is closed: a short row across the front of the mouth there, then rows back along each side lip, each tooth perpendicular to its lip edge, tips raked a little back. In front of the bite point is the front muzzle's underside: skin, no teeth. A little larger mid-row; no single big fang.",
+    "lip_note": "Upper roots are embedded in the finished palate at ray-cast gum seats; crown length is limited by the actual clearance above the lip margin. Both rows root in gums, not in the lip surface. Tooth counts remain the reference-based seven upper and six lower side crowns, with four front crowns.",
+    "note": "Flight render and limited edition: small triangular crown silhouettes, interpreted as solid recurved animal teeth with oval cross-sections. The tooth rows start at the bite point (z 1.86), where the upper and lower fronts of the mouth meet when it is closed: a short row across the front of the mouth there, then rows back along each side lip, each tooth perpendicular to its lip edge, tips raked a little back. In front of the bite point is the front muzzle's underside: skin, no teeth. A little larger mid-row; no single big fang.",
     "rake_deg": 12,
     "base_frac": 0.6,
     "thickness": 0.018,
     "upper": {
-      "z": [1.955, 1.62],
+      "z": [
+        1.955,
+        1.62
+      ],
       "count": 7,
-      "length": [0.042, 0.064],
-      "inset": 0.012,
-      "tuck_up": 0.02,
+      "length": [
+        0.042,
+        0.064
+      ],
+      "inset": 0.02,
+      "tuck_up": 0.065,
       "inset_note": "From the tucked lip edge: the upper teeth stand just outside the lower ones (lower inset 0.016 from the jaw edge).",
-      "outside_lower": 0.01,
+      "outside_lower": 0.03,
       "outside_note": "The upper tooth row sits 0.01 outside the lower one (whose row is 0.016 inside the jaw's edge), never outside the lip. Placed from the lip alone, the back upper tooth stood outside the lower jaw at the mouth corner and hung down past it as a blade."
     },
     "lower": {
-      "z": [1.945, 1.63],
+      "z": [
+        1.945,
+        1.63
+      ],
       "count": 6,
-      "length": [0.03, 0.046],
-      "inset": 0.016
+      "length": [
+        0.03,
+        0.046
+      ],
+      "inset": 0.035
     },
     "front": {
       "z": 1.985,
       "count": 4,
       "half_span": 0.06,
       "length": 0.0336,
-      "tuck_up": 0.02,
+      "tuck_up": 0.065,
       "tuck_back": 0.012
     },
     "front_lower": {
@@ -780,11 +792,14 @@
       "half_span": 0.06,
       "length": 0.0253
     },
-    "shape_note": "Re-read on the two open-mouth paintings (Dragonet Prophecy cover, ClayTopShot): cones, not flat blades, about 1.4x the earlier length for the upper teeth (hidden behind the lip when shut), 1.15x for the lower (which show along the closed lip); round-based (thickness about the base's width), still tips raked back, still no single big fang. Sculpted as a reptile's teeth (user: not flat triangle shards): each a cone rooted 0.004 into the gum, its section an oval flattened side to side (along the jaw 0.45 of its length across the base, 0.012 thick), tapering to a sharp tip that curves back toward the throat by 0.18 of its length (front row 0.09, flattened front to back).",
+    "shape_note": "Solid recurved cones with 20 radial and 12 longitudinal samples; cross-jaw base width is 0.75 of the along-row base width. Crowns have real volume rather than fixed thin blade sections.",
     "recurve": 0.18,
     "size_note": "Stout cones as the covers paint them: across the base 0.6 of the tooth's length along the jaw, 0.018 thick.",
     "row_note": "The rows run the whole jaw, to the front of the mouth (they stopped at a bite point at z 1.86 while the jaw was traced short from the side sheet).",
-    "count_note": "Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout cones show along each side of each jaw, with gaps between them, not a saw of small spikes. Upper 7 per side (0.042-0.064 long), lower 6 (0.03-0.046)."
+    "count_note": "Re-read on the Dragonet Prophecy cover's open mouth: about six or seven stout cones show along each side of each jaw, with gaps between them, not a saw of small spikes. Upper 7 per side (0.042-0.064 long), lower 6 (0.03-0.046).",
+    "section_ratio": 0.75,
+    "root_embed": 0.004,
+    "hide_margin": 0.003
   },
   "mouth": {
     "why": "The mouth opens by stretching skin, not as two rigid pieces parting (user; Dragonet Prophecy cover). The cover's open mouth is a deep cavity, its floor a trough for the tongue under an arched palate, and the gape ends in a rounded corner of cheek skin under the eye. The lips stay joined from the corner back to the hinge, where the jaw's bone runs on inside the cheek.",
@@ -794,8 +809,12 @@
     "web_back_z": 1.45,
     "web_thickness": 0.004,
     "hinge_z": 1.45,
-    "inside_from": [1.98, 1.94],
-    "palate_arch": 0.035,
+    "inside_from": [
+      2.015,
+      1.98
+    ],
+    "palate_arch": 0.07,
+    "palate_shape_power": 0.3,
     "floor_trough": 0.03,
     "web_orange_to": 0.2,
     "cheek_bulge": 0.035,
@@ -810,13 +829,82 @@
       "tip_z": 1.93,
       "root_z": 1.56,
       "width": 0.05,
-      "thickness": [0.012, 0.03],
+      "thickness": [
+        0.012,
+        0.03
+      ],
       "tip_round": 0.14,
       "groove": 0.004,
       "lift": 0.004,
       "note": "A muscular tongue (user: convincing for speech): rounded across, a shallow median groove (0.004) down its middle, thick at the root (0.03) thinning to 0.012, its tip broad and rounded over the last 0.14 of its length, lifting a little off the floor, lying in the floor's trough. On three bones (tongue1-3) so it can curl up for speech sounds."
     },
-    "corner_thickness": 0.008
+    "corner_thickness": 0.008,
+    "gums": {
+      "radius": 0.011,
+      "root_sink": 0.004,
+      "why": "Continuous alveolar tissue supports each tooth row; the upper ridge is embedded in the raised palate, inside the lip."
+    },
+    "throat": {
+      "back_z": 1.32,
+      "front_z": 1.76,
+      "stations": [
+        [
+          1.43,
+          1.555,
+          0.095,
+          0.085
+        ],
+        [
+          1.56,
+          1.48,
+          0.11,
+          0.12
+        ],
+        [
+          1.72,
+          1.36,
+          0.115,
+          0.08
+        ]
+      ],
+      "why": "Dark recessed oral space visible behind the tongue in the open-mouth cover; subtract from the body union so solid neck/head construction does not fill the gape. Stations are z, centre y, lateral radius, vertical radius."
+    },
+    "fire_origin": [
+      [
+        0,
+        1.41,
+        1.65
+      ],
+      [
+        0,
+        1.2,
+        2.05
+      ]
+    ],
+    "fire_note": "Animation emission guide aimed through the open gape below the upper lip. No fictional fire organ is modeled. Validate its ray against the posed mouth for fire breathing.",
+    "floor_profile": [
+      [
+        1.43,
+        1.47
+      ],
+      [
+        1.56,
+        1.37
+      ],
+      [
+        1.7,
+        1.3
+      ],
+      [
+        1.86,
+        1.235
+      ],
+      [
+        1.98,
+        1.235
+      ]
+    ],
+    "floor_wall": 0.012
   },
   "muzzle_shield": {
     "note": "The muzzle shield (user): one solid piece raised from the face itself over the region above one edge line (dark_plate_edge, lifted clear of the ear), so the top, the angular front corners and the upper front face are one continuous surface, its edge rounded all round; no seams, no fitted front cap. Its plating is carved in like an ankylosaur's fused skull armour (grooves at the joints, a low dome per tile; layout from roof_plates.layout). The lion's nose rises out of it.",
@@ -846,7 +934,6 @@
     "note": "User: the orange muzzle front must turn down nearly perpendicular to the shield plane, not just lose its bulge. Shared anterior-maxilla field extends the crown over the alveolar base while leaving the lip, tooth bed and lower-jaw closure fixed. Chosen from the measured shield/front plane relationship; checked against How to Draw and the flight cover, whose front turns down from the shield. Applies before snout_turn to all parts, shape keys and bone anchors."
   },
   "lion_nose": {
-    "frame_span": 0.025,
     "note": "A short lion-like bridge seated on the actual shield surface, with a raised, angled leather cap. The shield is deformed first; the nose is then built in its orthonormal local frame, so the muzzle correction cannot shear the cap flat. The cap terminates the loft with one disk instead of collapsing overshooting rings into a flap. Same base material as the shield; nostrils remain carved geometry.",
     "stations": [
       [0.0175, 0.0625, 0.048],
@@ -874,6 +961,7 @@
     "cap_bevel": 0.008,
     "face_note": "The cap plane is 45 degrees to the final local shield tangent: a raised, angled face with dome 0.009 and bevel 0.008. This is a model fitting parameter, not a claimed 3D angle directly measured from projected art. The old world-space face_pitch parameter is removed.",
     "face_angle_to_shield": 45,
+    "frame_span": 0.025,
     "face_dome": 0.009,
     "squareness_note": "3.5: a rounded top running into its sides; at 7 the bridge's top fluted out into a boxy top at the cap.",
     "s_front_note": "Setback calibrated on the actual shield: the flight crop cap tip (732,449), rim (744,442), cap span approximately 48 px suggest clearance around 0.25-0.30 cap widths. Model target 0.28 widths (0.0364); a measured position sweep gives s 0.0555. Previous s 0.010 had negative clearance (-0.0081).",

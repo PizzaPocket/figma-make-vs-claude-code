@@ -315,23 +315,26 @@ def tooth(vs, fs, base, d, tang, length, ra, rs, sink=0.004, recurve=0.18, NA=10
     Appends to vs/fs; returns the vertex count added."""
     side = norm(np.cross(d, tang))
     b0 = len(vs)
-    for i in range(NL + 1):
+    for i in range(NL):
         t = i / NL
         c = base - d * sink + d * (length + sink) * t - tang * recurve * length * t * t
         r = (1 - t) ** 0.85
         for j in range(NA):
             a = 2 * math.pi * j / NA
             vs.append(tuple(c + tang * ra * r * math.cos(a) + side * rs * r * math.sin(a)))
-    for i in range(NL):
+    for i in range(NL - 1):
         for j in range(NA):
             k = (j + 1) % NA
             q = [b0 + i * NA + j, b0 + i * NA + k, b0 + (i + 1) * NA + k, b0 + (i + 1) * NA + j]
             fs.append(q)  # outward: (tang, side, d) is right-handed
     tip = len(vs); vs.append(tuple(base + d * length - tang * recurve * length))
-    top = b0 + NL * NA  # the last ring is a point already; close it with a fan to the tip
+    top = b0 + (NL - 1) * NA
     for j in range(NA):
         f = [top + j, top + (j + 1) % NA, tip]
         fs.append(f)
+    root = len(vs); vs.append(tuple(base - d * sink))
+    for j in range(NA):
+        fs.append([b0 + (j + 1) % NA, b0 + j, root])
     return len(vs) - b0
 
 
@@ -901,7 +904,7 @@ def caruncle(c, er, sgn, skin):
 
 
 # ---------------------------------------------------------------- general pieces
-def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None, inner_dip=None, n_inner=6):
+def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None, inner_dip=None, n_inner=6, inner_power=1.0):
     """Rings of the contour along z, closed across the open side (palate / mouth floor)
     and capped at both ends. Returns verts, quads, and per-vertex (along, around) coords. inner_dip(z), if given,
     bows the closing surface: up into an arched palate (positive) or down into a trough for the tongue (negative)."""
@@ -917,7 +920,7 @@ def loft(contour_fn, zs, cap_front=True, cap_back=True, front_dent=None, inner_d
         for j in range(1, n_inner):
             t = j / n_inner
             x = pts[-1][0] + (pts[0][0] - pts[-1][0]) * t
-            y = (edge_y(x) if callable(edge_y) else edge_y) + (inner_dip(z) * math.sin(math.pi * t) if inner_dip else 0.0)
+            y = (edge_y(x) if callable(edge_y) else edge_y) + (inner_dip(z) * math.sin(math.pi * t) ** inner_power if inner_dip else 0.0)
             inner.append(len(verts)); verts.append((x, y, z)); uv.append((z, -1.0))
         rings.append(ring + inner)
     M = len(rings[0])
@@ -1129,6 +1132,12 @@ def premaxilla_z(z, y):
     return z + P["crown_extension"] * w * height
 
 
+def oral_floor(z):
+    """Central mouth floor; the ascending jaw crest is not the tongue's bed."""
+    profile = np.array(D["mouth"]["floor_profile"])
+    return max(float(np.interp(z, profile[:, 0], profile[:, 1])), interp(JAW, z, 2) + D["mouth"]["floor_wall"])
+
+
 def warp_snout(objs, bones):
     """Apply snout_z to every head part (its vertices and every shape key) and to the bones."""
     for ob in objs:
@@ -1141,6 +1150,154 @@ def warp_snout(objs, bones):
             data.foreach_set("co", co.ravel())
     w = lambda p: (p[0], p[1], float(snout_z(premaxilla_z(np.array(p[2]), np.array(p[1])))))
     return [(n, w(h0), w(h1), par) for n, h0, h1, par in bones]
+
+
+def ear_part(sgn):
+    rigid = lambda n: [[("head", 1.0)]] * n
+    objs = []
+    # ear: a flap of skin on a thin stalk growing out of the face's flesh at the top-back corner of the cheek (where
+    # the S line behind the cheek begins), flaring into a leaf that lies back along the head under the horn and
+    # curls round its length like a tulip petal, the upper front edge rolling over furthest: cream inside, orange
+    # outside (user). Its section is one closed loop, inside then outside; the loft rises tangentially out of a
+    # small footprint on the face's own surface (a fillet), so the face's skin runs on into the stalk (_A < 0)
+    face_x = lambda y, z: abs(face_pt(z, side_th(z, y))[0])
+    b_yz = np.array(FRILL["base"][1:])
+    base = np.array([sgn * (face_x(*b_yz) + FRILL["stand_off"]), *b_yz])
+    tipp = np.array([sgn * FRILL["tip"][0], FRILL["tip"][1], FRILL["tip"][2]])
+    L = tipp - base; length = np.linalg.norm(L); L /= length
+    nrm = norm([sgn * 1.0, FRILL["face_up"], FRILL["face_forward"]]); nrm = norm(nrm - L * (nrm @ L))
+    W = np.cross(nrm, L); W = W if W[1] > 0 else -W  # across the ear, toward its upper front edge
+    G, H, NF = 26, 20, 8
+    lo, up = (math.radians(a) for a in FRILL["roll_deg"])
+    dk, th = FRILL["depth"], FRILL["thickness"]
+
+    def ear_pt(a, c, out):
+        # a narrow stalk at the root, flaring into the flap (widest about halfway), narrowing to the tip
+        half = FRILL["width"] / 2 * (FRILL["stalk"] + (1 - FRILL["stalk"]) * math.sin(math.pi * min(1.0, a / FRILL["widest_at"]) / 2) ** 1.5) \
+            * (1 if a <= FRILL["widest_at"] else math.cos(math.pi / 2 * (a - FRILL["widest_at"]) / (1 - FRILL["widest_at"])) ** 0.8)
+        t = c * (up if c > 0 else lo)  # angle round the arc from the bottom of the hollow
+        o = base + L * a * length + nrm * half * dk
+        p = o + W * half * math.sin(t) - nrm * half * dk * math.cos(t)
+        if out:  # the outside of the flap: the skin's thickness further from the curl's centre (thicker at the stalk)
+            q = p - o; q = q / (np.linalg.norm(q) + 1e-9)
+            p = p + q * (th * (1 - 0.5 * a) + FRILL["body"] * (1 - a) ** 3)
+        return p
+
+    M = 2 * (H + 1)
+    loop = [(0, j) for j in range(H + 1)] + [(1, j) for j in range(H, -1, -1)]  # hollow lower->upper, back upper->lower
+    a1 = FRILL["fillet_a"]
+    sec1 = [ear_pt(a1, -1 + 2 * j / H, layer) for layer, j in loop]
+    # the footprint: an oval on the face round the root, the hollow's side forward-out, the back's side behind
+    Ls = norm(np.array([0.0, L[1], L[2]])); Ws = norm(np.array([0.0, W[1], W[2]]))
+    foot = []
+    for k in range(M):
+        ph = math.pi * (k / (M - 1)) * 2 - math.pi / 2
+        yz = b_yz + (Ws[1:] * FRILL["foot"][1] * math.sin(ph) + Ls[1:] * FRILL["foot"][0] * (1 + math.cos(ph)) * 0.5)
+        foot.append(np.array([sgn * (face_x(*yz) - 0.002), *yz]))
+    vs, fs, us, bs, zs = [], [], [], [], []
+    for i in range(G + 1):
+        for k, (layer, j) in enumerate(loop):
+            if i <= NF:  # the fillet: from the footprint on the face, rising tangentially into the section
+                e = (i / NF) ** 2
+                P = foot[k] + (sec1[k] - foot[k]) * e
+                us.append(-1.0 + i / NF)
+            else:
+                P = ear_pt(a1 + (1 - a1) * (i - NF) / (G - NF), -1 + 2 * j / H, layer)
+                us.append(a1 + (1 - a1) * (i - NF) / (G - NF))
+            vs.append(tuple(P)); bs.append(j / H); zs.append(float(layer))
+    for i in range(G):
+        for k in range(M):
+            q = [i * M + k, (i + 1) * M + k, (i + 1) * M + (k + 1) % M, i * M + (k + 1) % M]
+            fs.append(q if sgn > 0 else q[::-1])
+    objs.append(add_part("Frill" + ("L" if sgn > 0 else "R"), vs, fs, {"_PART": [9] * len(vs), "_A": us, "_B": bs, "_ZONE": zs},
+                         rigid(len(vs))))
+
+    return objs[0]
+
+
+def dentition_parts(face):
+    """Build rigid animal crowns and gum beds against the finished oral surfaces."""
+    from mathutils.bvhtree import BVHTree
+    from mathutils import Vector
+    MO = D["mouth"]
+    objs = []
+    palate = BVHTree.FromPolygons([tuple(v.co) for v in face.data.vertices], [list(p.vertices) for p in face.data.polygons])
+    def seat(x, z, lip):
+        hit, _, _, _ = palate.ray_cast(Vector((x, -float(snout_z(np.array(z))), lip - 0.25)), Vector((0, 0, 1)), 1.0)
+        if hit is None:
+            raise ValueError("upper tooth bed misses palate")
+        return hit.z
+    # Teeth are solid recurved crowns rooted in a continuous gum bed, inside the lip.
+    # The reference's visible tooth count is retained; hiding them correctly is anatomical seating.
+    # Previously they were placed from the lip edge rather than an upper alveolar ridge.
+    # Side silhouettes follow the flight art; crowns have an oval section and a closed root.
+    # Upper seats come from the final palate, and the lip controls crown concealment.
+    TT = D["teeth"]
+    for jaw_side, bone in ((False, "head"), (True, "jaw")):
+        TS = TT["lower" if jaw_side else "upper"]
+        vs, fs, ws = [], [], []
+        if jaw_side:
+            edge_y = lambda z: interp(JAW, z, 1)
+            half_w = lambda z: interp(JAW, z, 3) - TS["inset"]
+        else:
+            edge_y = lambda z: interp(UPPER, z, 2)
+            # the upper tooth row just outside the lower one (outside_lower), as in a closed reptile's bite, and never
+            # outside the lip (inset from the lip's edge)
+            half_w = lambda z: min(interp(UPPER, z, 4) * muzzle_taper(z) * lip_tuck(z) - TS["inset"],
+                                   interp(JAW, z, 3) - TT["lower"]["inset"] + TS["outside_lower"])
+        zs = np.linspace(TS["z"][0], TS["z"][1], TS["count"])
+        # the front teeth: a row across the front of the mouth at the bite point, where the upper and lower fronts
+        # meet (in front of it is the front muzzle's underside: skin, no teeth)
+        FT = TT["front_lower" if jaw_side else "front"]
+        if FT:
+            z0 = FT["z"] - FT.get("tuck_back", 0.0)
+            for x in np.linspace(-FT["half_span"], FT["half_span"], FT["count"]):
+                ceiling = seat(x, z0, edge_y(z0)) if not jaw_side else edge_y(z0)
+                base = np.array([x, ceiling + (TT["root_embed"] if not jaw_side else 0), float(snout_z(np.array(z0)))])
+                sy = 1.0 if jaw_side else -1.0
+                d = norm(np.array([0.0, sy * math.cos(math.radians(TT["rake_deg"])), -math.sin(math.radians(TT["rake_deg"]))]))
+                tang = np.array([1.0, 0.0, 0.0]); length = FT["length"]
+                if not jaw_side:
+                    length = min(length, max(0.015, ceiling - edge_y(z0) - TT["hide_margin"]))
+                fwd = np.array([0.0, 0.0, 1.0]); fwd = norm(fwd - (fwd @ d) * d)  # forward, square to the tooth
+                # across the front the jaw runs sideways, so these are flattened front to back
+                n = tooth(vs, fs, base, d, fwd, length, length * TT["base_frac"] * TT["section_ratio"] * 0.5, length * TT["base_frac"] * 0.5, recurve=TT["recurve"] * 0.5, NA=20, NL=12)
+                ws += [[(bone, 1.0)]] * n
+        for sgn in (1, -1):
+            for k, z in enumerate(zs):
+                f = k / (len(zs) - 1)
+                length = TS["length"][0] + (TS["length"][1] - TS["length"][0]) * math.sin(math.pi * min(1.0, f * 1.3))
+                dz = 0.004
+                slope = (edge_y(z + dz) - edge_y(z - dz)) / (2 * dz)
+                tang = norm(np.array([0.0, slope, 1.0]))          # along the lip, forward
+                into = np.array([0.0, 1.0 if jaw_side else -1.0, 0.0])
+                into = norm(into - (into @ tang) * tang)            # perpendicular to the lip line, into the mouth gap
+                rake = math.radians(TT["rake_deg"])
+                d = norm(into * math.cos(rake) - tang * math.sin(rake))  # tip raked back toward the throat
+                ceiling = seat(sgn * half_w(z), z, edge_y(z)) if not jaw_side else edge_y(z)
+                base = np.array([sgn * half_w(z), ceiling + (TT["root_embed"] if not jaw_side else 0), float(snout_z(np.array(z)))])
+                if not jaw_side:
+                    length = min(length, max(0.015, ceiling - edge_y(z) - TT["hide_margin"]))
+                n = tooth(vs, fs, base, d, tang, length, length * TT["base_frac"] * 0.5, length * TT["base_frac"] * TT["section_ratio"] * 0.5,
+                          recurve=TT["recurve"], NA=20, NL=12)
+                ws += [[(bone, 1.0)]] * n
+        objs.append(add_part("Teeth" + ("Lower" if jaw_side else "Upper"), vs, fs, {"_PART": [4] * len(vs), "_A": [0] * len(vs), "_B": [0] * len(vs), "_ZONE": [0] * len(vs)}, ws))
+        # The U-shaped alveolar ridge links both side rows to the front row.
+        # Its upper surface is buried in the palate; tooth roots enter the ridge.
+        gum = MO["gums"]
+        zfront = FT["z"] - FT.get("tuck_back", 0.0)
+        points = []
+        for sign, samples in ((1, np.linspace(TS["z"][1], zfront, 35)), (-1, np.linspace(zfront, TS["z"][1], 35))):
+            if sign < 0:
+                for x in np.linspace(half_w(zfront), -half_w(zfront), 16)[1:-1]:
+                    points.append([x, edge_y(zfront) + TS.get("tuck_up", 0.0) - (gum["root_sink"] if jaw_side else 0.0), zfront])
+            points += [[sign * half_w(z), edge_y(z) + TS.get("tuck_up", 0.0) - (gum["root_sink"] if jaw_side else 0.0), z] for z in samples]
+        points = [[x, (seat(x, z, edge_y(z)) - gum["root_sink"] if not jaw_side else y), float(snout_z(np.array(z)))] for x, y, z in points]
+        gv, gf, ga, gb = tube(points, [gum["radius"]] * len(points), around=16, step=0.004)
+        objs.append(add_part("Gum" + ("Lower" if jaw_side else "Upper"), gv, gf,
+                             {"_PART": [14] * len(gv), "_A": ga, "_B": gb, "_ZONE": [0] * len(gv)}, [[(bone, 1.0)]] * len(gv)))
+
+    return objs
 
 
 def head_parts():
@@ -1156,7 +1313,7 @@ def head_parts():
     # 1 inside the mouth (behind inside_from), 0 in front of it, where the closing surface is the overhanging lip's underside
     inside = lambda z: smoothstep(MO["inside_from"][0], MO["inside_from"][1], z) * smoothstep(MO["hinge_z"], MO["hinge_z"] + 0.06, z)
     # the closing surface finely sampled across: in front of the mouth it is the lip's visible underside
-    v, f, uv = loft(upper_contour, zs, front_dent=front_setback, inner_dip=lambda z: MO["palate_arch"] * inside(z), n_inner=24)
+    v, f, uv = loft(upper_contour, zs, front_dent=front_setback, inner_dip=lambda z: MO["palate_arch"] * inside(z), n_inner=24, inner_power=MO["palate_shape_power"])
     hf = []
     for (x, y, z), (_, w) in zip(v, uv):
         low, top = interp(UPPER, z, 2), interp(UPPER, z, 1)
@@ -1183,7 +1340,7 @@ def head_parts():
 
     # lower jaw skin
     zj = JAW[:, 0]  # the generated stations: dense, with the landmarks (the throat notch stays crisp)
-    v, f, uv = loft(jaw_contour, zj, inner_dip=lambda z: -MO["floor_trough"] * inside(z))
+    v, f, uv = loft(jaw_contour, zj, inner_dip=lambda z: (oral_floor(z) - interp(JAW, z, 1)) * inside(z))
     part = [2.0 if u[1] >= 0 else 3.0 for u in uv]
     jaw = add_part("Jaw", v, f, {"_PART": part, "_A": [u[0] for u in uv], "_B": [u[1] for u in uv], "_ZONE": [0] * len(v)},
                    [[("jaw", 1.0)]] * len(v))
@@ -1252,55 +1409,6 @@ def head_parts():
             "co", to_blender(np.array(vs) + np.array(bulge)).astype(np.float32).ravel())
         objs.append(web)
 
-    # teeth: small flat triangular blades, evenly spaced along each lip edge, each pointing perpendicular to the
-    # lip line with its tip raked a little back toward the throat (flight render, limited edition). The lower
-    # teeth rise plainly from the lower jaw; the upper ones grow from the roof of the mouth, inward and up
-    # behind the upper lip, which hides most of them (tuck_up, inset)
-    TT = D["teeth"]
-    for jaw_side, bone in ((False, "head"), (True, "jaw")):
-        TS = TT["lower" if jaw_side else "upper"]
-        vs, fs, ws = [], [], []
-        if jaw_side:
-            edge_y = lambda z: interp(JAW, z, 1)
-            half_w = lambda z: interp(JAW, z, 3) - TS["inset"]
-        else:
-            edge_y = lambda z: interp(UPPER, z, 2)
-            # the upper tooth row just outside the lower one (outside_lower), as in a closed reptile's bite, and never
-            # outside the lip (inset from the lip's edge)
-            half_w = lambda z: min(interp(UPPER, z, 4) * muzzle_taper(z) * lip_tuck(z) - TS["inset"],
-                                   interp(JAW, z, 3) - TT["lower"]["inset"] + TS["outside_lower"])
-        zs = np.linspace(TS["z"][0], TS["z"][1], TS["count"])
-        # the front teeth: a row across the front of the mouth at the bite point, where the upper and lower fronts
-        # meet (in front of it is the front muzzle's underside: skin, no teeth)
-        FT = TT["front_lower" if jaw_side else "front"]
-        if FT:
-            z0 = FT["z"] - FT.get("tuck_back", 0.0)
-            for x in np.linspace(-FT["half_span"], FT["half_span"], FT["count"]):
-                base = np.array([x, edge_y(z0) + FT.get("tuck_up", 0.0), z0])
-                sy = 1.0 if jaw_side else -1.0
-                d = norm(np.array([0.0, sy * math.cos(math.radians(TT["rake_deg"])), -math.sin(math.radians(TT["rake_deg"]))]))
-                tang = np.array([1.0, 0.0, 0.0]); length = FT["length"]
-                fwd = np.array([0.0, 0.0, 1.0]); fwd = norm(fwd - (fwd @ d) * d)  # forward, square to the tooth
-                # across the front the jaw runs sideways, so these are flattened front to back
-                n = tooth(vs, fs, base, d, fwd, length, TT["thickness"] * 0.5, length * TT["base_frac"] * 0.5, recurve=TT["recurve"] * 0.5)
-                ws += [[(bone, 1.0)]] * n
-        for sgn in (1, -1):
-            for k, z in enumerate(zs):
-                f = k / (len(zs) - 1)
-                length = TS["length"][0] + (TS["length"][1] - TS["length"][0]) * math.sin(math.pi * min(1.0, f * 1.3))
-                dz = 0.004
-                slope = (edge_y(z + dz) - edge_y(z - dz)) / (2 * dz)
-                tang = norm(np.array([0.0, slope, 1.0]))          # along the lip, forward
-                into = np.array([0.0, 1.0 if jaw_side else -1.0, 0.0])
-                into = norm(into - (into @ tang) * tang)            # perpendicular to the lip line, into the mouth gap
-                rake = math.radians(TT["rake_deg"])
-                d = norm(into * math.cos(rake) - tang * math.sin(rake))  # tip raked back toward the throat
-                base = np.array([sgn * half_w(z), edge_y(z) + TS.get("tuck_up", 0.0), z])  # upper: up behind the lip
-                n = tooth(vs, fs, base, d, tang, length, length * TT["base_frac"] * 0.5, TT["thickness"] * 0.5,
-                          recurve=TT["recurve"])
-                ws += [[(bone, 1.0)]] * n
-        objs.append(add_part("Teeth" + ("Lower" if jaw_side else "Upper"), vs, fs, {"_PART": [4] * len(vs), "_A": [0] * len(vs), "_B": [0] * len(vs), "_ZONE": [0] * len(vs)}, ws))
-
     # tongue: a muscular body lying in the trough of the mouth's floor, on three bones: rounded across with a
     # shallow groove down its middle (the median sulcus), thick at the root and thinning to a broad, rounded,
     # free tip that can lift off the floor (mouth.tongue)
@@ -1311,7 +1419,7 @@ def head_parts():
         w = max(w, 0.002)
         h = TG["thickness"][0] + (TG["thickness"][1] - TG["thickness"][0]) * u ** 0.7
         h *= max(0.15, math.sqrt(max(0.0, 1 - (1 - min(1.0, u / TG["tip_round"])) ** 2)))
-        y0 = interp(JAW, z, 1) - MO["floor_trough"] * smoothstep(MO["hinge_z"], MO["hinge_z"] + 0.06, z) + TG["lift"] * (1 - u) ** 2 - 0.002
+        y0 = oral_floor(z) + TG["lift"] * (1 - u) ** 2 - 0.002
         pts = []
         for i in range(N_AROUND + 1):
             th = math.pi * i / N_AROUND
@@ -1371,70 +1479,17 @@ def head_parts():
         path = [[sgn * p[0], p[1], p[2]] for p in hp]
         v, f, A, B = tube(path, hr, around=24, step=0.001, grooves=HORN["grooves"])
         objs.append(add_part("Horn" + sd, v, f, {"_PART": [8] * len(v), "_A": A, "_B": B, "_ZONE": [0] * len(v)}, rigid(len(v))))
-        # ear: a flap of skin on a thin stalk growing out of the face's flesh at the top-back corner of the cheek (where
-        # the S line behind the cheek begins), flaring into a leaf that lies back along the head under the horn and
-        # curls round its length like a tulip petal, the upper front edge rolling over furthest: cream inside, orange
-        # outside (user). Its section is one closed loop, inside then outside; the loft rises tangentially out of a
-        # small footprint on the face's own surface (a fillet), so the face's skin runs on into the stalk (_A < 0)
-        face_x = lambda y, z: abs(face_pt(z, side_th(z, y))[0])
-        b_yz = np.array(FRILL["base"][1:])
-        base = np.array([sgn * (face_x(*b_yz) + FRILL["stand_off"]), *b_yz])
-        tipp = np.array([sgn * FRILL["tip"][0], FRILL["tip"][1], FRILL["tip"][2]])
-        L = tipp - base; length = np.linalg.norm(L); L /= length
-        nrm = norm([sgn * 1.0, FRILL["face_up"], FRILL["face_forward"]]); nrm = norm(nrm - L * (nrm @ L))
-        W = np.cross(nrm, L); W = W if W[1] > 0 else -W  # across the ear, toward its upper front edge
-        G, H, NF = 26, 20, 8
-        lo, up = (math.radians(a) for a in FRILL["roll_deg"])
-        dk, th = FRILL["depth"], FRILL["thickness"]
-
-        def ear_pt(a, c, out):
-            # a narrow stalk at the root, flaring into the flap (widest about halfway), narrowing to the tip
-            half = FRILL["width"] / 2 * (FRILL["stalk"] + (1 - FRILL["stalk"]) * math.sin(math.pi * min(1.0, a / FRILL["widest_at"]) / 2) ** 1.5) \
-                * (1 if a <= FRILL["widest_at"] else math.cos(math.pi / 2 * (a - FRILL["widest_at"]) / (1 - FRILL["widest_at"])) ** 0.8)
-            t = c * (up if c > 0 else lo)  # angle round the arc from the bottom of the hollow
-            o = base + L * a * length + nrm * half * dk
-            p = o + W * half * math.sin(t) - nrm * half * dk * math.cos(t)
-            if out:  # the outside of the flap: the skin's thickness further from the curl's centre (thicker at the stalk)
-                q = p - o; q = q / (np.linalg.norm(q) + 1e-9)
-                p = p + q * (th * (1 - 0.5 * a) + FRILL["body"] * (1 - a) ** 3)
-            return p
-
-        M = 2 * (H + 1)
-        loop = [(0, j) for j in range(H + 1)] + [(1, j) for j in range(H, -1, -1)]  # hollow lower->upper, back upper->lower
-        a1 = FRILL["fillet_a"]
-        sec1 = [ear_pt(a1, -1 + 2 * j / H, layer) for layer, j in loop]
-        # the footprint: an oval on the face round the root, the hollow's side forward-out, the back's side behind
-        Ls = norm(np.array([0.0, L[1], L[2]])); Ws = norm(np.array([0.0, W[1], W[2]]))
-        foot = []
-        for k in range(M):
-            ph = math.pi * (k / (M - 1)) * 2 - math.pi / 2
-            yz = b_yz + (Ws[1:] * FRILL["foot"][1] * math.sin(ph) + Ls[1:] * FRILL["foot"][0] * (1 + math.cos(ph)) * 0.5)
-            foot.append(np.array([sgn * (face_x(*yz) - 0.002), *yz]))
-        vs, fs, us, bs, zs = [], [], [], [], []
-        for i in range(G + 1):
-            for k, (layer, j) in enumerate(loop):
-                if i <= NF:  # the fillet: from the footprint on the face, rising tangentially into the section
-                    e = (i / NF) ** 2
-                    P = foot[k] + (sec1[k] - foot[k]) * e
-                    us.append(-1.0 + i / NF)
-                else:
-                    P = ear_pt(a1 + (1 - a1) * (i - NF) / (G - NF), -1 + 2 * j / H, layer)
-                    us.append(a1 + (1 - a1) * (i - NF) / (G - NF))
-                vs.append(tuple(P)); bs.append(j / H); zs.append(float(layer))
-        for i in range(G):
-            for k in range(M):
-                q = [i * M + k, (i + 1) * M + k, (i + 1) * M + (k + 1) % M, i * M + (k + 1) % M]
-                fs.append(q if sgn > 0 else q[::-1])
-        objs.append(add_part("Frill" + ("L" if sgn > 0 else "R"), vs, fs, {"_PART": [9] * len(vs), "_A": us, "_B": bs, "_ZONE": zs},
-                             rigid(len(vs))))
+        objs.append(ear_part(sgn))
 
     bones = [("head", (0, 1.57, 1.36), (0, 1.44, 2.017), None),
              ("jaw", HINGE, (0, 1.24, 1.985), "head"),
              ("tongue1", (0, 1.42, 1.56), (0, 1.37, 1.68), "jaw"),
              ("tongue2", (0, 1.37, 1.68), (0, 1.32, 1.80), "tongue1"),
-             ("tongue3", (0, 1.32, 1.80), (0, 1.29, 1.93), "tongue2")]
+             ("tongue3", (0, 1.32, 1.80), (0, 1.29, 1.93), "tongue2"),
+             ("fire_origin", tuple(MO["fire_origin"][0]), tuple(MO["fire_origin"][1]), "head")]
     bones += [(bn, h0, h1, "head") for bn, h0, h1 in lid_bones]
     bones = warp_snout(objs, bones)
+    objs += dentition_parts(face)
     return objs, bones
 
 
