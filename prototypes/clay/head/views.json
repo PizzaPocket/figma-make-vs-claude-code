@@ -1441,4 +1441,148 @@
    "fov": 24
   }
  ]
+,
+ "gape_stress": [
+  {
+    "label": "Jaw 0.00 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 0
+    }
+  },
+  {
+    "label": "Jaw 0.25 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 0.25
+    }
+  },
+  {
+    "label": "Jaw 0.65 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 0.65
+    }
+  },
+  {
+    "label": "Jaw 0.85 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 0.85
+    }
+  },
+  {
+    "label": "Jaw 1.05 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 1.05
+    }
+  },
+  {
+    "label": "Front: full gape",
+    "cam": [
+      0,
+      1.7,
+      4.5
+    ],
+    "target": [
+      0,
+      1.45,
+      1.6
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 1.05
+    }
+  },
+  {
+    "label": "Reference: oral cavity",
+    "ref": "{refs}/study/mouth_teeth_grid.jpg"
+  },
+  {
+    "label": "Lower gum into rear corner",
+    "cam": [
+      1.7,
+      1.6,
+      3
+    ],
+    "target": [
+      0,
+      1.37,
+      1.68
+    ],
+    "fov": 24,
+    "pose": {
+      "jaw": 0.85
+    }
+  },
+  {
+    "label": "Plain clay: maximum tested gape",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 1.05
+    },
+    "clay": true
+  }
+]
 }

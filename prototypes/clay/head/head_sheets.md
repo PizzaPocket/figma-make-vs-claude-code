@@ -524,3 +524,34 @@ The two black circles were shader paint, not holes or mesh artifacts: `ear` and
 and `pit` painted the smaller snout dot at (z 1.796, y 1.505). Removed all three
 shader masks at the user's request. This leaves the underlying cheek and snout
 surfaces intact. Judge their actual anatomy in the new `surface_review` sheet.
+
+
+## Lower gum termination and wide-gape deformation
+The lower gum formerly stopped at z 1.63 with its full 0.011 radius and a flat
+end cap. The ridge now continues to z 1.565, tapering over 0.075 to radius 0.0015
+and sinking 0.012 into the rear jaw tissue. The tooth count and crown placements
+are unchanged. Check the ridge past the last tooth in `gape_stress`.
+
+The cheek web and exposed throat formerly blended directly from the rigid head
+to the rotating jaw. At the midpoint this follows the chord of the opening arc,
+contracting the tissue by cos(angle/2), with greater collapse at wider angles.
+Two intermediate oral bones now rotate by one-third and two-thirds of the jaw
+angle. Both cheek and lining vertices blend adjacent samples of this arc, while
+the upper and lower attachments retain their original rigid endpoints. This is
+a rig correction, not a limit imposed on how far the mouth can open. Stress
+views run through 0, 0.25, 0.65, 0.85 and 1.05 radians, plus front and clay views.
+The viewer drives these oral bones alongside the jaw; other runtimes must do
+the same to preserve this deformation behavior.
+
+The lower ridge also had a deeper attachment problem: its narrow tube followed
+the lip height while the modeled mouth floor fell away beneath it. The revised
+ridge spans down to ray-cast seats on the finished jaw floor, with its lower
+surface embedded by root_sink. At the rear, both height and width taper below
+the floor so no full-height cap remains exposed.
+
+The first stress render still exposed a floor flap: some body-lining vertices
+lay immediately over the rigid jaw floor but retained a partial head rotation.
+`fit_oral_lining` now measures the finished jaw and palate surfaces, pins the
+0.012 overlap to its actual host, and blends into the flexible wall by 0.035.
+The operation is confined between the oral floor and palate and inside the
+jaw margin. These lining vertices retain a continuous dark tissue mask.

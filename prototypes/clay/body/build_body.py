@@ -401,7 +401,7 @@ def skin_parts(ranges, ear_pts=None):
     cy = np.interp(V[:, 2], rows[:, 0], rows[:, 1]); ry = np.interp(V[:, 2], rows[:, 0], rows[:, 3])
     for i in np.flatnonzero(interior):
         jaw = float(np.clip((cy[i] + ry[i] - V[i, 1]) / (2 * ry[i]), 0, 1))
-        W[i] = [("head", 1 - jaw), ("jaw", jaw)]
+        W[i] = H.oral_weights(jaw)
         Z[i] = 1.0  # the oral lining must not acquire an internal carapace shell
     # Keep categorical material IDs in one family across every triangle. Interpolating
     # 3 (lining) to 20 (skin) incorrectly shades the boundary as teeth, horns and armor.
@@ -834,6 +834,38 @@ def wing(sgn):
     return parts, bones, {f"{n}.{sd}": v for n, v in fold.items()}
 
 
+def fit_oral_lining(skin, objs):
+    """Pin the lining's floor/roof overlap to the actual host jaw/head surfaces."""
+    from mathutils.bvhtree import BVHTree
+    def tree(name):
+        obj = next(o for o in objs if o.name == name)
+        return BVHTree.FromPolygons([v.co for v in obj.data.vertices], [list(p.vertices) for p in obj.data.polygons])
+    jaw_tree, face_tree = tree("Jaw"), tree("Face")
+    settings = H.D["mouth"]["opening_arc"]
+    snap, blend = settings["attachment_snap_distance"], settings["attachment_blend_distance"]
+    count = 0
+    for vertex in skin.data.vertices:
+        x, z, y = vertex.co.x, -vertex.co.y, vertex.co.z
+        if not (1.43 < z < 1.80 and abs(x) < H.interp(H.JAW, z, 3) - 0.02 and H.oral_floor(z) - 0.012 < y < H.interp(H.UPPER, z, 2) + H.D["mouth"]["palate_arch"] + 0.015):
+            continue
+        jf, ff = jaw_tree.find_nearest(vertex.co), face_tree.find_nearest(vertex.co)
+        distance = min(jf[3], ff[3])
+        if distance >= blend:
+            continue
+        target = 1.0 if jf[3] < ff[3] else 0.0
+        old = sum(g.weight * {"head": 0, "oral1": 1/3, "oral2": 2/3, "jaw": 1}.get(skin.vertex_groups[g.group].name, 0) for g in vertex.groups)
+        strength = 1 - smoothstep(snap, blend, distance)
+        weights = H.oral_weights(old * (1 - strength) + target * strength)
+        for group in skin.vertex_groups:
+            group.remove([vertex.index])
+        for name, value in weights:
+            group = skin.vertex_groups.get(name) or skin.vertex_groups.new(name=name)
+            group.add([vertex.index], value, 'REPLACE')
+        skin.data.attributes["_ABZ"].data[vertex.index].vector.z = -1.0
+        count += 1
+    print('Oral lining host attachments:', count, flush=True)
+
+
 def fit_surface_joins(objs, skin, shell):
     """Seat ear roots and the dorsal head-shield boundary on final body surfaces."""
     from mathutils.bvhtree import BVHTree
@@ -906,6 +938,7 @@ def main():
         ear_pts = np.stack([ear_pts[:, 0], ear_pts[:, 2], -ear_pts[:, 1]], 1)  # Blender's frame back to the model's
     skin, shell = skin_parts(ranges, ear_pts)
     fit_surface_joins(objs, skin, shell)
+    fit_oral_lining(skin, objs)
     objs += [skin, shell]
     objs += spike_parts(ranges, band)
     neck_end = TR["bones"]["chain_forward"][-1][0]
@@ -918,7 +951,7 @@ def main():
         parts, lb, fd = wing(sgn)
         objs += parts; bones += lb; fold.update(fd)
     # the wings rest spread; "wings_fold" (spread at 0, folded at 1) takes them to the side sheet's folded pose
-    H.assemble(objs, bones, OUT, "ClayRig", clips={"wings_fold": fold})
+    H.assemble(objs, bones, OUT, "ClayRig", clips={"wings_fold": fold}, extras={"mouth_rig": H.D["mouth"]["opening_arc"]})
 
 
 if __name__ == "__main__":

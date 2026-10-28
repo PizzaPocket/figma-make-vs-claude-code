@@ -1218,6 +1218,48 @@ def ear_part(sgn):
     return objs[0]
 
 
+def oral_weights(jaw_share):
+    """Blend adjacent samples of the opening arc rather than collapsing its chord."""
+    names = ["head", "oral1", "oral2", "jaw"]
+    x = max(0.0, min(1.0, float(jaw_share))) * 3
+    i = min(2, int(x)); t = x - i
+    return [(names[i], 1 - t), (names[i + 1], t)]
+
+
+def lower_gum_ridge(points, radii):
+    """A gum ridge joined down to the actual floor, with buried rear ends."""
+    from mathutils import Vector
+    from mathutils.bvhtree import BVHTree
+    jaw = bpy.data.objects["Jaw"]
+    tree = BVHTree.FromPolygons([tuple(v.co) for v in jaw.data.vertices], [list(p.vertices) for p in jaw.data.polygons])
+    C, R, distance, _, _ = spline_frames(points, radii, 0.004)
+    tangent = np.gradient(C, axis=0); tangent /= np.linalg.norm(tangent, axis=1)[:, None]
+    verts, faces, along = [], [], []
+    gum = D["mouth"]["gums"]; count = 16
+    for i, center in enumerate(C):
+        x, y, z = center
+        hit, _, _, _ = tree.ray_cast(Vector((x, -z, y + 0.25)), Vector((0, 0, -1)), 1.0)
+        if hit is None:
+            raise ValueError("lower gum ridge misses jaw floor")
+        low = hit.z - gum["root_sink"]
+        fade = smoothstep(gum["back_z"], gum["back_z"] + gum["blend_length"], z)
+        high = low + 0.001 + max(0.0, y + R[i] - low - 0.001) * fade
+        side = norm(np.cross(tangent[i], [0, 1, 0]))
+        for k in range(count):
+            angle = 2 * math.pi * k / count
+            point = center + side * R[i] * math.cos(angle)
+            point[1] = (high + low) / 2 + (high - low) / 2 * math.sin(angle)
+            verts.append(tuple(point)); along.append(float(distance[i] / distance[-1]))
+    faces = ring_faces(len(C), count)
+    for i, end in ((0, False), (len(C) - 1, True)):
+        ring = np.array(verts[i * count:(i + 1) * count]); cap = len(verts)
+        verts.append(tuple(ring.mean(axis=0))); along.append(float(distance[i] / distance[-1]))
+        for k in range(count):
+            a = i * count + k; b = i * count + (k + 1) % count
+            faces.append([a, b, cap] if end else [b, a, cap])
+    return verts, faces, along, [0.0] * len(verts)
+
+
 def dentition_parts(face):
     """Build rigid animal crowns and gum beds against the finished oral surfaces."""
     from mathutils.bvhtree import BVHTree
@@ -1290,13 +1332,20 @@ def dentition_parts(face):
         gum = MO["gums"]
         zfront = FT["z"] - FT.get("tuck_back", 0.0)
         points = []
-        for sign, samples in ((1, np.linspace(TS["z"][1], zfront, 35)), (-1, np.linspace(zfront, TS["z"][1], 35))):
+        back = gum["back_z"] if jaw_side else TS["z"][1]
+        for sign, samples in ((1, np.linspace(back, zfront, 45)), (-1, np.linspace(zfront, back, 45))):
             if sign < 0:
                 for x in np.linspace(half_w(zfront), -half_w(zfront), 16)[1:-1]:
                     points.append([x, edge_y(zfront) + TS.get("tuck_up", 0.0) - (gum["root_sink"] if jaw_side else 0.0), zfront])
             points += [[sign * half_w(z), edge_y(z) + TS.get("tuck_up", 0.0) - (gum["root_sink"] if jaw_side else 0.0), z] for z in samples]
         points = [[x, (seat(x, z, edge_y(z)) - gum["root_sink"] if not jaw_side else y), float(snout_z(np.array(z)))] for x, y, z in points]
-        gv, gf, ga, gb = tube(points, [gum["radius"]] * len(points), around=16, step=0.004)
+        radii = []
+        for i, (x, y, z) in enumerate(points):
+            fade = smoothstep(back, back + gum["blend_length"], z) if jaw_side else 1.0
+            radii.append(gum["tip_radius"] + (gum["radius"] - gum["tip_radius"]) * fade)
+            if jaw_side:
+                points[i][1] -= gum["end_sink"] * (1 - fade)
+        gv, gf, ga, gb = lower_gum_ridge(points, radii) if jaw_side else tube(points, radii, around=16, step=0.004)
         objs.append(add_part("Gum" + ("Lower" if jaw_side else "Upper"), gv, gf,
                              {"_PART": [14] * len(gv), "_A": ga, "_B": gb, "_ZONE": [0] * len(gv)}, [[(bone, 1.0)]] * len(gv)))
 
@@ -1376,7 +1425,7 @@ def head_parts():
                     P = U + (Lp - U) * w
                     # the lining a little inside the skin, thickening toward the corner into the lips' fleshy commissure
                     P[0] -= sgn * (0.0 if layer == 0 else MO["web_thickness"] + MO["corner_thickness"] * u ** 3)
-                    vs.append(tuple(P)); ws.append([("head", 1 - w), ("jaw", w)])
+                    vs.append(tuple(P)); ws.append(oral_weights(w))
                     # outside: orange along the upper lip, cream jowl below it (the cover); inside: the mouth's lining
                     ps.append((1.0 if w < MO["web_orange_to"] else 2.0) if layer == 0 else 3.0); As.append(u); Bs.append(w)
                     # the jaw's opening fills the cheek out: a corrective shape (jawOpen, driven by the jaw's angle) bowing
@@ -1486,6 +1535,8 @@ def head_parts():
 
     bones = [("head", (0, 1.57, 1.36), (0, 1.44, 2.017), None),
              ("jaw", HINGE, (0, 1.24, 1.985), "head"),
+             ("oral1", HINGE, (0, 1.24, 1.985), "head"),
+             ("oral2", HINGE, (0, 1.24, 1.985), "head"),
              ("tongue1", (0, 1.42, 1.56), (0, 1.37, 1.68), "jaw"),
              ("tongue2", (0, 1.37, 1.68), (0, 1.32, 1.80), "tongue1"),
              ("tongue3", (0, 1.32, 1.80), (0, 1.29, 1.93), "tongue2"),
@@ -1526,7 +1577,7 @@ def pose_clips(arm, bones, clips):
     bpy.ops.object.mode_set(mode="OBJECT")
 
 
-def assemble(objs, bones, out, name="ClayRig", clips=None):
+def assemble(objs, bones, out, name="ClayRig", clips=None, extras=None):
     """Make the armature from (name, head, tail, parent) specs, join the parts into one skinned mesh
     on it, and export a .glb. clips: {clip name: {bone: (turn, head)}}, each exported as an animation from
     rest (time 0) to that pose (its end): per bone its turn from rest (a 3x3 in the model's frame) and its
@@ -1546,6 +1597,8 @@ def assemble(objs, bones, out, name="ClayRig", clips=None):
     bpy.context.view_layer.objects.active = objs[0]
     bpy.ops.object.join()
     mesh = objs[0]
+    for key, value in (extras or {}).items():
+        mesh[key] = value
     mod = mesh.modifiers.new("Armature", "ARMATURE"); mod.object = arm
     mesh.parent = arm
     if clips:
@@ -1553,7 +1606,7 @@ def assemble(objs, bones, out, name="ClayRig", clips=None):
     bpy.ops.object.select_all(action="DESELECT")
     mesh.select_set(True); arm.select_set(True)
     bpy.ops.export_scene.gltf(filepath=out, export_format="GLB", use_selection=True, export_skins=True, export_attributes=True,
-                              export_yup=True, export_animations=bool(clips), export_force_sampling=False, export_materials="NONE")
+                              export_yup=True, export_extras=True, export_animations=bool(clips), export_force_sampling=False, export_materials="NONE")
     print(f"exported {out}: {len(mesh.data.vertices)} verts, {len(mesh.data.polygons)} faces")
 
 

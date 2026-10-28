@@ -853,7 +853,18 @@
       "note": "A muscular tongue (user: convincing for speech): rounded across, a shallow median groove (0.004) down its middle, thick at the root (0.03) thinning to 0.012, its tip broad and rounded over the last 0.14 of its length, lifting a little off the floor, lying in the floor's trough. On three bones (tongue1-3) so it can curl up for speech sounds."
     },
     "corner_thickness": 0.008,
+    "opening_arc": {
+      "attachment_snap_distance": 0.012,
+      "attachment_blend_distance": 0.035,
+      "fractions": [0.0, 0.3333333333, 0.6666666667, 1.0],
+      "tested_max_angle": 1.05,
+      "why": "Intermediate oral bones preserve the throat and cheek volume as the jaw opens; direct head/jaw linear blending contracts the wall along a chord."
+    },
     "gums": {
+      "back_z": 1.565,
+      "blend_length": 0.075,
+      "tip_radius": 0.0015,
+      "end_sink": 0.012,
       "radius": 0.011,
       "root_sink": 0.004,
       "why": "Continuous alveolar tissue supports each tooth row; the upper ridge is embedded in the raised palate, inside the lip."

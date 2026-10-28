@@ -309,3 +309,17 @@ and spread poses before judging the decorative armor over it.
 Trace conspicuous spots to shader masks as well as geometry. A circular paint
 mask can look like a hole even when the mesh is continuous; remove the mask
 when the user rejects the mark rather than adding geometry to conceal it.
+
+
+### Wide-gape soft tissue
+A direct head/jaw blend follows a chord and contracts the cheek and throat as
+the jaw opens. Blend neighboring samples of the opening arc, keep both rigid
+attachment boundaries, and test beyond the normal talking pose. An emission
+ray check alone cannot establish that the enclosing tissues remain coherent.
+Let a gum ridge continue past its last tooth, then taper and bury the end in
+the corner tissue rather than leaving a full-radius capped tube visible.
+
+Soft lining that overlaps a rigid jaw floor must share that floor's bone weights.
+An arc blend preserves wall volume but cannot fix a misplaced rigid attachment.
+Bind overlaps to the finished host surface and keep the correction inside the
+oral envelope; verify the result in rendered wide-gape views.

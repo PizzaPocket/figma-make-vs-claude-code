@@ -180,7 +180,7 @@
       const w = wings === undefined ? 1 : Math.max(0, Math.min(1, wings));
       for (const t of foldTracks) t.node.quaternion.fromArray(t.it.evaluate(w * fold.duration));
       const apply = (n, ang) => {
-        const b = bones[n]; const wq = new THREE.Quaternion(); b.parent.getWorldQuaternion(wq);
+        const b = bones[n]; if (!b) return; const wq = new THREE.Quaternion(); b.parent.getWorldQuaternion(wq);
         const axis = X.clone().applyQuaternion(wq.clone().invert()).normalize();
         b.quaternion.premultiply(Q.setFromAxisAngle(axis, ang));
       };
@@ -198,6 +198,7 @@
         }
       }
       apply("jaw", jawOpen);
+      apply("oral1", jawOpen / 3); apply("oral2", jawOpen * 2 / 3);
       gltf.scene.updateMatrixWorld(true);
       apply("tongue1", -tongue * 0.3); gltf.scene.updateMatrixWorld(true);
       apply("tongue2", -tongue * 0.4); gltf.scene.updateMatrixWorld(true);
