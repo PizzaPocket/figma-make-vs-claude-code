@@ -69,3 +69,24 @@ Work top to bottom: the head first, because the neck and body join onto it. Tick
   show continuous underlying skin. Armor transitions still warrant polish.
 - Final glTF: finite positions, nonnegative weights and maximum weight-sum error
   1.8e-7. Python compilation, JavaScript syntax and whitespace checks pass.
+
+
+## User review corrections (2026-10-28)
+
+- Removed the painted cheek/ear-opening and snout-pit dots at their shader source.
+- Doubled neck scale spacing after comparing the official How to Draw and flight
+  crops. This applies only to the neck, fading into the chest. The discarded
+  interpretation of smaller overall orange scales is not implemented.
+- Leg pattern coordinates now follow actual limb segments in the rest skeleton;
+  front, rear and hind-leg views are included in `surface_review`.
+- Lower gums continue behind the final tooth, span down to the actual jaw floor
+  and taper into the rear tissue. Oral overlap weights now match their rigid
+  host; intermediate oral bones retain cheek/throat volume at wide gape.
+  Rendered angles 0–1.05 radians show the previous floor flap and spikes removed.
+- Wing shoulder weights now follow both muscle attachments. A shared arm bend
+  plane removes the independent elbow roll. All five fold stages, a top view
+  and clay render are in `wing_motion_review`. Fine socket and armor-edge
+  shaping remains open; connected topology alone is not the acceptance test.
+
+Current proofs are `out/surface_review-corrected.jpg`,
+`out/gape_stress-corrected.jpg` and `out/wing_motion_review-corrected.jpg`.

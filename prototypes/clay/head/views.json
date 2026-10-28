@@ -1699,5 +1699,145 @@
     "clay": true
   }
 ]
-
+,
+ "wing_motion_review": [
+  {
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 0",
+    "pose": {
+      "wings": 0
+    }
+  },
+  {
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 0.25",
+    "pose": {
+      "wings": 0.25
+    }
+  },
+  {
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 0.5",
+    "pose": {
+      "wings": 0.5
+    }
+  },
+  {
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 0.75",
+    "pose": {
+      "wings": 0.75
+    }
+  },
+  {
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 1",
+    "pose": {
+      "wings": 1
+    }
+  },
+  {
+    "label": "Official shoulder and elbow",
+    "ref": "{refs}/study/wing_shoulder_htd_grid.jpg"
+  },
+  {
+    "label": "Folded shoulder from above",
+    "cam": [
+      2,
+      2.7,
+      1.2
+    ],
+    "target": [
+      0.5,
+      1.2,
+      0.3
+    ],
+    "fov": 28,
+    "pose": {
+      "wings": 1
+    }
+  },
+  {
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Folded: plain clay anatomy",
+    "pose": {
+      "wings": 1
+    },
+    "clay": true
+  },
+  {
+    "label": "Full body after wing rig correction",
+    "cam": [
+      6,
+      3.1,
+      8
+    ],
+    "target": [
+      0,
+      1.15,
+      0.1
+    ],
+    "fov": 24
+  }
+]
 }

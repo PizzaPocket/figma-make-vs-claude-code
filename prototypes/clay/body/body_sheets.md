@@ -390,3 +390,27 @@ wrap its cross-section. The rest-space pattern deforms with the skin. Pattern
 settings are exported in `skin_pattern` metadata and read by the viewer; no
 extra vertex attributes are required. Inspect both sides of the forelegs and
 the hind leg in `surface_review`, plus the neck before/after beside the art.
+
+
+## Wing shoulder and elbow motion (2026-10-28)
+The user's static-looking shoulder cap was a weight error: the whole deltoid
+used 80% chest influence despite having a humeral endpoint. The shoulder socket
+is the existing humeral head at [0.34, 1.12, 0.30], behind and above the foreleg
+shoulder. Its broad muscle joins a fixed chest origin to the moving humerus.
+Those endpoint attachments now determine a spatial weight gradient through the
+muscle instead of one constant chest/humerus blend. Armor inherits that gradient.
+
+The former pose independently aligned each arm bone, then added a separate
+world-up-to-outward roll to each. Construction used a different transform from
+the fold pose, compounding the mismatch. Both bones now share the shoulder–
+elbow–wrist bend plane; their construction and fold transforms are exact
+inverses. The socket carries shoulder swing and roll, while the elbow bends
+about that plane's normal with no independent axial twist. Muscle section hints
+rotate with their bone as well as their endpoint positions.
+
+Numerical checks on both mirrored wings give a hinge-axis error below 3e-16.
+The shoulder muscle samples humerus influence 1, 0.5, 0 at its moving endpoint,
+midpoint and chest endpoint. These are construction checks; `wing_motion_review`
+shows spread, quarter, half, three-quarter and fully folded poses, plus top and
+clay views beside the official shoulder/elbow crop. Continue judging the surface
+transition at the socket and elbow by those views, not connectivity alone.

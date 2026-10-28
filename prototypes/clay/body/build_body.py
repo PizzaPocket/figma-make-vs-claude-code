@@ -635,8 +635,14 @@ def wing_pose(sgn):
     J = {k: np.array(v, float) for k, v in Wg["joints"].items()}
     tips = [np.array(t, float) for t in Wg["fingers"]]
     J["elbow_tip"] = np.array(Wg["elbow_finger"]["tip"], float)
-    Rh = align(J["elbow"] - J["shoulder"], S["humerus_dir"])
-    Rf = align(J["wrist"] - J["elbow"], S["forearm_dir"])
+    # Both bones share the elbow's bend plane. Independent shortest rotations
+    # plus independent roll corrections produce a corkscrew at the joint.
+    dh, df = H.norm(J["elbow"] - J["shoulder"]), H.norm(J["wrist"] - J["elbow"])
+    sh, sf = H.norm(S["humerus_dir"]), H.norm(S["forearm_dir"])
+    nf, ns = H.norm(np.cross(dh, df)), H.norm(np.cross(sh, sf))
+    frame = lambda axis, normal: np.column_stack([axis, normal, np.cross(axis, normal)])
+    Rh = frame(sh, ns) @ frame(dh, nf).T
+    Rf = frame(sf, ns) @ frame(df, nf).T
     R = dict(J)
     R["elbow"] = J["shoulder"] + Rh @ (J["elbow"] - J["shoulder"])
     R["wrist"] = R["elbow"] + Rf @ (J["wrist"] - J["elbow"])
@@ -649,12 +655,13 @@ def wing_pose(sgn):
         if bone == "wing_forearm":
             return R["elbow"] + Rf @ (p - J["elbow"])
         return p
+    carry.direction = lambda vector, bone: (Rh if bone == "wing_humerus" else (Rf if bone == "wing_forearm" else np.eye(3))) @ np.asarray(vector, float)
     def rolled(R0, d):  # also turn about the folded bone so the armored top (up when spread) faces outward
         d = H.norm(d); u = R0 @ np.array([0, 1.0, 0]); u = H.norm(u - d * (u @ d))
         o = np.array([1.0, 0, 0]); o = H.norm(o - d * (o @ d))
         ang = math.atan2(np.cross(u, o) @ d, u @ o)
         return np.array([H.rot(c, d, ang) for c in R0.T]).T
-    Rhf, Rff = rolled(Rh.T, J["elbow"] - J["shoulder"]), rolled(Rf.T, J["wrist"] - J["elbow"])
+    Rhf, Rff = Rh.T, Rf.T  # exact inverse frames; elbow flexion has no independent axial twist
     fold = {"wing_humerus": (Rhf, J["shoulder"]), "wing_forearm": (Rff, J["elbow"]), "wing_thumb": (Rff, J["wrist"]),
             "wing_elbowfinger": (rolled(align(R["elbow_tip"] - R["elbow"], J["elbow_tip"] - J["elbow"]), J["elbow_tip"] - J["elbow"]), J["elbow"])}
     for k, (t, rt) in enumerate(zip(tips, rtips)):  # rolled too, so the membrane billows outward when folded, not into the leg
@@ -675,7 +682,10 @@ def wing_arm(sgn, sd):
     def posed(spec):  # each piece rides the bone that carries most of it
         bone = max(spec["rig"].items(), key=lambda kv: kv[1])[0]
         attachment = spec.get("endpoint_rig", {})
-        return dict(spec, **{"from": carry(spec["from"], attachment.get("from", bone)).tolist(), "to": carry(spec["to"], attachment.get("to", bone)).tolist()})
+        result = dict(spec, **{"from": carry(spec["from"], attachment.get("from", bone)).tolist(), "to": carry(spec["to"], attachment.get("to", bone)).tolist()})
+        if "hint" in spec:
+            result["hint"] = carry.direction(spec["hint"], bone).tolist()
+        return result
     parts = [SK.Piece(posed(b), sgn, "bone") for b in an["bones"]] + [SK.Piece(posed(m), sgn, "muscle") for m in an["muscles"]]
     V, F = SK.mesh(None, parts, an["resolution"])
     W = SK.piece_weights(V, parts)

@@ -273,6 +273,11 @@
     }
   },
   "wing": {
+    "articulation": {
+      "socket": [0.34, 1.12, 0.3],
+      "elbow_axial_twist_deg": 0.0,
+      "why": "The humeral head rotates in the shoulder socket. Shoulder skin grades from the moving humerus attachment to the fixed chest attachment. Upper arm and forearm share a bend plane, so elbow flexion does not add an independent roll; folded-to-spread construction and the fold pose are exact inverses."
+    },
     "note": "Built like a bat's arm (the official art draws it so: the spread wings of the limited-edition render and the full render, the raised wing in How to Draw), bone first, then muscle, then membrane. Upper arm: short and heavily muscled, a fleshy belly over the humerus that swells out of a round mound on the shoulder (the side sheet's scaly mound, px 490-560, py 340-400). Forearm: long, thick and fleshy for its first third below the elbow (the forearm muscles), then a bony shaft (tendons) to a knobby wrist; the elbow's point stands out behind. Thumb: a short digit on the wrist's leading side ending in a hooked claw. Fingers: four long ones from the wrist, each a metacarpal to a knuckle partway out and a phalanx to a small hooked claw past the membrane. Pose: the side sheet's folded wing. The arm runs from the shoulder back along the flank to the elbow (px 525,385 -> 785,425); the forearm drops straight down to a low wrist (765,760) with the thumb claw (735,800); the fingers fan up and back to their tips (1055,255; 1165,140; 1265,55; 1365,20), nearly parallel, the membrane between them in narrow strips, scalloped between the tips (a sixth of the finger's length). x from the model: the shoulder cap is 0.40 out, the flank under the arm 0.34-0.36, the hind thigh 0.57, so the arm lies on the flank (the sheet's arm is a broad band, py 395-460: 0.19 tall) and the fan stands just outside the thigh. [x, y, z].",
     "joints": {
       "shoulder": [0.34, 1.12, 0.3],
@@ -354,7 +359,7 @@
       "muscles": [
         {
           "name": "wing shoulder (the wing's deltoid)",
-          "why": "The wing's shoulder: from the arm's socket (the head of the humerus) forward over the top of the foreleg's shoulder, where every reference shows it (the side sheet's scaly mound in front of the arm, Umber's plated shoulder). It lies on the body, outside the shoulder armor, carrying the wing's armor on its top, so the arm has a defined shoulder rather than a cut-off cap; weighted mostly to the chest, it stays on the shoulder as the wing moves.",
+          "why": "The wing's shoulder: from the arm's socket (the head of the humerus) forward over the top of the foreleg's shoulder, where every reference shows it (the side sheet's scaly mound in front of the arm, Umber's plated shoulder). It lies on the body, outside the shoulder armor, carrying the wing's armor on its top, so the arm has a defined shoulder rather than a cut-off cap; weighted continuously from its chest attachment to the humerus attachment, it deforms with the shoulder as the wing moves.",
           "from": [0.44, 1.14, 0.24],
           "to": [0.52, 1.06, 0.62],
           "radii": [0.13, 0.11],

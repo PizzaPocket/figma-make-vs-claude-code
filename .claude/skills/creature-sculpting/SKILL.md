@@ -319,11 +319,6 @@ ray check alone cannot establish that the enclosing tissues remain coherent.
 Let a gum ridge continue past its last tooth, then taper and bury the end in
 the corner tissue rather than leaving a full-radius capped tube visible.
 
-Soft lining that overlaps a rigid jaw floor must share that floor's bone weights.
-An arc blend preserves wall volume but cannot fix a misplaced rigid attachment.
-Bind overlaps to the finished host surface and keep the correction inside the
-oral envelope; verify the result in rendered wide-gape views.
-
 
 ### Pattern size and anatomical flow
 When a size comparison is ambiguous, inspect the named region in the references
@@ -332,3 +327,19 @@ boundaries, not crop sizes. Neck, face, torso and limbs may need different scale
 sizes. For inclined limbs, use rest-skeleton segment frames rather than global
 height; integrate a changing pattern density instead of dividing a coordinate by
 a changing spacing, which can reverse or bunch rows.
+
+
+### Wing roots and shared joint frames
+Moving a muscle's endpoints in its construction pose does not make its skin
+follow both attachments in animation. Sample weights along that attachment path;
+a mostly chest-weighted deltoid leaves its armor upright as the humerus rotates.
+Use the same joint frames for construction and their exact inverses for folding.
+A shared arm bend plane avoids an artificial elbow corkscrew from independently
+forcing both bones to a world-oriented armor normal. Rotate muscle cross-section
+hints with their bones, and inspect socket, elbow and armor through intermediate
+poses as well as at the endpoints.
+
+Soft lining that overlaps a rigid jaw floor must share that floor's bone weights.
+An arc blend preserves wall volume but cannot fix a misplaced rigid attachment.
+Bind overlaps to the finished host surface and keep the correction inside the
+oral envelope; verify the result in rendered wide-gape views.

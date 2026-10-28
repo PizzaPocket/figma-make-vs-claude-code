@@ -111,3 +111,27 @@ check, not completed fire effects or exhaustive speech validation. Exported
 weights are normalized even though the unjoined Blender cache retains some
 unnormalized influence totals. The open checklist distinguishes implemented
 geometry from reference likeness and remaining surface polish.
+
+
+## Current review build (2026-10-28)
+
+Use the `*-corrected.jpg` sheets listed in CHECKLIST.md. They replace the older
+`*-final.jpg` review images for these issues. The latest full-body build and
+unjoined cache include grounded extended lower gums, oral floor/roof attachment
+weights, intermediate oral bones, larger neck-only scales, bone-aligned leg
+patterns and the revised wing articulation. Black cheek/snout dots are removed.
+
+The model exports `skin_pattern` and `mouth_rig` metadata. The viewer reads the
+neck density settings and rotates oral1/oral2 by the configured fractions when
+it opens the jaw. External animation clients must drive those oral bones too.
+The wing fold clip now uses consistent construction/inverse joint frames; its
+shoulder muscle uses a spatial chest-to-humerus influence gradient.
+
+`fit_oral_lining` must run after the finished head/body surfaces exist: near-floor
+lining that keeps a partial head weight becomes a flap at wide gape, even with
+a volume-preserving wall rig. The corrected final export applied this function
+to the full source-built cache before assembly; the same call is in body main.
+Final numerical checks: finite export and deformed mouth vertices, normalized
+weights, connected wing skins/armor, closed tooth crowns, no added elbow axial
+twist, clear fire-guide bundles at jaw 0.85 and 1.05. Reference likeness and fine
+surface polish remain open as recorded in the checklist.

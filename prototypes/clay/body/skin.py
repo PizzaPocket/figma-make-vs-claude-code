@@ -36,6 +36,7 @@ class Piece:
         self.name, self.kind, self.k = spec["name"], kind, spec["k"]
         self.a, self.b = np.array(spec["from"]) * m, np.array(spec["to"]) * m
         self.rig = {f"{bn}.{'L' if sgn > 0 else 'R'}" if bn in LIMB_BONES else bn: w for bn, w in spec["rig"].items()}
+        self.endpoint_rig = {key: (f"{bn}.{'L' if sgn > 0 else 'R'}" if bn in LIMB_BONES else bn) for key, bn in spec.get("endpoint_rig", {}).items()}
         self.zone = spec.get("zone", 0.5 if kind == "bone" else None)  # bones near the skin show orange
         # a limb's piece: coloured by which way its skin faces (limb_zone), not by its own zone
         self.limb = sum(w for bn, w in spec["rig"].items() if bn in LIMB_BONES) > 0.5
@@ -49,6 +50,13 @@ class Piece:
             self.radii = np.array([np.linalg.norm(self.b - self.a) / 2, spec["radii"][0], spec["radii"][1]])
             self.c = (self.a + self.b) / 2
         self.ax, self.len = ax, np.linalg.norm(self.b - self.a)
+
+    def rig_at(self, X):
+        if not self.endpoint_rig:
+            return {bn: np.full(len(X), weight) for bn, weight in self.rig.items()}
+        t = np.clip((X - self.a) @ self.ax / max(self.len, 1e-9), 0.0, 1.0)
+        t = t * t * (3 - 2 * t)
+        return {self.endpoint_rig["from"]: 1 - t, self.endpoint_rig["to"]: t}
 
     def sdf(self, X):
         if self.kind == "bone":
@@ -337,12 +345,13 @@ def piece_weights(V, parts, blend=0.02):
     """Rig weights for a surface over pieces alone: each piece's say is how close it lies to the skin."""
     D = np.array([p.sdf(V) for p in parts])
     infl = np.exp(-(D - D.min(axis=0)) / blend); infl /= infl.sum(axis=0)
+    sampled_rig = [p.rig_at(V) for p in parts]
     W = []
     for n in range(len(V)):
         acc = {}
         for k, p in enumerate(parts):
-            for bn, wt in p.rig.items():
-                acc[bn] = acc.get(bn, 0.0) + infl[k, n] * wt
+            for bn, values in sampled_rig[k].items():
+                acc[bn] = acc.get(bn, 0.0) + infl[k, n] * values[n]
         top = sorted(acc.items(), key=lambda kv: -kv[1])[:4]; tot = sum(wt for _, wt in top)
         W.append([(bn, wt / tot) for bn, wt in top])
     return W
