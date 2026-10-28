@@ -274,6 +274,7 @@
   },
   "wing": {
     "articulation": {
+      "shoulder_arc_fractions": [0.3333333333, 0.6666666667],
       "socket": [0.34, 1.12, 0.3],
       "elbow_axial_twist_deg": 0.0,
       "why": "The humeral head rotates in the shoulder socket. Shoulder skin grades from the moving humerus attachment to the fixed chest attachment. Upper arm and forearm share a bend plane, so elbow flexion does not add an independent roll; folded-to-spread construction and the fold pose are exact inverses."

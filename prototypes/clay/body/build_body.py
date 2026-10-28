@@ -664,6 +664,11 @@ def wing_pose(sgn):
     Rhf, Rff = Rh.T, Rf.T  # exact inverse frames; elbow flexion has no independent axial twist
     fold = {"wing_humerus": (Rhf, J["shoulder"]), "wing_forearm": (Rff, J["elbow"]), "wing_thumb": (Rff, J["wrist"]),
             "wing_elbowfinger": (rolled(align(R["elbow_tip"] - R["elbow"], J["elbow_tip"] - J["elbow"]), J["elbow_tip"] - J["elbow"]), J["elbow"])}
+    from mathutils import Matrix, Quaternion
+    shoulder_rotation = Matrix(Rhf.tolist()).to_quaternion()
+    for i, fraction in enumerate(Wg["articulation"]["shoulder_arc_fractions"], 1):
+        turn = np.array(Quaternion((1, 0, 0, 0)).slerp(shoulder_rotation, fraction).to_matrix())
+        fold[f"wing_shoulder{i}"] = (turn, J["shoulder"])
     for k, (t, rt) in enumerate(zip(tips, rtips)):  # rolled too, so the membrane billows outward when folded, not into the leg
         fold[f"wing_finger{k + 1}"] = (rolled(align(rt - R["wrist"], t - J["wrist"]), t - J["wrist"]), J["wrist"])
         for seg in ("b", "c"):  # the two phalanges turn with it; their heads ride the bone before
@@ -689,6 +694,17 @@ def wing_arm(sgn, sd):
     parts = [SK.Piece(posed(b), sgn, "bone") for b in an["bones"]] + [SK.Piece(posed(m), sgn, "muscle") for m in an["muscles"]]
     V, F = SK.mesh(None, parts, an["resolution"])
     W = SK.piece_weights(V, parts)
+    # Sample shoulder rotation along its arc; a chest/humerus chord flattens the
+    # deltoid and armor when the shoulder swings and rolls through a large angle.
+    for index, weights in enumerate(W):
+        acc = dict(weights); moving = acc.pop(f"wing_humerus.{sd}", 0); fixed = acc.pop("chest", 0)
+        total = moving + fixed
+        if total > 1e-9:
+            share = moving / total; u = share * 3; interval = min(2, int(u)); t = u - interval
+            names = ["chest", f"wing_shoulder1.{sd}", f"wing_shoulder2.{sd}", f"wing_humerus.{sd}"]
+            acc[names[interval]] = acc.get(names[interval], 0) + total * (1 - t)
+            acc[names[interval + 1]] = acc.get(names[interval + 1], 0) + total * t
+        W[index] = [(name, value) for name, value in acc.items() if value > 1e-8]
     path = np.array([J["shoulder"], J["elbow"], J["wrist"]])
     seg = np.linalg.norm(np.diff(path, axis=0), axis=1)
     A = []
@@ -743,7 +759,9 @@ def wing(sgn):
     J, tips, _, Rf, fold = wing_pose(sgn)
     out = np.array([0, 1.0, 0])  # spread, the membrane billows up with the air under it
     parts = wing_arm(sgn, sd)
-    bones = [(f"wing_humerus.{sd}", tuple(J["shoulder"]), tuple(J["elbow"]), "chest"),
+    bones = [(f"wing_shoulder1.{sd}", tuple(J["shoulder"]), tuple(J["elbow"]), "chest"),
+             (f"wing_shoulder2.{sd}", tuple(J["shoulder"]), tuple(J["elbow"]), "chest"),
+             (f"wing_humerus.{sd}", tuple(J["shoulder"]), tuple(J["elbow"]), "chest"),
              (f"wing_forearm.{sd}", tuple(J["elbow"]), tuple(J["wrist"]), f"wing_humerus.{sd}")]
     claw_part = lambda name, v, f, bn: H.add_part(name, v, f, {"_PART": [23] * len(v), "_A": [0] * len(v), "_B": [0] * len(v), "_ZONE": [0] * len(v)},
                                                   [[(bn, 1.0)]] * len(v))

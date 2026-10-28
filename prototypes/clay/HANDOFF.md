@@ -135,3 +135,10 @@ Final numerical checks: finite export and deformed mouth vertices, normalized
 weights, connected wing skins/armor, closed tooth crowns, no added elbow axial
 twist, clear fire-guide bundles at jaw 0.85 and 1.05. Reference likeness and fine
 surface polish remain open as recorded in the checklist.
+
+
+Wing shoulder follow-up: `wing_shoulder1/2.L/R` are deformation helper frames at
+the humeral socket, sampled at one-third and two-thirds of its fold rotation.
+The fold clip drives them. They prevent the deltoid/armor cap from flattening
+between chest and humerus after the influence-gradient fix. Both complete-source
+wing construction and the final unjoined cache contain these helpers.

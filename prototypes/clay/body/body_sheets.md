@@ -414,3 +414,15 @@ midpoint and chest endpoint. These are construction checks; `wing_motion_review`
 shows spread, quarter, half, three-quarter and fully folded poses, plus top and
 clay views beside the official shoulder/elbow crop. Continue judging the surface
 transition at the socket and elbow by those views, not connectivity alone.
+
+
+### Shoulder-cap volume through the fold
+The first revised fold still flattened the deltoid between its fixed chest and
+moving humeral attachments. A correct spatial influence gradient does not stop
+a large two-bone rotation from contracting along its chord. Two shoulder helper
+frames now sample one-third and two-thirds of that socket rotation. Skin and
+armor blend adjacent arc samples, preserving the broad muscle through the fold.
+These are deformation helpers at the same socket, not extra anatomical joints.
+Their rotations are included in the fold animation, requiring no extra viewer
+control. The chest attachment remains fixed and the humeral endpoint remains
+rigid with the upper arm.

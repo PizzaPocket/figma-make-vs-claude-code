@@ -343,3 +343,10 @@ Soft lining that overlaps a rigid jaw floor must share that floor's bone weights
 An arc blend preserves wall volume but cannot fix a misplaced rigid attachment.
 Bind overlaps to the finished host surface and keep the correction inside the
 oral envelope; verify the result in rendered wide-gape views.
+
+
+### Preserve volume at a rotating shoulder
+After fixing an attachment gradient, check the joint at its largest swing and
+roll. Directly blending a fixed chest to a strongly rotated humerus can flatten
+the deltoid and its armor. Neighboring helper frames on the same socket's rotation
+arc preserve volume without adding anatomical joints or moving either endpoint.
