@@ -951,7 +951,7 @@ def main():
         parts, lb, fd = wing(sgn)
         objs += parts; bones += lb; fold.update(fd)
     # the wings rest spread; "wings_fold" (spread at 0, folded at 1) takes them to the side sheet's folded pose
-    H.assemble(objs, bones, OUT, "ClayRig", clips={"wings_fold": fold}, extras={"mouth_rig": H.D["mouth"]["opening_arc"]})
+    H.assemble(objs, bones, OUT, "ClayRig", clips={"wings_fold": fold}, extras={"skin_pattern": B["skin_pattern"], "mouth_rig": H.D["mouth"]["opening_arc"]})
 
 
 if __name__ == "__main__":

@@ -323,3 +323,12 @@ Soft lining that overlaps a rigid jaw floor must share that floor's bone weights
 An arc blend preserves wall volume but cannot fix a misplaced rigid attachment.
 Bind overlaps to the finished host surface and keep the correction inside the
 oral envelope; verify the result in rendered wide-gape views.
+
+
+### Pattern size and anatomical flow
+When a size comparison is ambiguous, inspect the named region in the references
+before choosing a direction. Compare scale rows/columns between fixed anatomical
+boundaries, not crop sizes. Neck, face, torso and limbs may need different scale
+sizes. For inclined limbs, use rest-skeleton segment frames rather than global
+height; integrate a changing pattern density instead of dividing a coordinate by
+a changing spacing, which can reverse or bunch rows.

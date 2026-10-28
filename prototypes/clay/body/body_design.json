@@ -1,4 +1,11 @@
 {
+  "skin_pattern": {
+    "neck_scale": 2.0,
+    "neck_blend_s": [0.48, 0.75],
+    "body_spacing": [0.065, 0.06],
+    "limb_spacing": [0.07, 0.075],
+    "why": "How to Draw neck crop x280–610 y320–880: broad orange scales in roughly two columns between armor and cream, versus the model's denser small cells. Flight crop x2320–2800 y1580–1990 confirms large elongated neck scales. Double neck spacing, fade into the chest, retain body and leg density."
+  },
   "about": "Clay's body (neck, torso, tail, then limbs and wings), element by element (see body_sheets.md). Model units: z = (700 - px) / 343, y = (830 - py) / 343, from the 1400 px side sheet; x = Clay's left. The bind pose is the side sheet's pose, so the side view can be checked against the sheet directly; the tail's lower run is lifted onto the ground and curls toward the viewer (+x).",
   "trunk": {
     "note": "Neck, torso and tail are one continuous mass, built as one loft along a curved spine with cross-sections perpendicular to it. Measured on the side sheet (trunk_overlay): the spine was traced through the middle of the body, and at each station the depth to the dorsal outline (top of the neck and back along the body under the mane, at the bases of the spike blades, not their tips; outer edge of the tail curl) and to the ventral outline (the throat and chest along the underside's midline, drawn down the middle of the cream throat band, not the outline in front of it, which is the far front leg's shoulder; at about elbow height where the near upper arm hides the chest; belly, inner edge of the tail curl) was measured along the perpendicular. The neck is short and thick, the torso a deep barrel (~0.9 from back to belly), the tail thick (~0.25-0.38) nearly to its tip. The throat's ventral depth runs smoothly from the jaw down the neck (0.212, 0.213, 0.207, 0.200, 0.203): the trace had a bump at s 0.23 (0.232 between 0.213 and 0.195), most likely the jaw's corner read as throat, which made a collar round the neck just behind the jaw.",

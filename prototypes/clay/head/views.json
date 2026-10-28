@@ -1442,6 +1442,120 @@
   }
  ]
 ,
+ "surface_review": [
+  {
+    "cam": [
+      2.4,
+      2.1,
+      2.4
+    ],
+    "target": [
+      0,
+      1.5,
+      1.1
+    ],
+    "fov": 28,
+    "label": "Neck before: original scale spacing",
+    "pose": {
+      "neckScale": 1
+    }
+  },
+  {
+    "cam": [
+      2.4,
+      2.1,
+      2.4
+    ],
+    "target": [
+      0,
+      1.5,
+      1.1
+    ],
+    "fov": 28,
+    "label": "Neck after: twice the scale spacing",
+    "pose": {
+      "neckScale": 2
+    }
+  },
+  {
+    "label": "How to Draw: neck scale size",
+    "ref": "{refs}/study/neck_htd_grid.jpg"
+  },
+  {
+    "label": "Flight: large orange neck scales",
+    "ref": "{refs}/study/neck_flight_grid.jpg"
+  },
+  {
+    "label": "Cheek and snout: dots removed",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26
+  },
+  {
+    "label": "Front leg: shoulder to wrist flow",
+    "cam": [
+      2.2,
+      1.3,
+      2.2
+    ],
+    "target": [
+      0.4,
+      0.58,
+      0.5
+    ],
+    "fov": 26
+  },
+  {
+    "label": "Front leg: outer and rear surfaces",
+    "cam": [
+      2,
+      1.1,
+      -0.3
+    ],
+    "target": [
+      0.4,
+      0.57,
+      0.45
+    ],
+    "fov": 27
+  },
+  {
+    "label": "Hind leg: knee, ankle and foot flow",
+    "cam": [
+      2.5,
+      1.3,
+      -1.8
+    ],
+    "target": [
+      0.44,
+      0.5,
+      -0.6
+    ],
+    "fov": 26
+  },
+  {
+    "label": "Full body surface check",
+    "cam": [
+      6,
+      3.1,
+      8
+    ],
+    "target": [
+      0,
+      1.15,
+      0.1
+    ],
+    "fov": 24
+  }
+],
  "gape_stress": [
   {
     "label": "Jaw 0.00 radians",
@@ -1585,4 +1699,5 @@
     "clay": true
   }
 ]
+
 }

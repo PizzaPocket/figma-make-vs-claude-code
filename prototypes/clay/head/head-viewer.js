@@ -4,6 +4,31 @@
   // parts: 1 face, 2 jaw, 3 mouth interior, 4 teeth, 5 tongue, 6 eye, 7 eyelid, 8 horn, 9 ear frill, 10 roof underlay, 12 caruncle, 13 roof plates (nose crest sculpted in)
   const GLSL = `
     varying vec3 vObj; varying float vPart; varying vec3 vAB;
+    uniform float neckScale; uniform vec2 neckBlend; uniform vec2 bodySpacing; uniform vec2 limbSpacing;
+    uniform vec3 limbStart[6]; uniform vec3 limbEnd[6]; uniform float limbOffset[6];
+    float neckRows(float s) {
+      float a = neckBlend.x, b = neckBlend.y, len = b - a, q = 1.0 / neckScale;
+      float t = clamp((s - a) / len, 0.0, 1.0);
+      float integral = a * q + len * (q * t + (1.0 - q) * (t*t*t - 0.5*t*t*t*t));
+      return (s < a ? s * q : (s > b ? a*q + len*(q+1.0)*0.5 + s-b : integral)) / bodySpacing.x;
+    }
+    vec2 limbFlow(vec3 point) {
+      point.x = abs(point.x);
+      float best = 1e9; vec2 uv = vec2(0.0);
+      for (int i = 0; i < 6; i++) {
+        vec3 delta = limbEnd[i] - limbStart[i]; float len = max(length(delta), 0.001);
+        vec3 axis = delta / len; vec3 rel = point - limbStart[i];
+        float t = dot(rel, axis); vec3 radius = rel - axis * t;
+        float d = length(rel - axis * clamp(t, 0.0, len));
+        if (d < best) {
+          best = d;
+          vec3 side = normalize(vec3(1.0, 0.0, 0.0) - axis * axis.x);
+          vec3 front = cross(axis, side);
+          uv = vec2(limbOffset[i] + t, atan(dot(radius, front), dot(radius, side)) * max(length(radius), 0.02));
+        }
+      }
+      return uv;
+    }
     vec3 srgb(vec3 c) { return pow(c / 255.0, vec3(2.2)); }
     float isP(float p) { return 1.0 - step(0.5, abs(vPart - p)); }
     vec3 hash3(vec3 p) { p = vec3(dot(p, vec3(127.1, 311.7, 74.7)), dot(p, vec3(269.5, 183.3, 246.1)), dot(p, vec3(113.5, 271.9, 124.6))); return fract(sin(p) * 43758.5453); }
@@ -30,10 +55,18 @@
       return vec3(max(lineAtW(fract(r), 0.05), lineAtW(fract(c), 0.045)), hash3(vec3(floor(r), floor(c), 5.0)).x, 0.0); }
     float lineAt(float f, float w) { float e = min(f, 1.0 - f); return 1.0 - smoothstep(w, w + fwidth(f) * 1.5 + 0.01, e); }
   `;
-  function material(THREE, clay) {
+  function material(THREE, clay, frames, pattern) {
     const m = new THREE.MeshStandardMaterial({ side: THREE.DoubleSide, roughness: 0.6, skinning: true, morphTargets: true, morphNormals: true });
     if (clay) m.defines = { CLAY: '' }; // plain clay render: judge the forms without paint
+    m.userData.neckScale = { value: pattern.neck_scale };
     m.onBeforeCompile = (sh) => {
+      sh.uniforms.neckScale = m.userData.neckScale;
+      sh.uniforms.neckBlend = { value: new THREE.Vector2(...pattern.neck_blend_s) };
+      sh.uniforms.bodySpacing = { value: new THREE.Vector2(...pattern.body_spacing) };
+      sh.uniforms.limbSpacing = { value: new THREE.Vector2(...pattern.limb_spacing) };
+      sh.uniforms.limbStart = { value: frames.starts };
+      sh.uniforms.limbEnd = { value: frames.ends };
+      sh.uniforms.limbOffset = { value: frames.offsets };
       sh.vertexShader = sh.vertexShader
         .replace("#include <common>", "#include <common>\nattribute float _part; attribute vec3 _abz;\nvarying vec3 vObj; varying float vPart; varying vec3 vAB;")
         .replace("#include <begin_vertex>", "#include <begin_vertex>\nvObj = position; vPart = _part; vAB = _abz;");
@@ -67,13 +100,14 @@
             float zv = clamp(vAB.z, 0.0, 1.0);
             // the sides: shingle scales ~0.065 along x 0.06 round (side sheet's neck), free edges facing back; vPart carries
             // the distance round the trunk (20 + around / 4)
-            vec2 sc = shingle(vec2(vAB.x / 0.065, (vPart - 20.0) * 4.0 / 0.06));
+            float neckFactor = mix(neckScale, 1.0, smoothstep(neckBlend.x, neckBlend.y, vAB.x));
+            vec2 sc = shingle(vec2(neckRows(vAB.x), (vPart - 20.0) * 4.0 / (bodySpacing.y * neckFactor)));
             float pe = 1.0 - smoothstep(0.03, 0.08, sc.x);
             // the legs (where the trunk's share is low): plates in brick rows across the limb, ~0.07 x 0.075, organically
-            // warped (How to Draw); rows by height up the leg, and along the ground (by z) on the feet and toes
-            float limb = 1.0 - smoothstep(0.3, 0.6, vAB.y), foot = 1.0 - smoothstep(0.1, 0.17, vObj.y);
-            vec3 legP = plates(vec2(vObj.y / 0.07, (vObj.x + vObj.z) / 0.075)), footP = plates(vec2(vObj.z / 0.07, vObj.x / 0.075));
-            float lp = mix(legP.x, footP.x, foot), lt = mix(legP.y, footP.y, foot); // the two patterns blended, not their coordinates
+            // warped (How to Draw); coordinates run along and around each anatomical limb segment
+            float limb = 1.0 - smoothstep(0.3, 0.6, vAB.y);
+            vec3 legP = plates(limbFlow(vObj) / limbSpacing);
+            float lp = legP.x, lt = legP.y;
             pe = mix(pe, lp, limb); sc.y = mix(sc.y, lt, limb); sc.x = mix(sc.x, 0.4, limb);
             vec3 back = mix(dark, line, lineAt(fract(vAB.x / 0.10), 0.04) * 0.6); // back plates ~0.08-0.12 apart (measured)
             vec3 side = mix(orange * (0.93 + 0.1 * sc.y) * (0.9 + 0.1 * smoothstep(0.0, 0.4, sc.x)), line, pe * 0.45); // each scale lit toward its middle
@@ -162,10 +196,25 @@
     const rim = new THREE.DirectionalLight(0xb8c8ff, 0.5); rim.position.set(-3, 2, -3); scene.add(rim);
     const gltf = await new Promise((res, rej) => new THREE.GLTFLoader().load(opts.glbUrl, res, undefined, rej));
     let sk = null; gltf.scene.traverse(o => { if (o.isSkinnedMesh) sk = o; });
-    sk.material = material(THREE, opts.clay); sk.frustumCulled = false;
+    sk.frustumCulled = false;
     scene.add(gltf.scene);
     const bones = {}; sk.skeleton.bones.forEach(b => (bones[b.name] = b));
     const bind = {}; for (const n in bones) bind[n] = bones[n].quaternion.clone();
+    gltf.scene.updateMatrixWorld(true);
+    const frames = { starts: [], ends: [], offsets: [] };
+    for (const names of [["upperarm.L", "forearm.L", "hand.L", "ftoe2.L"], ["thigh.L", "shin.L", "foot.L", "htoe2.L"]]) {
+      let offset = 0;
+      for (let i = 0; i < 3; i++) {
+        const start = bones[names[i]] ? bones[names[i]].getWorldPosition(new THREE.Vector3()) : new THREE.Vector3(1000, 0, 0);
+        const end = bones[names[i + 1]] ? bones[names[i + 1]].getWorldPosition(new THREE.Vector3()) : start.clone().add(new THREE.Vector3(0, 1, 0));
+        if (i === 2) end.add(end.clone().sub(start).multiplyScalar(0.3));
+        frames.starts.push(start); frames.ends.push(end); frames.offsets.push(offset);
+        offset += start.distanceTo(end);
+      }
+    }
+    const pattern = sk.userData.skin_pattern || { neck_scale: 2.0, neck_blend_s: [0.48, 0.75], body_spacing: [0.065, 0.06], limb_spacing: [0.07, 0.075] };
+    const oralFractions = (sk.userData.mouth_rig || {}).fractions || [0, 1/3, 2/3, 1];
+    sk.material = material(THREE, opts.clay, frames, pattern);
     // the wings rest spread; the "wings_fold" clip turns their bones to the side sheet's folded pose (0 spread, 1 folded)
     const fold = (gltf.animations || []).find(a => /wings_fold/.test(a.name));
     const foldTracks = fold ? fold.tracks.filter(tr => /\.quaternion$/.test(tr.name))
@@ -198,7 +247,7 @@
         }
       }
       apply("jaw", jawOpen);
-      apply("oral1", jawOpen / 3); apply("oral2", jawOpen * 2 / 3);
+      apply("oral1", jawOpen * oralFractions[1]); apply("oral2", jawOpen * oralFractions[2]);
       gltf.scene.updateMatrixWorld(true);
       apply("tongue1", -tongue * 0.3); gltf.scene.updateMatrixWorld(true);
       apply("tongue2", -tongue * 0.4); gltf.scene.updateMatrixWorld(true);
@@ -227,6 +276,7 @@
       // (see head_design.json "expressions")
       shot(cam, target, pose, fov) {
         pose = pose || {};
+        sk.material.userData.neckScale.value = pose.neckScale || pattern.neck_scale;
         setPose(pose.jaw || 0, pose.tongue || 0, pose.lids, pose.morphs, pose.wings, pose.head);
         camera.fov = fov || 30; camera.updateProjectionMatrix();
         camera.position.set(...cam); camera.lookAt(...target);

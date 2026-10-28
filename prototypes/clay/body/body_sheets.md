@@ -369,3 +369,24 @@ so the muscle connects the torso to the wing arm during construction of each pos
 Wing digits now use the carapace treatment along their complete length. Inspect
 folded, intermediate and spread poses; decorative armor gaps must not conceal a
 disconnected underlying limb. Final shader renders use `join_review`.
+
+
+## Neck scale size and limb-pattern flow (2026-10-28)
+References: How to Draw crop (source x280–610, y320–880) and flight crop
+(x2320–2800, y1580–1990), gridded in `refs/study/neck_*_grid.jpg`. The orange
+neck strip in How to Draw is about two broad scale columns between the dorsal
+armor and cream throat; the flight art confirms broad, elongated scales there.
+The previous model used its small body cells on the neck. Neck spacing is now
+twice the former 0.065 x 0.060, fading into normal chest spacing over spine
+s 0.48–0.75. The along-neck coordinate integrates the changing density so that
+the fade cannot reverse rows or fold the coordinates over. This is a neck-only
+size correction; face pebbles and leg/body scale density are retained.
+
+The previous leg rows sampled global y, with an x+z column coordinate and a
+second global-ground pattern at the feet. The new coordinates follow the rest
+positions of shoulder–elbow–wrist–hand and hip–knee–ankle–foot, obtained from
+the exported skeleton. Rows run along each segment's actual axis and columns
+wrap its cross-section. The rest-space pattern deforms with the skin. Pattern
+settings are exported in `skin_pattern` metadata and read by the viewer; no
+extra vertex attributes are required. Inspect both sides of the forelegs and
+the hind leg in `surface_review`, plus the neck before/after beside the art.
