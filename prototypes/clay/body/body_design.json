@@ -274,75 +274,26 @@
   },
   "wing": {
     "canonical_fold": {
-      "finger_tip_offsets": [
-        [
-          0.12,
-          1.07,
-          -1.3
-        ],
-        [
-          0.14,
-          1.52,
-          -1.08
-        ],
-        [
-          0.16,
-          1.87,
-          -0.75
-        ],
-        [
-          0.18,
-          2.18,
-          -0.38
-        ]
-      ],
       "finger_joint_blend": 0.035,
       "pose_steps": 8,
-      "finger_dirs": [
-        [
-          0.05,
-          0.7,
-          -0.72
-        ],
-        [
-          0.06,
-          0.92,
-          -0.4
-        ],
-        [
-          0.07,
-          0.99,
-          -0.12
-        ],
-        [
-          0.08,
-          0.995,
-          0.08
-        ]
-      ],
       "elbow_finger_dir": [
-        0.05,
-        0.98,
-        0.15
+        -0.08,
+        1.0,
+        0.0
       ],
       "elbow_finger_length": 0.88,
       "elbow_fold_length": 0.5,
-      "palm_root_forward": 0.035,
-      "root_spacing": 0.026,
-      "root_field_fraction": 0.12,
-      "tube_start_fraction": 0.0,
-      "wrist_claw_offset": 0.065,
-      "chest_origin": [
-        0.42,
-        1.13,
-        0.4
-      ],
+      "palm_root_forward": 0.028,
+      "root_spacing": 0.019,
       "shoulder_radii": [
         0.135,
         0.12
       ],
-      "why": "Folded review correction: brown dorsal shell faces away from body, orange ventral tissue faces inward. Shoulder, forearm and palm have explicit anatomical dorsal frames independent of digit fan-plane sign. Wrist claw continues from the distal forearm knuckle, not the palm face. Folded fan ray angles span about 41 degrees; finger order and segment lengths are preserved. Elbow accessory retains user-authorized half-length retraction.",
-      "socket_half_span": [0.06, 0.11],
+      "why": "User accepts folded dorsal orientation. Elbow accessory now points upward, slightly medially, retaining half-length folded canon. Near-wing plated fingers are traced separately from the far plain fan on the Clay side sheet. Rest and folded link lengths derive from the same sampled centerlines; outermost digit is longest in both poses. Folded rays sweep back and up in the reference order rather than turning into a vertical stack. The spread fan angles follow the official SE poster. Wrist is a small continuous carpal saddle, not an oversized terminal knob.",
+      "socket_half_span": [
+        0.06,
+        0.11
+      ],
       "rest_dorsal": [
         0,
         1,
@@ -353,7 +304,7 @@
         0,
         0
       ],
-      "wrist_claw_tip_offset": 0.125,
+      "wrist_claw_tip_offset": 0.052,
       "wrist_claw_direction_rest": [
         0.1,
         0.94,
@@ -387,6 +338,175 @@
           410
         ],
         "interpretation": "Dark outer shoulder and forearm form a continuous side-facing strip; orange stays against torso. Claw continues beyond distal end of wrist, opposite rising fan; visible fingers are separated rather than coincident. Perspective/crop hides the full fan; use modest angular spread, not exact lengths from this drawing."
+      },
+      "folded_finger_paths_px": [
+        [
+          [
+            751,
+            758
+          ],
+          [
+            870,
+            660
+          ],
+          [
+            940,
+            590
+          ],
+          [
+            1002,
+            500
+          ],
+          [
+            1038,
+            410
+          ],
+          [
+            1053,
+            330
+          ],
+          [
+            1060,
+            280
+          ]
+        ],
+        [
+          [
+            759,
+            769
+          ],
+          [
+            900,
+            669
+          ],
+          [
+            1076,
+            480
+          ],
+          [
+            1122,
+            380
+          ],
+          [
+            1163,
+            248
+          ],
+          [
+            1174,
+            166
+          ]
+        ],
+        [
+          [
+            767,
+            778
+          ],
+          [
+            1005,
+            625
+          ],
+          [
+            1127,
+            493
+          ],
+          [
+            1193,
+            374
+          ],
+          [
+            1235,
+            195
+          ],
+          [
+            1265,
+            45
+          ]
+        ],
+        [
+          [
+            778,
+            786
+          ],
+          [
+            1090,
+            607
+          ],
+          [
+            1244,
+            467
+          ],
+          [
+            1356,
+            239
+          ],
+          [
+            1380,
+            43
+          ]
+        ]
+      ],
+      "folded_wrist_px": [
+        752,
+        770
+      ],
+      "reference_pixels_per_unit": 343,
+      "folded_finger_depth_offsets": [
+        0.04,
+        0.055,
+        0.07,
+        0.085
+      ],
+      "carpal_span": [
+        -0.025,
+        0.015
+      ],
+      "carpal_radii": [
+        0.042,
+        0.038
+      ],
+      "carpal_blend": 0.025,
+      "skin_construction": "One closed implicit skin mesh joins humerus, forearm, reduced carpal saddle, all four segmented fingers and elbow accessory. Armor and claws remain separate fitted hard surfaces.",
+      "finger_reference_measurements": {
+        "folded_source": "clayref/ClayTemplateS978.png",
+        "working_width": 1400,
+        "side_only_for": "wing anatomy, not head proportions",
+        "near_fan_identifier": "square inset plates; far plain rays excluded",
+        "projected_arc_lengths_model_units": [
+          1.7237820952706249,
+          2.222002610872844,
+          2.727667001705965,
+          2.9717602597881094
+        ],
+        "spread_source": "covers/Clay_SEPoster_Isolated_Edit_png.png",
+        "spread_wrist_px": [
+          542,
+          52
+        ],
+        "spread_tips_shortest_to_outermost_px": [
+          [
+            472,
+            529
+          ],
+          [
+            301,
+            439
+          ],
+          [
+            150,
+            373
+          ],
+          [
+            6,
+            280
+          ]
+        ],
+        "interpretation": "Use side-sheet centerlines for consistent link lengths and folded shape. Official spread view supplies angular order and fan directions; perspective and illustration variation prevent simultaneously matching every projected endpoint with a single unchanging bone length.",
+        "paths_field": "canonical_fold.folded_finger_paths_px"
+      },
+      "deformation_domains": {
+        "finger_start": 0.07,
+        "finger_blend_length": 0.09,
+        "why": "Beyond the shared palm, fit each finger skin only to its own skeletal capsules. Global union projection pinches the surface when folded rays approach each other."
       }
     },
     "articulation": {
@@ -531,17 +651,59 @@
     "finger": {
       "knuckle_at": 0.45,
       "bend_deg": 6,
-      "radius": [0.034, 0.024, 0.03, 0.02, 0.024, 0.015, 0.01],
+      "radius": [
+        0.026,
+        0.023,
+        0.025,
+        0.019,
+        0.022,
+        0.014,
+        0.01
+      ],
       "knuckle2_at": 0.75,
-      "why": "Each finger a metacarpal and two phalanges, a knuckle bulge at each joint (the TDP cover render: segmented fingers, plates along each segment, a hooked claw at the tip past the membrane)."
+      "why": "Each finger a metacarpal and two phalanges, a knuckle bulge at each joint (the TDP cover render: segmented fingers, plates along each segment, a hooked claw at the tip past the membrane).",
+      "union_blend": 0.018
     },
     "spread": {
       "why": "The wings spread in flight, from the covers seen from below (The Dragonet Prophecy US cover and its full render, the Hybrid Prince cover's Umber render, the limited edition, the SE poster): the humerus out, up and a little back from the shoulder; the forearm out and forward to the wrist, the leading edge; the longest finger on along the leading edge to the wing's tip (on the folded sheet it is the outermost, reaching highest), the shorter ones fanned back, the shortest pointing nearly straight back; the elbow finger back; the membrane between the fingers scalloped between their tips, and from the last finger back along the flank to the hip (the Umber render); billowed up by the air under it. Directions for the left wing [x, y, z]; the bones keep their folded lengths.",
-      "humerus_dir": [1.0, 0.45, -0.35],
-      "forearm_dir": [1.0, 0.2, 0.5],
-      "finger_dirs": [[0.35, 0.0, -1.0], [0.8, 0.05, -1.0], [1.0, 0.1, -0.45], [1.0, 0.15, 0.15]],
+      "humerus_dir": [
+        1.0,
+        0.45,
+        -0.35
+      ],
+      "forearm_dir": [
+        1.0,
+        0.2,
+        0.5
+      ],
+      "finger_dirs": [
+        [
+          0.15,
+          0.05,
+          -1
+        ],
+        [
+          0.62,
+          0.08,
+          -1
+        ],
+        [
+          1,
+          0.1,
+          -0.82
+        ],
+        [
+          1,
+          0.12,
+          -0.42
+        ]
+      ],
       "billow": 0.12,
-      "elbow_finger_dir": [0.3, 0.2, -1.0]
+      "elbow_finger_dir": [
+        0.3,
+        0.2,
+        -1.0
+      ]
     },
     "elbow_finger": {
       "tip": [0.5, 1.32, -1.11],

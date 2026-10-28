@@ -17,6 +17,8 @@ Tiny moving field branches at a wrist can pinch shell topology during retraction
 
 A fan's signed plane normal is not necessarily its dorsal side through a fold. Check the visible brown/orange side at the socket, forearm and wrist independently. Give arm tissue an anatomical dorsal frame and prevent changing muscle-origin frames from rolling material to the opposite side. A wrist claw continues from the ending knuckle; a palm-face attachment is a different construction. Compare resting fan angles against folded art as well as checking digit order.
 
+A continuous skin union is useful for construction, but fitting a deforming finger to the union of all fingers can capture its surface onto a neighbor when the fan closes. Preserve per-digit surface domains beyond the shared palm. Check plain-clay close-ups: connected/manifold topology alone did not reveal this pinching. Sample folded centerlines to set link lengths, then use the same lengths in flight; do not use arbitrary endpoint compression to fake retraction. Derive membrane edges from posed centerlines rather than rest-path bone selectors.
+
 Model one element at a time. Treat each element like a building:
 - find its load-bearing masses;
 - find the bones and muscles that shape them;

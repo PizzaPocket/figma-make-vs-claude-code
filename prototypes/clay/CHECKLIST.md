@@ -1,5 +1,15 @@
 # Clay model: open fixes
 
+## Latest wing review
+
+- [x] Folded shell orientation accepted by user: preserve brown outward/orange inward.
+- [x] Implement upward/slightly medial elbow digit; retain half-length fold exception.
+- [x] Trace near plated rays separately from far plain rays; use official spread fan directions.
+- [x] Give main fingers identical link lengths in spread/fold, outermost longest.
+- [x] Build truly continuous closed arm/finger skin and reduce the club-shaped wrist.
+- [x] Diagnose first-proof skin pinching and attach membranes to actual posed centerlines.
+- [ ] User visual review of this reference-based fan, wrist bend and elbow angle.
+
 ## Follow-up review requirements
 
 - [ ] User review of flatter cheek side walls; lip profile and bite bed retained.

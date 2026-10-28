@@ -53,18 +53,32 @@ class Rig:
         self.Rh = frame(ef-self.S, self.dorsal1) @ frame(self.h, self.dorsal0).T
         self.Rf = frame(wf-ef, self.dorsal1) @ frame(self.f, self.dorsal0).T
         self.digits = [unit(d)for d in self.D['spread']['finger_dirs']]
-        self.closed = [unit(d)for d in self.C['finger_tip_offsets']]
-        self.lengths = [np.linalg.norm(np.array(t)-wf)for t in self.D['fingers']]
+        wrist_px=np.array(self.C['folded_wrist_px']);pixels=self.C['reference_pixels_per_unit']
+        self.closed=[unit([x,(wrist_px[1]-p[-1][1])/pixels,(wrist_px[0]-p[-1][0])/pixels])for x,p in zip(self.C['folded_finger_depth_offsets'],self.C['folded_finger_paths_px'])]
         self.fan0 = unit(np.cross(self.digits[0], self.digits[-1])); self.avg0 = unit(sum(self.digits))
         self.across0 = unit(np.cross(self.fan0, self.avg0))
         if self.across0 @ (self.digits[-1]-self.digits[0]) < 0:self.across0 *= -1
         self.restE = self.S + self.h*self.Lh; self.restW = self.restE+self.f*self.Lf
         self.roots = [self.restW+self.avg0*self.C['palm_root_forward']+self.across0*(k-1.5)*self.C['root_spacing']for k in range(4)]
-        self.curves=[]; self.knots=[0,self.D['finger']['knuckle_at'],self.D['finger']['knuckle2_at'],1]
+        self.curves=[]; self.fold_nodes=[]; self.lengths=[]
+        self.knots=[0,self.D['finger']['knuckle_at'],self.D['finger']['knuckle2_at'],1]
+        avg1=unit(sum(self.closed)); fan1=unit(np.cross(self.closed[0],self.closed[-1]))
+        folded_carpal=frame(avg1,fan1)@frame(self.avg0,self.fan0).T
+        wrist_px=np.array(self.C['folded_wrist_px']); pixels=self.C['reference_pixels_per_unit']
         for k,d in enumerate(self.digits):
+            trace=np.array(self.C['folded_finger_paths_px'][k],float)
+            distance=np.r_[0,np.cumsum(np.linalg.norm(np.diff(trace,axis=0),axis=1))];t=distance/distance[-1]
+            path=np.column_stack([t*self.C['folded_finger_depth_offsets'][k],(wrist_px[1]-trace[:,1])/pixels,(wrist_px[0]-trace[:,0])/pixels])
+            root=folded_carpal@(self.roots[k]-self.restW)
+            path+=(1-t)[:,None]*(root-path[0])
+            folded=np.array([curve_at(path,a)for a in self.knots]);self.fold_nodes.append(folded)
+            lengths=np.linalg.norm(np.diff(folded,axis=0),axis=1);self.lengths.append(float(lengths.sum()))
             back=unit(np.cross(self.fan0,d))
             if back[2]>0:back=-back
-            self.curves.append(np.array([self.roots[k]+d*self.lengths[k]*a+back*self.lengths[k]*math.sin(math.pi*a)*math.sin(math.radians(self.D['finger']['bend_deg']))for a in self.knots]))
+            nodes=[self.roots[k]]
+            for length,angle in zip(lengths,np.linspace(-1,1,3)*math.radians(self.D['finger']['bend_deg'])):
+                nodes.append(nodes[-1]+length*(d*math.cos(angle)+back*math.sin(angle)))
+            self.curves.append(np.array(nodes))
         self.acc0=unit(self.D['spread']['elbow_finger_dir']);self.acc1=unit(self.C['elbow_finger_dir'])
         self.accL=float(self.C['elbow_finger_length'])
         self.rest_claw=self.restW+self.f*self.C['wrist_claw_tip_offset']
@@ -104,13 +118,12 @@ class Rig:
         data['wing_elbowclaw']=(ra,E+ad*self.accL*length_scale,1.)
         for k,d in enumerate(dirs):
             root=W+rc@(self.roots[k]-self.restW)
-            goal=W+(1-u)*(self.curves[k][-1]-self.restW)+u*np.array(self.C['finger_tip_offsets'][k])
+            goal=W+(1-u)*(self.curves[k][-1]-self.restW)+u*self.fold_nodes[k][-1]
             lengths=np.linalg.norm(np.diff(self.curves[k],axis=0),axis=1)
             if u==0:
                 nodes=self.curves[k].copy()
             else:
-                pole=unit(np.array([0.,-.5,-1.])-unit(goal-root)*(unit(goal-root)@np.array([0.,-.5,-1.])))
-                seed=np.array([root+(goal-root)*a+pole*sum(lengths)*.18*math.sin(math.pi*a) for a in self.knots])
+                seed=W+(1-u)*(self.curves[k]-self.restW)+u*self.fold_nodes[k]
                 nodes=finger_ik(root,goal,lengths,seed)
             for i,suffix in enumerate(['','b','c']):
                 rest_axis=self.curves[k][i+1]-self.curves[k][i]
@@ -146,15 +159,21 @@ class Rig:
             out.append(self.SK.Piece(sp,sgn,'muscle'))
         bone('humerus',self.S,E,[.060,.052],'wing_humerus')
         bone('forearm',E,W,[.055,.040],'wing_forearm')
-        bone('carpal hub',W-df*.04,W+df*.075,[.065,.055],'wing_forearm',.05)
+        bone('carpal saddle',W+df*self.C['carpal_span'][0],W+df*self.C['carpal_span'][1],self.C['carpal_radii'],'wing_forearm',self.C['carpal_blend'])
         anchor=self.S-dh*self.C['socket_half_span'][0];insertion=self.S+dh*self.C['socket_half_span'][1]
         muscle('deltoid',insertion,anchor,self.C['shoulder_radii'],rh@self.dorsal0,{'wing_humerus.'+sd:.5,'chest':.5},.075,{'from':'wing_humerus.'+sd,'to':'chest'})
         muscle('humeral head',self.S-dh*.02,self.S+dh*.08,[.10,.095],rh@np.array([0,1,0]),{'wing_humerus.'+sd:1},.06)
         muscle('upper arm',self.S+dh*.08,E-dh*.055,[.115,.105],rh@np.array([0,1,0]),{'wing_humerus.'+sd:1})
         muscle('forearm belly',E+df*.025,E+df*np.linalg.norm(W-E)*.48,[.082,.075],rf@np.array([0,1,0]),{'wing_forearm.'+sd:1})
-        # The palm is the forearm's compact terminal knuckle. Digit tubes begin
-        # inside it; tiny articulated field branches caused pinched shell petals.
-        Ra,A,scale=st['wing_elbowfinger'];bone('accessory root',A,A+Ra@self.acc0*min(.14,self.accL*.2)*scale,[.04,.032],'wing_elbowfinger',.045)
+        # Arm, metacarpals and phalanges are one smoothly united skin surface.
+        for k,curve in enumerate(self.curves):
+            for i,suffix in enumerate(['','b','c']):
+                name='wing_finger'+str(k+1)+suffix;R,head,_=st[name]
+                tip=head+R@(curve[i+1]-curve[i])
+                radii=np.interp(self.knots[i:i+2],np.linspace(0,1,len(self.D['finger']['radius'])),self.D['finger']['radius'])
+                bone('digit '+str(k)+' link '+str(i),head,tip,radii,name,self.D['finger']['union_blend'])
+        Ra,A,scale=st['wing_elbowfinger']
+        bone('elbow accessory',A,A+Ra@self.acc0*self.accL*scale,[.033,.012],'wing_elbowfinger',.023)
         return out
 
 
@@ -185,6 +204,44 @@ def project_surface(P,parts,SK,iterations=7):
     return P
 
 
+def surface_targets(B,rig,sgn,V,p0):
+    SK=B.SK;D=np.array([p.sdf(V)for p in p0])
+    influence=np.exp(-(D-D.min(0))/.022);influence/=influence.sum(0)
+    nearest=np.argmin(D,axis=0);family=np.full(len(V),-1,int);distance=np.zeros(len(V))
+    for index,piece in enumerate(p0):
+        if not piece.name.startswith('digit '):continue
+        _,k,_,j=piece.name.split();k,j=int(k),int(j);mask=nearest==index
+        ls=np.linalg.norm(np.diff(rig.curves[k],axis=0),axis=1)
+        family[mask]=k;distance[mask]=ls[:j].sum()+np.clip((V[mask]-piece.a)@piece.ax,0,piece.len)
+    targets=[]
+    for step in range(1,rig.C['pose_steps']+1):
+        u=step/rig.C['pose_steps'];parts=rig.pieces(u,sgn);maps=rig.maps(u,sgn);target=np.zeros_like(V)
+        for k,(a,b)in enumerate(zip(p0,parts)):
+            if a.kind=='muscle':
+                q=(V-a.c)@a.E.T/np.maximum(a.radii,1e-6);mapped=(q*b.radii)@b.E+b.c
+            else:
+                bone=max(a.rig,key=a.rig.get);R,t=maps[bone];mapped=V@R.T+t
+            target+=mapped*influence[k,:,None]
+        target=project_surface(target,parts,SK)
+        # A folded neighbor must not capture another finger's surface. Global
+        # union projection changes topology where slender rays approach each other.
+        for k in range(4):
+            domain=rig.C['deformation_domains'];start=domain['finger_start'];span=domain['finger_blend_length']
+            mask=(family==k)&(distance>start)
+            if not mask.any():continue
+            indices=[i for i,p in enumerate(p0)if p.name.startswith('digit '+str(k)+' ')]
+            share=np.exp(-(D[indices][:,mask]-D[indices][:,mask].min(0))/.012);share/=share.sum(0)
+            local=np.zeros((mask.sum(),3))
+            for weight,index in zip(share,indices):
+                bone=max(p0[index].rig,key=p0[index].rig.get);R,t=maps[bone]
+                local+=(V[mask]@R.T+t)*weight[:,None]
+            local=project_surface(local,[parts[i]for i in indices],SK)
+            blend=np.clip((distance[mask]-start)/span,0,1);blend=blend*blend*(3-2*blend)
+            target[mask]=target[mask]*(1-blend[:,None])+local*blend[:,None]
+        targets.append(target)
+    return targets
+
+
 def arm(B,rig,sgn):
     H,SK=B.H,B.SK;sd='L'if sgn>0 else'R';p0=rig.pieces(0,sgn)
     V,F=SK.mesh(None,p0,rig.D['anatomy']['resolution']);W=SK.piece_weights(V,p0)
@@ -196,28 +253,30 @@ def arm(B,rig,sgn):
         top=sorted(a.items(),key=lambda x:-x[1])[:4];s=sum(w for _,w in top);W[i]=[(n,w/s)for n,w in top if w>1e-9]
     E,Wrist=rig.restE*np.array([sgn,1,1]),rig.restW*np.array([sgn,1,1]);S=rig.S*np.array([sgn,1,1]);path=np.array([S,E,Wrist]);distances=np.linalg.norm(np.diff(path,axis=0),axis=1)
     along=[]
-    for p in V:
-        candidates=[]
-        for k in range(2):
-            d=path[k+1]-path[k];t=np.clip((p-path[k])@d/(d@d),0,1);candidates.append((np.linalg.norm(p-path[k]-d*t),distances[:k].sum()+distances[k]*t))
-        along.append(min(candidates)[1])
-    skin=H.add_part('WingArm'+sd,V.tolist(),F.tolist(),{'_PART':[24]*len(V),'_A':along,'_B':[0]*len(V),'_ZONE':[0]*len(V)},W)
-    normals=SK.normals(V,F);ar=rig.D['armor'];Z=SK.smooth_on_mesh(V,F,[0 if n[1]>ar['top_from']*2-1 else 1 for n in normals],iters=4)
+    D=np.array([p.sdf(V)for p in p0]);nearest=np.argmin(D,axis=0)
+    finger_share=np.array([sum(w for n,w in weights if n.startswith('wing_finger') or n.startswith('wing_elbowfinger'))for weights in W])
+    for index,p in enumerate(V):
+        piece=p0[nearest[index]]
+        if piece.name.startswith('digit '):
+            _,k,_,i=piece.name.split();k,i=int(k),int(i)
+            curve=rig.curves[k];ls=np.linalg.norm(np.diff(curve,axis=0),axis=1)
+            t=np.clip((p-piece.a)@piece.ax/max(piece.len,1e-9),0,1)
+            along.append(float(distances.sum()+ls[:i].sum()+t*ls[i]))
+        else:
+            candidates=[]
+            for k in range(2):
+                d=path[k+1]-path[k];t=np.clip((p-path[k])@d/(d@d),0,1);candidates.append((np.linalg.norm(p-path[k]-d*t),distances[:k].sum()+distances[k]*t))
+            along.append(min(candidates)[1])
+    skin=H.add_part('WingArm'+sd,V.tolist(),F.tolist(),{'_PART':[24]*len(V),'_A':along,'_B':np.clip(finger_share*2,0,1).tolist(),'_ZONE':[0]*len(V)},W)
+    normals=SK.normals(V,F);ar=rig.D['armor']
+    Z=SK.smooth_on_mesh(V,F,np.maximum((normals[:,1]<=ar['top_from']*2-1).astype(float),(finger_share>.32).astype(float)),iters=4)
     S,SF,src,ink,tint=SK.shell(V,F,Z,ar,SK.smooth_normals(V,F),np.array(along),np.zeros(len(V)),lambda x:np.asarray(x)/ar['band'])
     sw=[W[i]for i in src];shell=H.add_part('WingArmor'+sd,S.tolist(),SF.tolist(),{'_PART':[13]*len(S),'_A':list(ink),'_B':list(tint),'_ZONE':[0]*len(S)},sw)
-    targets=[];shell_targets=[];D=np.array([p.sdf(V)for p in p0]);influence=np.exp(-(D-D.min(0))/.022);influence/=influence.sum(0)
-    for step in range(1,rig.C['pose_steps']+1):
-        u=step/rig.C['pose_steps'];parts=rig.pieces(u,sgn);maps=rig.maps(u,sgn);target=np.zeros_like(V)
-        for k,(a,b)in enumerate(zip(p0,parts)):
-            if a.kind=='muscle':
-                q=(V-a.c)@a.E.T/np.maximum(a.radii,1e-6);mapped=(q*b.radii)@b.E+b.c
-            else:
-                bone=max(a.rig,key=a.rig.get);R,t=maps[bone];mapped=V@R.T+t
-            target+=mapped*influence[k,:,None]
-        target=project_surface(target,parts,SK)
+    targets=surface_targets(B,rig,sgn,V,p0);shell_targets=[]
+    for target in targets:
         n=SK.normals(target,F);old=normals[src];new=n[src];axis=np.cross(old,new);cos=np.clip((old*new).sum(1),-.98,1)
         offset=S-V[src];rotated=offset+np.cross(axis,offset)+np.cross(axis,np.cross(axis,offset))/np.maximum(1+cos,.02)[:,None]
-        targets.append(target);shell_targets.append(target[src]+rotated)
+        shell_targets.append(target[src]+rotated)
     corrected_keys(H,skin,V,W,targets,rig,sgn);corrected_keys(H,shell,S,sw,shell_targets,rig,sgn)
     return [skin,shell]
 
@@ -229,18 +288,13 @@ def curve_at(P,t):
 
 def build(B,sgn):
     rig=Rig(B);H=B.H;sd='L'if sgn>0 else'R';m=np.array([sgn,1,1]);parts=arm(B,rig,sgn);bones=rig.bones(sgn)
-    def tube(name,path,radii,bone_fn,part=24):
-        v,f,a,b=H.tube(path,radii,around=16,step=.004);total=sum(np.linalg.norm(np.array(path[i+1])-path[i])for i in range(len(path)-1));weights=[([(bone_fn(u),1)] if isinstance(bone_fn(u),str) else bone_fn(u))for u in a]
-        obj=H.add_part(name,v,f,{'_PART':[part]*len(v),'_A':[u*total for u in a],'_B':[1]*len(v),'_ZONE':[0]*len(v)},weights);parts.append(obj)
-        return obj
     def claw(name,point,direction,length,radius,hook,bone):
         v,f= B.claw_tube(point,direction,length,radius,hook,down=np.array([0,-1.,0]));parts.append(H.add_part(name,v,f,{'_PART':[23]*len(v),'_A':[0]*len(v),'_B':[0]*len(v),'_ZONE':[0]*len(v)},[[(bone,1)]]*len(v)))
     # The wrist claw belongs to the carpal knuckle, never to a wing finger.
     c=rig.D['thumb']['claw'];claw('WingWristClaw'+sd,rig.rest_claw*m,rig.rest_claw_dir*m,c['length'],c['radius'],c['hook_deg'],'wing_wrist_claw.'+sd)
     accessory=np.array([rig.restE,rig.restE+rig.acc0*rig.accL]);accbone='wing_elbowfinger.'+sd
-    tube('WingElbowFinger'+sd,[p*m for p in np.linspace(accessory[0],accessory[1],7)],[.035,.033,.03,.027,.022,.017,.012],lambda u:accbone)
     ec=rig.D['elbow_finger']['claw'];claw('WingElbowClaw'+sd,accessory[-1]*m,rig.acc0*m,ec['length'],ec['radius'],ec['hook_deg'],'wing_elbowclaw.'+sd)
-    # Long digits begin inside field-unioned palm branches, not at a shared floating point.
+    # The single skin surface already includes all digits; these paths drive membranes.
     spars=[]
     armline=np.array([rig.restW,rig.restE,accessory[-1]])*m
     fe=np.linalg.norm(rig.restW-rig.restE)/(np.linalg.norm(rig.restW-rig.restE)+rig.accL)
@@ -255,9 +309,6 @@ def build(B,sgn):
                     return [(names[i],1-blend),(names[i+1],blend)]
             return names[0]if t<rig.knots[1]else(names[1]if t<rig.knots[2]else names[2])
         full=np.array([curve_at(curve,t)for t in np.linspace(0,1,16)])*m
-        start=rig.C['tube_start_fraction'];path=np.array([curve_at(curve,t)for t in np.linspace(start,1,20)])*m
-        radii=np.interp(np.linspace(start,1,20),np.linspace(0,1,len(rig.D['finger']['radius'])),rig.D['finger']['radius'])
-        tube('WingFinger'+str(k)+sd,path,radii,lambda a,bn=bn,start=start:bn(start+(1-start)*a))
         tip=curve[-1]*m;direction=unit((curve[-1]-curve[-2])*m);c=rig.D['claw'];claw('WingClaw'+str(k)+sd,tip,direction,c['length'],c['radius'],c['hook_deg'],bn(1))
         spars.append((full,bn))
     body=np.array([rig.S*m]+B.membrane_body_line(sgn));line=np.array([rig.S,rig.restE,accessory[-1]])*m
@@ -277,14 +328,19 @@ def build(B,sgn):
                 a=i*(nv+1)+j;faces.append([a,a+1,a+nv+2,a+nv+1]if sgn>0 else[a+nv+1,a+nv+2,a+1,a])
         targets=[]
         def target(amount):
-            maps=rig.maps(amount,sgn);result=[]
+            st=rig.state(amount);S=rig.S;E=st['wing_forearm'][1];Wrist=st['wing_carpal'][1]
+            Ra,A,scale=st['wing_elbowfinger'];acc_tip=A+Ra@rig.acc0*rig.accL*scale
+            posed=[np.array([Wrist,E,acc_tip])*m]
+            for k,curve in enumerate(rig.curves):
+                names=['wing_finger'+str(k+1)+suffix for suffix in ['', 'b', 'c']]
+                nodes=[st[n][1]for n in names];R,h,_=st[names[-1]];nodes.append(h+R@(curve[-1]-curve[-2]))
+                posed.append(np.array(nodes)*m)
+            if flank:pa,pb=np.array([S,E,acc_tip])*m,body
+            else:pa,pb=posed[panel],posed[panel+1]
+            result=[]
             for u,q in uv:
                 ue=u*(1-rig.D['membrane']['sag']*math.sin(math.pi*q))
-                a=curve_at(PA,ue);b=curve_at(PB,ue)
-                def carry(point,selector):
-                    weights=[(selector,1)]if isinstance(selector,str)else selector
-                    return sum((maps[name][0]@point+maps[name][1])*weight for name,weight in weights)
-                a=carry(a,ba(ue));b=carry(b,bbone(ue))
+                a=curve_at(pa,ue);b=curve_at(pb,ue)
                 p=a*(1-q)+b*q;span=np.linalg.norm(b-a)
                 # Sag is scaled by the available span; compressed panels gather in small outward pleats.
                 sag=rig.D['membrane']['sag']*span*math.sin(math.pi*q)*math.sin(math.pi*u)

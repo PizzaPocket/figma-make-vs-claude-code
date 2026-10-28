@@ -1,5 +1,9 @@
 # Clay model: handoff
 
+## Current wing pass: measured fan and continuous skin
+
+The user accepts folded shell orientation. This pass changes only wing anatomy/posing: upward/slightly medial folded elbow digit; near-wing centerlines measured separately from far plain rays on the side sheet; official spread fan angles; constant three-link main-digit lengths with outermost longest; smaller wrist saddle; genuinely connected arm/finger skin; per-finger deformation domains; direct posed membrane edges. Half-length folded elbow convention remains. See the newest `body/body_sheets.md` section and `body/check_wing.py`. Keep head proportions and approved scale sizing unchanged. The isolated first proof had pinched digit bases; this was diagnosed and corrected before full-body integration. User visual review of the latest pass remains pending.
+
 ## Follow-up: cheek fullness and folded shell inversion
 
 User rejected puffy cheeks, shoulder roll, outward orange wrist, palm-face claw and nearly coincident resting fingers in `aef4ee2`. Corrective source now adds planar cheek walls; explicit outward arm dorsal frames; humerus-based shoulder material transport; forearm-based palm tissue; a distal-knuckle claw; and a roughly 41-degree resting fan. See the new sections in the element sheets and `wing_surface_review`. Earlier “candidate” descriptions are historical, not acceptance. Keep current scale sizing. Do not equate fan-order/weight checks with visual reference agreement.

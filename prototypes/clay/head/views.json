@@ -2254,5 +2254,303 @@
    "label": "Official flight arm / dorsal shell",
    "ref": "{refs}/covers/Clay_SEPoster_Isolated_Edit_png.png"
   }
+ ],
+ "wing_reference_anatomy_review": [
+  {
+   "label": "Folded near wing: traced back-and-up fan",
+   "cam": [
+    5.7,
+    1.25,
+    -1.0
+   ],
+   "target": [
+    0.63,
+    1.35,
+    -0.92
+   ],
+   "fov": 29,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Side reference: near plated rays, far plain rays",
+   "ref": "{refs}/study/wing_side_fan_2026_grid.jpg"
+  },
+  {
+   "label": "Spread fan, outermost digit longest",
+   "cam": [
+    3.4,
+    6.5,
+    1.5
+   ],
+   "target": [
+    2.35,
+    1.5,
+    -0.45
+   ],
+   "fov": 38,
+   "pose": {
+    "wings": 0
+   }
+  },
+  {
+   "label": "Official spread fan: wrist and ray angles",
+   "ref": "{refs}/study/wing_spread_fan_2026_grid.jpg"
+  },
+  {
+   "label": "Continuous wrist and finger bases, folded",
+   "cam": [
+    2.0,
+    0.6,
+    0.6
+   ],
+   "target": [
+    0.75,
+    0.32,
+    -0.3
+   ],
+   "fov": 23,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Continuous wrist: plain clay",
+   "cam": [
+    2.0,
+    0.6,
+    0.6
+   ],
+   "target": [
+    0.75,
+    0.32,
+    -0.3
+   ],
+   "fov": 23,
+   "pose": {
+    "wings": 1
+   },
+   "clay": true
+  },
+  {
+   "label": "Intermediate fold: continuous skin",
+   "cam": [
+    4.7,
+    2.8,
+    2.5
+   ],
+   "target": [
+    1.45,
+    1.35,
+    -0.5
+   ],
+   "fov": 37,
+   "pose": {
+    "wings": 0.5
+   }
+  },
+  {
+   "label": "Upward elbow accessory, slight medial lean",
+   "cam": [
+    2.4,
+    1.7,
+    0.6
+   ],
+   "target": [
+    0.45,
+    1.35,
+    -0.26
+   ],
+   "fov": 22,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Extended wing: plain clay",
+   "cam": [
+    3.4,
+    6.5,
+    1.5
+   ],
+   "target": [
+    2.35,
+    1.5,
+    -0.45
+   ],
+   "fov": 38,
+   "pose": {
+    "wings": 0
+   },
+   "clay": true
+  }
+ ],
+ "wing_skin_diagnostic": [
+ {
+  "label": "Continuous wrist and finger bases, folded",
+  "cam": [
+   2.0,
+   0.6,
+   0.6
+  ],
+  "target": [
+   0.75,
+   0.32,
+   -0.3
+  ],
+  "fov": 23,
+  "pose": {
+   "wings": 1
+  }
+ },
+ {
+  "label": "Continuous wrist: plain clay",
+  "cam": [
+   2.0,
+   0.6,
+   0.6
+  ],
+  "target": [
+   0.75,
+   0.32,
+   -0.3
+  ],
+  "fov": 23,
+  "pose": {
+   "wings": 1
+  },
+  "clay": true
+ }
+],
+ "wing_reference_body_review": [
+  {
+   "label": "Full body: revised folded fan",
+   "cam": [
+    4.8,
+    2.5,
+    4.8
+   ],
+   "target": [
+    0,
+    1.2,
+    -0.45
+   ],
+   "fov": 43,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Near wing and body, side view",
+   "cam": [
+    6.5,
+    1.4,
+    -0.65
+   ],
+   "target": [
+    0,
+    1.25,
+    -0.65
+   ],
+   "fov": 28,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Folded reference: near plated fan",
+   "ref": "{refs}/study/wing_side_fan_2026_grid.jpg"
+  },
+  {
+   "label": "Spread: constant lengths, outermost longest",
+   "cam": [
+    6,
+    4,
+    7
+   ],
+   "target": [
+    0,
+    1.2,
+    -0.5
+   ],
+   "fov": 45,
+   "pose": {
+    "wings": 0
+   }
+  },
+  {
+   "label": "Wrist and finger bases, left",
+   "cam": [
+    2,
+    0.6,
+    0.6
+   ],
+   "target": [
+    0.75,
+    0.32,
+    -0.3
+   ],
+   "fov": 23,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Wrist and finger bases, right",
+   "cam": [
+    -2,
+    0.6,
+    0.6
+   ],
+   "target": [
+    -0.75,
+    0.32,
+    -0.3
+   ],
+   "fov": 23,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Upward elbow digit, slight lean toward body",
+   "cam": [
+    2.4,
+    1.7,
+    0.6
+   ],
+   "target": [
+    0.45,
+    1.35,
+    -0.26
+   ],
+   "fov": 22,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Wrist plain clay",
+   "cam": [
+    2,
+    0.6,
+    0.6
+   ],
+   "target": [
+    0.75,
+    0.32,
+    -0.3
+   ],
+   "fov": 23,
+   "pose": {
+    "wings": 1
+   },
+   "clay": true
+  },
+  {
+   "label": "Official spread-wing reference",
+   "ref": "{refs}/covers/Clay_SEPoster_Isolated_Edit_png.png"
+  }
  ]
 }

@@ -1,5 +1,28 @@
 # Clay's body: element sheets
 
+## Reference-based finger lengths and continuous wrist
+
+The user accepts the folded shell orientation in `2c8fd97`. Preserve brown outward/orange inward. Their new requests supersede the upright fan targets and the earlier forward elbow-digit angle.
+
+**References.** `clayref/ClayTemplateS978.png`, measured at working width 1400, is used for the wing only. It shows two overlapping fans: use the near square-plated rays, exclude the plain far rays. The near wrist is (752,770); four near claw bases run (1060,280), (1174,166), (1265,45), (1380,43). Intermediate points along each curved centerline are recorded in `canonical_fold.folded_finger_paths_px`; the gridded crop is `study/wing_side_fan_2026_grid.jpg`. This does not reintroduce the side sheet for head proportions. The official SE poster provides the spread wrist (542,52) and radiating endpoints (472,529), (301,439), (150,373), (6,280), in inner-to-outer order; see `study/wing_spread_fan_2026_grid.jpg`.
+
+The folded near rays sweep backward and upward, rather than increasing toward a vertical stack. Their projected centerline arc lengths are approximately 1.724, 2.222, 2.728, 2.972 model units at 343 working pixels/unit. Three articulated links sample those centerlines, with resulting physical lengths:
+
+| Main finger | Spread length | Folded length |
+| --- | ---: | ---: |
+| Inner / shortest | 1.717 | 1.717 |
+| Second | 2.192 | 2.192 |
+| Third | 2.685 | 2.685 |
+| Outer / leading edge | 2.929 | 2.929 |
+
+Both poses use the same three link lengths. Folded centerline seeds replace the arbitrary sinusoidal IK seed; the spread angular fan follows the official poster. Perspective and drawing variation mean the two drawings' projected endpoint distances cannot all be literal lengths at once. The measured folded construction establishes consistent lengths; the official spread art establishes angular order and direction. The outermost is longest in both. The elbow accessory points upward with a small medial lean (approximately −0.080,0.997,0 on the left) and retains the user-authorized half-length fold convention.
+
+**Anatomy and topology.** A smaller carpal saddle replaces the old elongated terminal capsule. The forearm, all four three-link digits and the elbow accessory now have one connected, closed skin mesh per side, not merely joined objects with intersecting tubes. Metacarpal bases blend through the same implicit surface. Armor and keratin claws remain separate fitted hard surfaces. The wrist claw is rooted at the distal skin pole, independent of finger motion.
+
+**Deformation.** A global union fit alone failed visually: when rays approached during folding, one finger's skin could project onto its neighbor and pinch. Beyond the shared palm (blend 0.07–0.16 along the digit), each finger now fits only its own skeletal surface. This preserves the single skin topology while retaining each digit's identity. Membrane edges are evaluated directly on posed centerlines, avoiding stale rest-path bone-selection offsets at knuckles. The first pinched proof was rejected internally; the revised wrist was inspected in textured and plain-clay close-ups before full-body integration.
+
+**Checks.** `body/check_wing.py` checks 17 fold values, unchanged main-link lengths, unbroken joints, ordered rays, upward/medial accessory direction and its half-length exception. With `--blend` it also verifies the actual WingArm skins are single connected surfaces with no nonmanifold/open edges and have all finger bindings plus finite shape keys. Run with Blender's configured Python dependencies, e.g. `PYTHONPATH=/workspace/clay-py-libs blender -b --python-use-system-env --python prototypes/clay/body/check_wing.py -- --blend prototypes/clay/out/body-parts.blend`. Reference proofs: `wing_reference_anatomy_review` and `wing_reference_body_review`. Visual acceptance remains with the user; these checks do not prove exact reference likeness.
+
 ## Folded surface orientation, knuckle claw and resting fan
 
 The user rejected the shoulder roll and the outward orange wrist in `aef4ee2`. The official sticker (`covers/Clay_sticker_no_bg_png.png`) shows brown plates on the lateral shoulder/forearm, orange against the torso, a claw extending beyond the distal wrist, and separated resting rays. Measured review landmarks in original pixels: wrist (146,393), claw tip approximately (133,410), visible ray tip (354,175), outer shoulder plates (193,254). Perspective and the cropped far fingers prevent recovering exact fan lengths from this image.
