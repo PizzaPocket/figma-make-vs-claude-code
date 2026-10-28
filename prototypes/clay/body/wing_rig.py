@@ -48,9 +48,10 @@ class Rig:
         ef, wf = np.array(j['elbow'], float), np.array(j['wrist'], float)
         self.h = unit(self.D['spread']['humerus_dir']); self.f = unit(self.D['spread']['forearm_dir'])
         self.Lh, self.Lf = np.linalg.norm(ef-self.S), np.linalg.norm(wf-ef)
-        nf, nr = unit(np.cross(ef-self.S, wf-ef)), unit(np.cross(self.h, self.f))
-        self.Rh = frame(ef-self.S, nf) @ frame(self.h, nr).T
-        self.Rf = frame(wf-ef, nf) @ frame(self.f, nr).T
+        self.dorsal0 = np.array(self.C['rest_dorsal'], float)
+        self.dorsal1 = np.array(self.C['fold_dorsal'], float)
+        self.Rh = frame(ef-self.S, self.dorsal1) @ frame(self.h, self.dorsal0).T
+        self.Rf = frame(wf-ef, self.dorsal1) @ frame(self.f, self.dorsal0).T
         self.digits = [unit(d)for d in self.D['spread']['finger_dirs']]
         self.closed = [unit(d)for d in self.C['finger_tip_offsets']]
         self.lengths = [np.linalg.norm(np.array(t)-wf)for t in self.D['fingers']]
@@ -66,9 +67,9 @@ class Rig:
             self.curves.append(np.array([self.roots[k]+d*self.lengths[k]*a+back*self.lengths[k]*math.sin(math.pi*a)*math.sin(math.radians(self.D['finger']['bend_deg']))for a in self.knots]))
         self.acc0=unit(self.D['spread']['elbow_finger_dir']);self.acc1=unit(self.C['elbow_finger_dir'])
         self.accL=float(self.C['elbow_finger_length'])
-        dorsal=unit(np.array([0.,1.,0.])-self.f*self.f[1])
-        self.rest_claw=self.restW+dorsal*self.C['wrist_claw_offset']
-        self.rest_claw_dir=unit(dorsal*.9+self.f*.2+np.array([0,0,.2]))
+        self.rest_claw=self.restW+self.f*self.C['wrist_claw_tip_offset']
+        self.rest_claw_dir=unit(self.C['wrist_claw_direction_rest'])
+        self.fold_claw_dir=unit(self.C['wrist_claw_direction_fold'])
         self.rest={};self.parent={}
         self.add('wing_humerus',self.S,self.restE,'chest')
         self.add('wing_forearm',self.restE,self.restW,'wing_humerus')
@@ -93,7 +94,9 @@ class Rig:
         fan=unit(np.cross(dirs[0],dirs[-1]));avg=unit(sum(dirs));rc=frame(avg,fan)@frame(self.avg0,self.fan0).T
         data={'wing_humerus':(rh,self.S,1.),'wing_forearm':(rf,E,1.),'wing_carpal':(rc,W,1.)}
         for i in [1,2]:data['wing_socketBlend'+str(i)]=(turn(rh,i/3),self.S,1.)
-        data['wing_wrist_claw']=(rf,W+rf@(self.rest_claw-self.restW),1.)
+        claw_dir=unit(turn(self.B.align(self.rest_claw_dir,self.fold_claw_dir),u)@self.rest_claw_dir)
+        claw_R=frame(claw_dir,(1-u)*self.dorsal0+u*self.dorsal1)@frame(self.rest_claw_dir,self.dorsal0).T
+        data['wing_wrist_claw']=(claw_R,W+rf@(self.rest_claw-self.restW),1.)
         ad=unit(turn(self.B.align(self.acc0,self.acc1),u)@self.acc0)
         ra=frame(ad,np.cross(rh@self.h,rf@self.f))@frame(self.acc0,np.cross(self.h,self.f)).T
         length_scale=1-u*(1-self.C['elbow_fold_length'])
@@ -111,7 +114,7 @@ class Rig:
                 nodes=finger_ik(root,goal,lengths,seed)
             for i,suffix in enumerate(['','b','c']):
                 rest_axis=self.curves[k][i+1]-self.curves[k][i]
-                r=frame(nodes[i+1]-nodes[i],fan)@frame(rest_axis,self.fan0).T
+                r=frame(nodes[i+1]-nodes[i],(1-u)*self.dorsal0+u*self.dorsal1)@frame(rest_axis,self.dorsal0).T
                 data['wing_finger'+str(k+1)+suffix]=(r,nodes[i],1.)
         self.states[u]=data
         return data
@@ -143,16 +146,14 @@ class Rig:
             out.append(self.SK.Piece(sp,sgn,'muscle'))
         bone('humerus',self.S,E,[.060,.052],'wing_humerus')
         bone('forearm',E,W,[.055,.040],'wing_forearm')
-        bone('carpal hub',W-df*.04,W+rc@self.avg0*.075,[.065,.055],'wing_carpal',.05)
-        anchor=np.array(self.C['chest_origin']);insertion=self.S+dh*.16
-        muscle('deltoid',insertion,anchor,self.C['shoulder_radii'],[1,.25,0],{'wing_humerus.'+sd:.5,'chest':.5},.075,{'from':'wing_humerus.'+sd,'to':'chest'})
+        bone('carpal hub',W-df*.04,W+df*.075,[.065,.055],'wing_forearm',.05)
+        anchor=self.S-dh*self.C['socket_half_span'][0];insertion=self.S+dh*self.C['socket_half_span'][1]
+        muscle('deltoid',insertion,anchor,self.C['shoulder_radii'],rh@self.dorsal0,{'wing_humerus.'+sd:.5,'chest':.5},.075,{'from':'wing_humerus.'+sd,'to':'chest'})
         muscle('humeral head',self.S-dh*.02,self.S+dh*.08,[.10,.095],rh@np.array([0,1,0]),{'wing_humerus.'+sd:1},.06)
         muscle('upper arm',self.S+dh*.08,E-dh*.055,[.115,.105],rh@np.array([0,1,0]),{'wing_humerus.'+sd:1})
         muscle('forearm belly',E+df*.025,E+df*np.linalg.norm(W-E)*.48,[.082,.075],rf@np.array([0,1,0]),{'wing_forearm.'+sd:1})
-        for k in range(4):
-            n='wing_finger'+str(k+1);R,head,_=st[n]
-            tip=head+R@(self.curves[k][1]-self.curves[k][0])
-            bone('finger root '+str(k),head,head+(tip-head)*self.C['root_field_fraction'],[.044,.035],n,.045)
+        # The palm is the forearm's compact terminal knuckle. Digit tubes begin
+        # inside it; tiny articulated field branches caused pinched shell petals.
         Ra,A,scale=st['wing_elbowfinger'];bone('accessory root',A,A+Ra@self.acc0*min(.14,self.accL*.2)*scale,[.04,.032],'wing_elbowfinger',.045)
         return out
 

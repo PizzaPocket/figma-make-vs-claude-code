@@ -1,5 +1,9 @@
 # Clay model: handoff
 
+## Follow-up: cheek fullness and folded shell inversion
+
+User rejected puffy cheeks, shoulder roll, outward orange wrist, palm-face claw and nearly coincident resting fingers in `aef4ee2`. Corrective source now adds planar cheek walls; explicit outward arm dorsal frames; humerus-based shoulder material transport; forearm-based palm tissue; a distal-knuckle claw; and a roughly 41-degree resting fan. See the new sections in the element sheets and `wing_surface_review`. Earlier “candidate” descriptions are historical, not acceptance. Keep current scale sizing. Do not equate fan-order/weight checks with visual reference agreement.
+
 ## Latest review candidate, 2026-10-28
 
 This is a new review candidate, not user approval. Measurements use official How to Draw, limited-edition and flight drawings; ref1400 is excluded from head proportions because it is a three-quarter view. An anterior-only map shortens the actual down/forward head axis, keeping the rear skull attachment stable. All head parts, keys and bones share it; body oral tissue receives it once.

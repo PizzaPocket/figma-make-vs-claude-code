@@ -274,7 +274,28 @@
   },
   "wing": {
     "canonical_fold": {
-      "finger_tip_offsets": [[0.12, 1.25, -1.12], [0.14, 1.58, -0.98], [0.16, 1.86, -0.84], [0.18, 2.12, -0.70]],
+      "finger_tip_offsets": [
+        [
+          0.12,
+          1.07,
+          -1.3
+        ],
+        [
+          0.14,
+          1.52,
+          -1.08
+        ],
+        [
+          0.16,
+          1.87,
+          -0.75
+        ],
+        [
+          0.18,
+          2.18,
+          -0.38
+        ]
+      ],
       "finger_joint_blend": 0.035,
       "pose_steps": 8,
       "finger_dirs": [
@@ -309,11 +330,64 @@
       "palm_root_forward": 0.035,
       "root_spacing": 0.026,
       "root_field_fraction": 0.12,
-      "tube_start_fraction": 0.03,
+      "tube_start_fraction": 0.0,
       "wrist_claw_offset": 0.065,
-      "chest_origin": [0.42, 1.13, 0.40],
-      "shoulder_radii": [0.135, 0.12],
-      "why": "User canon: the fan retracts laterally toward the body without reversing digit order. The elbow accessory retracts to half length and points neutrally/slightly forward. All digits and the wrist claw share one carpal hub. Soft tissue is shaped from actual pose-local bones and muscle attachments instead of accepting a stretched LBS strap."
+      "chest_origin": [
+        0.42,
+        1.13,
+        0.4
+      ],
+      "shoulder_radii": [
+        0.135,
+        0.12
+      ],
+      "why": "Folded review correction: brown dorsal shell faces away from body, orange ventral tissue faces inward. Shoulder, forearm and palm have explicit anatomical dorsal frames independent of digit fan-plane sign. Wrist claw continues from the distal forearm knuckle, not the palm face. Folded fan ray angles span about 41 degrees; finger order and segment lengths are preserved. Elbow accessory retains user-authorized half-length retraction.",
+      "socket_half_span": [0.06, 0.11],
+      "rest_dorsal": [
+        0,
+        1,
+        0
+      ],
+      "fold_dorsal": [
+        1,
+        0,
+        0
+      ],
+      "wrist_claw_tip_offset": 0.125,
+      "wrist_claw_direction_rest": [
+        0.1,
+        0.94,
+        0.33
+      ],
+      "wrist_claw_direction_fold": [
+        0.15,
+        -0.96,
+        0.22
+      ],
+      "reference_review": {
+        "source": "covers/Clay_sticker_no_bg_png.png",
+        "wrist_px": [
+          146,
+          393
+        ],
+        "visible_fan_tip_px": [
+          354,
+          175
+        ],
+        "arm_dorsal_region_px": [
+          193,
+          254
+        ],
+        "orange_socket_region_px": [
+          177,
+          232
+        ],
+        "claw_tip_px": [
+          133,
+          410
+        ],
+        "interpretation": "Dark outer shoulder and forearm form a continuous side-facing strip; orange stays against torso. Claw continues beyond distal end of wrist, opposite rising fan; visible fingers are separated rather than coincident. Perspective/crop hides the full fan; use modest angular spread, not exact lengths from this drawing."
+      }
     },
     "articulation": {
       "shoulder_arc_fractions": [0.3333333333, 0.6666666667],

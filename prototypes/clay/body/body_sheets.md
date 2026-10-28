@@ -1,5 +1,13 @@
 # Clay's body: element sheets
 
+## Folded surface orientation, knuckle claw and resting fan
+
+The user rejected the shoulder roll and the outward orange wrist in `aef4ee2`. The official sticker (`covers/Clay_sticker_no_bg_png.png`) shows brown plates on the lateral shoulder/forearm, orange against the torso, a claw extending beyond the distal wrist, and separated resting rays. Measured review landmarks in original pixels: wrist (146,393), claw tip approximately (133,410), visible ray tip (354,175), outer shoulder plates (193,254). Perspective and the cropped far fingers prevent recovering exact fan lengths from this image.
+
+The actual wrist inversion came from using the finger fan's signed plane normal as the palm tissue's dorsal side: that normal reverses its anatomical side during retraction. The carpal skin field now follows the forearm, independently of the fan; finger roots still follow their ordered skeleton. Humerus/forearm roll maps the neutral dorsal direction to projected lateral-outward. The shoulder cap is now a compact socket centered on the humeral pivot (span −0.06 to +0.11 along the humerus), so its frame follows the humeral roll instead of changing along a chest-to-insertion bridge. The tiny finger-root field branches were removed after the first orientation proof showed pinched shell petals. Full-length digit tubes start inside the compact terminal knuckle, avoiding those deformed branches. Intermediate orientation probe (before the final socket/palm cleanup): outer wrist armor median x changes from 0.668 to 0.792; shoulder armor median x from 0.410 to 0.478 (left side). Supporting checks only; inspect `wing_surface_review` in side and plain-clay views.
+
+The claw base is on the distal continuation of the forearm (0.125 beyond the wrist center, at the skin capsule's distal pole rather than inside it), with its own terminal knuckle rotation, independent of fan motion. Folded claws continue down past the wrist as in the sticker, rather than emerging from the palm face. The resting ray targets span about 41 degrees rather than about 24, maintaining order and phalanx lengths through 17 tested fold values. The elbow accessory still retracts to half length. Current approved scale sizing is unchanged.
+
 ## Canonical wing rebuild, 2026-10-28
 
 The prior helper-driven shoulder was rejected by the user: a stretched, twisted strap is not acceptance. `wing_rig.py` replaces it with humerus/forearm frames, a shared wrist/palm, a compact shoulder field and pose-local soft-tissue corrections sampled across the fold. Arm skin and armor follow the same moving anatomy.

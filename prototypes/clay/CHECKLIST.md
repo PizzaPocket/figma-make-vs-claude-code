@@ -1,5 +1,13 @@
 # Clay model: open fixes
 
+## Follow-up review requirements
+
+- [ ] User review of flatter cheek side walls; lip profile and bite bed retained.
+- [ ] User review of folded shoulder/forearm/wrist: brown outward, orange body-facing; previous roll rejected.
+- [ ] User review of claw at distal knuckle tip and visibly separated resting fan.
+
+These have a corrective implementation and reference proof set (`wing_surface_review`), but remain open for visual acceptance.
+
 ## Current review status, 2026-10-28
 
 - [x] Implement replacement ordered wing rig, half-length folded elbow accessory, shared palm and arm-knuckle claw; validate 17 fold samples.

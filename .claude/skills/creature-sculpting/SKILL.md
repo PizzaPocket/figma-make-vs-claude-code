@@ -13,6 +13,10 @@ A connected mesh and normalized weights do not establish natural anatomy. Inspec
 
 Axial head shortening can make unchanged cheek width read as puffiness. Inspect and flatten the side cross-section between the lip and shield instead of repeatedly reducing small muscle brushes. Preserve the bite bed and lip profile while doing so.
 
+Tiny moving field branches at a wrist can pinch shell topology during retraction. Prefer a compact terminal knuckle with digit bases embedded inside it; verify the junction in a close render. Keep the shoulder socket centered on its actual pivot instead of building a moving chest-to-insertion strap.
+
+A fan's signed plane normal is not necessarily its dorsal side through a fold. Check the visible brown/orange side at the socket, forearm and wrist independently. Give arm tissue an anatomical dorsal frame and prevent changing muscle-origin frames from rolling material to the opposite side. A wrist claw continues from the ending knuckle; a palm-face attachment is a different construction. Compare resting fan angles against folded art as well as checking digit order.
+
 Model one element at a time. Treat each element like a building:
 - find its load-bearing masses;
 - find the bones and muscles that shape them;

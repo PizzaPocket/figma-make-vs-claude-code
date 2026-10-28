@@ -2124,5 +2124,135 @@
     },
     "clay": true
   }
-]
+],
+ "wing_surface_review": [
+  {
+   "label": "Folded shoulder: brown outside / orange inside",
+   "cam": [
+    2.8,
+    1.6,
+    0.5
+   ],
+   "target": [
+    0.48,
+    0.97,
+    0.04
+   ],
+   "fov": 33,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Same folded shoulder, plain clay",
+   "cam": [
+    2.8,
+    1.6,
+    0.5
+   ],
+   "target": [
+    0.48,
+    0.97,
+    0.04
+   ],
+   "fov": 33,
+   "pose": {
+    "wings": 1
+   },
+   "clay": true
+  },
+  {
+   "label": "Official folded shoulder, wrist and finger fan",
+   "ref": "{refs}/study/wing_fold_socket_fan.png"
+  },
+  {
+   "label": "Distal knuckle claw and outer wrist shell",
+   "cam": [
+    2.2,
+    0.55,
+    0.55
+   ],
+   "target": [
+    0.71,
+    0.24,
+    -0.21
+   ],
+   "fov": 25,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Half fold: continuous shell orientation",
+   "cam": [
+    2.8,
+    1.6,
+    0.5
+   ],
+   "target": [
+    0.7,
+    0.9,
+    0.0
+   ],
+   "fov": 40,
+   "pose": {
+    "wings": 0.5
+   }
+  },
+  {
+   "label": "Extended arm and knuckle",
+   "cam": [
+    3.2,
+    2.7,
+    2.5
+   ],
+   "target": [
+    1.05,
+    1.35,
+    0.2
+   ],
+   "fov": 37,
+   "pose": {
+    "wings": 0
+   }
+  },
+  {
+   "label": "Resting fan, side view",
+   "cam": [
+    3.9,
+    1.5,
+    -0.1
+   ],
+   "target": [
+    0.65,
+    1.15,
+    -0.8
+   ],
+   "fov": 38,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Full body, wings at rest",
+   "cam": [
+    4.8,
+    2.5,
+    4.8
+   ],
+   "target": [
+    0,
+    1.1,
+    -0.35
+   ],
+   "fov": 42,
+   "pose": {
+    "wings": 1
+   }
+  },
+  {
+   "label": "Official flight arm / dorsal shell",
+   "ref": "{refs}/covers/Clay_SEPoster_Isolated_Edit_png.png"
+  }
+ ]
 }
