@@ -65,6 +65,22 @@
       "convex_note": "The front still rounds across by 0.025, with subtle paired pads and a shallow philtrum. Do not restore the old 0.035 side bulge to correct the front angle: change the premaxilla frame and check both planes.",
       "across_power": 2.5
     },
+    "cheek_plane": {
+      "from_z": [
+        1.48,
+        1.6
+      ],
+      "to_z": [
+        1.83,
+        1.9
+      ],
+      "upper_fade": [
+        0.64,
+        0.84
+      ],
+      "rounding": 0.002,
+      "why": "User: compact head now has puffy cheeks. Official How to Draw and limited-edition views show a comparatively flat lateral wall between the lip and cheekbone. Limit the middle cross-section to the plane between the lip width and shield-side width; retain rounded transitions, the lip silhouette, orbital rim and rear jaw attachment. Axial shortening alone had retained the original broad mid-cheek barrel."
+    },
     "lip_tuck": {
       "from_z": [1.58, 1.63],
       "to_z": [1.95, 1.99],
@@ -653,7 +669,7 @@
         "why": "The jaw-closing muscle from the zygomatic arch down to the jaw: the full rounded cheek above the cream jowl, behind the mouth corner. User lip review: keep this a restrained rear attachment mass rather than a puffy cheek.",
         "centre": [1.56, 1.53],
         "radii": [0.07, 0.055],
-        "amount": 0.008
+        "amount": 0.004
       },
       {
         "kind": "bulge",

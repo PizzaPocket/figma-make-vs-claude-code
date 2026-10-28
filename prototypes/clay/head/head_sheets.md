@@ -1,5 +1,11 @@
 # Clay's head: element sheets
 
+## Cheek plane correction after compact-head review
+
+The user rejected the new cheek fullness. The official How to Draw crop (`study/lip_htd_grid.jpg`) and limited-edition close-up show a comparatively flat lateral cheek between the rising lip and orbital rim, with the stronger angled return at the rear. The compact-axis map shortened length while retaining a mid-height barrel in the wide superellipse cross-section.
+
+`upper_head.cheek_plane` limits that barrel to the plane from the existing lip width to the shield-side width, with a 0.002 rounded allowance, fading at the rear attachment, muzzle and eye/roof transition. It preserves the lip heights and bite-bed widths. The small rear masseter brush is reduced from 0.008 to 0.004. This corrects the supporting volume rather than changing the scale shader. Check the neutral three-quarter, side, plain-clay and partly open views in `lip_profile_review`; the front seal remains closed. Reference likeness remains subject to user review.
+
 ## Compact head and lip review, 2026-10-28
 
 This is a new review candidate, not user approval. Measurements use official How to Draw, limited-edition and flight drawings; ref1400 is excluded from head proportions because it is a three-quarter view. An anterior-only map shortens the actual down/forward head axis, keeping the rear skull attachment stable. All head parts, keys and bones share it; body oral tissue receives it once.

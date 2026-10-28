@@ -279,6 +279,14 @@ def face_pt(z, th):
     x = a * math.copysign(abs(c) ** (2 / SQ), c)
     x *= 1 - (1 - lip_tuck(z)) * (1 - yy / b) ** D["upper_head"]["lip_tuck"]["power"]  # the cheek drapes in to the lip
     x += math.copysign(lip_roll(yy), x)  # the lip's fleshy margin
+    # A planar cheek wall avoids the mid-height barrel left by tucking only the lip.
+    cp = D["upper_head"]["cheek_plane"]
+    coverage = smoothstep(*cp["from_z"], z) * (1 - smoothstep(*cp["to_z"], z))
+    coverage *= 1 - smoothstep(*cp["upper_fade"], yy / b)
+    lip_width = wb * muzzle_taper(z) * lip_tuck(z) + lip_roll(0)
+    plane_width = lip_width + (wt * muzzle_taper(z) - lip_width) * yy / b
+    plane_width += cp["rounding"] * math.sin(math.pi * yy / b)
+    x = math.copysign(abs(x) - coverage * max(0.0, abs(x) - plane_width), x)
     # gable: straight slopes down from a crisp ridge; the ridge stays on the measured profile, the shoulders drop
     y = low + yy - snout_ridge(z) * min(1.0, abs(x) / (wt * 0.98)) * (yy / b) ** 4
     y += (lip_height(z) - low) * (1 - smoothstep(0.0, D["lip_line"]["height_fade"], yy / b))
