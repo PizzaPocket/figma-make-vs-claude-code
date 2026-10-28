@@ -1440,504 +1440,689 @@
    ],
    "fov": 24
   }
- ],
+ ]
+,
  "surface_review": [
   {
-   "cam": [
-    2.4,
-    2.1,
-    2.4
-   ],
-   "target": [
-    0,
-    1.5,
-    1.1
-   ],
-   "fov": 28,
-   "label": "Neck before: original scale spacing",
-   "pose": {
-    "neckScale": 1
-   }
+    "cam": [
+      2.4,
+      2.1,
+      2.4
+    ],
+    "target": [
+      0,
+      1.5,
+      1.1
+    ],
+    "fov": 28,
+    "label": "Neck before: original scale spacing",
+    "pose": {
+      "neckScale": 1
+    }
   },
   {
-   "cam": [
-    2.4,
-    2.1,
-    2.4
-   ],
-   "target": [
-    0,
-    1.5,
-    1.1
-   ],
-   "fov": 28,
-   "label": "Neck after: twice the scale spacing",
-   "pose": {
-    "neckScale": 2
-   }
+    "cam": [
+      2.4,
+      2.1,
+      2.4
+    ],
+    "target": [
+      0,
+      1.5,
+      1.1
+    ],
+    "fov": 28,
+    "label": "Neck after: twice the scale spacing",
+    "pose": {
+      "neckScale": 2
+    }
   },
   {
-   "label": "How to Draw: neck scale size",
-   "ref": "{refs}/study/neck_htd_grid.jpg"
+    "label": "How to Draw: neck scale size",
+    "ref": "{refs}/study/neck_htd_grid.jpg"
   },
   {
-   "label": "Flight: large orange neck scales",
-   "ref": "{refs}/study/neck_flight_grid.jpg"
+    "label": "Flight: large orange neck scales",
+    "ref": "{refs}/study/neck_flight_grid.jpg"
   },
   {
-   "label": "Cheek and snout: dots removed",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.75
-   ],
-   "fov": 26
+    "label": "Cheek and snout: dots removed",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26
   },
   {
-   "label": "Front leg: shoulder to wrist flow",
-   "cam": [
-    2.2,
-    1.3,
-    2.2
-   ],
-   "target": [
-    0.4,
-    0.58,
-    0.5
-   ],
-   "fov": 26
+    "label": "Front leg: shoulder to wrist flow",
+    "cam": [
+      2.2,
+      1.3,
+      2.2
+    ],
+    "target": [
+      0.4,
+      0.58,
+      0.5
+    ],
+    "fov": 26
   },
   {
-   "label": "Front leg: outer and rear surfaces",
-   "cam": [
-    2,
-    1.1,
-    -0.3
-   ],
-   "target": [
-    0.4,
-    0.57,
-    0.45
-   ],
-   "fov": 27
+    "label": "Front leg: outer and rear surfaces",
+    "cam": [
+      2,
+      1.1,
+      -0.3
+    ],
+    "target": [
+      0.4,
+      0.57,
+      0.45
+    ],
+    "fov": 27
   },
   {
-   "label": "Hind leg: knee, ankle and foot flow",
-   "cam": [
-    2.5,
-    1.3,
-    -1.8
-   ],
-   "target": [
-    0.44,
-    0.5,
-    -0.6
-   ],
-   "fov": 26
+    "label": "Hind leg: knee, ankle and foot flow",
+    "cam": [
+      2.5,
+      1.3,
+      -1.8
+    ],
+    "target": [
+      0.44,
+      0.5,
+      -0.6
+    ],
+    "fov": 26
   },
   {
-   "label": "Full body surface check",
-   "cam": [
-    6,
-    3.1,
-    8
-   ],
-   "target": [
-    0,
-    1.15,
-    0.1
-   ],
-   "fov": 24
+    "label": "Full body surface check",
+    "cam": [
+      6,
+      3.1,
+      8
+    ],
+    "target": [
+      0,
+      1.15,
+      0.1
+    ],
+    "fov": 24
   }
- ],
+],
  "gape_stress": [
   {
-   "label": "Jaw 0.00 radians",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.75
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 0
-   }
+    "label": "Jaw 0.00 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 0
+    }
   },
   {
-   "label": "Jaw 0.25 radians",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.75
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 0.25
-   }
+    "label": "Jaw 0.25 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 0.25
+    }
   },
   {
-   "label": "Jaw 0.65 radians",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.75
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 0.65
-   }
+    "label": "Jaw 0.65 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 0.65
+    }
   },
   {
-   "label": "Jaw 0.85 radians",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.75
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 0.85
-   }
+    "label": "Jaw 0.85 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 0.85
+    }
   },
   {
-   "label": "Jaw 1.05 radians",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.75
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 1.05
-   }
+    "label": "Jaw 1.05 radians",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 1.05
+    }
   },
   {
-   "label": "Front: full gape",
-   "cam": [
-    0,
-    1.7,
-    4.5
-   ],
-   "target": [
-    0,
-    1.45,
-    1.6
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 1.05
-   }
+    "label": "Front: full gape",
+    "cam": [
+      0,
+      1.7,
+      4.5
+    ],
+    "target": [
+      0,
+      1.45,
+      1.6
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 1.05
+    }
   },
   {
-   "label": "Reference: oral cavity",
-   "ref": "{refs}/study/mouth_teeth_grid.jpg"
+    "label": "Reference: oral cavity",
+    "ref": "{refs}/study/mouth_teeth_grid.jpg"
   },
   {
-   "label": "Lower gum into rear corner",
-   "cam": [
-    1.7,
-    1.6,
-    3
-   ],
-   "target": [
-    0,
-    1.37,
-    1.68
-   ],
-   "fov": 24,
-   "pose": {
-    "jaw": 0.85
-   }
+    "label": "Lower gum into rear corner",
+    "cam": [
+      1.7,
+      1.6,
+      3
+    ],
+    "target": [
+      0,
+      1.37,
+      1.68
+    ],
+    "fov": 24,
+    "pose": {
+      "jaw": 0.85
+    }
   },
   {
-   "label": "Plain clay: maximum tested gape",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.75
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 1.05
-   },
-   "clay": true
+    "label": "Plain clay: maximum tested gape",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.75
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 1.05
+    },
+    "clay": true
   }
- ],
+]
+,
  "wing_motion_review": [
   {
-   "cam": [
-    2.5,
-    1.8,
-    1.1
-   ],
-   "target": [
-    0.5,
-    1,
-    0.2
-   ],
-   "fov": 36,
-   "label": "Wing fold 0",
-   "pose": {
-    "wings": 0
-   }
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 0",
+    "pose": {
+      "wings": 0
+    }
   },
   {
-   "cam": [
-    2.5,
-    1.8,
-    1.1
-   ],
-   "target": [
-    0.5,
-    1,
-    0.2
-   ],
-   "fov": 36,
-   "label": "Wing fold 0.25",
-   "pose": {
-    "wings": 0.25
-   }
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 0.25",
+    "pose": {
+      "wings": 0.25
+    }
   },
   {
-   "cam": [
-    2.5,
-    1.8,
-    1.1
-   ],
-   "target": [
-    0.5,
-    1,
-    0.2
-   ],
-   "fov": 36,
-   "label": "Wing fold 0.5",
-   "pose": {
-    "wings": 0.5
-   }
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 0.5",
+    "pose": {
+      "wings": 0.5
+    }
   },
   {
-   "cam": [
-    2.5,
-    1.8,
-    1.1
-   ],
-   "target": [
-    0.5,
-    1,
-    0.2
-   ],
-   "fov": 36,
-   "label": "Wing fold 0.75",
-   "pose": {
-    "wings": 0.75
-   }
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 0.75",
+    "pose": {
+      "wings": 0.75
+    }
   },
   {
-   "cam": [
-    2.5,
-    1.8,
-    1.1
-   ],
-   "target": [
-    0.5,
-    1,
-    0.2
-   ],
-   "fov": 36,
-   "label": "Wing fold 1",
-   "pose": {
-    "wings": 1
-   }
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Wing fold 1",
+    "pose": {
+      "wings": 1
+    }
   },
   {
-   "label": "Official shoulder and elbow",
-   "ref": "{refs}/study/wing_shoulder_htd_grid.jpg"
+    "label": "Official shoulder and elbow",
+    "ref": "{refs}/study/wing_shoulder_htd_grid.jpg"
   },
   {
-   "label": "Folded shoulder from above",
-   "cam": [
-    2,
-    2.7,
-    1.2
-   ],
-   "target": [
-    0.5,
-    1.2,
-    0.3
-   ],
-   "fov": 28,
-   "pose": {
-    "wings": 1
-   }
+    "label": "Folded shoulder from above",
+    "cam": [
+      2,
+      2.7,
+      1.2
+    ],
+    "target": [
+      0.5,
+      1.2,
+      0.3
+    ],
+    "fov": 28,
+    "pose": {
+      "wings": 1
+    }
   },
   {
-   "cam": [
-    2.5,
-    1.8,
-    1.1
-   ],
-   "target": [
-    0.5,
-    1,
-    0.2
-   ],
-   "fov": 36,
-   "label": "Folded: plain clay anatomy",
-   "pose": {
-    "wings": 1
-   },
-   "clay": true
+    "cam": [
+      2.5,
+      1.8,
+      1.1
+    ],
+    "target": [
+      0.5,
+      1,
+      0.2
+    ],
+    "fov": 36,
+    "label": "Folded: plain clay anatomy",
+    "pose": {
+      "wings": 1
+    },
+    "clay": true
   },
   {
-   "label": "Full body after wing rig correction",
-   "cam": [
-    6,
-    3.1,
-    8
-   ],
-   "target": [
-    0,
-    1.15,
-    0.1
-   ],
-   "fov": 24
+    "label": "Full body after wing rig correction",
+    "cam": [
+      6,
+      3.1,
+      8
+    ],
+    "target": [
+      0,
+      1.15,
+      0.1
+    ],
+    "fov": 24
   }
- ],
+]
+,
  "lip_profile_review": [
   {
-   "label": "Compact head: neutral three-quarter",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.7
-   ],
-   "fov": 26
+    "label": "Compact head: neutral three-quarter",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.7
+    ],
+    "fov": 26
   },
   {
-   "label": "Front: lip arc and chin corners",
-   "cam": [
-    0,
-    1.5,
-    3.8
-   ],
-   "target": [
-    0,
-    1.45,
-    1.75
-   ],
-   "fov": 23
+    "label": "Front: lip arc and chin corners",
+    "cam": [
+      0,
+      1.5,
+      3.8
+    ],
+    "target": [
+      0,
+      1.45,
+      1.75
+    ],
+    "fov": 23
   },
   {
-   "label": "Official How to Draw: lip and chin",
-   "ref": "{refs}/study/lip_htd_grid.jpg"
+    "label": "Official How to Draw: lip and chin",
+    "ref": "{refs}/study/lip_htd_grid.jpg"
   },
   {
-   "label": "True side: anterior lobe and rear line",
-   "cam": [
-    3,
-    1.6,
-    1.7
-   ],
-   "target": [
-    0,
-    1.5,
-    1.7
-   ],
-   "fov": 23
+    "label": "True side: anterior lobe and rear line",
+    "cam": [
+      3,
+      1.6,
+      1.7
+    ],
+    "target": [
+      0,
+      1.5,
+      1.7
+    ],
+    "fov": 23
   },
   {
-   "label": "Neutral: plain clay",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.7
-   ],
-   "fov": 26,
-   "clay": true
+    "label": "Neutral: plain clay",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.7
+    ],
+    "fov": 26,
+    "clay": true
   },
   {
-   "label": "Official limited edition: lip lobe",
-   "ref": "{refs}/study/lip_le_grid.jpg"
+    "label": "Official limited edition: lip lobe",
+    "ref": "{refs}/study/lip_le_grid.jpg"
   },
   {
-   "label": "Bite and lip at partial opening",
-   "cam": [
-    2.1,
-    1.95,
-    3.6
-   ],
-   "target": [
-    0,
-    1.5,
-    1.7
-   ],
-   "fov": 26,
-   "pose": {
-    "jaw": 0.3
-   }
+    "label": "Bite and lip at partial opening",
+    "cam": [
+      2.1,
+      1.95,
+      3.6
+    ],
+    "target": [
+      0,
+      1.5,
+      1.7
+    ],
+    "fov": 26,
+    "pose": {
+      "jaw": 0.3
+    }
   },
   {
-   "label": "Chin and front muzzle from below",
-   "cam": [
-    1.1,
-    0.95,
-    3.1
-   ],
-   "target": [
-    0,
-    1.35,
-    1.8
-   ],
-   "fov": 24
+    "label": "Chin and front muzzle from below",
+    "cam": [
+      1.1,
+      0.95,
+      3.1
+    ],
+    "target": [
+      0,
+      1.35,
+      1.8
+    ],
+    "fov": 24
   },
   {
-   "label": "Official flight: lip lobe",
-   "ref": "{refs}/study/lip_flight_grid.jpg"
+    "label": "Official flight: lip lobe",
+    "ref": "{refs}/study/lip_flight_grid.jpg"
   }
- ]
+]
+,
+ "canonical_wing_review": [
+  {
+    "label": "Ordered fan: fold 0",
+    "cam": [
+      6,
+      3.5,
+      7
+    ],
+    "target": [
+      0,
+      1.2,
+      -0.4
+    ],
+    "fov": 43,
+    "pose": {
+      "wings": 0
+    }
+  },
+  {
+    "label": "Ordered fan: fold 0.5",
+    "cam": [
+      6,
+      3.5,
+      7
+    ],
+    "target": [
+      0,
+      1.2,
+      -0.4
+    ],
+    "fov": 43,
+    "pose": {
+      "wings": 0.5
+    }
+  },
+  {
+    "label": "Ordered fan: fold 1",
+    "cam": [
+      6,
+      3.5,
+      7
+    ],
+    "target": [
+      0,
+      1.2,
+      -0.4
+    ],
+    "fov": 43,
+    "pose": {
+      "wings": 1
+    }
+  },
+  {
+    "label": "Shoulder and arm: fold 0",
+    "cam": [
+      2.8,
+      1.9,
+      1.2
+    ],
+    "target": [
+      0.65,
+      1,
+      0.15
+    ],
+    "fov": 40,
+    "pose": {
+      "wings": 0
+    }
+  },
+  {
+    "label": "Shoulder and arm: fold 0.5",
+    "cam": [
+      2.8,
+      1.9,
+      1.2
+    ],
+    "target": [
+      0.65,
+      1,
+      0.15
+    ],
+    "fov": 40,
+    "pose": {
+      "wings": 0.5
+    }
+  },
+  {
+    "label": "Shoulder and arm: fold 1",
+    "cam": [
+      2.8,
+      1.9,
+      1.2
+    ],
+    "target": [
+      0.65,
+      1,
+      0.15
+    ],
+    "fov": 40,
+    "pose": {
+      "wings": 1
+    }
+  },
+  {
+    "label": "One carpal hub: wrist claw and digit roots",
+    "cam": [
+      3.6,
+      2.3,
+      3.1
+    ],
+    "target": [
+      1.7,
+      1.5,
+      0.6
+    ],
+    "fov": 24,
+    "pose": {
+      "wings": 0
+    }
+  },
+  {
+    "label": "Closed wrist: claw stays on arm knuckle",
+    "cam": [
+      2.7,
+      0.9,
+      1.6
+    ],
+    "target": [
+      0.72,
+      0.35,
+      -0.2
+    ],
+    "fov": 28,
+    "pose": {
+      "wings": 1
+    }
+  },
+  {
+    "label": "Elbow accessory: half length, neutral/forward",
+    "cam": [
+      2.4,
+      1.5,
+      1.4
+    ],
+    "target": [
+      0.5,
+      1.45,
+      -0.3
+    ],
+    "fov": 30,
+    "pose": {
+      "wings": 1
+    }
+  },
+  {
+    "label": "Folded reference: official sticker",
+    "ref": "{refs}/covers/Clay_sticker_no_bg_png.png"
+  },
+  {
+    "label": "Flight reference: shoulder, wrist and fan",
+    "ref": "{refs}/covers/Clay_SEPoster_Isolated_Edit_png.png"
+  },
+  {
+    "label": "Plain clay: folded root and palm",
+    "cam": [
+      2.8,
+      1.9,
+      1.2
+    ],
+    "target": [
+      0.65,
+      1,
+      0.15
+    ],
+    "fov": 40,
+    "pose": {
+      "wings": 1
+    },
+    "clay": true
+  }
+]
 }

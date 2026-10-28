@@ -1,5 +1,14 @@
 # Clay's body: element sheets
 
+## Canonical wing rebuild, 2026-10-28
+
+The prior helper-driven shoulder was rejected by the user: a stretched, twisted strap is not acceptance. `wing_rig.py` replaces it with humerus/forearm frames, a shared wrist/palm, a compact shoulder field and pose-local soft-tissue corrections sampled across the fold. Arm skin and armor follow the same moving anatomy.
+
+Four segmented digits retract toward the body while preserving fan order and segment lengths. The elbow accessory points more neutrally/forward and telescopes to half length when folded, explicitly authorized by the user; its claw has separate rigid attachment. The wrist claw is attached dorsally to the forearm's ending knuckle, independent of finger motion. Short embedded branches merge the digit roots into the palm. Membrane boundaries, scallops, sag and pleats follow the new posed skeleton.
+
+The animation exports rotation, translation and scale; the viewer resets bind transforms and drives eight corrective shapes. Validation covers 17 fold samples, increasing fan angles, rigid finger-segment lengths and accessory scale 1→0.5. Exported weights are finite, nonnegative and normalized. These checks support review but do not prove a reference match. Review set: `canonical_wing_review` with open/intermediate/closed arm, wrist and reference views.
+
+
 The working notes behind `body_design.json`, following the `creature-sculpting` skill. The head
 has its own sheets in `../head/head_sheets.md`.
 

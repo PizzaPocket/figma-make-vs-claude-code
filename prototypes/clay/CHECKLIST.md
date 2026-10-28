@@ -1,5 +1,15 @@
 # Clay model: open fixes
 
+## Current review status, 2026-10-28
+
+- [x] Implement replacement ordered wing rig, half-length folded elbow accessory, shared palm and arm-knuckle claw; validate 17 fold samples.
+- [x] Implement compact head axis, independent upper-lip silhouette and faceted chin; inspect front seal.
+- [ ] User visual review of head proportions, lip character and open/intermediate/closed wings. Previous shoulder pass is rejected.
+- [x] Preserve current orange scale sizing: user says it is good now.
+
+Historical unchecked items below remain open unless separately reviewed.
+
+
 Work top to bottom: the head first, because the neck and body join onto it. Tick an item only once it has been checked against the references (see "Checks" below) and committed.
 
 ## Head

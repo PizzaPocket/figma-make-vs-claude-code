@@ -1,4 +1,9 @@
 ---
+
+## Lessons from the rejected shoulder pass
+
+A connected mesh and normalized weights do not establish natural anatomy. Inspect the shoulder at intermediate folds in plain clay before accepting it. Reconstruct posed soft tissue in joint-local frames; do not stretch a chest strap into a humerus. Preserve angular fan order throughout retraction. Attach the wrist claw to the actual arm knuckle. Separate the visible lip drape from structural bite geometry, and shorten the head along its anatomical axis rather than world forward alone.
+
 name: creature-sculpting
 description: Sculpt a creature model from reference art one element at a time (nose, eye, cheekbone, horn, jaw, neck, limb, hand, wing, tail), the way an architect designs a building and a sculptor builds from bone and muscle outward, then encode it as measured data and build it. Use when modelling or fixing any part of the Clay (Wings of Fire) model, or any character model built from reference images in this repo.
 ---

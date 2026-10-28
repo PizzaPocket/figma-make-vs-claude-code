@@ -273,6 +273,48 @@
     }
   },
   "wing": {
+    "canonical_fold": {
+      "finger_tip_offsets": [[0.12, 1.25, -1.12], [0.14, 1.58, -0.98], [0.16, 1.86, -0.84], [0.18, 2.12, -0.70]],
+      "finger_joint_blend": 0.035,
+      "pose_steps": 8,
+      "finger_dirs": [
+        [
+          0.05,
+          0.7,
+          -0.72
+        ],
+        [
+          0.06,
+          0.92,
+          -0.4
+        ],
+        [
+          0.07,
+          0.99,
+          -0.12
+        ],
+        [
+          0.08,
+          0.995,
+          0.08
+        ]
+      ],
+      "elbow_finger_dir": [
+        0.05,
+        0.98,
+        0.15
+      ],
+      "elbow_finger_length": 0.88,
+      "elbow_fold_length": 0.5,
+      "palm_root_forward": 0.035,
+      "root_spacing": 0.026,
+      "root_field_fraction": 0.12,
+      "tube_start_fraction": 0.03,
+      "wrist_claw_offset": 0.065,
+      "chest_origin": [0.42, 1.13, 0.40],
+      "shoulder_radii": [0.135, 0.12],
+      "why": "User canon: the fan retracts laterally toward the body without reversing digit order. The elbow accessory retracts to half length and points neutrally/slightly forward. All digits and the wrist claw share one carpal hub. Soft tissue is shaped from actual pose-local bones and muscle attachments instead of accepting a stretched LBS strap."
+    },
     "articulation": {
       "shoulder_arc_fractions": [0.3333333333, 0.6666666667],
       "socket": [0.34, 1.12, 0.3],
@@ -312,6 +354,7 @@
       }
     },
     "anatomy": {
+      "superseded_geometry": "The old folded-view bone/muscle coordinates below are retained as reference notes. Active wing geometry is pose-local in wing_rig.py; only resolution is read from this block.",
       "resolution": 0.008,
       "bones": [
         {

@@ -1,5 +1,20 @@
 # Clay model: handoff
 
+## Latest review candidate, 2026-10-28
+
+This is a new review candidate, not user approval. Measurements use official How to Draw, limited-edition and flight drawings; ref1400 is excluded from head proportions because it is a three-quarter view. An anterior-only map shortens the actual down/forward head axis, keeping the rear skull attachment stable. All head parts, keys and bones share it; body oral tissue receives it once.
+
+The external upper lip has its own spline, separate from the structural bite bed: shallow front arc, anterior side lobe, rising flatter rear line. Cheek inflation is reduced. The lower chin has a wider faceted front and a backward-sloping underside. A cream closing lip seals the front without pulling the entire mouth floor upward. Repeated oral-host fitting now uses stored rest shares instead of compounding weights.
+
+Review: `lip_profile_review`; full model renders include actual surface shaders and a plain-clay view. The previous narrow chin/red front gap was rejected during this pass. The final front seal is closed. The overall likeness, nose and lip character remain subject to visual review; projected drawing measurements are not an orthographic reconstruction. The user's current orange scale sizing is approved and unchanged.
+
+The prior helper-driven shoulder was rejected by the user: a stretched, twisted strap is not acceptance. `wing_rig.py` replaces it with humerus/forearm frames, a shared wrist/palm, a compact shoulder field and pose-local soft-tissue corrections sampled across the fold. Arm skin and armor follow the same moving anatomy.
+
+Four segmented digits retract toward the body while preserving fan order and segment lengths. The elbow accessory points more neutrally/forward and telescopes to half length when folded, explicitly authorized by the user; its claw has separate rigid attachment. The wrist claw is attached dorsally to the forearm's ending knuckle, independent of finger motion. Short embedded branches merge the digit roots into the palm. Membrane boundaries, scallops, sag and pleats follow the new posed skeleton.
+
+The animation exports rotation, translation and scale; the viewer resets bind transforms and drives eight corrective shapes. Validation covers 17 fold samples, increasing fan angles, rigid finger-segment lengths and accessory scale 1→0.5. Exported weights are finite, nonnegative and normalized. These checks support review but do not prove a reference match. Review set: `canonical_wing_review` with open/intermediate/closed arm, wrist and reference views.
+
+
 State at the end of the session on branch `wings-of-fire-game`. Read with `CHECKLIST.md` (open fixes), `head/head_sheets.md` and `body/body_sheets.md` (what each part is and why), and the skill `.claude/skills/creature-sculpting/SKILL.md` (how we work).
 
 ## Latest user review: outstanding anatomy and surface issues

@@ -1610,33 +1610,40 @@ def head_parts():
 
 
 def pose_clips(arm, bones, clips):
-    """Key each clip on the armature: rest at frame 0, the pose at frame 1 (see assemble)."""
+    """Export sampled joint rotation, translation and longitudinal retraction."""
     from mathutils import Matrix
-    C = np.array([[1.0, 0, 0], [0, 0, -1.0], [0, 1.0, 0]])  # the model's frame to Blender's
+    C = np.array([[1.0, 0, 0], [0, 0, -1.0], [0, 1.0, 0]])
     order = [b[0] for b in bones]
     bpy.context.view_layer.objects.active = arm
     bpy.ops.object.mode_set(mode="POSE")
     arm.animation_data_create()
     for clip, pose in clips.items():
         arm.animation_data.action = bpy.data.actions.new(clip)
-        names = [n for n in order if n in pose]
-        for n in names:
-            pb = arm.pose.bones[n]; pb.rotation_mode = "QUATERNION"
-            pb.rotation_quaternion = (1, 0, 0, 0); pb.location = (0, 0, 0)
-            pb.keyframe_insert("rotation_quaternion", frame=0)
-        bpy.context.view_layer.update()
-        for n in names:  # parents first, so each bone's head follows its parent's pose
-            Rm, head = pose[n]
-            pb = arm.pose.bones[n]; rest = np.array(arm.data.bones[n].matrix_local)
-            M = np.eye(4); M[:3, :3] = (C @ Rm @ C.T) @ rest[:3, :3]
-            M[:3, 3] = to_blender(np.array(head)) if head is not None else np.array(pb.matrix)[:3, 3]
-            pb.matrix = Matrix(M.tolist())
+        samples = pose.get("__samples__", [(0.0, {}), (1.0, pose)])
+        names = [n for n in order if any(n in sample for _, sample in samples)]
+        for amount, sample in samples:
+            for pb in arm.pose.bones:
+                pb.matrix_basis = Matrix.Identity(4)
+                pb.rotation_mode = 'QUATERNION'
             bpy.context.view_layer.update()
-            pb.keyframe_insert("rotation_quaternion", frame=1)
-        for n in names:
-            arm.pose.bones[n].rotation_quaternion = (1, 0, 0, 0); arm.pose.bones[n].location = (0, 0, 0)
+            for name in names:
+                if name in sample:
+                    value = sample[name]; Rm, head = value[:2]
+                    scale = value[2] if len(value) > 2 else 1.0
+                    pb = arm.pose.bones[name]; rest = np.array(arm.data.bones[name].matrix_local)
+                    M = np.eye(4); M[:3, :3] = (C @ np.array(Rm) @ C.T) @ rest[:3, :3]
+                    M[:3, 1] *= scale
+                    M[:3, 3] = to_blender(np.array(head)) if head is not None else np.array(pb.matrix)[:3, 3]
+                    pb.matrix = Matrix(M.tolist())
+                    bpy.context.view_layer.update()
+                pb = arm.pose.bones[name]
+                for channel in ('rotation_quaternion', 'location', 'scale'):
+                    pb.keyframe_insert(channel, frame=float(amount) * 24)
+        for curve in arm.animation_data.action.fcurves:
+            for key in curve.keyframe_points:
+                key.interpolation = 'LINEAR'
     bpy.context.scene.frame_set(0)
-    bpy.ops.object.mode_set(mode="OBJECT")
+    bpy.ops.object.mode_set(mode='OBJECT')
 
 
 def assemble(objs, bones, out, name="ClayRig", clips=None, extras=None):

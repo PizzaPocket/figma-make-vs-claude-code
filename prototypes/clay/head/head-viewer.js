@@ -199,7 +199,8 @@
     sk.frustumCulled = false;
     scene.add(gltf.scene);
     const bones = {}; sk.skeleton.bones.forEach(b => (bones[b.name] = b));
-    const bind = {}; for (const n in bones) bind[n] = bones[n].quaternion.clone();
+    const bind = {}, bindPosition = {}, bindScale = {};
+    for (const n in bones) { bind[n] = bones[n].quaternion.clone(); bindPosition[n] = bones[n].position.clone(); bindScale[n] = bones[n].scale.clone(); }
     gltf.scene.updateMatrixWorld(true);
     const frames = { starts: [], ends: [], offsets: [] };
     for (const names of [["upperarm.L", "forearm.L", "hand.L", "ftoe2.L"], ["thigh.L", "shin.L", "foot.L", "htoe2.L"]]) {
@@ -217,17 +218,17 @@
     sk.material = material(THREE, opts.clay, frames, pattern);
     // the wings rest spread; the "wings_fold" clip turns their bones to the side sheet's folded pose (0 spread, 1 folded)
     const fold = (gltf.animations || []).find(a => /wings_fold/.test(a.name));
-    const foldTracks = fold ? fold.tracks.filter(tr => /\.quaternion$/.test(tr.name))
-      .map(tr => ({ node: gltf.scene.getObjectByName(THREE.PropertyBinding.parseTrackName(tr.name).nodeName), it: tr.createInterpolant() }))
+    const foldTracks = fold ? fold.tracks.filter(tr => /\.(quaternion|position|scale)$/.test(tr.name))
+      .map(tr => ({ node: gltf.scene.getObjectByName(THREE.PropertyBinding.parseTrackName(tr.name).nodeName), it: tr.createInterpolant(), property: THREE.PropertyBinding.parseTrackName(tr.name).propertyName }))
       .filter(t => t.node) : [];
     function resize() { const w = el.clientWidth, h = el.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
     resize();
     const Q = new THREE.Quaternion(), X = new THREE.Vector3(1, 0, 0);
     function setPose(jawOpen, tongue, lids, morphs, wings, headTurn) {
       // rotations about the model's x axis, converted into each bone's frame
-      for (const n in bones) bones[n].quaternion.copy(bind[n]);
+      for (const n in bones) { bones[n].quaternion.copy(bind[n]); bones[n].position.copy(bindPosition[n]); bones[n].scale.copy(bindScale[n]); }
       const w = wings === undefined ? 1 : Math.max(0, Math.min(1, wings));
-      for (const t of foldTracks) t.node.quaternion.fromArray(t.it.evaluate(w * fold.duration));
+      for (const t of foldTracks) t.node[t.property].fromArray(t.it.evaluate(w * fold.duration));
       const apply = (n, ang) => {
         const b = bones[n]; if (!b) return; const wq = new THREE.Quaternion(); b.parent.getWorldQuaternion(wq);
         const axis = X.clone().applyQuaternion(wq.clone().invert()).normalize();
@@ -261,6 +262,10 @@
       // face: muscle actions as morph targets
       const dict = sk.morphTargetDictionary || {};
       const m = Object.assign({ wingfold: w, jawOpen: Math.max(0, Math.min(1, jawOpen / 0.6)) }, morphs || {}); // the cheek skin fills out as the jaw drops
+      const wingSteps = (sk.userData.wing_rig || {}).pose_steps || 8;
+      const wingAmount = w * wingSteps, wingIndex = Math.floor(wingAmount), wingFraction = wingAmount - wingIndex;
+      if (wingIndex > 0) m['wingFold' + wingIndex] = 1 - wingFraction;
+      if (wingIndex < wingSteps) m['wingFold' + (wingIndex + 1)] = wingFraction;
       // blink: in-between shapes blink1..blinkN along the lids' arc; a weight w blends the two steps either side of it
       const nb = Object.keys(dict).filter(k => /^blink\d+$/.test(k)).length;
       if (nb && m.blink !== undefined) {
