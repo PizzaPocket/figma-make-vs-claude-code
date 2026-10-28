@@ -42,7 +42,7 @@
     "front": {
       "note": "The front muzzle of the upper jaw, in front of the bite point (z 1.86): below the nose its front face is convex (the side sheet's notch at z 1.98 is the nose's underside, not a hollow in the face), then its underside sweeps back and down to the bite point, where it meets the lower jaw's front. That underside is skin, with no teeth. Its bottom corners pull up a little before angling round to the side muzzle. A small brown ridge (the roof's front edge) wraps across the top of the front face right under the nose. From above the front face is rounded across (convex: its middle 0.025 forward of its sides; the roof's front band follows the same curve, so the front ridge runs on from it flush) and bulges forward in side profile (0.01, side sheet front outline), and the front ridge's front edge follows that curve. Its bottom edge, the front lip edge, arcs down in the middle (0.03 lower than at the corners). Simplified: slightly convex, rounding forward (convex_side 0.016); its bottom corners lift only a little (0.012), so they meet the roof's level lower edge.",
       "concave": 0.0,
-      "corner_lift": 0.012,
+      "corner_lift": 0.018,
       "block_back_z": 1.93,
       "ridge": {
         "note": "The roof's front: the front band carries on down over the snout's front face as one smooth piece on the slightly convex front, to a level bottom edge at the overhang's lowest height (eave_y), right across to the front corners, rolling in to the orange muzzle in the same rounded edge the roof has all round (the user's reading). Simplified from an earlier version whose bottom edge rose at the corners and whose rows collapsed and folded (it looked crumpled).",
@@ -69,13 +69,228 @@
       "from_z": [1.58, 1.63],
       "to_z": [1.95, 1.99],
       "overhang": 0.012,
-      "power": 2.5,
+      "power": 1.15,
       "note": "User: the upper mouth looked puffed out, where the references show cheek flesh over the teeth and jaws. Measured on the build: the upper lip's edge stood 0.04-0.055 outside the lower jaw on each side along the whole mouth (wb 0.19-0.235 against the jaw's 0.14-0.18), a shelf overhanging the bite. Anatomy: the upper teeth sit just outside the lower ones and the lip skin lies over them, so the lip edge comes in to 0.012 outside the lower jaw, the cheek above curving in to it (power 2.5: the tuck is concentrated near the lip, the cheek's upper part is unchanged). Faded out at the mouth corner (z 1.58-1.63, the jowl over the jaw muscle) and in front of the bite (z 1.84-1.88, the front muzzle). The upper teeth follow the tucked edge."
     },
     "lip_line_note": "User: the jaw curved up at the front like a cereal bowl or a Nike check. The upper lip's edge rose 0.045 over the snout's last 0.1 (1.285 -> 1.33) and the jaw followed it. A reptile's or a dinosaur's lip line is nearly straight: level at the front, rising gently back to the mouth corner. Front rows lowered to 1.268-1.277, which also brings the front of the muzzle further down the face (user: that area had become very small).",
     "hammer_note": "Seen square to the shield's plane (topview views), the upper muzzle broadens into a hammer at the front: waist 0.126 at z 1.85, front 0.163 (top) / 0.17 (low), so the front corners stand out past the waist by about 0.037 each side. The low width is only a little more than the top width at the front, so the shield does not fold down over the sides there."
   },
+  "lip_line": {
+    "profile_zy": [
+      [
+        2.017,
+        1.268
+      ],
+      [
+        2.006,
+        1.268
+      ],
+      [
+        1.988,
+        1.27
+      ],
+      [
+        1.972,
+        1.276
+      ],
+      [
+        1.953,
+        1.255
+      ],
+      [
+        1.94,
+        1.268
+      ],
+      [
+        1.93,
+        1.263
+      ],
+      [
+        1.918,
+        1.26
+      ],
+      [
+        1.902,
+        1.26
+      ],
+      [
+        1.89,
+        1.264
+      ],
+      [
+        1.88,
+        1.268
+      ],
+      [
+        1.86,
+        1.28
+      ],
+      [
+        1.848,
+        1.292
+      ],
+      [
+        1.813,
+        1.316
+      ],
+      [
+        1.778,
+        1.332
+      ],
+      [
+        1.743,
+        1.354
+      ],
+      [
+        1.706,
+        1.371
+      ],
+      [
+        1.673,
+        1.382
+      ],
+      [
+        1.65,
+        1.387
+      ],
+      [
+        1.633,
+        1.39
+      ],
+      [
+        1.62,
+        1.411
+      ],
+      [
+        1.61,
+        1.44
+      ],
+      [
+        1.6,
+        1.46
+      ],
+      [
+        1.58,
+        1.535
+      ],
+      [
+        1.545,
+        1.578
+      ],
+      [
+        1.487,
+        1.602
+      ],
+      [
+        1.44,
+        1.627
+      ],
+      [
+        1.414,
+        1.656
+      ],
+      [
+        1.4,
+        1.71
+      ],
+      [
+        1.36,
+        1.79
+      ]
+    ],
+    "height_fade": 0.36,
+    "palate_edge_fraction": 0.94,
+    "why": "How to Draw and limited-edition art: shallow down-arc across front, lifted corner, anterior side lobe dipping over the lower jaw, then a smooth rise and flatter rear run into the angular cheek return. This is soft lip tissue around an unchanged structural bite bed.",
+    "reference_landmarks": {
+      "how_to_draw_side_lobe": [
+        [
+          892,
+          488
+        ],
+        [
+          862,
+          509
+        ],
+        [
+          820,
+          528
+        ],
+        [
+          780,
+          539
+        ],
+        [
+          758,
+          535
+        ],
+        [
+          718,
+          512
+        ],
+        [
+          688,
+          504
+        ],
+        [
+          660,
+          502
+        ],
+        [
+          637,
+          489
+        ],
+        [
+          622,
+          466
+        ]
+      ],
+      "limited_edition_side_lobe": [
+        [
+          923,
+          553
+        ],
+        [
+          894,
+          564
+        ],
+        [
+          878,
+          566
+        ],
+        [
+          851,
+          576
+        ],
+        [
+          827,
+          569
+        ],
+        [
+          806,
+          558
+        ],
+        [
+          784,
+          558
+        ],
+        [
+          759,
+          551
+        ]
+      ],
+      "chin_front_plane_htd": [[752, 580], [853, 541]],
+      "lip_front_plane_htd": [[778, 539], [896, 490]],
+      "chin_width_reading": "The visible chin front plane is about 0.85 of the lip front plane in the same closed view; use as a projected ratio, not an exact orthographic width.",
+      "reading": "The three-quarter contour includes the front plane; do not treat its entire projected diagonal as a side-view height slope."
+    }
+  },
   "lower_jaw": {
+    "front_lip_seal": {
+      "lift": 0.006,
+      "from_z": [1.80, 1.88],
+      "height_fade": 0.18,
+      "why": "The front lower lip meets the upper lip in the neutral bite; structural bone/gum levels stay fixed behind the soft margin. Match the shallow front corner arc without revealing a red gum slot."
+    },
     "columns": ["z", "top", "bottom", "half_width"],
     "note": "A dragon's lower jaw, built from its bones rather than traced (user: the side sheet is a three-quarter view of the snout, so the short chin it seemed to show at z 1.86 was the front of the chin seen at an angle). The dentary carries the teeth forward to a rounded U-shaped chin (the symphysis) at z 1.985, just behind the upper jaw's front under a slight overbite; its tip rounds up and in over the last 0.03 (half-width 0.125 at z 1.86 narrowing to 0.06). Along the tooth row it is about 0.065 deep at the front, deepening steadily backward (0.105 at z 1.75, 0.17 at the mouth corner) as the surangular and angular bones under the jaw muscle (masseter, pterygoid) take over; its underside is one long, gently convex line from under the chin up to the back, where the retroarticular process curves up behind the hinge into the ear opening (z 1.39). Its top edge runs just inside the upper lip line at the front and inside the cheek behind the mouth corner. At the back it is as wide as the cheek (the jowl). Skin: cream with faint pebble scales.",
     "rows": [
@@ -107,18 +322,26 @@
     "bones": {
       "note": "The lower jaw as bones (jaw_from_bones generates the profile table from these; edit the bones, not a table). z along the head (forward +), y up; model units, before the snout warp.",
       "symphysis": {
-        "z": 1.985,
-        "bottom": 1.212,
-        "half_width": 0.12,
-        "round_len": 0.03,
-        "tip_frac": 0.5,
-        "note": "The chin's front: where the two dentaries meet, a rounded U just behind the upper jaw's front under a slight overbite. Its last round_len rounds off in side view and from above (tip half-width tip_frac of its width)."
+        "z": 2.002,
+        "bottom": 1.189,
+        "half_width": 0.14,
+        "round_len": 0.018,
+        "tip_frac": 0.90,
+        "note": "The chin's front: where the two dentaries meet, a rounded U just behind the upper jaw's front under a slight overbite. Its last round_len rounds off in side view and from above (tip half-width tip_frac of its width).",
+        "round_lift": 0.10
       },
       "chin": {
-        "z": 1.89,
-        "bottom": 1.188,
-        "note": "The chin's lowest point under the front teeth: the dentary's deepest front part."
+        "z": 1.955,
+        "bottom": 1.176,
+        "note": "The chin's lowest point under the front teeth: the dentary's deepest front part.",
+        "front_backset": 0.012,
+        "front_squareness": 3.8,
+        "front_fade_z": [
+          1.87,
+          1.97
+        ]
       },
+      "chin_return": [[1.975, 1.180], [1.94, 1.180], [1.925, 1.195], [1.87, 1.21], [1.79, 1.24]],
       "alveolar": {
         "bite_gap": 0.006,
         "blend": 0.03,
@@ -142,18 +365,62 @@
         "note": "Behind the throat junction the jaw's deep back (angular, retroarticular) lies inside the throat's skin; its underside continues the same smooth rising line up to the ear opening."
       },
       "half_width": [
-        [1.96, 0.112],
-        [1.9, 0.118],
-        [1.862, 0.125],
-        [1.79, 0.14],
-        [1.703, 0.15],
-        [1.627, 0.172],
-        [1.58, 0.188],
-        [1.487, 0.215],
-        [1.44, 0.228],
-        [1.41, 0.236],
-        [1.398, 0.232],
-        [1.392, 0.222]
+        [
+          1.985,
+          0.135
+        ],
+        [
+          1.96,
+          0.125
+        ],
+        [
+          1.93,
+          0.122
+        ],
+        [
+          1.9,
+          0.118
+        ],
+        [
+          1.862,
+          0.125
+        ],
+        [
+          1.79,
+          0.14
+        ],
+        [
+          1.703,
+          0.15
+        ],
+        [
+          1.627,
+          0.172
+        ],
+        [
+          1.58,
+          0.188
+        ],
+        [
+          1.487,
+          0.215
+        ],
+        [
+          1.44,
+          0.228
+        ],
+        [
+          1.41,
+          0.236
+        ],
+        [
+          1.398,
+          0.232
+        ],
+        [
+          1.392,
+          0.222
+        ]
       ],
       "depth_note": "Deepened from the covers (Dragonet Prophecy, limited edition): the cream lower jaw is heavy, about 0.45 of the upper jaw's height at the front, with a squared chin. Chin bottom 1.213 -> 1.188, symphysis 1.262 -> 1.232.",
       "throat_junction": {
@@ -233,6 +500,22 @@
       "back_point": 0.85,
       "almond_note": "User: the eye doesn't match the references' nice shape. The covers draw an almond: the outer corner comes to a soft point and the upper lid rests over the top of the iris. So the opening's back half tapers from the round toward a cosine point (back_point 0.85), keeping the side sheet's pink inner point, and the upper lid rests 0.26 of the way closed (was 0.17)."
     }
+  },
+  "head_compact_frame": {
+    "anchor_yz": [1.67, 1.68],
+    "axis_yz": [-0.60, 0.80],
+    "length_scale": 0.68,
+    "gate_z": [1.61, 1.76],
+    "why": "Shorten along the actual down-and-forward muzzle axis. Compressing only world z made the face steeper instead of correcting the long horse-like proportion. Apply the same frame to both jaws, lips, palate, teeth, nose and rig anchors; retain the neck attachment. Official head drawings, not ref1400, guide the compactness."
+  },
+  "head_proportion_review": {
+    "sources": ["covers/Clay_htd.png", "covers/Clay_LE_Render_zstarchaserr_png.png", "covers/Clay_Render_zstarchaserr_png.png", "covers/Clay_SEPoster_Isolated_Edit_png.png"],
+    "excluded": "clayref/ref1400.png is not a head-proportion source; its three-quarter snout was previously treated as a profile.",
+    "why": "Compare apparent snout length and broad muzzle against official front/three-quarter drawings. Compact the anterior maxilla ahead of the eye, including the previous excessive crown extension, while preserving the skull/neck attachment and bite. Projected artwork measurements constrain camera-matched proportions rather than defining an exact side reconstruction.",
+    "anterior_scale_before": 0.78,
+    "anterior_scale_after": 0.78,
+    "crown_extension_before": 0.2,
+    "crown_extension_after": 0.13
   },
   "snout_turn": {
     "note": "The side sheet draws the head turned a few degrees toward the viewer: the front of its snout (a darker band from the tip back to a crease at px 80-95) is the muzzle's front face and front corner. Measured as a true side view, that read as extra length and a forward slant. With the muzzle about 0.21 wide, a turn of about 25 degrees accounts for about 0.07 of the sheet's snout, so the snout is compressed toward the eye from z 1.72 by 0.78 (the tip from 2.02 to 1.95), which also stands its front up straighter (the user's reading).",
@@ -367,10 +650,10 @@
       {
         "kind": "bulge",
         "name": "masseter",
-        "why": "The jaw-closing muscle from the zygomatic arch down to the jaw: the full rounded cheek above the cream jowl, behind the mouth corner.",
+        "why": "The jaw-closing muscle from the zygomatic arch down to the jaw: the full rounded cheek above the cream jowl, behind the mouth corner. User lip review: keep this a restrained rear attachment mass rather than a puffy cheek.",
         "centre": [1.56, 1.53],
         "radii": [0.07, 0.055],
-        "amount": 0.02
+        "amount": 0.008
       },
       {
         "kind": "bulge",
@@ -378,7 +661,7 @@
         "why": "Lifts the upper lip; a gentle fullness on the side of the muzzle in front of the eye, below the roof's eave.",
         "centre": [1.79, 1.45],
         "radii": [0.06, 0.04],
-        "amount": 0.008
+        "amount": 0.002
       },
       {
         "kind": "note",
@@ -955,7 +1238,7 @@
   "premaxilla": {
     "from_z": 1.8,
     "full_z": 2.017,
-    "crown_extension": 0.2,
+    "crown_extension": 0.13,
     "note": "User: the orange muzzle front must turn down nearly perpendicular to the shield plane, not just lose its bulge. Shared anterior-maxilla field extends the crown over the alveolar base while leaving the lip, tooth bed and lower-jaw closure fixed. Chosen from the measured shield/front plane relationship; checked against How to Draw and the flight cover, whose front turns down from the shield. Applies before snout_turn to all parts, shape keys and bone anchors."
   },
   "lion_nose": {

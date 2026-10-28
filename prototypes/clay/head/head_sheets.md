@@ -1,5 +1,14 @@
 # Clay's head: element sheets
 
+## Compact head and lip review, 2026-10-28
+
+This is a new review candidate, not user approval. Measurements use official How to Draw, limited-edition and flight drawings; ref1400 is excluded from head proportions because it is a three-quarter view. An anterior-only map shortens the actual down/forward head axis, keeping the rear skull attachment stable. All head parts, keys and bones share it; body oral tissue receives it once.
+
+The external upper lip has its own spline, separate from the structural bite bed: shallow front arc, anterior side lobe, rising flatter rear line. Cheek inflation is reduced. The lower chin has a wider faceted front and a backward-sloping underside. A cream closing lip seals the front without pulling the entire mouth floor upward. Repeated oral-host fitting now uses stored rest shares instead of compounding weights.
+
+Review: `lip_profile_review`; full model renders include actual surface shaders and a plain-clay view. The previous narrow chin/red front gap was rejected during this pass. The final front seal is closed. The overall likeness, nose and lip character remain subject to visual review; projected drawing measurements are not an orthographic reconstruction. The user's current orange scale sizing is approved and unchanged.
+
+
 ## Current correction: front muzzle plane and nose frame
 
 This section supersedes the older walkthrough settings below.

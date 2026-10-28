@@ -79,7 +79,7 @@ def jaw_from_bones(LJ):
     sy, ch, tn, cor = B["symphysis"], B["chin"], B["throat_junction"], B["coronoid_line"]
     ra = B["retroarticular"]
     zt = sy["z"]
-    bot_pts = [(zt, sy["bottom"]), (ch["z"], ch["bottom"]), (tn["z"], tn["bottom"])] + [tuple(p) for p in ra["bottom"]]
+    bot_pts = [(zt, sy["bottom"]), (ch["z"], ch["bottom"]), (tn["z"], tn["bottom"])] + [tuple(p) for p in B.get("chin_return", [])] + [tuple(p) for p in ra["bottom"]]
     bz, by = zip(*sorted(bot_pts))
     bottom = PchipInterpolator(bz, by)
     wz, ww = zip(*sorted([(zt, sy["half_width"])] + [tuple(p) for p in B["half_width"]]))
@@ -101,7 +101,7 @@ def jaw_from_bones(LJ):
         if u > 0:  # the chin's round, in side view and from above
             r = math.sqrt(max(0.0, 1 - min(u, 1.0) ** 2))
             w *= max(r, sy["tip_frac"])
-            b += (top - b) * 0.5 * (1 - r)
+            b += (top - b) * sy.get("round_lift", 0.5) * (1 - r)
         rows.append([float(z), top, b, w])
     return np.array(rows)
 
@@ -255,6 +255,19 @@ def lip_roll(dd):
     return LR["amount"] * math.exp(-((dd - LR["at"]) / LR["width"]) ** 2)
 
 
+_LIP_PROFILE = None
+
+
+def lip_height(z):
+    """The soft external lip silhouette, independent of the alveolar bite line."""
+    global _LIP_PROFILE
+    if _LIP_PROFILE is None:
+        from scipy.interpolate import PchipInterpolator
+        profile = np.array(D["lip_line"]["profile_zy"])[::-1]
+        _LIP_PROFILE = PchipInterpolator(profile[:, 0], profile[:, 1])
+    return float(_LIP_PROFILE(np.clip(z, UPPER[-1, 0], UPPER[0, 0])))
+
+
 def face_pt(z, th):
     """Point on the face at station z, angle th (0 = left lip edge, pi/2 = top, pi = right lip edge).
     Boxy cross-section (flat top, steep sides, cheeks wider than the top), then the brushes."""
@@ -268,6 +281,7 @@ def face_pt(z, th):
     x += math.copysign(lip_roll(yy), x)  # the lip's fleshy margin
     # gable: straight slopes down from a crisp ridge; the ridge stays on the measured profile, the shoulders drop
     y = low + yy - snout_ridge(z) * min(1.0, abs(x) / (wt * 0.98)) * (yy / b) ** 4
+    y += (lip_height(z) - low) * (1 - smoothstep(0.0, D["lip_line"]["height_fade"], yy / b))
     y += corner_lift(z, x, wb) * (1 - yy / b) ** 2  # the front's bottom corners pull up
     side = min(1.0, max(0.0, (abs(x) / wb - 0.35) / 0.4))  # brushes act on the sides, fading out on the top
     return x + math.copysign(brush_offset(z, y) * side, x), y
@@ -284,7 +298,12 @@ def face_normal(z, th):
 
 def upper_contour(z):
     low, wb = interp(UPPER, z, 2), interp(UPPER, z, 4)
-    return [face_pt(z, math.pi * i / N_AROUND) for i in range(N_AROUND + 1)], (lambda x: low + corner_lift(z, x, wb))
+    points = [face_pt(z, math.pi * i / N_AROUND) for i in range(N_AROUND + 1)]
+    width = max(abs(points[0][0]), 1e-6)
+    def inside_edge(x):
+        curtain = smoothstep(D["lip_line"]["palate_edge_fraction"], 1.0, min(1.0, abs(x) / width))
+        return low + (lip_height(z) - low) * curtain + corner_lift(z, x, wb)
+    return points, inside_edge
 
 
 def jaw_contour(z):
@@ -295,10 +314,18 @@ def jaw_contour(z):
         th = math.pi * i / N_AROUND  # 0 = one edge, pi/2 = chin bottom, pi = other edge
         c, s = math.cos(th), math.sin(th)
         n = D["lower_jaw"].get("squareness", 2.6)
+        chin = D["lower_jaw"]["bones"]["chin"]
+        f = smoothstep(*chin["front_fade_z"], z)
+        n = n * (1 - f) + chin["front_squareness"] * f
         x = w * math.copysign(abs(c) ** (2 / n), c)
         y = top - b * abs(s) ** (2 / n)
-        pts.append((x + math.copysign(lip_roll(top - y), x), y))
-    return pts, top
+        dd = top - y
+        seal = D["lower_jaw"]["front_lip_seal"]
+        amount = (seal["lift"] + corner_lift(z, x, interp(UPPER, z, 4))) * smoothstep(*seal["from_z"], z)
+        y += amount * (1 - smoothstep(0.0, seal["height_fade"], dd / max(b, 1e-6)))
+        pts.append((x + math.copysign(lip_roll(dd), x), y))
+    front = smoothstep(D["lower_jaw"]["bones"]["symphysis"]["z"] - 0.055, D["lower_jaw"]["bones"]["symphysis"]["z"] - 0.012, z)
+    return pts, (lambda x: top + front * (D["lower_jaw"]["front_lip_seal"]["lift"] + corner_lift(z, x, interp(UPPER, z, 4))))
 
 
 # ---------------------------------------------------------------- roof thickness (the profile the shield and nose are laid out on)
@@ -1352,6 +1379,30 @@ def dentition_parts(face):
     return objs
 
 
+def compact_head_objects(objs, bones=None):
+    """Compress the anatomical muzzle axis, keeping the rear skull/neck fitted."""
+    settings = D["head_compact_frame"]
+    anchor = np.array(settings["anchor_yz"]); axis = norm(settings["axis_yz"])
+    def compact(points):
+        points = np.asarray(points, float).copy(); yz = points[:, 1:]
+        t = np.clip((points[:, 2] - settings["gate_z"][0]) / (settings["gate_z"][1] - settings["gate_z"][0]), 0, 1)
+        t = t*t*(3-2*t)
+        extent = np.maximum((yz-anchor) @ axis, 0)
+        points[:, 1:] -= (1-settings["length_scale"]) * (extent*t)[:, None] * axis
+        return points
+    for obj in objs:
+        keys = obj.data.shape_keys.key_blocks if obj.data.shape_keys else []
+        for data in [obj.data.vertices] + [key.data for key in keys]:
+            coordinates = np.zeros(len(data)*3, np.float32);data.foreach_get('co', coordinates);coordinates=coordinates.reshape(-1,3)
+            model = np.column_stack([coordinates[:,0],coordinates[:,2],-coordinates[:,1]])
+            data.foreach_set('co',to_blender(compact(model)).astype(np.float32).ravel())
+    if bones is not None:
+        result=[]
+        for name,a,b,parent in bones:
+            aa,bb=compact(np.array([a,b]));result.append((name,tuple(aa),tuple(bb),parent))
+        return result
+
+
 def head_parts():
     """Build every head part as a Blender object. Returns the objects and the head's bones as
     (name, head, tail, parent) with the head bone's parent left as None, for the caller to attach."""
@@ -1392,8 +1443,18 @@ def head_parts():
 
     # lower jaw skin
     zj = JAW[:, 0]  # the generated stations: dense, with the landmarks (the throat notch stays crisp)
-    v, f, uv = loft(jaw_contour, zj, inner_dip=lambda z: (oral_floor(z) - interp(JAW, z, 1)) * inside(z))
-    part = [2.0 if u[1] >= 0 else 3.0 for u in uv]
+    front_z = D["lower_jaw"]["bones"]["symphysis"]["z"]
+    lower_inside = lambda z: inside(z) * (1 - smoothstep(front_z - 0.055, front_z - 0.012, z))
+    v, f, uv = loft(jaw_contour, zj, inner_dip=lambda z: (oral_floor(z) - interp(JAW, z, 1)) * lower_inside(z))
+    chin = D["lower_jaw"]["bones"]["chin"]
+    shaped = []
+    for x, y, z in v:
+        top, bottom = interp(JAW, z, 1), interp(JAW, z, 2)
+        depth = max(0.0, min(1.0, (top - y) / max(top - bottom, 1e-6)))
+        setback = chin["front_backset"] * depth * smoothstep(chin["z"] - 0.03, D["lower_jaw"]["bones"]["symphysis"]["z"], z)
+        shaped.append((x, y, z - setback))
+    v = shaped
+    part = [2.0 if u[1] >= 0 or u[0] > front_z - 0.020 else 3.0 for u in uv]
     jaw = add_part("Jaw", v, f, {"_PART": part, "_A": [u[0] for u in uv], "_B": [u[1] for u in uv], "_ZONE": [0] * len(v)},
                    [[("jaw", 1.0)]] * len(v))
     objs.append(jaw)
@@ -1544,6 +1605,7 @@ def head_parts():
     bones += [(bn, h0, h1, "head") for bn, h0, h1 in lid_bones]
     bones = warp_snout(objs, bones)
     objs += dentition_parts(face)
+    bones = compact_head_objects(objs, bones)
     return objs, bones
 
 
@@ -1597,6 +1659,9 @@ def assemble(objs, bones, out, name="ClayRig", clips=None, extras=None):
     bpy.context.view_layer.objects.active = objs[0]
     bpy.ops.object.join()
     mesh = objs[0]
+    internal = mesh.data.attributes.get("oral_rest_share")
+    if internal is not None:
+        mesh.data.attributes.remove(internal)
     for key, value in (extras or {}).items():
         mesh[key] = value
     mod = mesh.modifiers.new("Armature", "ARMATURE"); mod.object = arm

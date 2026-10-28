@@ -871,6 +871,11 @@ def fit_oral_lining(skin, objs):
     jaw_tree, face_tree = tree("Jaw"), tree("Face")
     settings = H.D["mouth"]["opening_arc"]
     snap, blend = settings["attachment_snap_distance"], settings["attachment_blend_distance"]
+    base = skin.data.attributes.get("oral_rest_share")
+    if base is None:
+        base = skin.data.attributes.new("oral_rest_share", "FLOAT", "POINT")
+        for vertex in skin.data.vertices:
+            base.data[vertex.index].value = sum(g.weight * {"head": 0, "oral1": 1/3, "oral2": 2/3, "jaw": 1}.get(skin.vertex_groups[g.group].name, 0) for g in vertex.groups)
     count = 0
     for vertex in skin.data.vertices:
         x, z, y = vertex.co.x, -vertex.co.y, vertex.co.z
@@ -881,7 +886,7 @@ def fit_oral_lining(skin, objs):
         if distance >= blend:
             continue
         target = 1.0 if jf[3] < ff[3] else 0.0
-        old = sum(g.weight * {"head": 0, "oral1": 1/3, "oral2": 2/3, "jaw": 1}.get(skin.vertex_groups[g.group].name, 0) for g in vertex.groups)
+        old = base.data[vertex.index].value
         strength = 1 - smoothstep(snap, blend, distance)
         weights = H.oral_weights(old * (1 - strength) + target * strength)
         for group in skin.vertex_groups:
@@ -965,6 +970,7 @@ def main():
     if ear_pts is not None:
         ear_pts = np.stack([ear_pts[:, 0], ear_pts[:, 2], -ear_pts[:, 1]], 1)  # Blender's frame back to the model's
     skin, shell = skin_parts(ranges, ear_pts)
+    H.compact_head_objects([skin, shell])
     fit_surface_joins(objs, skin, shell)
     fit_oral_lining(skin, objs)
     objs += [skin, shell]
